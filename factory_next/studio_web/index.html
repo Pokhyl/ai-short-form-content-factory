@@ -97,7 +97,7 @@ video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-rati
 const API="/factory-next/api/jobs",get=id=>document.getElementById(id);
 let selected=null, timer=null, detail=null;
 const stages={research:"Проверка источников",materials:"Поиск и проверка фотографий",story:"Создание и проверка сценария",voice:"Генерация озвучки",alignment:"Синхронизация сцен",edit:"Планирование монтажа",render:"Создание MP4",audit:"Финальная проверка качества"};
-const label=s=>s==="complete"?"Готово · проверка пройдена":s==="provider_wait"?"Сервис перегружен, повтор по расписанию":s==="needs_attention"?"Задание остановлено для проверки":s==="queued"?"В очереди":s==="queued_for_quota"?"В очереди · автоматический запуск при свободном месте":s==="registration_pending"?"Регистрация не завершена":s==="deferred"?"Ожидание провайдера":s==="running"?"Выполняется":s==="checking"||s==="checking_provider"?"Проверка разрешения на продолжение":"В работе";
+const label=s=>s==="complete"?"Готово · проверка пройдена":s==="provider_wait"?"Задание остановлено · автоматические повторы отключены":s==="needs_attention"?"Задание остановлено для проверки":s==="queued"?"В очереди":s==="queued_for_quota"?"В очереди · автоматический запуск при свободном месте":s==="registration_pending"?"Регистрация не завершена":s==="deferred"?"Ожидание провайдера":s==="running"?"Выполняется":s==="checking"||s==="checking_provider"?"Проверка разрешения на продолжение":"В работе";
 const escapeText=s=>String(s??"");
 async function request(url,opts={}){
   const response=await fetch(url,{credentials:"same-origin",cache:"no-store",...opts});

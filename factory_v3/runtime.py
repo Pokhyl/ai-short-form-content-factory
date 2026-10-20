@@ -93,7 +93,7 @@ class Runtime:
             if body.get("projectId") != proof["project_id"] or body.get("billingEnabled") is not False:
                 raise ValueError("Gemini project is not confirmed unbilled")
         gemini = Gemini(calls, lambda:"gateway-managed", self.gateway, model=MODEL,
-                        free_tier_confirmed=True, retry_unavailable=True, defer_unavailable=True)
+                        free_tier_confirmed=True)
         search = PhotoSearch(calls,ProviderCache(self.ledger),self.gateway,
                              lambda provider:"gateway-managed",self.settings["credential_scope"])
         producer = DurableProducer(self.root, self.preparations,
@@ -107,7 +107,6 @@ class Runtime:
     def correction_gemini(self, job_id, attempt):
         from copy import copy
         gemini = copy(self.producer(job_id).operations.gemini)
-        gemini.retry_unavailable = False  # Voice-stage correction retains its existing claim protocol.
         base = gemini.calls
         class PrefixedCalls:
             def run(self, key, kind, request, invoke, **kwargs):

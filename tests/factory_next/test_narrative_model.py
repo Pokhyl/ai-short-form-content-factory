@@ -34,3 +34,29 @@ class NarrativeModelProofTests(unittest.TestCase):
     def test_partial_proof_cannot_enable_model(self):
         self.runtime.settings['factory_next_narrative_proof']={}
         with self.assertRaises(ValueError):narrative_model_for(self.runtime,self.producer)
+
+class ResearchModelRoutingTests(unittest.TestCase):
+    def test_research_generation_and_review_share_verified_model_meter(self):
+        import hashlib
+        from factory_next.preparation import PreparationStages
+        from factory_v3.gemini import obj,string
+        text='Three independently supported source claims.'
+        evidence={'sources':[{'id':'s1','url':'https://example.org/source','title':'Source',
+                   'text':text,'sha256':hashlib.sha256(text.encode()).hexdigest()}],
+                  'facts':[{'id':'f'+str(i),'text':'Source claim '+str(i),
+                    'support':[{'source_id':'s1','quote':text}]} for i in range(1,4)]}
+        class Model:
+            def __init__(self):self.calls=[]
+            def generate(self,key,*args,**kwargs):self.calls.append(key)
+        class Operations:
+            def research(self,request):
+                self.gemini.generate('generation','',{},obj({'result':string()}))
+                self.gemini.generate('independent-review','',{},obj({'result':string()}))
+                return {'evidence':evidence,'required_fact_ids':['f1','f2','f3'],'queries':[]}
+        primary=Model();verified=Model();operations=Operations();operations.gemini=primary
+        stages=PreparationStages('/unused',operations,lambda:None,narrative_model=verified)
+        result=stages.research({'request':{'topic':'Topic','language':'ru','seconds':15}})
+        self.assertEqual(verified.calls,['generation','independent-review'])
+        self.assertEqual(primary.calls,[])
+        self.assertIs(operations.gemini,primary)
+        self.assertEqual(result['evidence'],evidence)

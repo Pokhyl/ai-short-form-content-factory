@@ -78,7 +78,11 @@ class PreparationStages:
         # Published scientific diagrams are legitimate evidence-backed visuals
         # for unphotographable subjects. This opt-in is Factory Next only.
         self.operations.allow_source_illustrations=True
-        brief=self.operations.research(deepcopy(request))
+        research_operations=self.operations
+        if self.narrative_model is not None:
+            research_operations=copy(self.operations)
+            research_operations.gemini=self.narrative_model
+        brief=research_operations.research(deepcopy(request))
         facts=validate_evidence(brief['evidence'])
         required=brief['required_fact_ids']
         if not required or len(required)!=len(set(required)) or not set(required)<=facts.keys():
@@ -501,8 +505,6 @@ class PreparationStages:
         scenes=allocate_scene_facts(original['scenes'])
         window=revision_length_window(original['script'],measured_ms,request['seconds'])
         model=copy(self.narrative_model or self.operations.gemini)
-        model.retry_unavailable=False
-        model.defer_unavailable=False
         model.calls=VoiceRevisionCalls(model.calls,
                          attempt=context.get('_voice_correction_round',2))
         schema=variant_contract(scenes)

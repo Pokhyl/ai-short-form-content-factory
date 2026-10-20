@@ -3,8 +3,6 @@ import base64
 import hashlib
 import json
 import re
-import time
-from .preparation import ModelUnavailable
 from .deadlines import model_request_timeout
 from .preflight import asset_path, digest, validate_asset
 from .grounding import validate_evidence, validate_script_review, compact_evidence
@@ -99,8 +97,7 @@ class ModelSchemaError(ValueError):
 
 
 class Gemini:
-    def __init__(self, calls, authorization_key, http, *, model, free_tier_confirmed, retry_unavailable=False,
-                 defer_unavailable=False):
+    def __init__(self, calls, authorization_key, http, *, model, free_tier_confirmed):
         # Confirmation is server-owned deployment policy; never a public input field.
         if free_tier_confirmed is not True:
             raise ValueError("verified free-tier project required")
@@ -110,9 +107,6 @@ class Gemini:
         self.authorization_key = authorization_key
         self.http = http
         self.model = model
-        self.retry_unavailable = retry_unavailable
-        self.defer_unavailable = defer_unavailable
-        self.sleep = time.sleep
 
     def generate(self, key, instruction, context, schema, *, photo=None, photos=None, max_tokens=8192,
                  thinking_level=None):
@@ -156,34 +150,7 @@ class Gemini:
                 raise ValueError("Gemini authorization unavailable")
             return self.http.request_receipt("POST", url, body,
                 headers={"x-goog-api-key": credential}, timeout=model_request_timeout(self.model))
-        if not self.retry_unavailable:
-            receipt = self.calls.run(key, "gemini", identity, send)
-        else:
-            # Separate physical claims share the existing total Gemini budget.
-            # Only a trusted explicit 503/UNAVAILABLE permits a subsequent send.
-            # A definitive 503 is not an unknown provider result. Allow a
-            # bounded second availability window while keeping every physical
-            # request in the same immutable preparation budget.
-            for attempt in range(6):
-                call_key = key if attempt == 0 else key + ':availability:' + str(attempt + 1)
-                try:
-                    receipt = self.calls.run(call_key, 'gemini', identity, send,
-                                             allow_model_unavailable=True)
-                    break
-                except ModelUnavailable as error:
-                    if attempt == 5:
-                        raise
-                    retry_after = error.receipt.get('headers', {}).get('retry-after', '')
-                    if self.defer_unavailable:
-                        delay = max((60, 300, 900, 900, 900)[attempt], int(retry_after) if str(retry_after).isdigit() else 0)
-                        if delay > 1800:
-                            raise
-                        self.calls.defer_unavailable(call_key, key + ':availability:' + str(attempt + 2), delay)
-                        continue
-                    delay = max(2 ** (attempt + 1), int(retry_after) if str(retry_after).isdigit() else 0)
-                    if delay > 30:
-                        raise  # Do not retry earlier than a long server-requested delay.
-                    self.sleep(delay)
+        receipt = self.calls.run(key, "gemini", identity, send)
         raw = receipt["body"]
         if raw.get("promptFeedback", {}).get("blockReason"):
             raise ValueError("model prompt blocked")

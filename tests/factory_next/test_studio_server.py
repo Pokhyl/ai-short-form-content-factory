@@ -343,14 +343,14 @@ class ServerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"not passed"):
             self.app.video(new["id"])
 
-    def test_provider_wait_does_not_resume_early(self):
+    def test_provider_wait_never_resumes_even_when_due(self):
         with patch.object(ss,"register_next",return_value={"created":True}):
             new=self.app.create({"topic":"Custom","language":"pl","seconds":15})
         p=Pipeline(self.root/"factory-next-states",None,REV)
         state=p.snapshot(new["id"])
         state["status"]="provider_wait"
         state["provider_wait_receipt"]={"stage":"research","protocol":"budgeted-explicit-503",
-                                        "retry_at":"2999-01-01T00:00:00+00:00"}
+                                        "retry_at":"1970-01-01T00:00:00+00:00"}
         p.save(p.directory(new["id"]),state)
         class Dummy:
             called=False

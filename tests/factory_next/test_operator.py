@@ -55,8 +55,9 @@ class OperatorTests(unittest.TestCase):
                 'protocol':'budgeted-explicit-503',
                 'stage':'research','retry_at':'2999-01-01T00:00:00+00:00'}
             pipeline.save(pipeline.directory(job),state)
-            result=progress(pipeline,job)
-            self.assertEqual(result['status'],'provider_wait')
+            with self.assertRaisesRegex(ValueError,'manual reconciliation'):
+                progress(pipeline,job)
+            self.assertEqual(pipeline.snapshot(job)['status'],'provider_wait')
             self.assertEqual(adapter.sends,0)
 
     def test_running_or_failed_checkpoint_never_dispatches(self):

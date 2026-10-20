@@ -34,60 +34,6 @@ class DeferralTests(unittest.TestCase):
         ledger.reject.assert_not_called()
         ledger.complete.assert_not_called()
 
-    def adapter(self, ledger, http):
-        return Gemini(BudgetedCalls(ledger, 'controlled'), lambda: 'test-key', http,
-                      model='gemini-3.1-flash-lite', free_tier_confirmed=True,
-                      retry_unavailable=True, defer_unavailable=True)
-
-    @patch('factory_v3.gemini.time.sleep')
-    def test_restart_replays_rejection_and_success_without_duplicate_sends(self, sleep):
-        ledger = DeferredLedger()
-        http = HTTP({'answer': 'controlled'})
-        send = http.request_receipt
-        http.request_receipt = Mock(side_effect=[rejection(), send('POST', 'test', {}, {}, 1)])
-        def run(adapter, context):
-            return adapter.generate('edit', 'controlled', context, obj({'answer': string()}))
-        with self.assertRaises(PreparationDeferred):
-            run(self.adapter(ledger, http), {'z': {'b': 2, 'a': 1}, 'a': 0})
-        self.assertEqual(http.request_receipt.call_count, 1)
-        # Reconstructed JSONB ordering must retain exact request identity.
-        with self.assertRaises(PreparationDeferred):
-            run(self.adapter(ledger, http), {'a': 0, 'z': {'a': 1, 'b': 2}})
-        self.assertEqual(http.request_receipt.call_count, 1)
-        ledger.due.add('edit:availability:2')
-        self.assertEqual(run(self.adapter(ledger, http), {'a': 0, 'z': {'a': 1, 'b': 2}})[0], {'answer':'controlled'})
-        run(self.adapter(ledger, http), {'a': 0, 'z': {'a': 1, 'b': 2}})
-        self.assertEqual(http.request_receipt.call_count, 2)
-        self.assertFalse(ledger.terminal)
-        sleep.assert_not_called()
-
-    @patch('factory_v3.gemini.time.sleep')
-    def test_six_total_rejections_stop_with_no_seventh_attempt(self, sleep):
-        ledger = DeferredLedger()
-        ledger.limit = 20
-        http = SimpleNamespace(request_receipt=Mock(side_effect=rejection()))
-        def run(): return self.adapter(ledger, http).generate('edit','controlled',{},obj({'answer':string()}))
-        for attempt in range(1,6):
-            with self.assertRaises(PreparationDeferred): run()
-            self.assertEqual(http.request_receipt.call_count, attempt)
-            self.assertEqual(ledger.delays[-1], (60,300,900,900,900)[attempt-1])
-            ledger.due.add('edit:availability:'+str(attempt+1))
-        with self.assertRaises(ModelUnavailable): run()
-        self.assertEqual(http.request_receipt.call_count,6)
-        with self.assertRaises(ModelUnavailable): run()
-        self.assertEqual(http.request_receipt.call_count,6)
-        sleep.assert_not_called()
-
-    def test_unknown_or_rate_limit_never_enters_queue(self):
-        for error in (TimeoutError(), rejection(502), rejection(429)):
-            ledger = DeferredLedger()
-            http = SimpleNamespace(request_receipt=Mock(side_effect=error))
-            with self.assertRaises(type(error)):
-                self.adapter(ledger,http).generate('edit','controlled',{},obj({'answer':string()}))
-            self.assertEqual(ledger.delays, [])
-            self.assertTrue(ledger.terminal)
-            self.assertEqual(http.request_receipt.call_count,1)
-
     def test_queue_deduplicates_and_deferred_task_does_not_become_failed(self):
         prep = SimpleNamespace(ready=lambda:['same','same'], reject=Mock())
         runtime = SimpleNamespace(settings={'owner_token':'x'*32}, preparations=prep,

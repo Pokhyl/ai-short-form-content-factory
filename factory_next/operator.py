@@ -43,7 +43,7 @@ def progress(pipeline, job_id, max_steps=MAX_STEPS):
     for _ in range(max_steps):
         if state['status']=='complete':
             return state
-        if state['status'] not in ('ready','provider_wait','deferred'):
+        if state['status'] not in ('ready','deferred'):
             # Never send from a running, checking, failed or uncertain job.
             raise ValueError('checkpoint requires manual reconciliation: '+state['status'])
         previous=state

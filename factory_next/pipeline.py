@@ -6,7 +6,6 @@ its receipt must be reconciled by an operator before any further execution.
 """
 from contextlib import contextmanager
 from copy import deepcopy
-from datetime import datetime
 import fcntl
 import hashlib
 import json
@@ -16,7 +15,6 @@ from pathlib import Path
 from uuid import UUID
 
 from .timeline import compile_edit
-from factory_v3.preparation import PreparationDeferred
 
 STAGES=('research','materials','story','voice','alignment','edit','render','audit')
 MAX_PRE_DISPATCH_DEFERRALS=3
@@ -135,43 +133,13 @@ class Pipeline:
                 if fingerprint(output)!=state['receipts'].get(stage):
                     raise ValueError('completed stage output changed')
             if state['status']=='complete':return state
-            if state['status'] not in ('ready','deferred','provider_wait'):
+            if state['status'] not in ('ready','deferred'):
                 raise ReconciliationRequired('claimed or failed stage cannot be repeated')
             stage=state['next_stage']
             expected=list(STAGES[:STAGES.index(stage)])
             if list(state['outputs'])!=expected:raise ValueError('nonconsecutive stage history')
             context={'id':state['id'],'request':deepcopy(state['request']),
                      'outputs':deepcopy(state['outputs'])}
-            if state['status']=='provider_wait':
-                waiting=state.get('provider_wait_receipt')
-                if (stage not in SAFE_LEDGER_STAGES or not isinstance(waiting,dict)
-                        or waiting.get('stage')!=stage
-                        or waiting.get('protocol')!='budgeted-explicit-503'):
-                    raise ReconciliationRequired('invalid provider deferral receipt')
-                try:
-                    due=datetime.fromisoformat(waiting['retry_at'])
-                    if due.tzinfo is None or due.utcoffset() is None:
-                        raise ValueError('naive timestamp')
-                    timestamp=due.timestamp()
-                except (KeyError,ValueError,TypeError,OverflowError):
-                    raise ReconciliationRequired('invalid provider deferral time') from None
-                if self.clock()<timestamp:
-                    return deepcopy(state)
-                resume=getattr(self.adapters,'resume_provider_wait',None)
-                if resume is None:
-                    raise ReconciliationRequired('provider ledger reconciliation required')
-                # Crashes while reconciling are *not* automatic resend authority.
-                state['status']='checking_provider';self.save(directory,state)
-                try:
-                    if resume(stage,deepcopy(context),deepcopy(waiting)) is not True:
-                        raise ReconciliationRequired('provider ledger did not authorize resume')
-                except BaseException as error:
-                    state.update(status='needs_attention',error_type=type(error).__name__,
-                             failure_code=classify_stage_failure(stage,error))
-                    self.save(directory,state)
-                    raise
-                state.pop('provider_wait_receipt')
-                state['status']='ready';self.save(directory,state)
             # A deferred preflight is safe to revisit because no stage call was
             # made. Unknown results and interrupted checks remain immutable.
             history=state.setdefault('preflight_deferrals',{})
@@ -224,26 +192,6 @@ class Pipeline:
                 if stage=='audit' and output.get('passed') is not True:
                     raise ValueError('actual output audit did not pass')
                 receipt=fingerprint(output)
-            except PreparationDeferred as error:
-                if stage in SAFE_LEDGER_STAGES:
-                    try:
-                        due=datetime.fromisoformat(error.retry_at)
-                        if due.tzinfo is None or due.utcoffset() is None:
-                            raise ValueError('naive timestamp')
-                        due.timestamp()
-                    except (TypeError,ValueError,OverflowError):
-                        state.update(status='needs_attention',error_type='InvalidProviderDeferral')
-                        self.save(directory,state)
-                        raise
-                    state['status']='provider_wait'
-                    state['provider_wait_receipt']={
-                        'protocol':'budgeted-explicit-503','stage':stage,
-                        'retry_at':error.retry_at}
-                    self.save(directory,state)
-                    return deepcopy(state)
-                state.update(status='needs_attention',error_type='UnsafeProviderDeferral')
-                self.save(directory,state)
-                raise
             except BaseException as error:
                 state.update(status='needs_attention',error_type=type(error).__name__,
                              failure_code=classify_stage_failure(stage,error))

@@ -242,15 +242,8 @@ class Studio:
             pipeline=self.pipeline(job,with_adapters=True)
             for _ in STAGES:
                 s=pipeline.snapshot(job)
-                if s["status"] not in ("ready","deferred","provider_wait"):
+                if s["status"] not in ("ready","deferred"):
                     break
-                if s["status"]=="provider_wait":
-                    try:
-                        due=datetime.fromisoformat(s["provider_wait_receipt"]["retry_at"]).timestamp()
-                    except (KeyError,ValueError,TypeError,OverflowError):
-                        break
-                    if time.time()<due:
-                        break
                 if s["status"]=="deferred":
                     prior=s.get("preflight_deferrals",{}).get(s.get("next_stage"),{})
                     if time.time()<prior.get("next_retry_at",float("inf")):
@@ -284,10 +277,6 @@ class Studio:
                     status=state["status"]
                     if status=="ready":
                         self.enqueue(job)
-                    elif status=="provider_wait":
-                        due=datetime.fromisoformat(state["provider_wait_receipt"]["retry_at"])
-                        if due.timestamp()<=time.time():
-                            self.enqueue(job)
                     elif status=="deferred":
                         stage=state.get("next_stage")
                         gate=state.get("preflight_deferrals",{}).get(stage,{})
