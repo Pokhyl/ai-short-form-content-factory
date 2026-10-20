@@ -1,0 +1,19 @@
+{
+  "request": {
+    "topic": "Почему листья меняют цвет осенью",
+    "language": "ru",
+    "seconds": 15
+  },
+  "reason": "Verify normal Studio chain after PostgreSQL/Gemini retry-sequence repair",
+  "maximum_new_jobs": 1,
+  "gemini_max": 23,
+  "research_search_max": 1,
+  "source_fetch_max": 6,
+  "download_max": 32,
+  "photo_search_max_per_provider": 3,
+  "tts_max": 3,
+  "free_only": "existing durable quotas unchanged; no paid fallback",
+  "stop": "terminal outcome or external-provider wait; never replay terminal jobs",
+  "provider_quotas": "actual remaining Gemini quota unknown; bounded by existing application ledger",
+  "started_at": "2026-10-19T16:29:21.925732+00:00"
+}

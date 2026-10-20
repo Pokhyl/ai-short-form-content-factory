@@ -1,0 +1,13 @@
+{
+  "job_id": "29342f75-919b-4c78-bb78-92a70bff5ea7",
+  "status": "needs_attention",
+  "stage": "research",
+  "error": "ModelUnavailable",
+  "gemini_attempts": 6,
+  "all_http_status": 503,
+  "all_provider_status": "UNAVAILABLE",
+  "sql_sequence_error": false,
+  "video_created": false,
+  "tts_calls": 0,
+  "conclusion": "SQL sequence defect resolved in actual normal run; external provider unavailable on all six attempts. No terminal replay."
+}

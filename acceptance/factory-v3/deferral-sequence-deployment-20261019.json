@@ -1,0 +1,1 @@
+{"deployed": true, "function": "factory_v3.defer_preparation_call", "body_sha256": "4e40083514daeccb7b52d6624d3ac5f2b29d66bb403028285e76bc0b8c4efc35", "unchanged_row_counts": {"preparations": 169, "preparation_calls": 3743, "preparation_deferrals": 7, "preparation_runs": 124}, "provider_calls": 0, "jobs_replayed": 0}

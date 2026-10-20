@@ -62,17 +62,20 @@ class DeferralTests(unittest.TestCase):
         sleep.assert_not_called()
 
     @patch('factory_v3.gemini.time.sleep')
-    def test_three_total_rejections_stop_with_no_fourth_attempt(self, sleep):
+    def test_six_total_rejections_stop_with_no_seventh_attempt(self, sleep):
         ledger = DeferredLedger()
+        ledger.limit = 20
         http = SimpleNamespace(request_receipt=Mock(side_effect=rejection()))
         def run(): return self.adapter(ledger, http).generate('edit','controlled',{},obj({'answer':string()}))
-        with self.assertRaises(PreparationDeferred): run()
-        ledger.due.add('edit:availability:2')
-        with self.assertRaises(PreparationDeferred): run()
-        self.assertEqual(ledger.delays[-1], 300)
-        ledger.due.add('edit:availability:3')
+        for attempt in range(1,6):
+            with self.assertRaises(PreparationDeferred): run()
+            self.assertEqual(http.request_receipt.call_count, attempt)
+            self.assertEqual(ledger.delays[-1], (60,300,900,900,900)[attempt-1])
+            ledger.due.add('edit:availability:'+str(attempt+1))
         with self.assertRaises(ModelUnavailable): run()
-        self.assertEqual(http.request_receipt.call_count, 3)
+        self.assertEqual(http.request_receipt.call_count,6)
+        with self.assertRaises(ModelUnavailable): run()
+        self.assertEqual(http.request_receipt.call_count,6)
         sleep.assert_not_called()
 
     def test_unknown_or_rate_limit_never_enters_queue(self):

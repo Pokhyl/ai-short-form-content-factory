@@ -52,11 +52,11 @@ class ModelAvailabilityTests(unittest.TestCase):
         self.assertEqual(self.sends, 3)
 
     @patch('factory_v3.gemini.time.sleep')
-    def test_three_rejections_stop_without_a_fourth_send(self, sleep):
-        self.setup_adapter([rejection(), rejection(), rejection(), None])
+    def test_inline_rejections_stop_before_backoff_exceeds_thirty_seconds(self, sleep):
+        self.setup_adapter([rejection() for _ in range(6)])
         with self.assertRaises(ModelUnavailable): self.generate()
-        self.assertEqual(self.sends, 3)
-        self.assertEqual(sleep.call_count, 2)
+        self.assertEqual(self.sends, 5)
+        self.assertEqual([c.args[0] for c in sleep.call_args_list], [2,4,8,16])
 
     @patch('factory_v3.gemini.time.sleep')
     def test_total_budget_still_caps_physical_attempts(self, sleep):

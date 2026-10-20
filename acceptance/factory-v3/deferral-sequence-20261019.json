@@ -1,0 +1,21 @@
+{
+  "live_revision": "f98a35119fcf0813566b79092b7a6adf4a0a387d",
+  "failed_job": "0d79a97e-11a9-4a70-9b45-1d1d27b24f48",
+  "root_cause": "Gemini six-attempt loop disagreed with PostgreSQL three-attempt sequence",
+  "old_sql_regression": "RaiseException: invalid bounded retry sequence",
+  "fixed_sql_checks": 17,
+  "core_tests": 127,
+  "core_result": "pass",
+  "factory_next_suite": {
+    "tests": 165,
+    "passed": 163,
+    "errors": 1,
+    "failures": 1,
+    "baseline_same_failures": true
+  },
+  "deployed": true,
+  "provider_calls": 0,
+  "new_video": false,
+  "git_push": "blocked: no GitHub credentials",
+  "studio_http": "200 https://studio.hodor.com.pl/factory-next/"
+}

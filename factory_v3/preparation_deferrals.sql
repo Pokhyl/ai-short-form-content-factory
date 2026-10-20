@@ -15,7 +15,8 @@ BEGIN
  THEN RAISE EXCEPTION 'preparation terminal or revision changed'; END IF;
  IF p_delay NOT BETWEEN 60 AND 1800 OR NOT (
    (p_failed NOT LIKE '%:availability:%' AND p_next=p_failed||':availability:2') OR
-   (p_failed LIKE '%:availability:2' AND p_next=left(p_failed,length(p_failed)-1)||'3'))
+   (p_failed ~ ':availability:[2-5]$' AND
+    p_next=left(p_failed,length(p_failed)-1)||((right(p_failed,1)::int)+1)::text))
  THEN RAISE EXCEPTION 'invalid bounded retry sequence'; END IF;
  SELECT * INTO STRICT old FROM factory_v3.preparation_calls WHERE preparation_id=p_id AND call_key=p_failed;
  IF old.kind<>'gemini' OR old.state<>'failed' OR old.finished_at IS NULL OR
