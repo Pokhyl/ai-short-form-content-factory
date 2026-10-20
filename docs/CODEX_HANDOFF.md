@@ -1,3 +1,10 @@
+## 2026-10-20 14:28 UTC — LIVE narrative deadline correction
+Studio now runs c4ef9213ed068c6f35472456dc01c0e427fff438, image sha256:16a43affb4ae266715cd7ad3db6ef88bc2fbed8fb80513d23b638481e2a99afe. Actual runtime narrative caller270s, gateway exact route403, public health200. Gateway active6624cdc6-cdff-4284-b91d-278e9f58499d has narrative upstream240s/workflow300s. Settings unchanged (private proof retained);65 other container identities/images unchanged. Rollback container factory-next-studio-v9-before-deadline-20261020 preserved.
+
+Exact c4 image184 Next/131 core/native tests passed. Fresh multilingual boundary b868b207-68d7-4653-8a1e-8bfe69c0937a completed168.667s, all8 RU/PL/EN/UK source-positive/negative controls matched. One Gemini3.8, no TTS/search. Do not rerun this boundary.
+
+ONE fresh normal public request4fa81f5b-04ec-43cd-8e3e-a5159ec8829f acceptedHTTP201 on14:26UTC, RU15 leaves. Last status provider_wait/research, retry_at14:27:17UTC. Inspect actual state; never repeat submission or mutate its receipts. Continue automatic pipeline to MP4; if terminal, diagnose exact saved failure offline before another full run. No current normal MP4 or universal readiness claim. Old77e850da timeout remains immutableunknown,0TTS/0MP4; never replay/rescue. Prior measured correction diagnostic14208ms remains valid boundary only.
+
 ## 2026-10-19 — VERIFIED PUBLIC END-TO-END SUCCESS (DO NOT LOSE)
 
 **FIRST CONFIRMED REAL automatic owner-topic UK45 DNA MP4** after prior failed immutable trials:

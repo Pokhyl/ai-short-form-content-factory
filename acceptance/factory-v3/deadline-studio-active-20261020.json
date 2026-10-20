@@ -1,0 +1,10 @@
+{
+  "source_revision": "c4ef9213ed068c6f35472456dc01c0e427fff438",
+  "image_id": "sha256:16a43affb4ae266715cd7ad3db6ef88bc2fbed8fb80513d23b638481e2a99afe",
+  "public_health": {
+    "ok": true,
+    "app": "factory-next-studio"
+  },
+  "other_container_identities_unchanged": 65,
+  "runtime": "narrative_caller 270\ngateway 403\n"
+}

@@ -1,0 +1,14 @@
+{
+  "request": {
+    "topic": "Почему листья меняют цвет осенью",
+    "language": "ru",
+    "seconds": 15
+  },
+  "source_revision": "c4ef9213ed068c6f35472456dc01c0e427fff438",
+  "purpose": "one new normal automatic8-stage acceptance after exact package and8 multilingual deadline controls",
+  "max_gemini": 23,
+  "max_tts": 3,
+  "no_old_job_replay": true,
+  "no_retry_submission": true,
+  "created_at": "2026-10-20T14:26:07.122258+00:00"
+}
