@@ -1,0 +1,9 @@
+{
+  "id": "a6647022-f98f-430c-97cd-fff70f4e89ca",
+  "fresh_billing_gate": "passed",
+  "reservation": {
+    "used": 1,
+    "cached": false,
+    "max_calls": 23
+  }
+}

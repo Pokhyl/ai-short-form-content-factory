@@ -1,3 +1,6 @@
+## Current continuation —2026-10-20
+Read docs/CODEX_START_HERE.md FIRST. It distinguishes LIVE bf800a3 from the tested but undeployed6d10ca7 candidate, records removed503 retries, actual provider failures and the reserved but NOT EXECUTED3.6 diagnostic. Current snapshot overrides stale chronological next-run directions below. Keep all failed/unknown IDs immutable and preserve free-only/unrelated-project constraints.
+
 ## Owner-requested complete rebuild — 2026-10-17
 
 The owner explicitly requested "переделывай все полностью". Active development is factory_next, documented in docs/FACTORY_NEXT.md. Preserve live Studio, existing media, unrelated projects, free-only budgets and old terminal IDs. Do not deploy the previous dual-cadence candidate as if it fulfills the new request. New staged core and adapters are implemented but not production-wired or accepted. Complete natural-duration correction, provider/recovery wiring, actual connected media checks and Studio migration before switching traffic. No project-ready claim from isolated tests.

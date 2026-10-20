@@ -1,0 +1,17 @@
+{
+  "id": "2eda70ca-d9b1-47b7-8d46-26f713fc58a5",
+  "source_revision": "6d10ca7544facb9b47f37a532426c2d7794d2a48",
+  "status": "failed",
+  "error_type": "HTTPFailure",
+  "failure_receipt": {
+    "status": 503,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "date": "Tue, 20 Oct 2026 15:20:45 GMT"
+    },
+    "error_status": "UNAVAILABLE",
+    "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "gateway_execution_id": "13775"
+  },
+  "elapsed_seconds": 4.735
+}

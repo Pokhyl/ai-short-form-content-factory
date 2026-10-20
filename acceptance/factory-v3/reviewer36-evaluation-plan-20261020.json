@@ -1,0 +1,15 @@
+{
+  "id": "a6647022-f98f-430c-97cd-fff70f4e89ca",
+  "workflow": "F3Eval3620261020B",
+  "model": "gemini-3.6-flash",
+  "max_gemini": 1,
+  "max_metadata": 1,
+  "search": 0,
+  "tts": 0,
+  "credential_ref": "V3GeminiFreeTier20261005",
+  "pricing_source": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.6-flash",
+  "pricing_reviewed": "standard input/output including thinking free of charge",
+  "production_changes": false,
+  "automatic_retry": false,
+  "required": "fresh billing false, durable call reservation, one inactive native execution, compare all six controls"
+}
