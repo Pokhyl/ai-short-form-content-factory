@@ -1,3 +1,6 @@
+## Active recovery — 2026-10-20 22:52 Europe/Warsaw
+Owner reports reconnection and explicitly asks to try. Fresh bounded saved-source diagnostic a00f850a-799e-486b-bae6-18491b8cb22a PASSED generation and independent source review on exact6d10ca7:2Gemini/1metadata/0search/0TTS,57.866s. This supersedes the unavailable-current-boundary statement below, but is not normal MP4 acceptance. All old failed IDs remain immutable. Evidence acceptance/factory-v3/reconnected-research-20261020.json; full result on VPS /opt/factory-reconnected-research-networked-20261020. Next protected rollout of already packaged6d image, exact readiness checks, ONE normal public request. Automatic503 retries remain removed. Do not run the imported3.5 evaluation: its launcher stopped before registration/provider because an optional readiness script was absent; not needed now. A first reconnect diagnostic lacked DB network and created no row or provider call; proper diagnostic connects both n8n_default and shorts-v2_default.
+
 # Factory repair: start here
 Snapshot updated after bounded model diagnostic, 2026-10-20 19:50 UTC.
 

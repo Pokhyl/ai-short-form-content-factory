@@ -1,0 +1,16 @@
+{
+  "id": "a00f850a-799e-486b-bae6-18491b8cb22a",
+  "source_revision": "6d10ca7544facb9b47f37a532426c2d7794d2a48",
+  "status": "reviewed",
+  "gemini_calls": 2,
+  "metadata_calls": 1,
+  "new_search": 0,
+  "tts": 0,
+  "elapsed_seconds": 57.866,
+  "user_reported_change": "Переподключил; пробуй",
+  "provider": "gemini-3.8-flash",
+  "source_job": "fe298c76-e3a6-497f-84f8-eaa6d28d351f",
+  "evidence_path": "/opt/factory-reconnected-research-networked-20261020/source-context-research-boundary-result-20261020.json",
+  "limitations": "Actual saved-source generation and independent review passed; no normal new MP4 yet",
+  "rollout_next": "Exact tested6d image, idle/protected snapshots and gateway verification before one normal public request"
+}
