@@ -1,0 +1,87 @@
+{
+  "id": "4fa81f5b-04ec-43cd-8e3e-a5159ec8829f",
+  "observed_at": "2026-10-20T14:32:22.358192+00:00",
+  "status": {
+    "id": "4fa81f5b-04ec-43cd-8e3e-a5159ec8829f",
+    "request": {
+      "topic": "Почему листья меняют цвет осенью",
+      "language": "ru",
+      "seconds": 15
+    },
+    "status": "provider_wait",
+    "eligible_after": null,
+    "next_stage": "research",
+    "completed_stages": [],
+    "error_type": null,
+    "failure_reason": null,
+    "retry_at": "2026-10-20T16:33:48.402737+02:00",
+    "script": "",
+    "scenes": [],
+    "sources": [],
+    "photo_count": 0,
+    "voice_duration_ms": null,
+    "machine_pass": false,
+    "video_url": null,
+    "video_sha256": null,
+    "source_revision": "c4ef9213ed068c6f35472456dc01c0e427fff438"
+  },
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "state": "failed",
+      "error_code": "ModelUnavailable",
+      "finished_at": "2026-10-20T16:26:17.703013+02:00",
+      "unavailable_receipt": {
+        "status": 503,
+        "headers": {
+          "date": "Tue, 20 Oct 2026 14:26:17 GMT",
+          "content-type": "application/json; charset=UTF-8"
+        },
+        "error_status": "UNAVAILABLE",
+        "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+        "gateway_execution_id": "13758"
+      }
+    },
+    {
+      "key": "material-brief-review:1",
+      "state": "failed",
+      "error_code": "ModelUnavailable",
+      "finished_at": "2026-10-20T16:27:36.049091+02:00",
+      "unavailable_receipt": {
+        "status": 503,
+        "headers": {
+          "date": "Tue, 20 Oct 2026 14:27:35 GMT",
+          "content-type": "application/json; charset=UTF-8"
+        },
+        "error_status": "UNAVAILABLE",
+        "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+        "gateway_execution_id": "13760"
+      }
+    },
+    {
+      "key": "material-brief:availability:2",
+      "state": "succeeded",
+      "error_code": null,
+      "finished_at": "2026-10-20T16:27:34.158015+02:00",
+      "unavailable_receipt": null
+    },
+    {
+      "key": "material-brief-review:1:availability:2",
+      "state": "failed",
+      "error_code": "ModelUnavailable",
+      "finished_at": "2026-10-20T16:28:48.402737+02:00",
+      "unavailable_receipt": {
+        "status": 503,
+        "headers": {
+          "date": "Tue, 20 Oct 2026 14:28:48 GMT",
+          "content-type": "application/json; charset=UTF-8"
+        },
+        "error_status": "UNAVAILABLE",
+        "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+        "gateway_execution_id": "13761"
+      }
+    }
+  ],
+  "automatically_resumes": true,
+  "manual_replay": false
+}
