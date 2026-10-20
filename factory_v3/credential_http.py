@@ -5,6 +5,7 @@ from .http import JSONHTTP, HTTPFailure
 
 GATEWAY = "http://ai-short-form-n8n:5678/webhook/factory-v3-internal-provider"
 MODEL = "gemini-3.1-flash-lite"
+NARRATIVE_MODEL = "gemini-3.8-flash"
 
 
 class CredentialHTTP:
@@ -56,6 +57,8 @@ class CredentialHTTP:
             provider = "pexels"
         elif parsed.hostname == "generativelanguage.googleapis.com" and parsed.path == "/v1beta/models/" + MODEL + ":generateContent" and method == "POST" and not query:
             provider = "gemini"
+        elif parsed.hostname == "generativelanguage.googleapis.com" and parsed.path == "/v1beta/models/" + NARRATIVE_MODEL + ":generateContent" and method == "POST" and not query:
+            provider = "gemini_narrative"
         elif parsed.hostname == "texttospeech.googleapis.com" and parsed.path == "/v1/text:synthesize" and method == "POST" and not query:
             provider = "google_tts"
         elif parsed.hostname == "commons.wikimedia.org" and parsed.path == "/w/api.php" and method == "GET":

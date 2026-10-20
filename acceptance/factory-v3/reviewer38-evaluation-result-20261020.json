@@ -1,0 +1,58 @@
+{
+  "id": "cda47247-d7b4-4292-beb7-396faed4e8dd",
+  "status": 200,
+  "model_version": "gemini-3.8-flash",
+  "usage": {
+    "promptTokenCount": 1117,
+    "candidatesTokenCount": 412,
+    "totalTokenCount": 5481,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1117
+      }
+    ],
+    "thoughtsTokenCount": 3952,
+    "serviceTier": "standard"
+  },
+  "cases": {
+    "case_1": {
+      "comparison": "В пересказе содержится ложное и не подтвержденное фактами утверждение о защите деревьев от насекомых антоцианами. Также фраза 'открывая доступ другим пигментам' искажает описанный в фактах механизм прекращения маскировки пигментов.",
+      "supported": false,
+      "native_language_quality": true
+    },
+    "case_2": {
+      "comparison": "Искажено время действия: указано 'зимой' вместо подготовки к зиме. Оборот 'скрывающего пигменты' противоречит факту о том, что пигменты перестают скрываться. Кроме того, добавлено неподтвержденное свойство 'насыщенные' оттенки.",
+      "supported": false,
+      "native_language_quality": true
+    },
+    "case_3": {
+      "comparison": "Использованы неестественные и грамматически некорректные конструкции ('замедляют хлорофилл', 'явить цвета'). Фактологически неверно заявлено, что хлорофилл 'исчезает' (в фактах замедляется его выработка), а также добавлена неподтвержденная деталь 'яркие тона'.",
+      "supported": false,
+      "native_language_quality": false
+    },
+    "case_4": {
+      "comparison": "Утверждение полностью совпадает с исходным фактом, смысл и формулировка переданы без искажений.",
+      "supported": true,
+      "native_language_quality": true
+    },
+    "case_5": {
+      "comparison": "Утверждение полностью совпадает с исходным фактом, информация передана точно и без искажений.",
+      "supported": true,
+      "native_language_quality": true
+    },
+    "case_6": {
+      "comparison": "Утверждение полностью совпадает с исходным фактом, информация передана точно и без искажений.",
+      "supported": true,
+      "native_language_quality": true
+    }
+  },
+  "matched": {
+    "case_1": true,
+    "case_2": true,
+    "case_3": true,
+    "case_4": true,
+    "case_5": true,
+    "case_6": true
+  }
+}

@@ -39,6 +39,16 @@ class CredentialHTTPTests(unittest.TestCase):
                 "https://generativelanguage.googleapis.com/v1beta/models/gemini-paid:generateContent", {})
         self.assertEqual(len(self.http.calls), 1)
 
+    def test_fixed_narrative_model_uses_its_separate_gateway_role(self):
+        self.transport.request_receipt("POST",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent", {})
+        self.assertEqual(self.http.calls[0][2]["provider"],"gemini_narrative")
+        for model in ("gemini-3.8-flash-paid", "gemini-2.5-pro", "gemini-arbitrary"):
+            with self.assertRaises(ValueError):
+                self.transport.request_receipt("POST",
+                    "https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent", {})
+        self.assertEqual(len(self.http.calls),1)
+
     def test_provider429_preserves_receipt_and_is_never_retried(self):
         self.http.status = 429
         with self.assertRaises(HTTPFailure) as caught:

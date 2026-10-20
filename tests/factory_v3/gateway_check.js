@@ -22,6 +22,12 @@ for (const [provider,request] of Object.entries(good)) {
   if (provider==='gemini_info') assert.strictEqual(result.url,
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite');
 }
+const narrative = validate({provider:'gemini_narrative',request:good.gemini});
+assert.strictEqual(narrative.url,'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent');
+assert.deepStrictEqual(narrative.body,good.gemini.body);
+assert.throws(()=>validate({provider:'gemini_narrative',request:{body:{...good.gemini.body,tools:[{googleSearch:{}}]}}}));
+assert.deepStrictEqual(workflow.nodes.find(n=>n.name==='Upstream gemini_narrative').credentials,
+  workflow.nodes.find(n=>n.name==='Upstream gemini').credentials);
 const lowThinking = structuredClone(good.gemini);
 lowThinking.body.generationConfig.thinkingConfig = {thinkingLevel:'low'};
 assert.strictEqual(validate({provider:'gemini',request:lowThinking}).provider,'gemini');

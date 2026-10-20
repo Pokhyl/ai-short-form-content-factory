@@ -239,10 +239,16 @@ class Gemini:
                 for i, (scene, fact_id) in enumerate((scene,fact_id) for scene in scenes for fact_id in scene['evidence_ids'])}
             if not 1 <= len(assertions) <= 64:
                 raise ValueError('bounded factual assertions required')
-            schema['properties']['factual_checks'] = obj({key:obj({'narration_quote':string(), 'supported':BOOL})
-                for key in assertions})
+            scene_text = {scene['id']:scene['narration'] for scene in scenes}
+            schema['properties']['factual_checks'] = obj({key:obj({
+                'narration_quote':string([scene_text[pair['scene_id']]]),
+                'comparison':string(), 'supported':BOOL})
+                for key,pair in assertions.items()})
             schema['properties']['native_language_quality'] = BOOL
             schema['required'].append('native_language_quality')
+            schema['properties'] = {'factual_checks':schema['properties']['factual_checks'],
+                **{k:v for k,v in schema['properties'].items() if k!='factual_checks'}}
+            schema['required'] = list(schema['properties'])
         # Keep the reviewer focused on the final narration and its evidence.
         # Passing the full factory payload also included detailed image/provider
         # receipts, which can dwarf the script and distract the model from exact
@@ -252,12 +258,23 @@ class Gemini:
              'visual_validation_mode') if key in request}
         review_context['evidence'] = compact_evidence(request['evidence'])
         if native:
-            review_context['required_assertions'] = assertions
+            fact_texts = {fact['id']:fact['text'] for fact in request['evidence']['facts']}
+            review_context['required_assertions'] = {key:{**pair,
+                'actual_narration':scene_text[pair['scene_id']],
+                'expected_fact':fact_texts[pair['fact_id']]} for key,pair in assertions.items()}
         if native and 'materials' in request:
             from material_first.paragraphs import compact_materials
             review_context['materials'] = compact_materials(request['materials'])
         result, provenance = self.generate("script-review",
             "Independently audit every claim in the exact final narration against supplied source-supported facts. "
+            "For each factual check, first write comparison: explicitly compare the narrated claim "
+            "with fact.text, including WHEN it happens, its cause, and its degree of certainty. "
+            "Only after this comparison decide supported. A changed season, causal direction, "
+            "or hypothesis asserted as certainty requires supported=false. "
+            "A fact_id must match the meaning of its fact.text, not merely share a subject. "
+            "Set supported=false if its essential color, cause or qualification is omitted. "
+            "Source quotations may contain speculation: hypotheses and possible benefits MUST NOT "
+            "be stated as established effects. Reject such certainty even when the excerpt mentions the idea. "
             "For required_assertions, return every named factual_checks field, including nonessential cited facts. "
             "Each key identifies one exact scene/fact pair. Quote its actual narrated assertion; if it is absent or unsupported, set supported=false. Never omit a key or check only required_fact_ids. "
             "Check native vocabulary, spelling, grammar and inflections in the requested language, not merely alphabet or overall language identity. Set native_language_quality=false for mixed-language words or grammatical defects. Check every scene's visual contract and exclusions. For material-first plans, relevant contextual photographs may illustrate a mechanism without depicting its exact action or microscopic anatomy. Facts are verified against sources. Check that the supplied visual roles provide different dominant subjects, scales or contexts; reject a sequence composed entirely of near-identical subject-and-setting views. Do not require perfect literal image-to-phrase correspondence. Reject a generic analogy, laboratory prop or unrelated object sharing only the broad scientific field. Still photographs need not depict motion. "

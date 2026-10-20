@@ -25,9 +25,10 @@ function validateProviderRequest(input) {
       throw new Error('unsupported Pexels settings');
     }
     url = 'https://api.pexels.com/v1/search';
-  } else if (provider === 'gemini') {
+  } else if (provider === 'gemini' || provider === 'gemini_narrative') {
     method = 'POST';
-    url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
+    url = 'https://generativelanguage.googleapis.com/v1beta/models/' +
+      (provider === 'gemini_narrative' ? 'gemini-3.8-flash' : model) + ':generateContent';
     if (!body || Object.keys(body).some(k => !['systemInstruction','contents','generationConfig'].includes(k)) ||
         !Array.isArray(body.contents) || body.contents.length !== 1 ||
         body.generationConfig?.candidateCount !== 1 ||

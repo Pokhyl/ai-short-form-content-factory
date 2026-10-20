@@ -24,6 +24,18 @@ Rules:
 - current Google documentation rejects unrestricted standard keys; explicitly restricted standard keys continue to work (https://ai.google.dev/gemini-api/docs/api-key, updated2026-09-25);
 - fail closed if free-tier access is unavailable.
 
+## Factory Next narrative model — 2026-10-20 candidate
+
+An additional fixed model, `gemini-3.8-flash`, is implemented for Factory Next narration composition, independent script review and measured-duration rewrites. Primary research/photo model remains `gemini-3.1-flash-lite`. This is an explicit private configuration, never an automatic paid fallback or public model selector.
+
+Google's current official pricing lists standard text input/output free of charge; the model supports structured outputs and thinking low/medium/high:
+- https://ai.google.dev/gemini-api/docs/pricing#gemini-3.8-flash
+- https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash
+
+Actual credential-backed capability evaluation `cda47247-d7b4-4292-beb7-396faed4e8dd`: project billingInfo false, same selected Gemini credential, one separately metered standard-tier request, modelVersion gemini-3.8-flash, 1117 input / 412 output / 3952 thinking tokens. It rejected all three saved human-rejected scripts and accepted all three exact fact-statement controls. This supports the tested semantic boundary, not universal accuracy or MP4 acceptance.
+
+Opt-in requires `factory_next_narrative_proof` bound to the same project and credential hash, exact model, billing false, standard free-tier true and actual verification ID. The native gateway's `gemini_narrative` role has a fixed model URL and the same existing body/tool/token limits. Per-job call ceilings, monthly voice quotas and immutable uncertain calls remain unchanged. Voice corrections do not retry unavailable or ambiguous sends.
+
 ## Google Cloud Text-to-Speech
 Selected voices:
 - en-US-Chirp3-HD-Algenib

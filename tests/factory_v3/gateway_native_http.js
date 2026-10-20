@@ -7,7 +7,7 @@ const body = {systemInstruction:{parts:[{text:'Controlled instruction'}]},
   contents:[{role:'user',parts:[{text:'Żółty цветок 🌼'}]}],
   generationConfig:{responseMimeType:'application/json',responseJsonSchema:{type:'object',properties:{ok:{type:'boolean'}},required:['ok']},candidateCount:1,maxOutputTokens:128}};
 const payload = {method:'POST',url:'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent',body};
-const node = workflow.nodes.find(n=>n.name==='Upstream gemini');
+let node = workflow.nodes.find(n=>n.name==='Upstream gemini');
 let captured;
 const context = {
   getInputData:()=>[{json:payload}], getNode:()=>node,
@@ -38,6 +38,11 @@ const context = {
     ([key,value])=>key.toLowerCase()==='content-type' && value==='application/json'));
   assert.strictEqual(captured.uri,payload.url);
   assert.strictEqual(result[0][0].json.body,'{"ok":true}');
+  node=workflow.nodes.find(n=>n.name==='Upstream gemini_narrative');
+  payload.url='https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
+  await new HttpRequestV3().execute.call(context);
+  assert.strictEqual(captured.uri,payload.url);
+  assert.deepStrictEqual(typeof captured.body==='string'?JSON.parse(captured.body):captured.body,body);
   let sends=0;
   context.continueOnFail=()=>node.onError==='continueRegularOutput';
   context.helpers.requestWithAuthentication=async()=>{sends++;throw new Error('read ECONNRESET');};

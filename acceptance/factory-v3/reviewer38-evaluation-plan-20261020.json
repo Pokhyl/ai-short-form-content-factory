@@ -1,0 +1,16 @@
+{
+  "id": "cda47247-d7b4-4292-beb7-396faed4e8dd",
+  "workflow": "F3Eval20261020A",
+  "model": "gemini-3.8-flash",
+  "max_gemini": 1,
+  "max_metadata": 1,
+  "tts": 0,
+  "search": 0,
+  "credential_ref": "V3GeminiFreeTier20261005",
+  "production_changes": false,
+  "pricing_source": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.8-flash",
+  "question": "Reject 3 known-bad scripts and accept 3 source-text controls",
+  "stop": "one metered completion or error; no retries; no paid fallback",
+  "tokens": "unknown, bounded maxOutputTokens 6000",
+  "workflow_sha256": "088312ba987e5ad046c047c78910ec91c0ab5f008e212980fef9541d950f1542"
+}

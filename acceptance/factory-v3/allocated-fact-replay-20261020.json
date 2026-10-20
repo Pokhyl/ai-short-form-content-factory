@@ -1,0 +1,54 @@
+{
+  "source_job": "95170921-1183-461c-bcd0-5278445a8daf",
+  "before": [
+    {
+      "id": "beat-1",
+      "material_id": "pexels:34427614",
+      "evidence_ids": [
+        "f1",
+        "f2"
+      ]
+    },
+    {
+      "id": "beat-2",
+      "material_id": "pixabay:7580700",
+      "evidence_ids": [
+        "f1",
+        "f2"
+      ]
+    },
+    {
+      "id": "beat-3",
+      "material_id": "wikimedia:149609452",
+      "evidence_ids": [
+        "f3"
+      ]
+    }
+  ],
+  "after": [
+    {
+      "id": "beat-1",
+      "material_id": "pexels:34427614",
+      "evidence_ids": [
+        "f1"
+      ]
+    },
+    {
+      "id": "beat-2",
+      "material_id": "pixabay:7580700",
+      "evidence_ids": [
+        "f2"
+      ]
+    },
+    {
+      "id": "beat-3",
+      "material_id": "wikimedia:149609452",
+      "evidence_ids": [
+        "f3"
+      ]
+    }
+  ],
+  "original_citations": 5,
+  "allocated_citations": 3,
+  "providers_called": 0
+}

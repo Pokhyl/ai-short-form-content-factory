@@ -146,7 +146,7 @@ class GeminiTests(unittest.TestCase):
         response={k:v for k,v in saved['actual_review'].items() if k!='factual_checks'}
         pairs=[(scene,fact) for scene in request['scenes'] for fact in scene['evidence_ids']]
         response['factual_checks']={'assertion_'+str(i+1):
-            {'narration_quote':scene['narration'],'supported':True} for i,(scene,fact) in enumerate(pairs)}
+            {'narration_quote':scene['narration'],'comparison':'Controlled fixture matches the assigned fact.','supported':True} for i,(scene,fact) in enumerate(pairs)}
         return saved,request,response,pairs
 
     def test_native_review_requires_every_named_scene_fact_pair(self):
@@ -164,8 +164,14 @@ class GeminiTests(unittest.TestCase):
         checks=body['generationConfig']['responseJsonSchema']['properties']['factual_checks']
         self.assertEqual(checks['type'],'object')
         self.assertEqual(len(checks['required']),6)
+        for i,(scene,fact) in enumerate(pairs):
+            self.assertEqual(checks['properties']['assertion_'+str(i+1)]['properties']['narration_quote']['enum'],[scene['narration']])
         context=json.loads(body['contents'][0]['parts'][0]['text'])
         self.assertEqual(len(context['required_assertions']),6)
+        for i,(scene,fact) in enumerate(pairs):
+            packet=context['required_assertions']['assertion_'+str(i+1)]
+            self.assertEqual(packet['actual_narration'],scene['narration'])
+            self.assertEqual(packet['expected_fact'],next(f['text'] for f in request['evidence']['facts'] if f['id']==fact))
         self.assertNotIn('assets',context)
         self.assertNotIn('visuals',context)
         self.assertNotIn('voice_correction',context)
@@ -199,7 +205,7 @@ class GeminiTests(unittest.TestCase):
         _,request,response,_=self.native_review_fixture()
         response['factual_checks']['assertion_1']['narration_quote']='Invented claim.'
         self.http.result=response
-        with self.assertRaisesRegex(ValueError,'actual narration'):self.adapter.review_script(request)
+        with self.assertRaisesRegex(ValueError,'unexpected identity'):self.adapter.review_script(request)
         self.assertEqual(len(self.http.requests),1)
 
     def test_narration_composer_receives_fixed_contracts_and_no_tools(self):

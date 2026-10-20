@@ -98,6 +98,28 @@ class NextBudgetGate:
             raise ValueError('insufficient reserved Gemini budget before '+stage)
 
 
+
+def narrative_model_for(runtime, producer):
+    """An opt-in private proof binds the additional fixed free-tier model."""
+    from copy import copy
+    from factory_v3.credential_http import NARRATIVE_MODEL
+    settings=getattr(runtime,'settings',{})
+    proof=settings.get('factory_next_narrative_proof')
+    if proof is None:
+        return None
+    primary=settings.get('free_tier_proof',{})
+    if (not isinstance(proof,dict) or proof.get('model')!=NARRATIVE_MODEL or
+            proof.get('billing_enabled') is not False or
+            proof.get('standard_free_tier') is not True or
+            not isinstance(proof.get('verification_id'),str) or not proof['verification_id'] or
+            not primary.get('project_id') or not primary.get('credential_sha256') or
+            proof.get('project_id')!=primary['project_id'] or
+            proof.get('credential_sha256')!=primary['credential_sha256']):
+        raise ValueError('verified narrative free-tier proof required')
+    model=copy(producer.operations.gemini)
+    model.model=NARRATIVE_MODEL
+    return model
+
 def connected_adapters(runtime, job_id, *, preflight_gate=None):
     """Reuse the checked native gateway and persisted free-tier request budgets."""
     identity=str(UUID(str(job_id)))
@@ -108,7 +130,9 @@ def connected_adapters(runtime, job_id, *, preflight_gate=None):
         raise ValueError('bounded producer with billing gate required')
     # The existing operations object already wraps Gemini, search, downloads
     # and inspections in their durable preparation budget ledger.
-    preparation=PreparationStages(runtime.root,producer.operations,producer.authorize)
+    narrative=narrative_model_for(runtime,producer)
+    preparation=PreparationStages(runtime.root,producer.operations,producer.authorize,narrative_model=narrative)
+    preparation.variant_correction=narrative is not None
     tts=GoogleVoice(lambda:'gateway-managed',runtime.gateway)
     voice=VoiceStages(runtime.root,tts,runtime.direct,runtime.ledger)
     media=MediaStages(runtime.root)
