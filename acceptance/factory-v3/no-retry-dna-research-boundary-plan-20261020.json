@@ -1,0 +1,11 @@
+{
+  "id": "2e1a444d-20b0-4639-a445-d91076fcb455",
+  "source_job": "fe298c76-e3a6-497f-84f8-eaa6d28d351f",
+  "source_revision": "bf800a35f743735b451c8ee620be4995a393b1c5",
+  "max_gemini": 4,
+  "metadata": 1,
+  "new_search": 0,
+  "tts": 0,
+  "no_provider_retry": true,
+  "purpose": "distinct Ukrainian DNA source-corpus generation and source-review boundary after owner continued work"
+}

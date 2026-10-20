@@ -1,0 +1,14 @@
+{
+  "request": {
+    "topic": "Почему листья меняют цвет осенью",
+    "language": "ru",
+    "seconds": 15
+  },
+  "source_revision": "bf800a35f743735b451c8ee620be4995a393b1c5",
+  "gate": "DNA Ukrainian source generation plus independent fact review must complete; all Studio jobs terminal",
+  "max_gemini": 23,
+  "max_tts": 3,
+  "automatic_provider_retries": false,
+  "one_submission_only": true,
+  "created_at": "2026-10-20T15:09:59.368194+00:00"
+}
