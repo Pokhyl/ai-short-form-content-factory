@@ -1,0 +1,13 @@
+{
+  "request": {
+    "topic": "Почему листья меняют цвет осенью",
+    "language": "ru",
+    "seconds": 15
+  },
+  "evidence": "939766b2-ddfe-4467-9ce3-4d753770e21c: selected model HTTP200 on 2026-10-20T01:26:21Z",
+  "max_new_jobs": 1,
+  "max_gemini": 23,
+  "max_tts": 3,
+  "budgets": "unchanged existing free-only ledger",
+  "stop": "terminal outcome; no terminal replay"
+}

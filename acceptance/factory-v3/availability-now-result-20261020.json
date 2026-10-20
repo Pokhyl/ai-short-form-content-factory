@@ -1,0 +1,28 @@
+{
+  "status": "responded",
+  "id": "939766b2-ddfe-4467-9ce3-4d753770e21c",
+  "model": "gemini-3.1-flash-lite",
+  "answer": {
+    "answer": "ready"
+  },
+  "http": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "date": "Tue, 20 Oct 2026 01:26:21 GMT"
+    },
+    "gateway_execution_id": "13697"
+  },
+  "usage": {
+    "promptTokenCount": 44,
+    "candidatesTokenCount": 6,
+    "totalTokenCount": 50,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 44
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "diagnostic_id": "939766b2-ddfe-4467-9ce3-4d753770e21c",
+  "question": "Does selected free-only model respond to minimal structured output after eight hours since six explicit 503 rejections?",
+  "model": "gemini-3.1-flash-lite",
+  "max_gemini_calls": 1,
+  "max_metadata_calls": 1,
+  "max_output_tokens": 64,
+  "photo_search": 0,
+  "tts": 0,
+  "retries": 0,
+  "stop": "first response or exception"
+}
