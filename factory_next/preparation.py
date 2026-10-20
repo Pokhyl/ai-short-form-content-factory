@@ -16,6 +16,7 @@ from material_first.paragraphs import compact_materials, validate_native_surface
 from material_first.photo_identity import pixels, same_photo
 from material_first.presentation import TOPIC_POLICY, minimum_shots, preferred_shots
 from material_first.visuals import candidate_limit
+from .source_context import SourceContextModel
 from .duration import revision_length_window, revision_length_fits, NaturalDurationRejected
 from .voice_length_repair import (sentence_contract, assemble_sentence_repair,
     adaptive_underlength_sentence_contract, trim_one_complete_sentence_locally,
@@ -81,7 +82,7 @@ class PreparationStages:
         research_operations=self.operations
         if self.narrative_model is not None:
             research_operations=copy(self.operations)
-            research_operations.gemini=self.narrative_model
+            research_operations.gemini=SourceContextModel(self.narrative_model,request['topic'])
         brief=research_operations.research(deepcopy(request))
         facts=validate_evidence(brief['evidence'])
         required=brief['required_fact_ids']
