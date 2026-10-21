@@ -1,3 +1,8 @@
+## High-reasoning story boundary active — 2026-10-21
+Candidate da0fb403fbb293964c70e23bb897dc28af71972f/image sha256:9a3599c6a777894856da8634028975adcaa4bcd8e92da90cfd0ebf22dc0fcc68 passes188Next+128core tests in exact image, network disabled and runtime source not overlaid. Saved-material diagnostic409fcf4a-e329-4871-baac-8e9581bd2222 started ONCE, max4Gemini/0search/0TTS. Actual first high-mode reply uses5874thinking tokens, short text and distinct photos, but independent exact factual/native review is still pending. Inspect /opt/factory-high-story-20261021/result.json and responses.jsonl before action; never repeat thisID. No deployment/new normal request yet. LIVE40d8eae unchanged;project_ready=false.
+
+Disk fell to86MB during fresh image build. Removed16 unused factory-v3 image tags after checking all container references; no container removed. Scoped deletion of exact unused/nonshared historical OpenCV build-cache record ao0z86nobb3t0b7m5x8p1ra30 reclaimed320.3MB; ~443MB free observed. Media/databases/current candidate/live and rollback container images retained. Further build/render capacity must be checked. Receipt acceptance/factory-v3/high-story-package-20261021.json.
+
 ## Normal story failure; reasoning-mode parity candidate — 2026-10-21
 Normal4369e8a2-e585-4424-be19-25a8bbad62fc is immutable needs_attention/story/MODEL_RESPONSE_INVALID. Research/materials completed;5Gemini200,4downloads,0TTS/MP4. Saved exact-hash replay reproduces an overlong unchanged length repair; initial draft also repeats its autumn photograph. Fixture tests/factory_next/fixtures/actual-story-4369.json contains sources/photos/replies, with assets omitted (not needed by story requests). Neither response is acceptance.
 

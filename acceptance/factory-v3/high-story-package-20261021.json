@@ -1,0 +1,136 @@
+{
+  "package": {
+    "source_revision": "da0fb403fbb293964c70e23bb897dc28af71972f",
+    "tag": "factory-v3:factory-next-high-da0fb40",
+    "image_id": "sha256:9a3599c6a777894856da8634028975adcaa4bcd8e92da90cfd0ebf22dc0fcc68",
+    "tests": {
+      "factory_next": {
+        "exit_code": 0,
+        "tail": ".................[png @ 0x581b1645c0c0] inflate returned error -3\n[png @ 0x581b16474340] inflate returned error -3\nError while decoding stream #0:0: Generic error in an external library\n[png @ 0x5dcd2a3dd180] inflate returned error -3\n[png @ 0x5dcd2a3f4ec0] inflate returned error -3\nError while decoding stream #0:0: Generic error in an external library\n.......................................................................usage: python3 -m unittest [-h] [--data-root DATA_ROOT] [--settings SETTINGS]\n                           [--steps STEPS]\n                           {start,continue,status} ...\npython3 -m unittest: error: --steps must be between 1 and 8\n....................................................................................................\n----------------------------------------------------------------------\nRan 188 tests in 118.003s\n\nOK\n"
+      },
+      "factory_v3": {
+        "exit_code": 0,
+        "tail": "................................................................................................................................\n----------------------------------------------------------------------\nRan 128 tests in 0.801s\n\nOK\n"
+      }
+    },
+    "status": "passed"
+  },
+  "plan": {
+    "id": "409fcf4a-e329-4871-baac-8e9581bd2222",
+    "source_job": "4369e8a2-e585-4424-be19-25a8bbad62fc",
+    "max_gemini_calls": 4,
+    "search_calls": 0,
+    "tts_calls": 0,
+    "purpose": "saved-material story generation and independent review with evaluated high reasoning"
+  },
+  "cache-cleanup": {
+    "cache": {
+      "CreatedAt": "2026-10-15 14:08:11.816211831 +0000 UTC",
+      "Description": "mount / from exec /bin/sh -c pip install --no-cache-dir opencv-python-headless==4.13.0.92 numpy==2.2.6",
+      "ID": "ao0z86nobb3t0b7m5x8p1ra30",
+      "LastUsedAt": "5 days ago",
+      "Mutable": false,
+      "Parents": [
+        "q0n9uvq8vc78w21hea2fewnfb"
+      ],
+      "Reclaimable": true,
+      "Shared": false,
+      "Size": "320.3MB",
+      "Type": "regular",
+      "UsageCount": 1
+    },
+    "exit_code": 0,
+    "output": "ID\t\t\t\t\t\tRECLAIMABLE\tSIZE\t\tLAST ACCESSED\nao0z86nobb3t0b7m5x8p1ra30               \ttrue \t\t320.3MB   \t5 days ago\nTotal:\t320.3MB\n",
+    "error": "",
+    "free_before": 95223808,
+    "free_after": 415555584
+  },
+  "image-cleanup": {
+    "free_before": 90558464,
+    "removed": [
+      {
+        "tag": "factory-v3:factory-next-whole-sentence-test",
+        "image": "sha256:1128fcb565cab31f90895b47f981f7bbf1b629e5feede2ee42d105428ebea79f",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-story-local",
+        "image": "sha256:2b3f659fffeba9f9efe56466f9dab11686e42c209046820d0cf16b445263c7d0",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-expansion-524f31f",
+        "image": "sha256:bb4c122fd94f149036d10d86d3ed696a347cc2d057cad2d16ca0801ff15e8e80",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-adjacent-local",
+        "image": "sha256:19c0c3f8e90965b8153f78bf03bbbab77169812e2de335bb131aef56ae8624b4",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-photo-schema-local",
+        "image": "sha256:b8191562c285c1d7a7f66bdcf79e34f56c5a3c50b317ca5ad2573ff06af488d1",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-bounded-research-bc5f1b3",
+        "image": "sha256:b7bfc5b7e8aa4d661476841aa633d1acec1cf3257d20c304122d6f94b8408978",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-research-review-c17e3db",
+        "image": "sha256:ed228aa5e8ce2a71228069e0d51a195e3d486a9261e647dc25553c373e7eebab",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-studio-d2ea526",
+        "image": "sha256:d2301984a1548b24133bded71293bc7fd1913c0d5062cbcbb6e4b002bf9bdced",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-da6472",
+        "image": "sha256:5c17cc5429b308c2ad9ae3fdcb9f2b066e6970d52964b7d2216b52afa225e000",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-dcc8ea9",
+        "image": "sha256:f1e545f5e3255336b2cc3c49f541fb94987241a4e09b5ad60849ef2657c43500",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-b6f1abb",
+        "image": "sha256:640ee867d38a742d87b5e302cee65cf5e7fe4a83fdeaa0ed73fb3ab0ab4551f2",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-1c31daf",
+        "image": "sha256:8c9f43ed58adb70d2c5ed39f6a4d432420113ca260d7e3c86eddc91278e1c4d1",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-e9d6298",
+        "image": "sha256:61e5fb7e6f333dd6fe3c8dceb222f087b188b0617040d1b91c55d44b49d4862a",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-b965f75",
+        "image": "sha256:31eef11e375776b48cb85da6f78fbc159dc73079c3554c4bed536e23da14dac2",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:factory-next-63de52e",
+        "image": "sha256:74ecb192e467b0dfb38f62052c404f3dd2719c9e9c779d963cee93c7a206ed3f",
+        "exit_code": 0
+      },
+      {
+        "tag": "factory-v3:dual-cadence-9dda131-amd64",
+        "image": "sha256:46d7eb40aed6747e65bd4d53b891a04178899adfaa4ca98551609abb3b9c2076",
+        "exit_code": 0
+      }
+    ],
+    "free_after": 87740416
+  },
+  "free_bytes": 443420672,
+  "started": true
+}
