@@ -12,5 +12,15 @@
   "source_job": "fe298c76-e3a6-497f-84f8-eaa6d28d351f",
   "evidence_path": "/opt/factory-reconnected-research-networked-20261020/source-context-research-boundary-result-20261020.json",
   "limitations": "Actual saved-source generation and independent review passed; no normal new MP4 yet",
-  "rollout_next": "Exact tested6d image, idle/protected snapshots and gateway verification before one normal public request"
+  "rollout_next": "Exact tested6d image, idle/protected snapshots and gateway verification before one normal public request",
+  "predeployment": {
+    "exact_image_tests": {
+      "factory_next": 185,
+      "factory_v3": 123
+    },
+    "image_id": "sha256:6f854219ce64a5c7e4d474dfc57f521e56ad43bf2fe80a6116da55831a0bffe9",
+    "settings_match": true,
+    "public_active_jobs": 0,
+    "full_payload_fingerprint": "cancelled by statement timeout before deployment; replaced with full row count and MVCC identity comparison"
+  }
 }

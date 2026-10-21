@@ -1,0 +1,15 @@
+{
+  "job_id": "895d898c-20a7-497e-b761-12cfe860f5b2",
+  "request": {
+    "topic": "Почему листья меняют цвет осенью",
+    "language": "ru",
+    "seconds": 15
+  },
+  "http_status": 201,
+  "source_revision": "6d10ca7544facb9b47f37a532426c2d7794d2a48",
+  "last_observed_status": "running",
+  "next_stage": "research",
+  "project_ready": false,
+  "server_receipts": "/opt/factory-reconnected-research-networked-20261020",
+  "automatic_provider_retries": false
+}
