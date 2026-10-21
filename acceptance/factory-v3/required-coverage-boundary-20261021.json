@@ -1,0 +1,62 @@
+{
+  "package": {
+    "source_revision": "7433858602636c9b6b4e8eb0245de8cb05a55535",
+    "tag": "factory-v3:factory-next-coverage-7433858",
+    "image_id": "sha256:778e6957304d8bb2920b8520dbddc3f4bf23af48957e9b683489534e67f0410c",
+    "tests": {
+      "factory_next": {
+        "exit_code": 0,
+        "tail": ".................[png @ 0x5ca9baa410c0] inflate returned error -3\n[png @ 0x5ca9baa59340] inflate returned error -3\nError while decoding stream #0:0: Generic error in an external library\n[png @ 0x5e1e1378c180] inflate returned error -3\n[png @ 0x5e1e137a3ec0] inflate returned error -3\nError while decoding stream #0:0: Generic error in an external library\n.......................................................................usage: python3 -m unittest [-h] [--data-root DATA_ROOT] [--settings SETTINGS]\n                           [--steps STEPS]\n                           {start,continue,status} ...\npython3 -m unittest: error: --steps must be between 1 and 8\n....................................................................................................\n----------------------------------------------------------------------\nRan 188 tests in 112.736s\n\nOK\n"
+      },
+      "factory_v3": {
+        "exit_code": 0,
+        "tail": "...................................................................................................................................\n----------------------------------------------------------------------\nRan 131 tests in 0.708s\n\nOK\n"
+      }
+    },
+    "status": "passed"
+  },
+  "negative_result": {
+    "id": "a87bfdbb-6d0d-4b8b-8f9c-358931e6c628",
+    "source_revision": "7433858602636c9b6b4e8eb0245de8cb05a55535",
+    "image_id": "sha256:778e6957304d8bb2920b8520dbddc3f4bf23af48957e9b683489534e67f0410c",
+    "status": "failed",
+    "error_type": "ValueError",
+    "error": "script semantic/language review failed",
+    "calls": 1,
+    "ledger_before_terminal": "preparing",
+    "elapsed_seconds": 46.702
+  },
+  "negative_responses": [
+    {
+      "key": "coverage-negative:script-review",
+      "usage": {
+        "promptTokenCount": 4454,
+        "candidatesTokenCount": 787,
+        "totalTokenCount": 8983,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4454
+          }
+        ],
+        "thoughtsTokenCount": 3742,
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "texts": [
+        "{\n  \"factual_checks\": {\n    \"assertion_1\": {\n      \"narration_quote\": \"Весной и летом в листьях доминирует зелёный пигмент хлорофилл.\",\n      \"comparison\": \"Нарация полностью соответствует первой части факта f1.\",\n      \"supported\": true\n    },\n    \"assertion_2\": {\n      \"narration_quote\": \"Он под действием солнечного света активно синтезирует питательные вещества для роста.\",\n      \"comparison\": \"Нарация соответствует второй части факта f1.\",\n      \"supported\": true\n    },\n    \"assertion_3\": {\n      \"narration_quote\": \"Осенью хлорофилл исчезает, позволяя увидеть жёлтые каротиноиды и красные антоцианы.\",\n      \"comparison\": \"Факт f2 описывает укорачивание светового дня, подготовку к зиме и разбор аппарата фотосинтеза, но не упоминает каротиноиды и антоцианы. Утверждение не подтверждается фактом f2.\",\n      \"supported\": false\n    },\n    \"assertion_4\": {\n      \"narration_quote\": \"Осенью хлорофилл исчезает, позволяя увидеть жёлтые каротиноиды и красные антоцианы.\",\n      \"comparison\": \"Нарация соответствует смыслу факта f3 о разрушении хлорофилла и проявлении пигментов.\",\n      \"supported\": true\n    }\n  },\n  \"language\": \"ru\",\n  \"language_match\": true,\n  \"visual_contracts_match\": true,\n  \"no_unsupported_claims\": false,\n  \"topic_covered\": false,\n  \"coverage_checks\": {\n    \"f1\": {\n      \"comparison\": \"Все основные детали факта f1 полностью выражены в наррации первых двух сцен.\",\n      \"narration_quotes\": [\n        \"Весной и летом в листьях доминирует зелёный пигмент хлорофилл.\",\n        \"Он под действием солнечного света активно синтезирует питательные вещества для роста.\"\n      ],\n      \"missing_details\": [],\n      \"covered\": true\n    },\n    \"f2\": {\n      \"comparison\": \"В наррации полностью отсутствуют ключевые детали факта f2, такие как укорачивание светового дня, подготовка к зиме и разбор аппарата фотосинтеза.\",\n      \"narration_quotes\": [\n        \"Осенью хлорофилл исчезает, позволяя увидеть жёлтые каротиноиды и красные антоцианы.\"\n      ],\n      \"missing_details\": [\n        \"укорачивание светового дня\",\n        \"подготовка к зиме\",\n        \"разбор аппарата фотосинтеза\"\n      ],\n      \"covered\": false\n    },\n    \"f3\": {\n      \"comparison\": \"Основной смысл факта f3 передан, но пропущено упоминание оранжевых каротиноидов.\",\n      \"narration_quotes\": [\n        \"Осенью хлорофилл исчезает, позволяя увидеть жёлтые каротиноиды и красные антоцианы.\"\n      ],\n      \"missing_details\": [\n        \"оранжевые каротиноиды\"\n      ],\n      \"covered\": false\n    }\n  },\n  \"native_language_quality\": true\n}"
+      ]
+    }
+  ],
+  "positive_plan": {
+    "id": "12352322-4c2b-4ffc-b27e-5b86c2ed4442",
+    "source_job": "4369e8a2-e585-4424-be19-25a8bbad62fc",
+    "negative_control_id": "a87bfdbb-6d0d-4b8b-8f9c-358931e6c628",
+    "max_gemini_calls": 3,
+    "search_calls": 0,
+    "tts_calls": 0,
+    "purpose": "remaining new-story generation/review after recorded actual negative rejection"
+  },
+  "positive_started": true,
+  "project_ready": false
+}
