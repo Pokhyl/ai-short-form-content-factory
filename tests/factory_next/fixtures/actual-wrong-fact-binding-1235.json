@@ -1,0 +1,57 @@
+{
+  "result": {
+    "id": "12352322-4c2b-4ffc-b27e-5b86c2ed4442",
+    "source_revision": "7433858602636c9b6b4e8eb0245de8cb05a55535",
+    "image_id": "sha256:778e6957304d8bb2920b8520dbddc3f4bf23af48957e9b683489534e67f0410c",
+    "negative_control": "rejected_missing_required_fact",
+    "negative_control_id": "a87bfdbb-6d0d-4b8b-8f9c-358931e6c628",
+    "status": "failed",
+    "error_type": "ValueError",
+    "error": "script semantic/language review failed",
+    "calls": 2,
+    "ledger_before_terminal": "preparing",
+    "elapsed_seconds": 73.619
+  },
+  "responses": [
+    {
+      "key": "next-story",
+      "usage": {
+        "promptTokenCount": 8212,
+        "candidatesTokenCount": 157,
+        "totalTokenCount": 14486,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8212
+          }
+        ],
+        "thoughtsTokenCount": 6117,
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "texts": [
+        "{\"beats\":[{\"material_id\":\"wikimedia:75815066\",\"narration\":\"Весной и летом хлорофилл под солнцем синтезирует питательные вещества для роста растений.\",\"fact_ids\":[\"f1\"]},{\"material_id\":\"wikimedia:146636005\",\"narration\":\"Осенью день укорачивается, растение разбирает аппарат фотосинтеза, хлорофилл исчезает.\",\"fact_ids\":[\"f2\",\"f3\"]},{\"material_id\":\"pexels:38739525\",\"narration\":\"Его разрушение обнажает скрытые летом яркие каротиноиды и антоцианы.\",\"fact_ids\":[\"f1\"]}]}"
+      ]
+    },
+    {
+      "key": "script-review",
+      "usage": {
+        "promptTokenCount": 4455,
+        "candidatesTokenCount": 709,
+        "totalTokenCount": 7840,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4455
+          }
+        ],
+        "thoughtsTokenCount": 2676,
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "texts": [
+        "{\n  \"factual_checks\": {\n  \"assertion_1\": {\n    \"narration_quote\": \"Весной и летом хлорофилл под солнцем синтезирует питательные вещества для роста растений.\",\n    \"comparison\": \"The narrated claim correctly reflects the primary action and timing of fact f1, stating that chlorophyll synthesizes nutrients under the sun during spring and summer.\",\n    \"supported\": true\n  },\n  \"assertion_2\": {\n    \"narration_quote\": \"Осенью день укорачивается, растение разбирает аппарат фотосинтеза, хлорофилл исчезает.\",\n    \"comparison\": \"The narration accurately captures the autumn shortening of day, the dismantling of the photosynthesis apparatus, and the disappearance of chlorophyll as described in fact f2.\",\n    \"supported\": true\n  },\n  \"assertion_3\": {\n    \"narration_quote\": \"Осенью день укорачивается, растение разбирает аппарат фотосинтеза, хлорофилл исчезает.\",\n    \"comparison\": \"The narration quote discusses autumn day shortening and chlorophyll disappearance, which does not mention or support the specific claim of fact f3 regarding the revelation of hidden carotenoids and anthocyanins.\",\n    \"supported\": false\n  },\n  \"assertion_4\": {\n    \"narration_quote\": \"Его разрушение обнажает скрытые летом яркие каротиноиды и антоцианы.\",\n    \"comparison\": \"The narration quote describes the revelation of carotenoids and anthocyanins, which does not match or support the expected fact f1 regarding spring/summer chlorophyll dominance and nutrient synthesis.\",\n    \"supported\": false\n  }\n  },\n  \"language\": \"ru\",\n  \"language_match\": true,\n  \"visual_contracts_match\": false,\n  \"no_unsupported_claims\": false,\n  \"topic_covered\": true,\n  \"coverage_checks\": {\n  \"f1\": {\n    \"comparison\": \"Fact f1 is fully expressed in beat 1, noting spring and summer activity of chlorophyll under sunlight.\",\n    \"narration_quotes\": [\n      \"Весной и летом хлорофилл под солнцем синтезирует питательные вещества для роста растений.\"\n    ],\n    \"missing_details\": [],\n    \"covered\": true\n  },\n  \"f2\": {\n    \"comparison\": \"Fact f2 is fully expressed in beat 2, detailing autumn day shortening and the dismantling of the photosynthesis apparatus.\",\n    \"narration_quotes\": [\n      \"Осенью день укорачивается, растение разбирает аппарат фотосинтеза, хлорофилл исчезает.\"\n    ],\n    \"missing_details\": [],\n    \"covered\": true\n  },\n  \"f3\": {\n    \"comparison\": \"Fact f3 is fully expressed in beat 3, describing the exposure of hidden carotenoids and anthocyanins.\",\n    \"narration_quotes\": [\n      \"Его разрушение обнажает скрытые летом яркие каротиноиды и антоцианы.\"\n    ],\n    \"missing_details\": [],\n    \"covered\": true\n  }\n  },\n  \"native_language_quality\": true\n}"
+      ]
+    }
+  ]
+}

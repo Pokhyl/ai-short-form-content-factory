@@ -29,6 +29,9 @@ class StoryContractTests(TestCase):
         reply={key:{'narration':'Controlled structural prose, not factual acceptance.'} for key in beats}
         result=assemble_story(reply,beats,schema)
         self.assertEqual([b['fact_ids'] for b in result['beats']],[['f1'],['f2'],['f3']])
+        actual=json.loads((Path(__file__).parent/'fixtures/actual-wrong-fact-binding-1235.json').read_text())
+        rejected=json.loads(''.join(actual['responses'][0]['texts']))
+        with self.assertRaises(ValueError):assemble_story(rejected,beats,schema)
         reply['beat_3']['fact_ids']=['f1']
         with self.assertRaises(ValueError):assemble_story(reply,beats,schema)
 
