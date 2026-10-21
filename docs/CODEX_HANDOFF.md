@@ -1,3 +1,8 @@
+## Source-owned allocation boundary active — 2026-10-21
+Candidate674db5527b1682e0101a32020a8405df08425c58/image232aaab07592dd772282c6cb3a22183c78835f330d6f32ee17ebfedd091b2eff passes194Next+131core exact-image network-disabled checks. Later f9d4d49 adds actual wrong-binding fixture and a passing focused regression only; runtime is identical.
+
+Exact read-only replay reconstructed9 saved searches and32 candidates from4369 with matching request hashes,0newsearch/0DBwrites. Saved /data/checks/source-owned-20261021/candidates.json. Diagnostic51583821-f9be-4874-9f77-db00016e97d4 started ONCE on candidate image: reuse original4 assets/inspection receipts (normal byte/probe/identity checks), max8additionaldownloads+6Gemini/0search/0TTS. Exercises material-stop maximum matching, server-owned keyed facts/photos, independent complete source/native review. Inspect /opt/factory-owned-story-20261021/result.json before action. rollout.py prepared, not executed; requires actual reviewed result and protected-state equality. LIVE40d8eae remains;project_ready=false.
+
 ## Source-owned story allocation candidate — 2026-10-21
 Positive12352322 is terminal failed after2Gemini/73.619s, nosearch/TTS. Actual draft incorrectly attached f3 to the f2 sentence and f1 to narration about pigments over a summer image; independent review correctly rejected both bindings and visual match. No rollout/new normal request. Do not repeat any diagnostic ID.
 

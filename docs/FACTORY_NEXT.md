@@ -1,3 +1,11 @@
+## 2026-10-21 — Candidate source-owned narration contract
+
+Current status lives at the top of CODEX_START_HERE/HANDOFF/RELEASE_GATE; the historic success below remains immutable, not acceptance of this candidate.
+
+The verified narrative client explicitly uses high reasoning for3.5FlashLite, matching its capability evaluation. It keeps the original durable meter and never falls back or retries provider failures. The same independent review checks both support of every narrated assertion and reverse coverage of every required fact across the whole script. A supported partial statement is insufficient coverage.
+
+Before narration, maximum matching assigns separate inspected photographs to each required fact actually observed in the corpus. Material collection continues if competing observed facts share a sole anchor. Unobserved mechanisms retain the existing independently reviewed topic-context policy. The server fixes the three essential fact/photo identities; the generator returns only keyed natural prose. The duration repair preserves those identities. Final independent factual/native review, measured natural voice correction, whole-photo cadence, exact MP4 and PCM audits remain mandatory. No extra budget or manual acceptance text is introduced.
+
 ## 2026-10-19 — VERIFIED PUBLIC END-TO-END SUCCESS (DO NOT LOSE)
 
 **FIRST CONFIRMED REAL automatic owner-topic UK45 DNA MP4** after prior failed immutable trials:
