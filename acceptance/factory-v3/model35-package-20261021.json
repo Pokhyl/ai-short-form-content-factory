@@ -1,0 +1,48 @@
+{
+  "source_revision": "40d8eae71195cd22552772dd0640fb0b030095a4",
+  "image_id": "sha256:e8b5598914cc1e89a2ff73f9ac5d1e8da082a6dd404c947838c5adc9bca3a5e1",
+  "tag": "factory-v3:factory-next-lite-40d8eae",
+  "tests": {
+    "factory_next": {
+      "exit_code": 0,
+      "tests": 186,
+      "evidence": [
+        "factory_next-package-tests-fixed-mounts.txt",
+        "factory_next_package-final-tests.txt"
+      ],
+      "note": "185 pass plus sole packaging test rerun after fixing fixture mount"
+    },
+    "factory_v3": {
+      "exit_code": 0,
+      "tests": 125
+    },
+    "guards": {
+      "exit_code": 0,
+      "status": "passed",
+      "controlled_gateway_guards": true,
+      "safe_error_receipt": true,
+      "no_upstream_retries": true,
+      "actual_provider_calls": 0,
+      "production_mutations": 0
+    },
+    "native": {
+      "exit_code": 0,
+      "status": "passed",
+      "native_http_execute": true,
+      "native_transport_failure_receipt": true,
+      "transport_sends": 1,
+      "provider_calls": 0,
+      "production_mutations": 0
+    },
+    "native_lite": {
+      "exit_code": 0,
+      "status": "passed",
+      "native_http_execute": true,
+      "native_transport_failure_receipt": true,
+      "transport_sends": 1,
+      "provider_calls": 0,
+      "production_mutations": 0
+    }
+  },
+  "deployed": false
+}

@@ -1,0 +1,13 @@
+{
+  "id": "fd4df7e7-0c4d-489c-8fa0-797d83834f52",
+  "source_revision": "40d8eae71195cd22552772dd0640fb0b030095a4",
+  "status": "reviewed",
+  "model": "gemini-3.5-flash-lite",
+  "calls": 3,
+  "elapsed_seconds": 10.904,
+  "search": 0,
+  "tts": 0,
+  "source_job": "fe298c76-e3a6-497f-84f8-eaa6d28d351f",
+  "evidence_path": "/opt/factory-lite-research-20261021/source-context-research-boundary-result-20261020.json",
+  "project_ready": false
+}
