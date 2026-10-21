@@ -1,0 +1,22 @@
+{
+  "id": "4369e8a2-e585-4424-be19-25a8bbad62fc",
+  "http_status": 201,
+  "status": "queued",
+  "source_revision": "40d8eae71195cd22552772dd0640fb0b030095a4",
+  "image_id": "sha256:e8b5598914cc1e89a2ff73f9ac5d1e8da082a6dd404c947838c5adc9bca3a5e1",
+  "model": "gemini-3.5-flash-lite",
+  "request": {
+    "topic": "Почему листья меняют цвет осенью",
+    "language": "ru",
+    "seconds": 15
+  },
+  "automatic_provider_retries": false,
+  "protected_rollout": {
+    "db_equal": true,
+    "workflows_equal": true,
+    "other_containers_equal": true,
+    "other_container_count": 70
+  },
+  "server_receipts": "/opt/factory-lite-studio-20261021",
+  "project_ready": false
+}

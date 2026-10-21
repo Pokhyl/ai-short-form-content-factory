@@ -1,3 +1,8 @@
+## LIVE3.5; normal output verification active — 2026-10-21
+LIVE Studio40d8eae71195cd22552772dd0640fb0b030095a4/imagee8b5598914cc1e89a2ff73f9ac5d1e8da082a6dd404c947838c5adc9bca3a5e1, explicitly selected gemini-3.5-flash-lite. Protected rollout completed: factory/factory_v3 counts+MVCC fingerprints equal, workflows equal, other70 container identities equal. Only private narrative proof model and verificationID changed. Prior container factory-next-studio-v9-before-lite-20261021 and private settings backup retained. Exact runtime model/revision/image, publichealth200 and gateway403 confirmed. Gatewayead54614 remains fixed-role and no retries/fallback.
+
+ONE normal public StudioRU15 request4369e8a2-e585-4424-be19-25a8bbad62fc accepted201. Inspect exactID before any action; no duplicate/replay. VPS receipts /opt/factory-lite-studio-20261021/{result,readiness,normal-plan,normal-started,normal-submission}.json. Follow through research/materials/story/voice/alignment/edit/render/audit and verify actual public MP4 before any readiness claim. All older failures immutable. project_ready=false pending real output.
+
 ## Explicit3.5 candidate verified; Studio rollout running — 2026-10-21
 Candidate40d8eae71195cd22552772dd0640fb0b030095a4 adds explicit proof-bound selection of gemini-3.5-flash-lite via separate fixed gemini_narrative_lite route. Existing3.8 remains supported; no error-triggered fallback/retry. Actual semantic evaluation767b4d5b passed3 negative+3 positive controls. Actual saved-DNA research fd4df7e7-0c4d-489c-8fa0-797d83834f52 passed generation/repair/independent review in3Gemini,10.904s,0search/TTS, terminalDIAGNOSTIC_COMPLETE. Full sources retained. It is research-boundary evidence, not MP4 acceptance.
 
