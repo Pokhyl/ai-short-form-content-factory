@@ -72,6 +72,7 @@ def narrative_model_for(runtime, producer):
         raise ValueError('verified narrative free-tier proof required')
     model=copy(producer.operations.gemini)
     model.model=proof['model']
+    model.require_fact_coverage=True
     # The lite semantic evaluation used high reasoning. Provider defaults did
     # not exercise that verified mode; bind it to this explicitly selected role.
     if model.model == NARRATIVE_LITE_MODEL:

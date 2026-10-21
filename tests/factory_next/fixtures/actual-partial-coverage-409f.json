@@ -1,0 +1,141 @@
+{
+  "id": "409fcf4a-e329-4871-baac-8e9581bd2222",
+  "source_revision": "da0fb403fbb293964c70e23bb897dc28af71972f",
+  "image_id": "sha256:9a3599c6a777894856da8634028975adcaa4bcd8e92da90cfd0ebf22dc0fcc68",
+  "status": "reviewed",
+  "calls": 2,
+  "story": {
+    "scenes": [
+      {
+        "id": "beat-1",
+        "material_id": "wikimedia:75815066",
+        "narration": "Весной и летом в листьях доминирует зелёный пигмент хлорофилл.",
+        "evidence_ids": [
+          "f1"
+        ],
+        "source_interval": null,
+        "capacity_ms": 60000,
+        "contract": {
+          "visual_intent": "A dense forest with tall trees and green leaves in summer.",
+          "must_show": [
+            "A dense forest with tall trees and green leaves in summer."
+          ],
+          "must_not_show": [],
+          "contextual_not_direct_proof": false
+        },
+        "visual_relation": "direct_fact_visual"
+      },
+      {
+        "id": "beat-2",
+        "material_id": "pexels:38739525",
+        "narration": "Он под действием солнечного света активно синтезирует питательные вещества для роста.",
+        "evidence_ids": [
+          "f1"
+        ],
+        "source_interval": null,
+        "capacity_ms": 60000,
+        "contract": {
+          "visual_intent": "Green forest environment with trees and rocks.",
+          "must_show": [
+            "Green forest environment with trees and rocks."
+          ],
+          "must_not_show": [],
+          "contextual_not_direct_proof": false
+        },
+        "visual_relation": "direct_fact_visual"
+      },
+      {
+        "id": "beat-3",
+        "material_id": "wikimedia:146636005",
+        "narration": "Осенью хлорофилл исчезает, позволяя увидеть жёлтые каротиноиды и красные антоцианы.",
+        "evidence_ids": [
+          "f2",
+          "f3"
+        ],
+        "source_interval": null,
+        "capacity_ms": 60000,
+        "contract": {
+          "visual_intent": "Birch tree in autumn with yellow-orange foliage.",
+          "must_show": [
+            "Birch tree in autumn with yellow-orange foliage."
+          ],
+          "must_not_show": [],
+          "contextual_not_direct_proof": false
+        },
+        "visual_relation": "direct_fact_visual"
+      }
+    ],
+    "script": "Весной и летом в листьях доминирует зелёный пигмент хлорофилл. Он под действием солнечного света активно синтезирует питательные вещества для роста. Осенью хлорофилл исчезает, позволяя увидеть жёлтые каротиноиды и красные антоцианы.",
+    "review": {
+      "factual_checks": [
+        {
+          "scene_id": "beat-1",
+          "fact_id": "f1",
+          "narration_quote": "Весной и летом в листьях доминирует зелёный пигмент хлорофилл.",
+          "comparison": "Наратив утверждает, что весной и летом в листьях доминирует зелёный пигмент хлорофилл, что полностью совпадает с первой частью факта f1.",
+          "supported": true
+        },
+        {
+          "scene_id": "beat-2",
+          "fact_id": "f1",
+          "narration_quote": "Он под действием солнечного света активно синтезирует питательные вещества для роста.",
+          "comparison": "Наратив утверждает, что хлорофилл под действием солнечного света активно синтезирует питательные вещества для роста, что соответствует факту f1.",
+          "supported": true
+        },
+        {
+          "scene_id": "beat-3",
+          "fact_id": "f2",
+          "narration_quote": "Осенью хлорофилл исчезает, позволяя увидеть жёлтые каротиноиды и красные антоцианы.",
+          "comparison": "Наратив утверждает, что осенью хлорофилл исчезает, что согласуется с фактом f2 о постепенном исчезновении хлорофилла при подготовке растения к зиме.",
+          "supported": true
+        },
+        {
+          "scene_id": "beat-3",
+          "fact_id": "f3",
+          "narration_quote": "Осенью хлорофилл исчезает, позволяя увидеть жёлтые каротиноиды и красные антоцианы.",
+          "comparison": "Наратив утверждает, что исчезновение хлорофилла позволяет увидеть жёлтые каротиноиды и красные антоцианы, что напрямую соответствует факту f3.",
+          "supported": true
+        }
+      ],
+      "language": "ru",
+      "language_match": true,
+      "visual_contracts_match": true,
+      "no_unsupported_claims": true,
+      "topic_covered": true,
+      "native_language_quality": true,
+      "receipt_id": "85160ba6b3b6a52bbfaf2023fa7d4234cf6e751a4b9ea39f45cd8f7580c9193e",
+      "model": "gemini-3.5-flash-lite",
+      "provider_provenance": {
+        "receipt_id": "85160ba6b3b6a52bbfaf2023fa7d4234cf6e751a4b9ea39f45cd8f7580c9193e",
+        "model": "gemini-3.5-flash-lite",
+        "thinking_level": "high",
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "promptTokenCount": 4189,
+          "candidatesTokenCount": 459,
+          "totalTokenCount": 5967,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 4189
+            }
+          ],
+          "thoughtsTokenCount": 1319,
+          "serviceTier": "standard"
+        },
+        "http": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json; charset=UTF-8",
+            "date": "Wed, 21 Oct 2026 14:27:12 GMT"
+          },
+          "gateway_execution_id": "13807"
+        }
+      },
+      "script_sha256": "0facbb865c43820f6c76cfafef015bfa9e1e5343b7b511c7dab842bbd837914c",
+      "evidence_sha256": "95f9908ec28057713b13d1b41945bc1cd2d913f343fc596321e2f01e1e46031f",
+      "topic_sha256": "ef9bbf784cadb8f489b5ad488e795d8213d50335798cbe837e10271c42d36fd9"
+    }
+  },
+  "elapsed_seconds": 65.4
+}

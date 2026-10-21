@@ -72,6 +72,21 @@ def validate_script_review(evidence, language, script, scenes, review, topic=Non
         observed.add(key)
     if observed!=expected:
         raise ValueError("semantic review omitted narrated facts")
+    if 'coverage_required_fact_ids' in review:
+        required=review['coverage_required_fact_ids']
+        coverage=review.get('coverage_checks')
+        if (not isinstance(required,list) or not required or len(required)!=len(set(required))
+                or not isinstance(coverage,dict) or set(coverage)!=set(required)
+                or not set(required)<={f['id'] for f in evidence['facts']}):
+            raise ValueError('required fact coverage review incomplete')
+        narrations={s['narration'] for s in scenes}
+        for check in coverage.values():
+            quotes=check.get('narration_quotes')
+            if (check.get('covered') is not True or check.get('missing_details')!=[]
+                    or not isinstance(check.get('comparison'),str) or not check['comparison'].strip()
+                    or not isinstance(quotes,list) or not quotes
+                    or any(q not in narrations for q in quotes)):
+                raise ValueError('required fact not fully narrated')
 
 
 def compact_evidence(evidence):

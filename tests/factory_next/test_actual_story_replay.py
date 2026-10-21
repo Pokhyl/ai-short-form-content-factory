@@ -21,7 +21,16 @@ class ActualStoryReplay(TestCase):
                 seen.append(key)
                 return {'status':200,'body':{'candidates':[{'finishReason':'STOP',
                     'content':{'parts':[{'text':text} for text in response['texts']]}}]}}
-        model=Gemini(Calls(),lambda:None,None,model='gemini-3.5-flash-lite',free_tier_confirmed=True)
+        class HistoricalGemini(Gemini):
+            def generate(self,key,instruction,*args,**kwargs):
+                # Reconstruct the immutable pre-coverage instruction explicitly.
+                # Calls.run still requires its exact archived digest.
+                instruction=instruction.replace(
+                    'Cover the complete essential meaning of each required fact across the script, '
+                    'including its cause, condition, timing, outcome and qualifications. '
+                    'Citing an ID or stating only its outcome does not cover the fact. ','')
+                return super().generate(key,instruction,*args,**kwargs)
+        model=HistoricalGemini(Calls(),lambda:None,None,model='gemini-3.5-flash-lite',free_tier_confirmed=True)
         stage=PreparationStages('/unused',SimpleNamespace(gemini=model),lambda:None)
         with self.assertRaises(ModelSchemaError):stage.story(saved['context'])
         self.assertEqual(seen,['next-story','next-story-length-repair:1'])

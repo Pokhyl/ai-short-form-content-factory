@@ -234,6 +234,56 @@ class GeminiTests(unittest.TestCase):
         self.assertEqual(context['scenes'],request['scenes'])
         self.assertEqual(len(self.http.requests),1)
 
+    def coverage_fixture(self):
+        from pathlib import Path
+        base=Path(__file__).parents[1]/'factory_next/fixtures'
+        original=json.loads((base/'actual-story-4369.json').read_text())
+        saved=json.loads((base/'actual-partial-coverage-409f.json').read_text())
+        research=original['context']['outputs']['research']
+        story=saved['story']
+        request={**research['request'],'evidence':research['evidence'],
+                 'scenes':story['scenes'],'script':story['script']}
+        fields=('language','language_match','visual_contracts_match',
+                'no_unsupported_claims','topic_covered','native_language_quality')
+        response={k:story['review'][k] for k in fields}
+        response['factual_checks']={'assertion_'+str(i+1):{
+            k:c[k] for k in ('narration_quote','comparison','supported')}
+            for i,c in enumerate(story['review']['factual_checks'])}
+        self.adapter.require_fact_coverage=True
+        return request,response
+
+    def test_actual_positive_partial_review_is_not_complete_coverage(self):
+        request,response=self.coverage_fixture()
+        self.http.result=response
+        with self.assertRaisesRegex(ValueError,'schema'):
+            self.adapter.review_script(request)
+        self.assertEqual(len(self.http.requests),1)
+
+    def test_supported_outcome_with_missing_cause_is_rejected(self):
+        request,response=self.coverage_fixture()
+        response['coverage_checks']={fact:{'comparison':'Controlled coverage result.',
+            'narration_quotes':[request['scenes'][-1]['narration']],
+            'missing_details':[],'covered':True} for fact in request['required_fact_ids']}
+        response['coverage_checks']['f2'].update(covered=False,
+            missing_details=['Shorter daylight triggers preparation and photosynthesis breakdown.'])
+        self.http.result=response
+        with self.assertRaisesRegex(ValueError,'not fully narrated'):
+            self.adapter.review_script(request)
+        context=json.loads(self.http.requests[0][2]['contents'][0]['parts'][0]['text'])
+        self.assertEqual(set(context['required_fact_coverage']),{'f1','f2','f3'})
+        self.assertIn('световой день',context['required_fact_coverage']['f2'])
+
+    def test_whole_script_coverage_can_span_scenes(self):
+        _,request,response,_=self.native_review_fixture()
+        self.adapter.require_fact_coverage=True
+        request['required_fact_ids']=[f['id'] for f in request['evidence']['facts']]
+        response['coverage_checks']={fact:{'comparison':'Controlled complete coverage.',
+            'narration_quotes':[s['narration'] for s in request['scenes']],
+            'missing_details':[],'covered':True} for fact in request['required_fact_ids']}
+        self.http.result=response
+        review=self.adapter.review_script(request)
+        self.assertEqual(review['coverage_required_fact_ids'],request['required_fact_ids'])
+
     def test_native_named_check_cannot_omit_even_a_nonessential_fact(self):
         _,request,response,_=self.native_review_fixture()
         del response['factual_checks']['assertion_1']

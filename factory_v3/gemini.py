@@ -205,6 +205,19 @@ class Gemini:
                 "narration_quote": string(), "supported": BOOL}), 1)})
         from material_first.presentation import TOPIC_POLICY
         native = request.get('presentation_policy') == TOPIC_POLICY
+        coverage = native and getattr(self, 'require_fact_coverage', False)
+        required_facts = request.get('required_fact_ids', []) if coverage else []
+        if coverage:
+            known = {f['id'] for f in request['evidence']['facts']}
+            if (not required_facts or len(required_facts) != len(set(required_facts))
+                    or not set(required_facts) <= known):
+                raise ValueError('required factual coverage identities missing')
+            schema['properties']['coverage_checks'] = obj({fact_id:obj({
+                'comparison':string(),
+                'narration_quotes':array(string(s['narration'] for s in scenes),0,len(scenes)),
+                'missing_details':array(string(),0,16), 'covered':BOOL})
+                for fact_id in required_facts})
+            schema['required'].append('coverage_checks')
         assertions = {}
         if native:
             assertions = {'assertion_' + str(i + 1): {'scene_id':scene['id'], 'fact_id':fact_id}
@@ -237,7 +250,20 @@ class Gemini:
         if native and 'materials' in request:
             from material_first.paragraphs import compact_materials
             review_context['materials'] = compact_materials(request['materials'])
+        if coverage:
+            review_context['required_fact_coverage'] = {
+                f['id']:f['text'] for f in request['evidence']['facts']
+                if f['id'] in required_facts}
         result, provenance = self.generate("script-review",
+            ("For coverage_checks perform the REVERSE check separately from factual support: "
+             "does the WHOLE script express EVERY essential claim in each required fact? "
+             "A true partial statement can be supported but NOT covered. Compare each fact's "
+             "cause, condition, timing, outcome, named colors and qualifications against the "
+             "whole script. List every omitted detail in missing_details and set covered=false "
+             "if any is absent. Mentioning an outcome alone does not cover its required cause. "
+             "A fact may be expressed across multiple scenes: cite their exact full narration "
+             "in narration_quotes. Do not infer omitted claims from images, IDs or sources. "
+             if coverage else "") +
             "Independently audit every claim in the exact final narration against supplied source-supported facts. "
             "For each factual check, first write comparison: explicitly compare the narrated claim "
             "with fact.text, including WHEN it happens, its cause, and its degree of certainty. "
@@ -256,6 +282,8 @@ class Gemini:
             review_context, schema)
         if native:
             result['factual_checks'] = [{**pair, **result['factual_checks'][key]} for key,pair in assertions.items()]
+        if coverage:
+            result['coverage_required_fact_ids'] = list(required_facts)
         result.update({"receipt_id": provenance["receipt_id"], "model": self.model,
             "provider_provenance": provenance,
             "script_sha256": hashlib.sha256(request["script"].encode()).hexdigest(),

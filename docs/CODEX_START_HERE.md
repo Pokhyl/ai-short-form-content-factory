@@ -1,3 +1,8 @@
+## Reverse factual coverage correction — 2026-10-21
+Diagnostic409fcf4a is terminal DIAGNOSTIC_COMPLETE after2Gemini/65.4s, nosearch/TTS. High reasoning fixed length/duplicate-photo generation and the model review approved it, but manual comparison found f2's required shorter-daylight cause absent. Therefore its machine approval is NOT full semantic acceptance; do not deploy/submit a full run based on it. Actual replies retained in tests/factory_next/fixtures/actual-partial-coverage-409f.json.
+
+Candidate now adds reverse whole-script coverage checks for each required fact to the SAME independent review call on the verified Next narrative client. Supported partial sentences are insufficient; absent causes/conditions/qualifications fail. Facts may span scenes. Generator receives matching full-meaning requirement. Legacy/primary clients unchanged.32 focused checks pass (30Gemini+2exact historical replays); packaged verification and actual saved-negative rejection/new-story acceptance pending. LIVE40d8eae unchanged;project_ready=false.
+
 ## High-reasoning story boundary active — 2026-10-21
 Candidate da0fb403fbb293964c70e23bb897dc28af71972f/image sha256:9a3599c6a777894856da8634028975adcaa4bcd8e92da90cfd0ebf22dc0fcc68 passes188Next+128core tests in exact image, network disabled and runtime source not overlaid. Saved-material diagnostic409fcf4a-e329-4871-baac-8e9581bd2222 started ONCE, max4Gemini/0search/0TTS. Actual first high-mode reply uses5874thinking tokens, short text and distinct photos, but independent exact factual/native review is still pending. Inspect /opt/factory-high-story-20261021/result.json and responses.jsonl before action; never repeat thisID. No deployment/new normal request yet. LIVE40d8eae unchanged;project_ready=false.
 
