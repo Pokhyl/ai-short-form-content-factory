@@ -56,13 +56,13 @@ class NextBudgetGate:
 def narrative_model_for(runtime, producer):
     """An opt-in private proof binds the additional fixed free-tier model."""
     from copy import copy
-    from factory_v3.credential_http import NARRATIVE_MODEL
+    from factory_v3.credential_http import NARRATIVE_MODELS
     settings=getattr(runtime,'settings',{})
     proof=settings.get('factory_next_narrative_proof')
     if proof is None:
         return None
     primary=settings.get('free_tier_proof',{})
-    if (not isinstance(proof,dict) or proof.get('model')!=NARRATIVE_MODEL or
+    if (not isinstance(proof,dict) or proof.get('model') not in NARRATIVE_MODELS or
             proof.get('billing_enabled') is not False or
             proof.get('standard_free_tier') is not True or
             not isinstance(proof.get('verification_id'),str) or not proof['verification_id'] or
@@ -71,7 +71,7 @@ def narrative_model_for(runtime, producer):
             proof.get('credential_sha256')!=primary['credential_sha256']):
         raise ValueError('verified narrative free-tier proof required')
     model=copy(producer.operations.gemini)
-    model.model=NARRATIVE_MODEL
+    model.model=proof['model']
     return model
 
 def connected_adapters(runtime, job_id, *, preflight_gate=None):

@@ -90,6 +90,17 @@ class GeminiTests(unittest.TestCase):
         with self.assertRaises(ValueError):self.generate()
         self.assertEqual(sends,[270])
 
+    def test_lite_narrative_keeps_ordered_deadline_without_resend(self):
+        self.adapter.model='gemini-3.5-flash-lite'
+        sends=[]
+        def fail(*args,**kwargs):
+            sends.append(kwargs['timeout'])
+            raise TimeoutError('controlled late model response')
+        self.http.request_receipt=fail
+        with self.assertRaises(TimeoutError):self.generate()
+        with self.assertRaises(ValueError):self.generate()
+        self.assertEqual(sends,[270])
+
     def test_existing_model_keeps_its_transport_deadline(self):
         self.generate()
         self.assertEqual(self.http.requests[0][-1],90)

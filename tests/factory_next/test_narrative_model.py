@@ -19,6 +19,14 @@ class NarrativeModelProofTests(unittest.TestCase):
         self.assertEqual(selected.model,'gemini-3.8-flash')
         self.assertIs(selected.calls,self.calls)
         self.assertEqual(self.original.model,'gemini-3.1-flash-lite')
+    def test_verified_lite_selection_keeps_shared_budget_and_is_not_fallback(self):
+        self.proof['model']='gemini-3.5-flash-lite'
+        selected=narrative_model_for(self.runtime,self.producer)
+        self.assertEqual(selected.model,'gemini-3.5-flash-lite')
+        self.assertIs(selected.calls,self.calls)
+        self.assertEqual(self.original.model,'gemini-3.1-flash-lite')
+        self.proof['billing_enabled']=True
+        with self.assertRaises(ValueError):narrative_model_for(self.runtime,self.producer)
     def test_missing_opt_in_preserves_existing_behavior(self):
         del self.runtime.settings['factory_next_narrative_proof']
         self.assertIsNone(narrative_model_for(self.runtime,self.producer))

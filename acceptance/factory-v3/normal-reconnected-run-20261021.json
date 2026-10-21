@@ -7,9 +7,30 @@
   },
   "http_status": 201,
   "source_revision": "6d10ca7544facb9b47f37a532426c2d7794d2a48",
-  "last_observed_status": "running",
+  "last_observed_status": "needs_attention",
   "next_stage": "research",
   "project_ready": false,
   "server_receipts": "/opt/factory-reconnected-research-networked-20261020",
-  "automatic_provider_retries": false
+  "automatic_provider_retries": false,
+  "error_type": "HTTPFailure",
+  "failure_reason": "EXTERNAL_HTTP_FAILURE",
+  "terminal": true,
+  "gemini_calls": 4,
+  "successful_gemini_calls": 3,
+  "tts_calls": 0,
+  "photo_search_calls": 0,
+  "mp4": null,
+  "failed_call": {
+    "key": "material-brief-review:2",
+    "status": 503,
+    "error_status": "UNAVAILABLE",
+    "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "elapsed_seconds": 1.426321
+  },
+  "first_review": {
+    "fact-1": "Rejected complete cessation vs cited slowdown",
+    "fact-2": "Supported",
+    "fact-3": "Rejected additional classification and cold-trigger synthesis not in selected citations"
+  },
+  "automatic_retries": false
 }

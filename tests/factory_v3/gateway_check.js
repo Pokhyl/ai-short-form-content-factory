@@ -98,3 +98,12 @@ assert(!JSON.stringify(result).includes(secret));
 assert(result.error_message.includes('Unknown response field'));
 console.log(JSON.stringify({status:'passed',controlled_gateway_guards:true,safe_error_receipt:true,
   no_upstream_retries:true,actual_provider_calls:0,production_mutations:0}));
+
+const lite = validate({provider:'gemini_narrative_lite',request:good.gemini});
+assert.strictEqual(lite.url,'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent');
+assert.deepStrictEqual(lite.body,good.gemini.body);
+assert.throws(()=>validate({provider:'gemini_narrative_lite',request:{body:{...good.gemini.body,tools:[{googleSearch:{}}]}}}));
+const liteNode=workflow.nodes.find(n=>n.name==='Upstream gemini_narrative_lite');
+assert.deepStrictEqual(liteNode.credentials,workflow.nodes.find(n=>n.name==='Upstream gemini').credentials);
+assert.strictEqual(liteNode.parameters.options.timeout,240000);
+assert.strictEqual(liteNode.retryOnFail,false);

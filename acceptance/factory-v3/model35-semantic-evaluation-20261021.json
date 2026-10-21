@@ -1,0 +1,23 @@
+{
+  "id": "767b4d5b-4c85-42b4-8be2-98a319ab04eb",
+  "model": "gemini-3.5-flash-lite",
+  "http_status": 200,
+  "semantic_pass": true,
+  "controls": {
+    "rejected_bad": 3,
+    "accepted_good": 3
+  },
+  "calls": {
+    "metadata": 1,
+    "gemini": 1,
+    "search": 0,
+    "tts": 0
+  },
+  "billing_enabled": false,
+  "serviceTier": "standard",
+  "verification_kind": "six saved source-statement/native controls, not real research or MP4 acceptance",
+  "ledger_terminal": "DIAGNOSTIC_COMPLETE",
+  "server_result": "/opt/factory-model35-evaluation-20261021/result.json",
+  "wrapper_status": "timeout; independently verified completed result and terminal ledger, never replayed",
+  "live_changed": false
+}

@@ -30,7 +30,7 @@ node("Authenticated provider request", "webhook", 2, {
     {"httpHeaderAuth": {"id": TOKEN_CREDENTIAL, "name": "Factory V3 private gateway"}})
 node("Validate scoped request", "code", 2, {"jsCode": guard +
     "\nreturn [{json: validateProviderRequest($input.first().json.body)}];"}, [240,0])
-providers = ["pixabay","pexels","gemini","google_tts","gemini_info","google_metadata","gemini_narrative"]
+providers = ["pixabay","pexels","gemini","google_tts","gemini_info","google_metadata","gemini_narrative","gemini_narrative_lite"]
 rules = [{"conditions": {"options": {"caseSensitive": True, "leftValue": "", "typeValidation": "strict", "version": 2},
     "conditions": [{"leftValue": "={{ $json.provider }}", "rightValue": provider,
                     "operator": {"type": "string", "operation": "equals"}}],
@@ -43,7 +43,7 @@ credentials = {
     "google_tts": {"googleOAuth2Api": {"id": "8KbFC6GBZOd18bzG", "name": "Google account"}},
 }
 for index, provider in enumerate(providers):
-    auth = credentials["gemini" if provider in {"gemini_info","gemini_narrative"} else "google_tts" if provider == "google_metadata" else provider]
+    auth = credentials["gemini" if provider in {"gemini_info","gemini_narrative","gemini_narrative_lite"} else "google_tts" if provider == "google_metadata" else provider]
     credential_type = next(iter(auth))
     params = {"method": "={{ $json.method }}", "url": "={{ $json.url }}",
         "options": {"timeout": upstream_timeout_ms(provider), "response": {"response": {
@@ -68,7 +68,7 @@ for index, provider in enumerate(providers):
     if provider == "google_metadata":
         params.update({"sendHeaders":True,"specifyHeaders":"json",
                        "jsonHeaders":"={{ JSON.stringify($json.headers || {}) }}"})
-    if provider in {"gemini","gemini_narrative","google_tts"}:
+    if provider in {"gemini","gemini_narrative","gemini_narrative_lite","google_tts"}:
         params.update({"sendBody":True,"contentType":"json","specifyBody":"json","jsonBody":"={{ JSON.stringify($json.body) }}"})
     node("Upstream " + provider, "httpRequest", 4.5, params, [760,index*180], auth)
 normalize = """
