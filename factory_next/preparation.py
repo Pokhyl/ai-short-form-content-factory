@@ -17,6 +17,7 @@ from material_first.photo_identity import pixels, same_photo
 from material_first.presentation import TOPIC_POLICY, minimum_shots, preferred_shots
 from material_first.visuals import candidate_limit
 from .source_context import SourceContextModel
+from .story_contract import sufficient_fact_anchors, story_contract, assemble_story
 from .duration import revision_length_window, revision_length_fits, NaturalDurationRejected
 from .voice_length_repair import (sentence_contract, assemble_sentence_repair,
     adaptive_underlength_sentence_contract, trim_one_complete_sentence_locally,
@@ -152,12 +153,16 @@ class PreparationStages:
             visual_coverage=required_facts & {
                 fact for photo in photos for fact in photo['supported_fact_ids']}
             if (len(photos)>=desired
-                    and len(visual_coverage)>=min(2,len(required_facts))):
+                    and len(visual_coverage)>=min(2,len(required_facts))
+                    and (not getattr(self.narrative_model,'fact_owned_story',False)
+                         or sufficient_fact_anchors(request['required_fact_ids'],photos))):
                 # Invisible claims are supported by source citations and
                 # the independent script reviewer, not invented photographs.
                 break
         if len(photos)<max(3,minimum_shots(request['seconds'],TOPIC_POLICY)):
             raise ValueError('insufficient distinct source-related verified images')
+        if getattr(self.narrative_model,'fact_owned_story',False):
+            story_contract(request,evidence,photos)
         return {'assets':assets,'photos':photos}
 
     def story(self, context):
@@ -181,10 +186,21 @@ class PreparationStages:
             "invisible process. Preserve mechanism and source-based meaning. "
             "Return natural narration directly; no word slots, scene durations or editing instructions.")
         source_context={**request,'evidence':evidence,'materials':compact_materials(photos)}
+        owned=getattr(model,'fact_owned_story',False)
+        wire_schema=schema
+        if owned:
+            beats,wire_schema=story_contract(request,evidence,photos)
+            source_context['server_owned_beats']=beats
+            instruction+=(" Write exactly the named server_owned_beats. For EACH beat narrate "
+                "its required_claim, preserving every essential cause, condition and qualification. "
+                "Never move claims to another beat to fit an image. Photo/fact identities are "
+                "server-owned and cannot be changed. Return only keyed narration fields.")
         try:
             draft,_=model.generate('next-story',instruction,
-                                                    source_context,schema)
+                                                    source_context,wire_schema)
+            if owned:draft=assemble_story(draft,beats,wire_schema)
         except ModelSchemaError as error:
+            if owned:raise
             # A complete, durably receipted model response is not an unknown
             # send. Only an invalid top-level beat count permits ONE
             # separately budgeted correction. No blind retry of next-story.

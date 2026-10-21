@@ -73,6 +73,7 @@ def narrative_model_for(runtime, producer):
     model=copy(producer.operations.gemini)
     model.model=proof['model']
     model.require_fact_coverage=True
+    model.fact_owned_story=True
     # The lite semantic evaluation used high reasoning. Provider defaults did
     # not exercise that verified mode; bind it to this explicitly selected role.
     if model.model == NARRATIVE_LITE_MODEL:

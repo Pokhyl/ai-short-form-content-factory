@@ -7,7 +7,7 @@ from factory_next.preparation import PreparationStages, required_verified_image_
 
 
 class PhotoBudgetStopTests(unittest.TestCase):
-    def run_materials(self, coverage, seconds=15):
+    def run_materials(self, coverage, seconds=15, owned=False):
         source_text = "A test source documenting three facts for grounded photographs."
         evidence = {
             "sources": [{"id": "source-1", "url": "https://example.org/source",
@@ -35,7 +35,7 @@ class PhotoBudgetStopTests(unittest.TestCase):
 
         def accepted(asset, receipt, unused_evidence, unused_facts, unused_mode):
             index = candidate_ids.index(asset["id"])
-            return {"id": asset["id"], "supported_fact_ids": coverage(index)}
+            return {"id": asset["id"], "sha256":asset['sha256'], "supported_fact_ids": coverage(index)}
 
         ops.download.side_effect = download
         ops.inspect_many.side_effect = inspect
@@ -43,9 +43,21 @@ class PhotoBudgetStopTests(unittest.TestCase):
              patch("factory_next.preparation.pixels"), \
              patch("factory_next.preparation.same_photo", return_value=False), \
              patch("factory_next.preparation.inspected_material", side_effect=accepted):
-            output = PreparationStages("/unused", ops, lambda: None).materials(
+            from types import SimpleNamespace
+            model=SimpleNamespace(fact_owned_story=True) if owned else None
+            output = PreparationStages("/unused", ops, lambda: None,narrative_model=model).materials(
                 {"outputs": {"research": source}})
         return output, ops
+
+    def test_distinct_source_anchors_prevent_premature_stop_on_actual_coverage_shape(self):
+        result,ops=self.run_materials(lambda i:['f1'] if i<3 else ['f2','f3'],owned=True)
+        self.assertEqual(ops.inspect_many.call_count,2)
+        self.assertEqual(len(result['photos']),8)
+
+    def test_owned_story_does_not_search_for_unobservable_fact_pixels(self):
+        result,ops=self.run_materials(lambda i:['f1'] if i%2 else ['f3'],owned=True)
+        self.assertEqual(ops.inspect_many.call_count,1)
+        self.assertEqual(len(result['photos']),4)
 
     def test_quota_saving_target_respects_cadence_for_all_durations(self):
         self.assertEqual({n:required_verified_image_target(n)
