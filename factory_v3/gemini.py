@@ -107,11 +107,14 @@ class Gemini:
         self.authorization_key = authorization_key
         self.http = http
         self.model = model
+        self.default_thinking_level = None
 
     def generate(self, key, instruction, context, schema, *, photo=None, photos=None, max_tokens=8192,
                  thinking_level=None):
         if not 1 <= max_tokens <= 16384:
             raise ValueError("model output budget invalid")
+        if thinking_level is None:
+            thinking_level = self.default_thinking_level
         if thinking_level not in {None, "low", "medium", "high"}:
             raise ValueError("model thinking level invalid")
         # Stable after JSONB key reordering during deferred receipt replay.
@@ -164,6 +167,7 @@ class Gemini:
         result = json.loads("".join(texts), object_pairs_hook=strict_object,
                             parse_constant=invalid_constant)
         provenance = {"receipt_id": digest(receipt), "model": self.model,
+                      "thinking_level": thinking_level,
                       "model_version": raw.get("modelVersion"),
                       "usage": raw.get("usageMetadata", {}),
                       "http": {k: v for k, v in receipt.items() if k != "body"}}

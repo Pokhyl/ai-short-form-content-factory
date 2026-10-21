@@ -70,6 +70,26 @@ class GeminiTests(unittest.TestCase):
         self.assertEqual(first[1]["http"]["headers"]["x-ratelimit-remaining"], "controlled")
         self.assertNotIn("controlled-secret", json.dumps(first))
 
+    def test_selected_reasoning_default_is_sent_and_recorded(self):
+        self.adapter.default_thinking_level='high'
+        result=self.generate()
+        self.assertEqual(self.http.requests[0][2]['generationConfig']['thinkingConfig'],
+                         {'thinkingLevel':'high'})
+        self.assertEqual(result[1]['thinking_level'],'high')
+        self.assertEqual(result,self.generate())
+        self.assertEqual(len(self.http.requests),1)
+
+    def test_reasoning_change_cannot_reuse_a_durable_call(self):
+        self.generate()
+        self.adapter.default_thinking_level='high'
+        with self.assertRaises(ValueError):self.generate()
+        self.assertEqual(len(self.http.requests),1)
+
+    def test_invalid_reasoning_default_stops_before_send(self):
+        self.adapter.default_thinking_level='unverified'
+        with self.assertRaises(ValueError):self.generate()
+        self.assertEqual(self.http.requests,[])
+
     def test_narrative_client_waits_longer_than_its_native_upstream_deadline(self):
         from factory_v3.deadlines import NARRATIVE_UPSTREAM_SECONDS, GATEWAY_WORKFLOW_SECONDS
         self.adapter.model='gemini-3.8-flash'

@@ -1,3 +1,8 @@
+## Normal story failure; reasoning-mode parity candidate — 2026-10-21
+Normal4369e8a2-e585-4424-be19-25a8bbad62fc is immutable needs_attention/story/MODEL_RESPONSE_INVALID. Research/materials completed;5Gemini200,4downloads,0TTS/MP4. Saved exact-hash replay reproduces an overlong unchanged length repair; initial draft also repeats its autumn photograph. Fixture tests/factory_next/fixtures/actual-story-4369.json contains sources/photos/replies, with assets omitted (not needed by story requests). Neither response is acceptance.
+
+Verified six-case3.5 evaluation used thinkingLevel=high, but production narrative calls omitted thinkingConfig and reported no thinking tokens. Candidate binds high reasoning to explicitly proof-selected3.5, preserving primary3.1 and legacy3.8 defaults, shared durable budget and no retries.35 focused checks pass including exact old request hashes and refusal to reuse a call after reasoning-mode change. Actual saved-material generation/review on candidate remains pending; do not launch another full normal job yet. LIVE40d8eae/imagee8b55989 unchanged. project_ready=false.
+
 ## LIVE3.5; normal output verification active — 2026-10-21
 LIVE Studio40d8eae71195cd22552772dd0640fb0b030095a4/imagee8b5598914cc1e89a2ff73f9ac5d1e8da082a6dd404c947838c5adc9bca3a5e1, explicitly selected gemini-3.5-flash-lite. Protected rollout completed: factory/factory_v3 counts+MVCC fingerprints equal, workflows equal, other70 container identities equal. Only private narrative proof model and verificationID changed. Prior container factory-next-studio-v9-before-lite-20261021 and private settings backup retained. Exact runtime model/revision/image, publichealth200 and gateway403 confirmed. Gatewayead54614 remains fixed-role and no retries/fallback.
 

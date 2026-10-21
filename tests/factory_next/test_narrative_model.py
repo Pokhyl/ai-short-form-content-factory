@@ -23,6 +23,8 @@ class NarrativeModelProofTests(unittest.TestCase):
         self.proof['model']='gemini-3.5-flash-lite'
         selected=narrative_model_for(self.runtime,self.producer)
         self.assertEqual(selected.model,'gemini-3.5-flash-lite')
+        self.assertEqual(selected.default_thinking_level,'high')
+        self.assertFalse(hasattr(self.original,'default_thinking_level'))
         self.assertIs(selected.calls,self.calls)
         self.assertEqual(self.original.model,'gemini-3.1-flash-lite')
         self.proof['billing_enabled']=True
