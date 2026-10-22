@@ -92,6 +92,7 @@ class Operations:
             'photo_contexts': obj({role: obj({'subject': string(),
                 'query': {**string(), 'maxLength': 100}, 'fact_ids': array(string(), 1, 8)})
                 for role in ('setting', 'subject', 'detail')})})
+        from .fact_budget import scope_instruction
         measured_feedback = getattr(self,'voice_correction_enabled',False)
         if measured_feedback:
             schema['properties']['required_fact_ids']=array(string(),3,3)
@@ -122,7 +123,7 @@ class Operations:
             'Never request a diagram, cross-section, field lines, imagined '
             'particle beams, space art or a synthetic rendering.')
         result, _ = self.gemini.generate('material-brief',
-            (('Select exactly THREE essential atomic facts that answer the requested topic or question. '
+            (scope_instruction(request) + ('Select exactly THREE essential atomic facts that answer the requested topic or question. '
               'Keep each fact a concise single claim; split compound source explanations into optional facts. '
               'Do not make every discovered fact mandatory or require every source detail/number in the narration. ' if measured_feedback else '') +
             f'For {request["seconds"]} seconds, include at most {desired_facts} distinct source-backed facts including optional details, '

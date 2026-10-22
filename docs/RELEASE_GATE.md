@@ -1,3 +1,8 @@
+## Duration-scoped research correction — 2026-10-22
+Diagnostic51583821 is terminal DIAGNOSTIC_FAILED:4Gemini/4downloads/0search/0TTS. Material matching succeeded with extra approved photos; initial keyed narration preserved full facts, but its length correction removed required details from all3facts. Independent coverage review correctly rejected. Never repeat this ID or deploy674 based on its tests. Actual safe replies retained in tests/factory_next/fixtures/actual-owned-coverage-5158.json.
+
+Root cause is upstream editorial scope: three compound mandatory source summaries cannot reliably fit RU15. New local candidate adds opt-in duration-scoped research BEFORE facts freeze: total required words<=round(seconds*1.8), per-fact bound, independent atomic-claim and joint-topic checks in the SAME research review. Existing bounded provisional correction handles overflow; no extra retry, quota, silent frozen-fact deletion or weakened final coverage. Four new controlled tests pass including actual old inventory rejection. Local131core pass; Next197 checks pass/skip with sole ffprobe-missing environment error; legacy material suite has8 failures also reproduced unchanged on baseline1cca483. Exact packaged verification and actual fresh research on saved sources pending. LIVE40d8eae unchanged;project_ready=false.
+
 ## Source-owned allocation boundary active — 2026-10-21
 Candidate674db5527b1682e0101a32020a8405df08425c58/image232aaab07592dd772282c6cb3a22183c78835f330d6f32ee17ebfedd091b2eff passes194Next+131core exact-image network-disabled checks. Later f9d4d49 adds actual wrong-binding fixture and a passing focused regression only; runtime is identical.
 

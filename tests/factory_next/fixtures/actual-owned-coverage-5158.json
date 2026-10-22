@@ -1,0 +1,103 @@
+{
+  "result": {
+    "id": "51583821-f9be-4874-9f77-db00016e97d4",
+    "source_revision": "674db5527b1682e0101a32020a8405df08425c58",
+    "image_id": "sha256:232aaab07592dd772282c6cb3a22183c78835f330d6f32ee17ebfedd091b2eff",
+    "new_search_calls": 0,
+    "tts_calls": 0,
+    "status": "failed",
+    "error_type": "ValueError",
+    "error": "required fact not fully narrated",
+    "counts": {
+      "gemini": 4,
+      "download": 4
+    },
+    "ledger_before_terminal": "preparing",
+    "elapsed_seconds": 142.668
+  },
+  "responses": [
+    {
+      "key": "material-inspect-batch:2698d98124ae522798f16f84104046135b6728256e9c5a294a2b643079351ef9",
+      "usage": {
+        "promptTokenCount": 6783,
+        "candidatesTokenCount": 1460,
+        "totalTokenCount": 8243,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4304
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 2479
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.1-flash-lite",
+      "texts": [
+        "{\n  \"photos\": [\n    {\n      \"accepted\": false,\n      \"is_real_material\": true,\n      \"medium\": \"photograph\",\n      \"topic_relation\": {\n        \"kind\": \"unrelated\",\n        \"visible_subject\": \"dry autumn leaves on branches\",\n        \"connection\": \"The image shows late autumn, not a green summer forest.\"\n      },\n      \"subject_fully_visible\": true,\n      \"visible_description\": \"A close-up of dry, brown and orange leaves on bare tree branches in late autumn.\",\n      \"visible_fact_details\": [],\n      \"target_matches\": [\n        {\n          \"target_id\": \"v0\",\n          \"matches\": false,\n          \"detail_prominent\": false,\n          \"visible_detail\": \"late autumn leaves\",\n          \"subject_qualifications_match\": false\n        },\n        {\n          \"target_id\": \"v1\",\n          \"matches\": true,\n          \"detail_prominent\": true,\n          \"visible_detail\": \"brown autumn foliage\",\n          \"subject_qualifications_match\": true\n        },\n        {\n          \"target_id\": \"v2\",\n          \"matches\": false,\n          \"detail_prominent\": false,\n          \"visible_detail\": \"withered brown leaves\",\n          \"subject_qualifications_match\": false\n        }\n      ],\n      \"asset_id\": \"pexels:7133385\"\n    },\n    {\n      \"accepted\": true,\n      \"is_real_material\": true,\n      \"medium\": \"photograph\",\n      \"topic_relation\": {\n        \"kind\": \"direct_subject\",\n        \"visible_subject\": \"oak leaves in autumn transition\",\n        \"connection\": \"The image captures foliage during the autumn transition period.\"\n      },\n      \"subject_fully_visible\": true,\n      \"visible_description\": \"Close-up of oak leaves showing autumn colors, backlit by sunlight.\",\n      \"visible_fact_details\": [\n        {\n          \"fact_id\": \"f2\",\n          \"detail\": \"The image demonstrates leaves with autumn coloration during the seasonal transition.\"\n        }\n      ],\n      \"target_matches\": [\n        {\n          \"target_id\": \"v0\",\n          \"matches\": false,\n          \"detail_prominent\": false,\n          \"visible_detail\": \"autumn foliage\",\n          \"subject_qualifications_match\": false\n        },\n        {\n          \"target_id\": \"v1\",\n          \"matches\": true,\n          \"detail_prominent\": true,\n          \"visible_detail\": \"autumn leaves on branch\",\n          \"subject_qualifications_match\": true\n        },\n        {\n          \"target_id\": \"v2\",\n          \"matches\": true,\n          \"detail_prominent\": true,\n          \"visible_detail\": \"close up of autumn leaf color\",\n          \"subject_qualifications_match\": true\n        }\n      ],\n      \"asset_id\": \"pixabay:7615084\"\n    },\n    {\n      \"accepted\": false,\n      \"is_real_material\": true,\n      \"medium\": \"photograph\",\n      \"topic_relation\": {\n        \"kind\": \"unrelated\",\n        \"visible_subject\": \"chestnuts on the ground\",\n        \"connection\": \"The image is a symbol of autumn, but the focus is on fallen chestnuts and grass rather than the process of leaf color change.\"\n      },\n      \"subject_fully_visible\": true,\n      \"visible_description\": \"Close-up of fallen horse chestnuts and dry leaves on grass.\",\n      \"visible_fact_details\": [],\n      \"target_matches\": [\n        {\n          \"target_id\": \"v0\",\n          \"matches\": false,\n          \"detail_prominent\": false,\n          \"visible_detail\": \"ground litter\",\n          \"subject_qualifications_match\": false\n        },\n        {\n          \"target_id\": \"v1\",\n          \"matches\": false,\n          \"detail_prominent\": false,\n          \"visible_detail\": \"fallen objects\",\n          \"subject_qualifications_match\": false\n        },\n        {\n          \"target_id\": \"v2\",\n          \"matches\": false,\n          \"detail_prominent\": false,\n          \"visible_detail\": \"fallen leaves and nuts\",\n          \"subject_qualifications_match\": false\n        }\n      ],\n      \"asset_id\": \"wikimedia:181564730\"\n    },\n    {\n      \"accepted\": true,\n      \"is_real_material\": true,\n      \"medium\": \"photograph\",\n      \"topic_relation\": {\n        \"kind\": \"direct_part_or_stage\",\n        \"visible_subject\": \"autumn leaves with visible chlorophyll decay\",\n        \"connection\": \"The leaves show a mix of green (chlorophyll) and red/orange (carotenoids/anthocyanins) indicating the process of changing colors.\"\n      },\n      \"subject_fully_visible\": true,\n      \"visible_description\": \"Close-up of a fern-like leaf showing a mix of green, yellow, and orange pigments.\",\n      \"visible_fact_details\": [\n        {\n          \"fact_id\": \"f3\",\n          \"detail\": \"The leaf shows visible remnants of green chlorophyll alongside other emerging autumn pigments.\"\n        }\n      ],\n      \"target_matches\": [\n        {\n          \"target_id\": \"v0\",\n          \"matches\": false,\n          \"detail_prominent\": false,\n          \"visible_detail\": \"autumn foliage\",\n          \"subject_qualifications_match\": false\n        },\n        {\n          \"target_id\": \"v1\",\n          \"matches\": true,\n          \"detail_prominent\": true,\n          \"visible_detail\": \"changing leaf color\",\n          \"subject_qualifications_match\": true\n        },\n        {\n          \"target_id\": \"v2\",\n          \"matches\": true,\n          \"detail_prominent\": true,\n          \"visible_detail\": \"close up of variegated leaf\",\n          \"subject_qualifications_match\": true\n        }\n      ],\n      \"asset_id\": \"pexels:40235466\"\n    }\n  ]\n}"
+      ]
+    },
+    {
+      "key": "next-story",
+      "usage": {
+        "promptTokenCount": 9242,
+        "candidatesTokenCount": 147,
+        "totalTokenCount": 11277,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 9242
+          }
+        ],
+        "thoughtsTokenCount": 1888,
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "texts": [
+        "{\"beat_1\":{\"narration\":\"Весной и летом в листьях доминирует зелёный пигмент хлорофилл, который под действием солнечного света активно синтезирует питательные вещества для роста растения.\"},\"beat_2\":{\"narration\":\"Осенью световой день укорачивается, и растение начинает подготовку к зиме: оно разбирает аппарат фотосинтеза, из-за чего хлорофилл постепенно исчезает.\"},\"beat_3\":{\"narration\":\"Разрушение хлорофилла позволяет увидеть другие пигменты, скрытые летом, такие как жёлтые и оранжевые каротиноиды или красные антоцианы.\"}}"
+      ]
+    },
+    {
+      "key": "next-story-length-repair:1",
+      "usage": {
+        "promptTokenCount": 9500,
+        "candidatesTokenCount": 134,
+        "totalTokenCount": 13026,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 9500
+          }
+        ],
+        "thoughtsTokenCount": 3392,
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "texts": [
+        "{\n  \"beat_1\": {\n    \"sentence_1\": \"Летом в листьях доминирует зелёный хлорофилл, синтезирующий питательные вещества для роста.\"\n  },\n  \"beat_2\": {\n    \"sentence_1\": \"Осенью световой день укорачивается, и растение разбирает аппарат фотосинтеза.\"\n  },\n  \"beat_3\": {\n    \"sentence_1\": \"Разрушение хлорофилла обнажает скрытые летом желтые каротиноиды и красные антоцианы.\"\n  }\n}"
+      ]
+    },
+    {
+      "key": "script-review",
+      "usage": {
+        "promptTokenCount": 5063,
+        "candidatesTokenCount": 892,
+        "totalTokenCount": 8413,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5063
+          }
+        ],
+        "thoughtsTokenCount": 2458,
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "texts": [
+        "{\n  \"factual_checks\": {\n    \"assertion_1\": {\n      \"narration_quote\": \"Летом в листьях доминирует зелёный хлорофилл, синтезирующий питательные вещества для роста.\",\n      \"comparison\": \"Повествование утверждает, что летом в листьях доминирует зелёный хлорофилл, синтезирующий питательные вещества для роста, что соответствует содержанию факта, хотя опускает упоминание весны и солнечного света.\",\n      \"supported\": true\n    },\n    \"assertion_2\": {\n      \"narration_quote\": \"Осенью световой день укорачивается, и растение разбирает аппарат фотосинтеза.\",\n      \"comparison\": \"Повествование указывает, что осенью укорачивается световой день и растение разбирает аппарат фотосинтеза, что совпадает с заявленной частью факта.\",\n      \"supported\": true\n    },\n    \"assertion_3\": {\n      \"narration_quote\": \"Разрушение хлорофилла обнажает скрытые летом желтые каротиноиды и красные антоцианы.\",\n      \"comparison\": \"Повествование говорит, что разрушение хлорофилла обнажает желтые каротиноиды и красные антоцианы, что соответствует смыслу факта о видимости скрытых пигментов.\",\n      \"supported\": true\n    }\n  },\n  \"language\": \"ru\",\n  \"language_match\": true,\n  \"visual_contracts_match\": true,\n  \"no_unsupported_claims\": true,\n  \"topic_covered\": true,\n  \"coverage_checks\": {\n    \"f1\": {\n      \"comparison\": \"Факт f1 говорит о том, что весной и летом в листьях доминирует зелёный пигмент хлорофилл под действием солнечного света, активно синтезирующий питательные вещества для роста. Скрипт упоминает только лето, хлорофилл и синтез веществ, пропуская весну, солнечный свет и степень активности.\",\n      \"narration_quotes\": [\n        \"Летом в листьях доминирует зелёный хлорофилл, синтезирующий питательные вещества для роста.\"\n      ],\n      \"missing_details\": [\n        \"весной\",\n        \"под действием солнечного света\",\n        \"активно\"\n      ],\n      \"covered\": false\n    },\n    \"f2\": {\n      \"comparison\": \"Факт f2 описывает сокращение светового дня осенью, подготовку к зиме, разбор аппарата фотосинтеза и постепенное исчезновение хлорофилла. Скрипт упоминает сокращение светового дня и разбор аппарата фотосинтеза, но опускает подготовку к зиме и исчезновение хлорофилла.\",\n      \"narration_quotes\": [\n        \"Осенью световой день укорачивается, и растение разбирает аппарат фотосинтеза.\"\n      ],\n      \"missing_details\": [\n        \"начинает подготовку к зиме\",\n        \"из-за чего хлорофилл постепенно исчезает\"\n      ],\n      \"covered\": false\n    },\n    \"f3\": {\n      \"comparison\": \"Факт f3 указывает на то, что разрушение хлорофилла позволяет увидеть жёлтые и оранжевые каротиноиды или красные антоцианы. Скрипт упоминает желтые каротиноиды и красные антоцианы, но пропускает оранжевые каротиноиды.\",\n      \"narration_quotes\": [\n        \"Разрушение хлорофилла обнажает скрытые летом желтые каротиноиды и красные антоцианы.\"\n      ],\n      \"missing_details\": [\n        \"оранжевые каротиноиды\"\n      ],\n      \"covered\": false\n    }\n  },\n  \"native_language_quality\": true\n}"
+      ]
+    }
+  ]
+}

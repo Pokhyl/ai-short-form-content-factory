@@ -76,7 +76,8 @@ class PreparationStages:
     def research(self, context):
         self.authorize()
         request={**context['request'],'presentation_policy':TOPIC_POLICY,
-                 'visual_validation_mode':'gemini'}
+                 'visual_validation_mode':'gemini',
+                 'fact_scope_policy':'duration-scoped-facts-v1'}
         # Published scientific diagrams are legitimate evidence-backed visuals
         # for unphotographable subjects. This opt-in is Factory Next only.
         self.operations.allow_source_illustrations=True
