@@ -10,6 +10,7 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import time
 from pathlib import Path
 from uuid import UUID
@@ -19,6 +20,25 @@ from .timeline import compile_edit
 STAGES=('research','materials','story','voice','alignment','edit','render','audit')
 MAX_PRE_DISPATCH_DEFERRALS=3
 SAFE_LEDGER_STAGES=('research','materials','story')
+def safe_failure_details(value):
+    """Keep only bounded, non-secret fields from an HTTP provider receipt."""
+    if not isinstance(value,dict):
+        value=getattr(value,'receipt',None)
+    if not isinstance(value,dict):
+        return None
+    result={}
+    status=value.get('status',value.get('http_status'))
+    if type(status) is int and 100<=status<=599:
+        result['http_status']=status
+    for key,pattern in (
+        ('error_status',r'^[A-Z_]{1,100}$'),
+        ('error_reason',r'^[A-Z0-9_]{1,100}$'),
+        ('gateway_execution_id',r'^\d{1,30}$'),
+    ):
+        item=value.get(key)
+        if isinstance(item,str) and re.fullmatch(pattern,item):
+            result[key]=item
+    return result or None
 
 
 # Only fixed, non-sensitive error categories may be stored in durable checkpoints.
@@ -170,6 +190,9 @@ class Pipeline:
                 except BaseException as error:
                     state.update(status='needs_attention',error_type=type(error).__name__,
                              failure_code=classify_stage_failure(stage,error))
+                    details=safe_failure_details(error)
+                    if details:
+                        state['failure_details']=details
                     self.save(directory,state)
                     raise
                 if previous:
@@ -195,6 +218,9 @@ class Pipeline:
             except BaseException as error:
                 state.update(status='needs_attention',error_type=type(error).__name__,
                              failure_code=classify_stage_failure(stage,error))
+                details=safe_failure_details(error)
+                if details:
+                    state['failure_details']=details
                 self.save(directory,state)
                 raise
             state['outputs'][stage]=output;state['receipts'][stage]=receipt
