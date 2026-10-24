@@ -18,6 +18,8 @@ VOICES = {
 }
 DENSITY = {15: 5, 30: 9, 45: 13, 60: 17}
 WINDOWS = {15: (14208,15768),30:(28464,34000),45:(42864,46128),60:(58176,61656)}
+# The live gateway permits up to 300 seconds; allow 30 seconds for its receipt.
+GOOGLE_TTS_GATEWAY_TIMEOUT_SECONDS = 330
 
 
 def identity(job_id, kind, value):
@@ -47,7 +49,8 @@ class GoogleVoice:
         response = self.http.request("POST", "https://texttospeech.googleapis.com/v1/text:synthesize",
             {"input":{"text":text},"voice":{"languageCode":locale,"name":voice},
              "audioConfig":{"audioEncoding":"MP3"}},
-            {"Authorization":"Bearer "+self.access_token()}, timeout=60)
+            {"Authorization":"Bearer "+self.access_token()},
+            timeout=GOOGLE_TTS_GATEWAY_TIMEOUT_SECONDS)
         encoded = response.get("audioContent")
         if not isinstance(encoded,str) or not encoded:
             raise ValueError("TTS returned no audio")
