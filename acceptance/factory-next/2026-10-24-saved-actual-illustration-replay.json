@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-24",
+  "scope": "Exact candidate image, actual saved job state, offline read-only replay",
+  "candidate": {
+    "tag": "factory-v3:factory-next-d8525f9",
+    "image_id": "sha256:8d31095f063beea7d5c1b9b95c8216c9606257eb4d51db4efed7bbb08509bbf1",
+    "source_revision": "d8525f9ea8d388ea3a0e2de448262ca7802fe12f",
+    "network": "none",
+    "state_volume_mount": "shorts-v2_media_data:/data:ro"
+  },
+  "job_id": "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
+  "asset_id": "wikimedia:22161410",
+  "asset_description": "A painting showing a river passing through an autumnal forest with changing tree colors.",
+  "prior_classification": "scientific_illustration",
+  "saved_inspection": {
+    "medium": "illustration",
+    "inspection_protocol": "source-illustration-v1",
+    "illustration_type": null
+  },
+  "replay_result": {
+    "accepted_by_candidate_scientific_illustration_gate": false,
+    "exit_code": 0
+  },
+  "interpretation": "The exact saved painting inspection is rejected by the candidate gate because it does not identify a scientific diagram or structural illustration. No provider request, TTS call, database write, job continuation, or deployment occurred.",
+  "project_ready": false
+}
