@@ -1,0 +1,25 @@
+{
+  "source_revision": "61fe285b9cef103d4009b44722080b53bd716755",
+  "runtime_files": [
+    "factory_v3/credential_http.py",
+    "factory_next/wiring.py"
+  ],
+  "suites": [
+    "tests/factory_next",
+    "tests/factory_v3"
+  ],
+  "tests_run": 335,
+  "failures": 0,
+  "errors": 0,
+  "status": "PASS",
+  "isolated_unit_tests": {
+    "model_routing": 7,
+    "credential_http": 6,
+    "gemini_deadline": 30,
+    "total": 43,
+    "status": "PASS"
+  },
+  "wall_seconds": 115.684,
+  "network_used": false,
+  "note": "An earlier full pass attempt correctly exposed an unintended 3.1 deadline change; the candidate was corrected by keeping NARRATIVE_MODELS separate from NARRATIVE_PROOF_MODELS, then the 335-test suite passed. No source overlay or provider call occurred during test execution."
+}
