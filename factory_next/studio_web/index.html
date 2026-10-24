@@ -53,17 +53,18 @@ video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-rati
 </header>
 <div class="kicker">AI SHORT-FORM CONTENT FACTORY</div>
 <h1>Создайте видео по своей теме</h1>
-<p class="muted">Напишите тему, выберите язык и длительность. Генерация выполняется на сервере; статус и результат сохраняются в разделе «Ваши видео».</p>
+<p class="muted">Введите одну или несколько тем — каждую с новой строки. Для каждой темы создаётся отдельное задание; статус и результат сохраняются в разделе «Ваши видео».</p>
 <div class="columns">
 <form id="request-form" class="panel">
   <div class="panelhead"><h2>Новое видео</h2><span class="small">01</span></div>
-  <label for="topic">Тема видео</label>
-  <textarea id="topic" maxlength="300" required placeholder="Например: Почему листья меняют цвет осенью?"></textarea>
+  <label for="topic">Темы видео · одна тема на строку</label>
+  <textarea id="topic" required placeholder="Почему листья меняют цвет осенью?&#10;Как пчёлы находят цветы?"></textarea>
+  <p class="small muted">До 300 символов на тему. Задания отправляются по одному; принятые задания останутся в истории, даже если очередь заполнится.</p>
   <div class="fields">
     <div><label for="language">Язык озвучки</label><select id="language"><option value="pl">Polski</option><option value="en">English</option><option value="ru">Русский</option><option value="uk">Українська</option></select></div>
     <div><label for="seconds">Длительность</label><select id="seconds"><option value="15">15 секунд</option><option value="30">30 секунд</option><option value="45">45 секунд</option><option value="60">60 секунд</option></select></div>
   </div>
-  <button id="submit" class="primary full" type="submit">Создать видео</button>
+  <button id="submit" class="primary full" type="submit">Добавить в очередь</button>
   <p id="message" class="error" role="alert" hidden></p>
   <p class="small muted">Новая фабрика · Проверка фактов и изображений · Естественная озвучка</p>
 </form>
@@ -193,15 +194,30 @@ async function show(id){
 }
 get("request-form").onsubmit=async event=>{
   event.preventDefault();get("message").hidden=true;
-  const topic=get("topic").value.trim(),language=get("language").value,seconds=Number(get("seconds").value);
-  if(!topic)return;
-  get("submit").disabled=true;get("submit").textContent="Создаём задание…";
+  const topics=get("topic").value.split(/\r?\n/).map(topic=>topic.trim()).filter(Boolean);
+  const language=get("language").value,seconds=Number(get("seconds").value),accepted=[];
+  if(!topics.length){report(new Error("Введите хотя бы одну тему."));return;}
+  const tooLong=topics.findIndex(topic=>topic.length>300);
+  if(tooLong!==-1){report(new Error("Тема №"+(tooLong+1)+" длиннее 300 символов."));return;}
+  get("submit").disabled=true;get("submit").textContent="Добавляем задания…";
   try{
-    const result=await request(API,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({topic,language,seconds})});
-    await loadJobHistory();await show(result.id);
-  }catch(e){report(e);}
-  finally{get("submit").disabled=false;get("submit").textContent="Создать видео";}
+    for(const [index,topic] of topics.entries()){
+      get("submit").textContent="Добавляем "+(index+1)+" из "+topics.length+"…";
+      const result=await request(API,{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({topic,language,seconds})});
+      accepted.push({topic,id:result.id});
+      get("message").hidden=false;get("message").className="small muted";
+      get("message").textContent="Добавлено "+accepted.length+" из "+topics.length+". Последнее задание: "+result.id;
+      await loadJobHistory();
+    }
+    if(accepted.length)await show(accepted[accepted.length-1].id);
+  }catch(e){
+    const partial=accepted.length?" Принято заданий: "+accepted.length+" из "+topics.length+". Их ID: "+accepted.map(item=>item.id).join(", "):"";
+    get("message").hidden=false;get("message").className="error";
+    get("message").textContent=(e.message||"Ошибка соединения")+partial;
+    await loadJobHistory().catch(()=>{});
+    if(accepted.length)await show(accepted[accepted.length-1].id).catch(()=>{});
+  }finally{get("submit").disabled=false;get("submit").textContent="Добавить в очередь";}
 };
 get("refresh").onclick=()=>Promise.all([loadJobHistory(),selected&&show(selected)]).catch(report);
 (async()=>{
