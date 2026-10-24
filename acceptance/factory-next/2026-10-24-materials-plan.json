@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-24",
+  "status": "planned_not_started",
+  "supersedes": "acceptance/factory-next/2026-10-24-fresh-research-plan.json",
+  "reason": "The completed research stage used four successful Gemini calls (brief, review, repair, review), so the original max-one plan was stopped and recorded. This plan uses observed ledger state and the immutable per-job budgets.",
+  "image": {
+    "tag": "factory-v3:factory-next-107367f",
+    "image_id": "sha256:9b41179034e2ee70e262ea415d20ec106fceedb257d39ee923ebf0a8d79ec6d7",
+    "source_revision": "107367f60ff3d267e7f714687f8d485bfa15b210"
+  },
+  "existing_job": {
+    "id": "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
+    "status": "ready",
+    "next_stage": "materials",
+    "gemini_used": 4,
+    "gemini_total_budget": 23
+  },
+  "action": "Advance exactly one checkpoint stage with operator continue --steps 1.",
+  "remaining_stage_limits": {
+    "additional_gemini_max": 10,
+    "additional_search": {
+      "pixabay": 3,
+      "pexels": 3,
+      "wikimedia": 3
+    },
+    "additional_download_max": 32,
+    "source_fetch": 0,
+    "metadata": 0,
+    "tts": 0,
+    "render": 0,
+    "stages": 1
+  },
+  "constraints": [
+    "Use only the existing gateway-managed free-tier configuration; never fall back to paid billing.",
+    "The total Gemini ledger must remain at or below 14 after materials, preserving at least nine calls for the story/voice admission gate.",
+    "Stop after materials and inspect the saved photos, support IDs, and ledger.",
+    "Do not repeat, restart, or create another job if the stage is failed, deferred, unknown, or needs_attention."
+  ],
+  "stop_conditions": [
+    "Stop immediately if a provider call exceeds the per-kind ledger limits.",
+    "Stop before story if total Gemini calls exceed 14 or the story gate reports insufficient headroom.",
+    "Do not run voice/TTS, rendering, or audit under this plan."
+  ]
+}
