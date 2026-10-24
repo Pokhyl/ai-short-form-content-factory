@@ -30,7 +30,8 @@ class GeminiTests(unittest.TestCase):
     def test_provider_subset_keeps_field_names_and_local_string_validation(self):
         schema = obj({"minLength": {**string(), "maxLength": 3}})
         compiled = provider_schema(schema)
-        self.assertEqual(compiled["properties"]["minLength"], {"type": "string"})
+        self.assertEqual(compiled["properties"]["minLength"], {"type": "string",
+            "description": "Return between 1 and 3 characters, including spaces and punctuation."})
         self.assertEqual(schema["properties"]["minLength"]["maxLength"], 3)
         with self.assertRaisesRegex(ValueError, "unsupported provider schema"):
             provider_schema({"type": "string", "pattern": "secret"})
