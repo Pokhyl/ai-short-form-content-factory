@@ -1,50 +1,7 @@
-#0 building with "desktop-linux" instance using docker driver
-
-#1 [internal] load build definition from Dockerfile
-#1 transferring dockerfile: 566B done
-#1 DONE 0.0s
-
-#2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
-#2 DONE 1.0s
-
-#3 [internal] load .dockerignore
-#3 transferring context: 2B done
-#3 DONE 0.0s
-
-#4 [1/8] FROM docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
-#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 done
-#4 DONE 0.0s
-
-#5 [internal] load build context
-#5 transferring context: 392.54kB done
-#5 DONE 0.0s
-
-#6 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
-#6 CACHED
-
-#7 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
-#7 CACHED
-
-#8 [3/8] WORKDIR /app
-#8 CACHED
-
-#9 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
-#9 CACHED
-
-#10 [6/8] COPY factory_v3 /app/factory_v3
-#10 CACHED
-
-#11 [7/8] COPY material_first /app/material_first
-#11 DONE 0.0s
-
-#12 [8/8] COPY scripts/audit_final_media.py /app/scripts/audit_final_media.py
-#12 DONE 0.0s
-
-#13 exporting to image
-#13 exporting layers 0.0s done
-#13 exporting manifest sha256:6c5d839fe22e5ca2bf773735f4f9307bbcae9c94fffe2ed06841ec0963043cf4 done
-#13 exporting config sha256:20a2f9cc81addb541cf638c58bc3fbf652cae88b3a8ec98e5229fbd5aa4204c5 done
-#13 exporting attestation manifest sha256:e69bc959c71cb071c5507951b3ea54d8f3b9818b4c95adb40ff2213b550c63bb done
-#13 exporting manifest list sha256:0b681e6182f0ca3f2d5b527f06e2ab4faf1ac936c1a9485cf4f78e20671bc665 done
-#13 naming to docker.io/library/factory-v3:research-review-correction-amd64-20261012-r1 done
-#13 DONE 0.0s
+Docker image factory-v3:studio-variant-length-3a5310c built successfully.
+Image manifest: sha256:61af675579ef9ee2949f6aed4d6437a35c1a2d1fcdf6e02bf60e77317b7764f0
+Source commit: 3a5310c69d43de3799bc7b4ea9f3fac838ce1c87
+Deployed as factory-next-studio-v9; public /factory-next/healthz returned HTTP 200.
+Production run 716a7db5-7133-4818-9e72-7124b2460cd1: research and materials passed (9 photos), Google returned HTTP 503 UNAVAILABLE at story generation.
+Production run f057d252-4f98-43e5-a29d-a6d69c8f120e: material preparation failed with DiskFull; Docker build cache pruning later freed 1.6 GB.
+Production run e0d8d6f1-56c7-43ab-8280-a482c354b7bd: material brief passed; review call failed with HTTPFailure.

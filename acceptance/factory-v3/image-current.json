@@ -1,7 +1,7 @@
 {
-  "tag": "factory-v3:research-review-correction-amd64-20261012-r1",
-  "image_id": "sha256:0b681e6182f0ca3f2d5b527f06e2ab4faf1ac936c1a9485cf4f78e20671bc665",
+  "tag": "factory-v3:studio-variant-length-3a5310c",
+  "image_id": "sha256:61af675579ef9ee2949f6aed4d6437a35c1a2d1fcdf6e02bf60e77317b7764f0",
   "platform": "linux/amd64",
-  "source_commit": "57349d3c8531dae56a6216b3f0f2541377bc742d",
-  "deployed": false
+  "source_commit": "3a5310c69d43de3799bc7b4ea9f3fac838ce1c87",
+  "deployed": true
 }
