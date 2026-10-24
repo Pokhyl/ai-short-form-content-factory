@@ -15,7 +15,7 @@ class HTTPDouble:
         self.replace_hash = False
 
     def request(self, method, url, body=None, headers=None, timeout=30):
-        self.calls.append((method,url,body,headers))
+        self.calls.append((method,url,body,headers,timeout))
         if url.startswith("https://texttospeech.googleapis.com"):
             return {"audioContent":base64.b64encode(b"controlled test audio; not real TTS").decode()}
         if "/voiceovers/" in url:
@@ -70,6 +70,7 @@ class WorkerAdapterTests(unittest.TestCase):
         calls=[c for c in self.http.calls if c[1].startswith("https://texttospeech")]
         self.assertEqual(len(calls),1)
         self.assertEqual(calls[0][2]["voice"]["name"],"pl-PL-Chirp3-HD-Enceladus")
+        self.assertEqual(calls[0][4],330)
         self.assertEqual(self.accounts,1)
         for scene in self.payload["scenes"]:
             staged=voice["staged_photos"][scene["id"]]
