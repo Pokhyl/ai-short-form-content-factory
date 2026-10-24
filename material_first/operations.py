@@ -385,6 +385,10 @@ class Operations:
                 row = schema['properties']['target_matches']['items']
                 row['properties']['subject_qualifications_match'] = BOOL
                 row['required'].append('subject_qualifications_match')
+        if getattr(self, 'allow_source_illustrations', False):
+            schema['properties']['illustration_type'] = string(
+                ['scientific_diagram', 'structural_illustration', 'artwork', 'not_applicable'])
+            schema['required'].append('illustration_type')
         return schema
 
     def _inspection_receipt(self, asset, evidence, result, provenance):
@@ -397,6 +401,8 @@ class Operations:
         diagram=(getattr(self,'allow_source_illustrations',False)
                  and trusted_commons_illustration_source(asset)
                  and result['medium']=='illustration'
+                 and result.get('illustration_type') in
+                     {'scientific_diagram','structural_illustration'}
                  and result['is_real_material'] is True)
         result['inspection_protocol'] = ('source-illustration-v1' if diagram
                                           else 'topic-specific-v1')
@@ -434,6 +440,11 @@ class Operations:
 
     SCIENTIFIC_INSPECTION_INSTRUCTION = (
         'Independently inspect each attached ORIGINAL published image, identified by asset_id. '
+        'For every image classify illustration_type: scientific_diagram only for a genuine '
+        'scientific diagram, structural_illustration only for an explanatory scientific '
+        'structure drawing, artwork for paintings or other visual art, and not_applicable '
+        'for photographs/observational images. A topical landscape painting is artwork, '
+        'not a scientific illustration, even when it depicts the requested subject. '
         'Accept accurate, licensed scientific diagrams and explanatory structural illustrations '
         'from Wikimedia Commons for scientific subjects that cannot be photographed directly. '
         'A labeled DNA double-helix schematic can genuinely illustrate DNA structure, but it '
