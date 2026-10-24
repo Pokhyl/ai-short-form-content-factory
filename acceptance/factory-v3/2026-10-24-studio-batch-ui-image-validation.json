@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-24",
+  "status": "candidate_validated_not_deployed",
+  "feature": "Studio accepts one or more topics, one per line, and submits each through the existing API sequentially as an independent job. Existing queue/capacity and PostgreSQL provider budgets are unchanged.",
+  "candidate": {
+    "tag": "factory-v3:studio-batch-c54d517",
+    "image_id": "sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922",
+    "platform": "linux/amd64",
+    "source_revision": "c54d517512a20dd62a9cd4f5d0479785b4dc3383"
+  },
+  "tests": {
+    "factory_next": {
+      "result": "PASS",
+      "passed": 202,
+      "total": 202,
+      "network": "none",
+      "runtime_source_overlay": false,
+      "readonly_mounts": [
+        "tests",
+        "services",
+        "acceptance"
+      ],
+      "ffmpeg_worker_integration": true
+    },
+    "factory_v3": {
+      "result": "PASS",
+      "passed": 131,
+      "total": 131,
+      "network": "none",
+      "runtime_source_overlay": false,
+      "readonly_mounts": [
+        "tests",
+        "services",
+        "acceptance"
+      ]
+    },
+    "local_ui_regression": {
+      "result": "PASS",
+      "passed": 3,
+      "total": 3
+    },
+    "javascript_syntax": "PASS"
+  },
+  "isolated_http_smoke": {
+    "result": "PASS",
+    "health_http": 200,
+    "batch_ui_served": true,
+    "network": "none",
+    "settings_mount": "read-only",
+    "media_root": "tmpfs"
+  },
+  "production_prestate": {
+    "container_id": "396ea9174b3bbf5eb74074784c87ac5cd2b1ff4ee35d2abf90fee779bcf69f19",
+    "image_id": "sha256:8d31095f063beea7d5c1b9b95c8216c9606257eb4d51db4efed7bbb08509bbf1",
+    "source_revision": "d8525f9ea8d388ea3a0e2de448262ca7802fe12f",
+    "rollback_container": "factory-next-studio-v9-before-illustration-20261024",
+    "jobs": 38,
+    "active_jobs": 0,
+    "status_counts": {
+      "complete": 2,
+      "needs_attention": 36
+    },
+    "settings_sha256": "1bb5a0503bca2742c92aaeb24b548103e44c758c18c9ebf3532c03125f316203",
+    "other_containers_count": 31,
+    "other_containers_sha256": "d02f76468f39a5ffb215441825dcfd7ba3de607fecdd0cb1e994b033f5d7ee0f"
+  },
+  "external_calls": {
+    "model": 0,
+    "search": 0,
+    "tts": 0,
+    "production_job_mutations": 0
+  },
+  "project_ready": false,
+  "open_release_gates": [
+    "No new normal job/MP4 or end-to-end multi-topic production acceptance in this change.",
+    "Google TTS remaining free character allowance is not observable from the configured gateway; no production TTS was issued."
+  ]
+}
