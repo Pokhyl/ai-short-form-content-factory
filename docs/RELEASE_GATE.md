@@ -1,3 +1,11 @@
+## Sequential multi-topic Studio intake — 2026-10-24
+
+Candidate `factory-v3:studio-batch-c54d517` (`sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922`, source `c54d517512a20dd62a9cd4f5d0479785b4dc3383`) adds line-separated topic submission. Each line is sent sequentially to the existing API and receives its own job ID; current bounded queue and per-job PostgreSQL budgets remain unchanged. UI validates 300 characters per topic and preserves IDs on partial queue rejection.
+
+Exact-image network-disabled tests: Factory Next 202/202, Factory v3 131/131; tests/services/acceptance mounts read-only and no runtime source overlay. Isolated Studio HTTP smoke returned health 200 and served the batch form using read-only settings and tmpfs media. No provider, search, TTS or production job calls. Receipt: `acceptance/factory-v3/2026-10-24-studio-batch-ui-image-validation.json`.
+
+Candidate is built and validated but not yet deployed. Live Studio remains `d8525f9` image `sha256:8d31095f063beea7d5c1b9b95c8216c9606257eb4d51db4efed7bbb08509bbf1`. This UI change does not establish a new production MP4 or full factory acceptance; `project_ready=false`. TTS free quota remains unobservable, so no voice/render request was made.
+
 ## Scientific-illustration classification and exact package — 2026-10-24
 
 The exact candidate image `factory-v3:factory-next-d8525f9` (`sha256:8d31095f063beea7d5c1b9b95c8216c9606257eb4d51db4efed7bbb08509bbf1`, source `d8525f9ea8d388ea3a0e2de448262ca7802fe12f`) passes the packaged Factory Next suite 199/199 and Factory v3 suite 131/131. Both ran with networking disabled and test/service/acceptance mounts read-only. Factory Next Studio now runs this candidate at revision `d8525f9`; public health returned 200. Settings, queued jobs, and all other container identities matched the pre-rollout snapshot; the previous Studio container is retained for rollback. Receipt: `acceptance/factory-v3/2026-10-24-illustration-gate-studio-deployment.json`.
