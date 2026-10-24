@@ -22,7 +22,7 @@ from uuid import UUID, uuid4
 from factory_v3.preflight import asset_path, validate_asset
 from factory_v3.runtime import Runtime, load_settings
 from factory_v3.server import byte_range
-from .pipeline import Pipeline
+from .pipeline import Pipeline, safe_failure_details
 from .wiring import connected_adapters, register_next
 
 PREFIX="/factory-next"
@@ -360,6 +360,7 @@ class Studio:
                 "status":state["status"],"eligible_after":None,
                 "next_stage":state.get("next_stage"),"completed_stages":list(outputs),
                 "error_type":state.get("error_type"),"failure_reason":failure_reason,
+                "failure_details":safe_failure_details(state.get("failure_details")),
                 "retry_at":state.get("provider_wait_receipt",{}).get("retry_at"),
                 "script":active_story.get("script",""),"scenes":scenes,"sources":sources,
                 "photo_count":len(outputs.get("materials",{}).get("photos",[])),
