@@ -528,9 +528,9 @@ class PreparationStages:
         model=copy(self.narrative_model or self.operations.gemini)
         model.calls=VoiceRevisionCalls(model.calls,
                          attempt=context.get('_voice_correction_round',2))
-        schema=variant_contract(scenes)
         mean=window['target_characters']/len(scenes)
         targets={'short':round(mean*.70),'medium':round(mean),'long':round(mean*1.25)}
+        schema=variant_contract(scenes,targets)
         prompt=(
             f"Rewrite each reviewed beat in fluent {LANGUAGES[request['language']]} in THREE "
             "different complete versions: short, medium, long. For each version first write "

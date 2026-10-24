@@ -5,13 +5,30 @@ from .duration import revision_length_fits, NaturalDurationRejected
 
 LABELS=("short","medium","long")
 
-def variant_contract(scenes):
+def variant_contract(scenes, character_targets=None):
     if not isinstance(scenes,list) or not 1<=len(scenes)<=8:
         raise ValueError("bounded reviewed scenes required")
-    return obj({"beat_"+str(i+1):obj({name:obj({"fact_comparison":string(),"narration":{**string(),"maxLength":2000},
-                "fact_ids":array(string(scenes[i]["evidence_ids"]),1,len(scenes[i]["evidence_ids"]))})
-                                   for name in LABELS})
-                for i in range(len(scenes))})
+    if character_targets is not None:
+        if (not isinstance(character_targets,dict)
+                or set(character_targets)!=set(LABELS)
+                or any(type(v) is not int or not 30<=v<=2000
+                       for v in character_targets.values())):
+            raise ValueError("bounded per-variant character targets required")
+    beats={}
+    for i,scene in enumerate(scenes):
+        variants={}
+        for name in LABELS:
+            narration={**string(),"maxLength":2000}
+            if character_targets is not None:
+                target=character_targets[name]
+                narration["minLength"]=max(5,round(target*.88))
+                narration["maxLength"]=min(2000,round(target*1.12))
+            variants[name]=obj({"fact_comparison":string(),
+                "narration":narration,
+                "fact_ids":array(string(scene["evidence_ids"]),1,
+                                  len(scene["evidence_ids"]))})
+        beats["beat_"+str(i+1)]=obj(variants)
+    return obj(beats)
 
 def variant_measurements(reply):
     return {beat:{label:{"words":len(text["narration"].split()),"characters":len(text["narration"].strip())}
