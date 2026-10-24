@@ -5,12 +5,12 @@ from types import SimpleNamespace
 from unittest import TestCase
 
 from factory_v3.gemini import Gemini, ModelSchemaError
-from factory_v3.preparation import verify_saved_request
+from factory_v3.preparation import verify_saved_request, SavedRequestMismatch
 from factory_next.preparation import PreparationStages, validated_next_story
 
 
 class ActualStoryReplay(TestCase):
-    def test_exact_saved_requests_reproduce_length_failure_before_review(self):
+    def test_historical_request_is_rejected_after_provider_schema_change(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-story-4369.json').read_text())
         responses={r['key']:r for r in saved['responses']}
         seen=[]
@@ -32,8 +32,8 @@ class ActualStoryReplay(TestCase):
                 return super().generate(key,instruction,*args,**kwargs)
         model=HistoricalGemini(Calls(),lambda:None,None,model='gemini-3.5-flash-lite',free_tier_confirmed=True)
         stage=PreparationStages('/unused',SimpleNamespace(gemini=model),lambda:None)
-        with self.assertRaises(ModelSchemaError):stage.story(saved['context'])
-        self.assertEqual(seen,['next-story','next-story-length-repair:1'])
+        with self.assertRaises(SavedRequestMismatch):stage.story(saved['context'])
+        self.assertEqual(seen,[])
 
     def test_actual_initial_story_also_fails_photo_uniqueness(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-story-4369.json').read_text())
