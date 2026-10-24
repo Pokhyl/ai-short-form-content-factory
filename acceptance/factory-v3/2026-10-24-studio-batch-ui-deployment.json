@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-24",
+  "status": "deployed_and_smoke_passed",
+  "change": "Studio accepts line-separated topics and submits each sequentially through the existing per-job API. Each accepted topic has an independent UUID. Queue and PostgreSQL provider budgets unchanged.",
+  "candidate": {
+    "tag": "factory-v3:studio-batch-c54d517",
+    "image_id": "sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922",
+    "platform": "linux/amd64",
+    "source_revision": "c54d517512a20dd62a9cd4f5d0479785b4dc3383",
+    "container_id": "1d4047fe55faa521c136e998b1d49a94ad63341c84c2beb375d2c46547fe05d4"
+  },
+  "previous": {
+    "container_name": "factory-next-studio-v9-before-batch-20261024",
+    "container_id": "396ea9174b3bbf5eb74074784c87ac5cd2b1ff4ee35d2abf90fee779bcf69f19",
+    "image_id": "sha256:8d31095f063beea7d5c1b9b95c8216c9606257eb4d51db4efed7bbb08509bbf1",
+    "source_revision": "d8525f9ea8d388ea3a0e2de448262ca7802fe12f"
+  },
+  "retained_rollback": {
+    "container_name": "factory-next-studio-v9-before-illustration-20261024",
+    "container_id": "aef060528ebe8b9e3daa1a32960d983c33bee3f6631516b33612d118573661e8",
+    "image_id": "sha256:e8b5598914cc1e89a2ff73f9ac5d1e8da082a6dd404c947838c5adc9bca3a5e1"
+  },
+  "verification": {
+    "factory_next_tests": {
+      "passed": 202,
+      "total": 202,
+      "network": "none",
+      "runtime_source_overlay": false,
+      "readonly_mounts": [
+        "tests",
+        "services",
+        "acceptance"
+      ]
+    },
+    "factory_v3_tests": {
+      "passed": 131,
+      "total": 131,
+      "network": "none",
+      "runtime_source_overlay": false,
+      "readonly_mounts": [
+        "tests",
+        "services",
+        "acceptance"
+      ]
+    },
+    "local_ui_tests": {
+      "passed": 3,
+      "total": 3
+    },
+    "isolated_http": {
+      "health": 200,
+      "batch_form": true,
+      "network": "none",
+      "settings": "read-only",
+      "media_root": "tmpfs"
+    },
+    "internal_health": 200,
+    "public_health": 200,
+    "public_batch_form": true,
+    "runtime_revision": "c54d517512a20dd62a9cd4f5d0479785b4dc3383",
+    "jobs_before": 38,
+    "jobs_after": 38,
+    "active_before": 0,
+    "active_after": 0,
+    "status_counts_before": {
+      "complete": 2,
+      "needs_attention": 36
+    },
+    "status_counts_after": {
+      "complete": 2,
+      "needs_attention": 36
+    },
+    "settings_sha256_before": "1bb5a0503bca2742c92aaeb24b548103e44c758c18c9ebf3532c03125f316203",
+    "settings_sha256_after": "1bb5a0503bca2742c92aaeb24b548103e44c758c18c9ebf3532c03125f316203",
+    "other_containers_count_before": 30,
+    "other_containers_count_after": 30,
+    "other_containers_sha256_before": "b1597b01f86d2f900c4d8a73b2aa5508bd4ad97fbc763f4135f7f6f956b3f7b5",
+    "other_containers_sha256_after": "b1597b01f86d2f900c4d8a73b2aa5508bd4ad97fbc763f4135f7f6f956b3f7b5",
+    "networks": [
+      "n8n_default",
+      "shorts-v2_default"
+    ],
+    "root_read_only": true,
+    "settings_mount_read_only": true,
+    "media_volume": "shorts-v2_media_data"
+  },
+  "effects": {
+    "provider_calls": 0,
+    "search_calls": 0,
+    "tts_calls": 0,
+    "new_production_jobs": 0,
+    "legacy_factory_v3_replaced": false
+  },
+  "project_ready": false,
+  "remaining_release_gates": [
+    "No newly generated MP4 in this change; end-to-end multi-topic production acceptance remains open.",
+    "Configured Google TTS gateway does not expose remaining free character allowance; no TTS was issued."
+  ]
+}
