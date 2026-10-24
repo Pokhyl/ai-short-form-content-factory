@@ -216,8 +216,13 @@ class NaturalDurationTests(unittest.TestCase):
         self.assertTrue(duration_fits(14000,15))
         self.assertTrue(duration_fits(15000,15))
         self.assertTrue(duration_fits(43656,45))
-        self.assertFalse(duration_fits(12999,15))
-        self.assertFalse(duration_fits(42999,45))
+        # Allow a small MP3 frame/probe variance below the 2-second headroom.
+        self.assertTrue(duration_fits(27936,30))
+        self.assertFalse(duration_fits(27899,30))
+        self.assertTrue(duration_fits(12900,15))
+        self.assertFalse(duration_fits(12899,15))
+        self.assertTrue(duration_fits(42900,45))
+        self.assertFalse(duration_fits(42899,45))
         self.assertFalse(duration_fits(15001,15))
         self.assertGreater(revision_word_target('one two three four',9000,15),4)
         for value in (float('nan'),float('inf'),0,-1):
