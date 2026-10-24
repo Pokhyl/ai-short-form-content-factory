@@ -36,6 +36,8 @@ class Model:
             total=context['target_words']
             if key.endswith(':1') and self.revision.get('over_limit'):
                 per_sentence=15
+            elif key.endswith(':2') and self.revision.get('second_over_limit'):
+                per_sentence=17
             else:
                 per_sentence=total//len(fields)
             output={beat:{} for beat in schema['required']}
@@ -112,6 +114,24 @@ class StoryDurationRegressions(TestCase):
             'next-story','next-story-length-repair:1','next-story-length-repair:2'])
         self.assertEqual(sum(len(row['required']) for row in model.calls[1][2]['properties'].values()),12)
         self.assertEqual(sum(len(row['required']) for row in model.calls[2][2]['properties'].values()),9)
+        self.assertLessEqual(len(result['script'].split()),150)
+        self.assertEqual(model.review_requests[0]['script'],result['script'])
+
+    def test_still_oversized_second_repair_gets_one_final_bounded_repair(self):
+        first=first_story(76)
+        model=Model(first,{'over_limit':True,'second_over_limit':True})
+        stage=PreparationStages('/tmp',SimpleNamespace(gemini=model,
+            review_script=model.review_script),lambda:None)
+        with patch('factory_next.preparation.validated_next_story',side_effect=validated), \
+             patch('factory_next.preparation.validate_native_surface'), \
+             patch('factory_next.preparation.validate_script_review'), \
+             patch('factory_next.preparation.compact_materials',return_value=[]):
+            result=stage.story(context(60,'unrelated topic'))
+        self.assertEqual([key for key,_,_ in model.calls],[
+            'next-story','next-story-length-repair:1',
+            'next-story-length-repair:2','next-story-length-repair:3'])
+        self.assertEqual(sum(len(row['required']) for row in model.calls[2][2]['properties'].values()),9)
+        self.assertEqual(sum(len(row['required']) for row in model.calls[3][2]['properties'].values()),8)
         self.assertLessEqual(len(result['script'].split()),150)
         self.assertEqual(model.review_requests[0]['script'],result['script'])
 

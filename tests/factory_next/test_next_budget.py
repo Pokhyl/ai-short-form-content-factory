@@ -37,7 +37,7 @@ def unconnected_runtime(root):
 
 
 class BudgetRegistrationTests(unittest.TestCase):
-    def test_next_only_adds_nine_to_base_without_changing_other_limits(self):
+    def test_next_only_adds_ten_to_base_without_changing_other_limits(self):
         for seconds in (15,30,45,60):
             with self.subTest(seconds=seconds):
                 original=preparation_budgets(seconds)
@@ -116,16 +116,16 @@ class HeadroomGateTests(unittest.TestCase):
                 self.assertEqual(len(runtime.ledger.calls),1)
 
     def test_story_reserves_all_repairs_and_voice_review_headroom(self):
-        self.assertEqual(MIN_STORY_AND_VOICE_HEADROOM,11)
-        # Exactly 11 is permitted; 10 is not. This check runs before any
+        self.assertEqual(MIN_STORY_AND_VOICE_HEADROOM,12)
+        # Exactly 12 is permitted; 11 is not. This check runs before any
         # draft/model call and does not consume a Gemini quota claim.
-        runtime=FakeRuntime(limit=23,used=12)
+        runtime=FakeRuntime(limit=23,used=11)
         job=str(uuid4())
         gate=NextBudgetGate(runtime)
         gate('story',{'id':job,'request':{},'outputs':{}})
         self.assertEqual(runtime.ledger.calls[0][1],(job,job,job))
         self.assertEqual(len(runtime.ledger.calls),1)
-        runtime=FakeRuntime(limit=23,used=13)
+        runtime=FakeRuntime(limit=23,used=12)
         with self.assertRaisesRegex(ValueError,'before story'):
             NextBudgetGate(runtime)('story',{'id':job,'request':{},'outputs':{}})
         self.assertEqual(len(runtime.ledger.calls),1)
