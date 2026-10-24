@@ -14,6 +14,16 @@ class NarrativeModelProofTests(unittest.TestCase):
         self.calls=object()
         self.original=SimpleNamespace(model='gemini-3.1-flash-lite',calls=self.calls)
         self.producer=SimpleNamespace(operations=SimpleNamespace(gemini=self.original))
+    def test_primary_free_model_can_be_selected_for_narrative_with_shared_budget(self):
+        self.proof['model']='gemini-3.1-flash-lite'
+        selected=narrative_model_for(self.runtime,self.producer)
+        self.assertEqual(selected.model,'gemini-3.1-flash-lite')
+        self.assertIs(selected.calls,self.calls)
+        self.assertTrue(selected.require_fact_coverage)
+        self.assertTrue(selected.fact_owned_story)
+        self.assertEqual(self.original.model,'gemini-3.1-flash-lite')
+        self.assertFalse(hasattr(selected,'default_thinking_level'))
+
     def test_verified_fixed_model_keeps_durable_meter_and_original_model(self):
         selected=narrative_model_for(self.runtime,self.producer)
         self.assertEqual(selected.model,'gemini-3.8-flash')
