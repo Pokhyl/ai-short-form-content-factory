@@ -36,6 +36,18 @@ def provider_schema(schema):
     if set(schema) - allowed - local_only:
         raise ValueError("unsupported provider schema keyword")
     result = {key: value for key, value in schema.items() if key in allowed and key not in local_only}
+    if schema.get("type") == "string":
+        minimum=schema.get("minLength")
+        maximum=schema.get("maxLength")
+        if minimum is not None or maximum is not None:
+            if minimum is not None and maximum is not None:
+                length_hint=f"Return between {minimum} and {maximum} characters, including spaces and punctuation."
+            elif minimum is not None:
+                length_hint=f"Return at least {minimum} characters, including spaces and punctuation."
+            else:
+                length_hint=f"Return no more than {maximum} characters, including spaces and punctuation."
+            result["description"]=" ".join(x for x in
+                (result.get("description","").strip(),length_hint) if x)
     if schema.get("type") == "array":
         minimum, maximum = schema.get("minItems"), schema.get("maxItems")
         if minimum is not None and maximum is not None:

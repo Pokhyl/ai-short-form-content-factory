@@ -530,10 +530,18 @@ class PreparationStages:
                          attempt=context.get('_voice_correction_round',2))
         mean=window['target_characters']/len(scenes)
         targets={'short':round(mean*.70),'medium':round(mean),'long':round(mean*1.25)}
+        bands={name:{'min_characters':max(5,round(target*.88)),
+                     'max_characters':min(2000,round(target*1.12))}
+               for name,target in targets.items()}
         schema=variant_contract(scenes,targets)
+        band_instruction='; '.join(
+            f"{name}: {bands[name]['min_characters']}-{bands[name]['max_characters']} characters"
+            for name in ('short','medium','long'))
         prompt=(
             f"Rewrite each reviewed beat in fluent {LANGUAGES[request['language']]} in THREE "
             "different complete versions: short, medium, long. For each version first write "
+            f"HARD narration character bands PER BEAT: {band_instruction}. Count spaces and punctuation; "
+            "every narration MUST fall inside its version's band. fact_comparison text does not count. "
             "fact_comparison: identify exactly which source proposition is retained, including "
             "its time, colors and causal direction. Then write the narration preserving it. "
             "Each version must retain "
@@ -557,6 +565,7 @@ class PreparationStages:
                   'assigned_facts':[{'id':fact['id'],'text':fact['text']} for fact in evidence['facts']
                                     if fact['id'] in scene['evidence_ids']]} for scene in scenes],
               'per_beat_character_targets':targets,
+              'per_beat_character_bands':bands,
               'total_length_window':window,'measured_voice_ms':measured_ms}
         reply,_=model.generate('next-measured-variants',prompt,data,schema)
         try:
