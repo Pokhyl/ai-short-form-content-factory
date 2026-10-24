@@ -38,6 +38,7 @@ def diagram_asset():
 def response():
     return {
         "accepted": True, "is_real_material": True, "medium": "illustration",
+        "illustration_type": "scientific_diagram",
         "topic_relation": {
             "kind": "direct_subject", "visible_subject": "DNA double helix",
             "connection": "The labeled diagram identifies two DNA strands and paired bases",
@@ -73,6 +74,27 @@ class ScientificIllustrationTests(unittest.TestCase):
         self.assertEqual(material["supported_fact_ids"], ["f1"])
         self.assertIn("not a photomicrograph", material["visible_description"])
         self.assertTrue(is_scientific_illustration(asset, receipt))
+
+    def test_topical_landscape_painting_is_not_a_scientific_illustration(self):
+        operations = self.setup_operations()
+        operations.allow_source_illustrations = True
+        asset = diagram_asset()
+        asset['description'] = 'File:River through an Autumn Forest-William Mason Brown.jpg'
+        model_response = {
+            **response(),
+            'illustration_type': 'artwork',
+            'visible_description': 'A painting showing a river through an autumn forest.',
+            'topic_relation': {
+                'kind': 'direct_subject',
+                'visible_subject': 'Autumn forest landscape',
+                'connection': 'The painting depicts autumn foliage.',
+            },
+        }
+        receipt = self.record(operations, asset=asset, model_response=model_response)
+        self.assertEqual(receipt['inspection_protocol'], 'topic-specific-v1')
+        self.assertFalse(receipt['accepted'])
+        self.assertIsNone(inspected_material(
+            asset, receipt, evidence(), validate_evidence(evidence()), 'gemini_scientific'))
 
     def test_legacy_photo_only_rejects_same_diagram(self):
         operations = self.setup_operations()
