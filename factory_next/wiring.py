@@ -56,13 +56,13 @@ class NextBudgetGate:
 def narrative_model_for(runtime, producer):
     """An opt-in private proof binds the additional fixed free-tier model."""
     from copy import copy
-    from factory_v3.credential_http import NARRATIVE_MODELS, NARRATIVE_LITE_MODEL
+    from factory_v3.credential_http import NARRATIVE_PROOF_MODELS, NARRATIVE_LITE_MODEL
     settings=getattr(runtime,'settings',{})
     proof=settings.get('factory_next_narrative_proof')
     if proof is None:
         return None
     primary=settings.get('free_tier_proof',{})
-    if (not isinstance(proof,dict) or proof.get('model') not in NARRATIVE_MODELS or
+    if (not isinstance(proof,dict) or proof.get('model') not in NARRATIVE_PROOF_MODELS or
             proof.get('billing_enabled') is not False or
             proof.get('standard_free_tier') is not True or
             not isinstance(proof.get('verification_id'),str) or not proof['verification_id'] or
