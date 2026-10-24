@@ -1,3 +1,13 @@
+# Current checkpoint — 2026-10-24
+
+- GitHub branch `fix/provider-deferral-sequence-20261020`; latest checkpoint commit `8de95a8305ba061d2b6cd0a4432153cea443de7c`. Exact live source revision: `c54d517512a20dd62a9cd4f5d0479785b4dc3383`; image `factory-v3:studio-batch-c54d517`, `sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922`.
+- Public Studio: https://studio.hodor.com.pl/factory-next/ . It accepts one or more line-separated topics and submits each sequentially as a separate job through the existing API; queue controls and per-job PostgreSQL budgets are unchanged.
+- Exact image checks: Factory Next 202/202 and Factory v3 131/131, network disabled, test/service/acceptance mounts read-only, no runtime source overlay. Three UI regressions pass. Isolated, internal, and public health all returned 200; the public page serves the batch form.
+- Deployment preserved all 38 jobs (2 complete, 36 needs_attention; active 0), settings SHA, media volume, both networks, read-only settings/rootfs, and all 30 other container identities. Previous Studio and prior rollback containers are retained. Receipts: `acceptance/factory-v3/2026-10-24-studio-batch-ui-image-validation.json` and `acceptance/factory-v3/2026-10-24-studio-batch-ui-deployment.json`.
+- No provider/search/TTS request or new production job was made. No new MP4 exists. Remaining TTS free-character balance is not observable through the configured gateway; keep `project_ready=false`. Do not claim the product is finished or reuse terminal job IDs.
+
+---
+
 ## Duration-scoped research correction — 2026-10-22
 Diagnostic51583821 is terminal DIAGNOSTIC_FAILED:4Gemini/4downloads/0search/0TTS. Material matching succeeded with extra approved photos; initial keyed narration preserved full facts, but its length correction removed required details from all3facts. Independent coverage review correctly rejected. Never repeat this ID or deploy674 based on its tests. Actual safe replies retained in tests/factory_next/fixtures/actual-owned-coverage-5158.json.
 
