@@ -1,0 +1,29 @@
+{
+  "diagnostic_id": "f1b7a3c2-9d64-4e21-8c5a-6f03d2b8a417",
+  "created_at": "2026-10-24",
+  "purpose": "Bounded research generation and independent review diagnostic for the already configured Google free-tier model gemini-3.1-flash-lite after current narrative routes returned HTTP 503.",
+  "repository": "Pokhyl/ai-short-form-content-factory",
+  "source_branch": "fix/provider-deferral-sequence-20261020",
+  "source_revision": "3a5310c69d43de3799bc7b4ea9f3fac838ce1c87",
+  "candidate_model": "gemini-3.1-flash-lite",
+  "credential_scope": "Reuse the existing server-owned Gemini credential and exact same project/key binding as free_tier_proof; never export or print credentials.",
+  "source_job": "52a0d4af-f032-4650-bbb1-d52251ae52d4",
+  "input_scope": "Reuse only the saved source corpus and immutable request from this terminal job; make a new diagnostic preparation ID.",
+  "limits": {
+    "max_gemini_calls": 4,
+    "max_search_calls": 0,
+    "max_photo_downloads": 0,
+    "max_tts_calls": 0,
+    "max_production_jobs": 0,
+    "automatic_retries": 0,
+    "paid_fallbacks": 0
+  },
+  "stop_conditions": [
+    "First non-200 or ambiguous provider result.",
+    "Budget reservation mismatch.",
+    "Source corpus missing or hash-invalid.",
+    "Any write outside the new diagnostic preparation and its evidence receipt."
+  ],
+  "acceptance": "Both generated research and independent source review complete on gemini-3.1-flash-lite, source/fact/quote binding passes, and exact call count plus free-tier ledger receipt are retained. This is not MP4 acceptance.",
+  "result_path": "acceptance/factory-next/gemini31-research-diagnostic-result-20261024.json"
+}
