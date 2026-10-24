@@ -1,0 +1,26 @@
+{
+  "diagnostic_id": "7e65ba10-d0f7-4d53-b0bd-25a9e15f3dd1",
+  "source_revision": "3a5310c69d43de3799bc7b4ea9f3fac838ce1c87",
+  "production_image": "factory-v3:studio-variant-length-3a5310c",
+  "model": "gemini-3.1-flash-lite",
+  "model_route": "existing primary free-tier Gemini route",
+  "source_job": "52a0d4af-f032-4650-bbb1-d52251ae52d4",
+  "input_scope": "Reuse immutable request and saved source corpus only; create new preparation ID and use the existing provider budget ledger.",
+  "purpose": "Measure current generation and independent review behavior of the primary free-tier Gemini 3.1 model after 3.5/3.8 returned HTTP 503.",
+  "limits": {
+    "max_gemini_calls": 4,
+    "max_search_calls": 0,
+    "max_photo_downloads": 0,
+    "max_tts_calls": 0,
+    "max_production_jobs": 0,
+    "automatic_retries": 0,
+    "paid_fallbacks": 0
+  },
+  "stop_conditions": [
+    "Stop on first non-200 or ambiguous HTTP response.",
+    "No new search, photo download, TTS or production job.",
+    "Do not alter settings or reuse any prior diagnostic/job ID."
+  ],
+  "acceptance": "Research generation and independent review both complete using gemini-3.1-flash-lite; evidence/fact binding and ledger receipt are saved. Diagnostic acceptance does not equal MP4 acceptance.",
+  "result_path": "acceptance/factory-next/gemini31-primary-route-result-7e65ba10-d0f7-4d53-b0bd-25a9e15f3dd1.json"
+}
