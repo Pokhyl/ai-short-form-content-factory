@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "planned_not_started",
+  "status": "story_stage_passed_review_but_visual_classification_blocked_voice",
   "image": {
     "tag": "factory-v3:factory-next-107367f",
     "image_id": "sha256:9b41179034e2ee70e262ea415d20ec106fceedb257d39ee923ebf0a8d79ec6d7",
@@ -34,6 +34,41 @@
   "stop_conditions": [
     "Stop if any additional search, download, metadata, source fetch, TTS, or render call occurs.",
     "Stop if cumulative Gemini calls exceed nine or any call is failed/unknown.",
-    "Do not retry, restart, or create another job if the stage is failed, deferred, unknown, or needs_attention."
-  ]
+    "Do not retry, restart, or create another job if the stage is failed, deferred, unknown, or needs_attention.",
+    "Stop before voice until the illustration classification regression is fixed, packaged, and reviewed."
+  ],
+  "actual_result": {
+    "job_id": "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
+    "checkpoint": {
+      "status": "ready",
+      "next_stage": "voice"
+    },
+    "ledger": {
+      "gemini": 8,
+      "metadata": 1,
+      "research_search": 1,
+      "source_fetch": 3,
+      "search_pixabay": 3,
+      "search_pexels": 3,
+      "search_wikimedia": 3,
+      "downloads": 8,
+      "all_calls_succeeded": true
+    },
+    "story_review": {
+      "language": "ru",
+      "native_language_quality": true,
+      "topic_covered": true,
+      "all_three_required_facts_covered": true
+    },
+    "visual_issue": {
+      "scene_id": "beat-1",
+      "asset_id": "wikimedia:22161410",
+      "asset_attribution": "William Mason Brown / Wikimedia Commons / Public domain",
+      "asset_description": "A landscape painting of an autumn forest",
+      "incorrect_classification": "scientific_illustration; direct_fact_visual",
+      "finding": "A topical painting is not a scientific diagram or structural scientific illustration. It cannot be labeled as direct visual evidence for reduced chlorophyll production."
+    },
+    "voice_tts_started": false
+  },
+  "continuation": "No voice, TTS, alignment, render, audit, deployment, or production switch was performed for this job."
 }
