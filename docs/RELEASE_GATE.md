@@ -1,10 +1,10 @@
 ## Sequential multi-topic Studio intake — 2026-10-24
 
-Candidate `factory-v3:studio-batch-c54d517` (`sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922`, source `c54d517512a20dd62a9cd4f5d0479785b4dc3383`) adds line-separated topic submission. Each line is sent sequentially to the existing API and receives its own job ID; current bounded queue and per-job PostgreSQL budgets remain unchanged. UI validates 300 characters per topic and preserves IDs on partial queue rejection.
+Studio now accepts line-separated topics and submits them sequentially through the existing API; each accepted topic gets an independent job ID. The existing queue and PostgreSQL provider budgets are unchanged. Candidate image `factory-v3:studio-batch-c54d517` (`sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922`, source `c54d517512a20dd62a9cd4f5d0479785b4dc3383`) is deployed to Studio only.
 
-Exact-image network-disabled tests: Factory Next 202/202, Factory v3 131/131; tests/services/acceptance mounts read-only and no runtime source overlay. Isolated Studio HTTP smoke returned health 200 and served the batch form using read-only settings and tmpfs media. No provider, search, TTS or production job calls. Receipt: `acceptance/factory-v3/2026-10-24-studio-batch-ui-image-validation.json`.
+Exact-image network-disabled suites passed: Factory Next 202/202 and Factory v3 131/131; all test/service/acceptance mounts read-only, with no runtime source overlay. Isolated, internal and public health checks returned 200; the public form serves batch input. Before/after: 38 jobs, zero active, statuses 2 complete + 36 needs_attention; settings SHA unchanged; all 30 other container identities unchanged. The previous Studio container and prior rollback container are retained. No provider, search, TTS or new job calls occurred. Receipts: `acceptance/factory-v3/2026-10-24-studio-batch-ui-image-validation.json` and `acceptance/factory-v3/2026-10-24-studio-batch-ui-deployment.json`.
 
-Candidate is built and validated but not yet deployed. Live Studio remains `d8525f9` image `sha256:8d31095f063beea7d5c1b9b95c8216c9606257eb4d51db4efed7bbb08509bbf1`. This UI change does not establish a new production MP4 or full factory acceptance; `project_ready=false`. TTS free quota remains unobservable, so no voice/render request was made.
+This deploys batch intake only. There is still no new MP4 from this change, and Google TTS free-character balance remains unobservable; `project_ready=false` until an actual audited video and multi-topic production acceptance are recorded.
 
 ## Scientific-illustration classification and exact package — 2026-10-24
 
