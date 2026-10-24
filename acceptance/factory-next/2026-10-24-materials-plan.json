@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "planned_not_started",
+  "status": "materials_succeeded",
   "supersedes": "acceptance/factory-next/2026-10-24-fresh-research-plan.json",
   "reason": "The completed research stage used four successful Gemini calls (brief, review, repair, review), so the original max-one plan was stopped and recorded. This plan uses observed ledger state and the immutable per-job budgets.",
   "image": {
@@ -40,5 +40,34 @@
     "Stop immediately if a provider call exceeds the per-kind ledger limits.",
     "Stop before story if total Gemini calls exceed 14 or the story gate reports insufficient headroom.",
     "Do not run voice/TTS, rendering, or audit under this plan."
-  ]
+  ],
+  "actual_result": {
+    "job_id": "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
+    "checkpoint": {
+      "status": "ready",
+      "next_stage": "story"
+    },
+    "ledger_cumulative": {
+      "gemini": 6,
+      "metadata": 1,
+      "research_search": 1,
+      "source_fetch": 3,
+      "search_pixabay": 3,
+      "search_pexels": 3,
+      "search_wikimedia": 3,
+      "downloads": 8,
+      "all_calls_succeeded": true
+    },
+    "visual_assets": {
+      "assets": 5,
+      "photos": 5,
+      "facts_covered": [
+        "f1",
+        "f2",
+        "f3"
+      ]
+    },
+    "disk_free_mb": 237
+  },
+  "continuation": "Materials plan completed; no story stage executed under this plan."
 }
