@@ -21,6 +21,5 @@ with tempfile.TemporaryDirectory(prefix="factory-v3-build-") as tmp:
     if result.returncode:raise RuntimeError("image build failed; inspect actual effects")
 identifier=subprocess.check_output(["docker","image","inspect","-f","{{.Id}}",args.tag],text=True).strip()
 manifest={"tag":args.tag,"image_id":identifier,"platform":args.platform,"source_commit":head,"deployed":False}
-(root/"acceptance/factory-v3/image-current.json").write_text(json.dumps(manifest,indent=2)+"
-")
+(root/"acceptance/factory-v3/image-current.json").write_text(json.dumps(manifest,indent=2)+"\n")
 print(json.dumps(manifest))
