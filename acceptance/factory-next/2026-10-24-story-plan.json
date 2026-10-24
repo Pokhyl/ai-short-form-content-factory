@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-24",
+  "status": "planned_not_started",
+  "image": {
+    "tag": "factory-v3:factory-next-107367f",
+    "image_id": "sha256:9b41179034e2ee70e262ea415d20ec106fceedb257d39ee923ebf0a8d79ec6d7",
+    "source_revision": "107367f60ff3d267e7f714687f8d485bfa15b210"
+  },
+  "existing_job": {
+    "id": "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
+    "status": "ready",
+    "next_stage": "story",
+    "gemini_used": 6,
+    "gemini_total_budget": 23
+  },
+  "action": "Advance exactly one checkpoint stage with operator continue --steps 1.",
+  "expected_limits": {
+    "additional_gemini_max": 3,
+    "total_gemini_max": 9,
+    "search": 0,
+    "download": 0,
+    "metadata": 0,
+    "source_fetch": 0,
+    "tts": 0,
+    "render": 0,
+    "stages": 1
+  },
+  "basis": "Story stage can generate a draft, perform at most one bounded length repair, then run an independent script review. The built-in story preflight requires at least nine unused Gemini calls for story plus voice headroom.",
+  "constraints": [
+    "Use only the existing gateway-managed free-tier configuration; no paid fallback.",
+    "Stop after story and inspect exact narration, fact-to-scene mapping, reviewer result, and ledger.",
+    "Do not proceed to voice/TTS without a separate plan after verifying external and internal free usage limits."
+  ],
+  "stop_conditions": [
+    "Stop if any additional search, download, metadata, source fetch, TTS, or render call occurs.",
+    "Stop if cumulative Gemini calls exceed nine or any call is failed/unknown.",
+    "Do not retry, restart, or create another job if the stage is failed, deferred, unknown, or needs_attention."
+  ]
+}
