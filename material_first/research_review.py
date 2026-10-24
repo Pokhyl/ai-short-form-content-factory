@@ -94,11 +94,11 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
     # An initially malformed draft may consume one repair before it is ready
     # for semantic review. Keep one additional correction available when that
     # reviewed revision still contains a specifically rejected claim.
-    # The normal two repair slots stay unchanged. Factory Next may spend ONE
-    # third, separately metered repair only if an earlier slot had to fix a
-    # photo citation and the final independent fact review rejects claims.
+    # Keep the normal two repair slots, with one separately metered extra
+    # correction for a narrowly identified duration-budget overflow. This lets
+    # the model select a smaller essential scope without weakening source checks.
     photo_repairs_used=0
-    for attempt in range(4 if not check_photos else 3):
+    for attempt in range(4):
         semantic_reviewed = False
         query_only_repair = False
         photo_only_repair = False
@@ -165,10 +165,13 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                     failures.append('fact scope does not answer topic: '+editorial['reason'])
             if not failures:return normalized
             semantic_reviewed = True
+        budget_scope_only=(len(failures)==1 and failures[0].startswith(
+            'required fact scope exceeds narration budget:'))
         eligible_extra_fact_repair=(
-            not check_photos and attempt==2 and photo_repairs_used>0
-            and semantic_reviewed and bool(failures)
-            and all(failure.startswith('fact ') for failure in failures))
+            (not check_photos and attempt==2 and photo_repairs_used>0
+             and semantic_reviewed and bool(failures)
+             and all(failure.startswith('fact ') for failure in failures))
+            or (attempt==2 and budget_scope_only))
         if attempt == 3 or (attempt == 2 and not eligible_extra_fact_repair):
             revision_count=attempt
             raise ValueError(f'research preflight failed after {revision_count} revisions: '+'; '.join(failures))
@@ -195,6 +198,10 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
             + ('Keep already supported facts unchanged unless their own review decision rejects them or the required fact scope exceeds the narration budget. ' if fact_budget(request) else
                'Keep already supported facts unchanged unless their own review decision rejects them. ') +
             'Return three essential concise atomic facts that answer the topic, with exact supporting span IDs; optional details may be omitted. '
+            + ('The required fact scope exceeds the duration word budget. Select a smaller set of three concise essential claims, '
+               'preserve each claim\'s meaning and source qualifiers, and omit optional explanations, examples and lists. Recheck the '
+               'whitespace-separated word count against the exact maximum in the instruction before returning. '
+               if budget_scope_only else '') +
             'Correct unsupported claims; these provisional facts have not yet been frozen or used for narration. '
             'Choose observable real-photo subjects or named associated objects explicitly documented in the sources. '
             'Never use a broad category such as space or equipment unrelated to the requested topic as a search hint. '
