@@ -1,30 +1,29 @@
 {
   "date": "2026-10-24",
   "image": {
-    "tag": "factory-v3:factory-next-107367f",
-    "image_id": "sha256:9b41179034e2ee70e262ea415d20ec106fceedb257d39ee923ebf0a8d79ec6d7",
+    "tag": "factory-v3:factory-next-d8525f9",
+    "image_id": "sha256:8d31095f063beea7d5c1b9b95c8216c9606257eb4d51db4efed7bbb08509bbf1",
     "platform": "linux/amd64",
-    "source_revision": "107367f60ff3d267e7f714687f8d485bfa15b210",
+    "source_revision": "d8525f9ea8d388ea3a0e2de448262ca7802fe12f",
     "deployed": false
   },
   "build": {
-    "job_id": "job_446300840b70",
     "status": "succeeded",
     "exit_code": 0
   },
   "suites": {
     "factory_next": {
-      "job_id": "job_11f790566c53",
+      "job_id": "job_e6b90f795a5e",
       "status": "passed",
-      "tests": 198,
-      "seconds": 111.789,
+      "tests": 199,
+      "seconds": 112.217,
       "network": "none",
       "mounts": "tests/services/acceptance read-only"
     },
     "factory_v3": {
       "status": "passed",
       "tests": 131,
-      "seconds": 0.664,
+      "seconds": 0.62,
       "network": "none",
       "mounts": "tests/services/acceptance read-only"
     }
@@ -40,10 +39,17 @@
       "status": "timeout",
       "duration_seconds": 118.05,
       "reason": "default background command ceiling; container removed, no network"
+    },
+    {
+      "status": "failed",
+      "returncode": 2,
+      "reason": "factory_v3 test command reached application entrypoint; test discovery did not run"
     }
   ],
   "notes": [
     "PNG decoder warnings appeared in fixture tests; both suites exited 0.",
-    "The timeout attempt was rerun once with a 3600-second limit after checking that the container was removed and no provider/DB access occurred."
+    "Factory Next output also contains expected argparse usage text from a negative CLI test; suite exited 0.",
+    "The timeout attempt was rerun once with a 3600-second limit after checking that the container was removed and no provider/DB access occurred.",
+    "Exact packaged image was tested without runtime source overlay; only tests, services and acceptance directories were mounted read-only."
   ]
 }
