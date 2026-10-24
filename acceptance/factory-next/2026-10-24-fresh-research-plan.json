@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-24",
+  "purpose": "Fresh 15-second Russian research-stage acceptance for duration-scoped required facts on the exact candidate image.",
+  "image": {
+    "tag": "factory-v3:factory-next-107367f",
+    "image_id": "sha256:9b41179034e2ee70e262ea415d20ec106fceedb257d39ee923ebf0a8d79ec6d7",
+    "source_revision": "107367f60ff3d267e7f714687f8d485bfa15b210"
+  },
+  "request": {
+    "topic": "Почему листья осенью меняют цвет?",
+    "language": "ru",
+    "seconds": 15
+  },
+  "provider": "Existing gateway-managed Gemini, guarded by the runtime's billing-enabled=false check; no paid fallback.",
+  "limits": {
+    "gemini_generation_max": 1,
+    "billing_metadata_max": 1,
+    "research_search_max": 1,
+    "source_fetch_max": 6,
+    "image_search": 0,
+    "image_download": 0,
+    "tts": 0,
+    "render": 0,
+    "stages": 1
+  },
+  "stop_conditions": [
+    "Stop after the first checkpointed research stage regardless of result.",
+    "Do not retry, restart, or create a second job if the result is failed, deferred, unknown, or needs_attention.",
+    "Do not continue to materials/story/voice until the research output and ledger counts are reviewed against this plan.",
+    "Stop if billing is enabled, the free-tier proof is missing, or actual call counts exceed the limits."
+  ],
+  "authorization": "User authorized continuing the project; this plan limits the actual provider request to the free-tier guarded research stage.",
+  "status": "planned_not_started"
+}
