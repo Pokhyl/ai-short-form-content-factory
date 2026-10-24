@@ -39,6 +39,8 @@ def is_scientific_illustration(asset, receipt):
             and isinstance(receipt, dict)
             and receipt.get('inspection_protocol') == 'source-illustration-v1'
             and receipt.get('medium') == 'illustration'
+            and receipt.get('illustration_type') in
+                ('scientific_diagram', 'structural_illustration')
             and receipt.get('accepted') is True
             and receipt.get('is_real_material') is True
             and receipt.get('subject_fully_visible') is True
