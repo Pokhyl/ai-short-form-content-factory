@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-24",
+  "image": {
+    "tag": "factory-v3:factory-next-107367f",
+    "image_id": "sha256:9b41179034e2ee70e262ea415d20ec106fceedb257d39ee923ebf0a8d79ec6d7",
+    "platform": "linux/amd64",
+    "source_revision": "107367f60ff3d267e7f714687f8d485bfa15b210",
+    "deployed": false
+  },
+  "build": {
+    "job_id": "job_446300840b70",
+    "status": "succeeded",
+    "exit_code": 0
+  },
+  "suites": {
+    "factory_next": {
+      "job_id": "job_11f790566c53",
+      "status": "passed",
+      "tests": 198,
+      "seconds": 111.789,
+      "network": "none",
+      "mounts": "tests/services/acceptance read-only"
+    },
+    "factory_v3": {
+      "status": "passed",
+      "tests": 131,
+      "seconds": 0.664,
+      "network": "none",
+      "mounts": "tests/services/acceptance read-only"
+    }
+  },
+  "nonpassing_attempts": [
+    {
+      "job_id": "job_c7600f5aca0d",
+      "status": "failed",
+      "reason": "unittest discovery used an importable top-level directory; no tests ran"
+    },
+    {
+      "job_id": "job_c23c5992e76b",
+      "status": "timeout",
+      "duration_seconds": 118.05,
+      "reason": "default background command ceiling; container removed, no network"
+    }
+  ],
+  "notes": [
+    "PNG decoder warnings appeared in fixture tests; both suites exited 0.",
+    "The timeout attempt was rerun once with a 3600-second limit after checking that the container was removed and no provider/DB access occurred."
+  ]
+}
