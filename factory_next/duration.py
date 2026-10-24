@@ -11,7 +11,7 @@ def duration_fits(measured_ms, seconds):
         raise ValueError('unsupported requested duration')
     if type(measured_ms) not in (int, float) or not math.isfinite(measured_ms) or measured_ms <= 0:
         raise ValueError('positive finite measured duration required')
-    return seconds * 1000 - 2000 <= measured_ms <= seconds * 1000
+    return seconds * 1000 - 2100 <= measured_ms <= seconds * 1000
 
 
 def revision_word_target(script, measured_ms, seconds):
