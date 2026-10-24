@@ -1,3 +1,9 @@
+## Current continuation — 2026-10-24
+
+Live Studio batch intake is deployed on `c54d517512a20dd62a9cd4f5d0479785b4dc3383`. Owner clarified the monthly provider allowance; do not revisit TTS provider choice or make voice balance a blocker. The live internal ledger is below configured caps.
+
+Fresh normal job `52a0d4af-f032-4650-bbb1-d52251ae52d4` is immutable `needs_attention` at voice; research/materials/story passed, one 388-character WaveNet call was recorded, no MP4. Do not replay it. Active production gateway TTS/workflow timeout is 300s versus the prior 60s app timeout; matching n8n execution stayed running 291s, then its DB row disappeared. Exact upstream HTTP status is unavailable. Local candidate raises client timeout to 330s and stores an allowlisted HTTP failure receipt. 203/203 Next and 131/131 Factory v3 local tests pass. Exact image build/deploy and fresh normal acceptance are pending; `project_ready=false`.
+
 # Current checkpoint — 2026-10-24
 
 - GitHub branch `fix/provider-deferral-sequence-20261020`; latest checkpoint commit `8de95a8305ba061d2b6cd0a4432153cea443de7c`. Exact live source revision: `c54d517512a20dd62a9cd4f5d0479785b4dc3383`; image `factory-v3:studio-batch-c54d517`, `sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922`.
