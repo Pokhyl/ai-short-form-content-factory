@@ -1,3 +1,13 @@
+## Current release state — 2026-10-24
+
+Google voice and the owner's monthly allocation are settled. Do not reopen provider selection or require a balance check for release. This note supersedes historical free-character warnings below.
+
+Studio runs source revision `3a5310c69d43de3799bc7b4ea9f3fac838ce1c87` in image `factory-v3:studio-variant-length-3a5310c` (`sha256:61af675579ef9ee2949f6aed4d6437a35c1a2d1fcdf6e02bf60e77317b7764f0`). The duration-band correction now reaches Gemini in its provider schema. The public health endpoint returns 200.
+
+The exact image passes the network-disabled packaged suites: Factory Next 203/203 and Factory v3 131/131. Test, service and acceptance mounts were read-only; the runtime source was not overlaid.
+
+Fresh normal production jobs on this image stopped at Gemini `503 UNAVAILABLE` during research/material review. Latest job `7ff430fd-98f6-4817-bfc1-10865e285163` is terminal at research. Voice, render, MP4 and audit were not reached. No new audited production video exists, so `project_ready=false`. The blocker is Gemini service availability, not the Google voice allocation.
+
 ## Google TTS timeout diagnosis — 2026-10-24
 
 Owner clarified that the monthly provider allowance is already established; do not reopen voice-provider selection or make TTS balance a release blocker. Production `factory.provider_budget_status` after the bounded run showed WaveNet 1,691/3,600,000 internal characters (3,598,309 remaining) and Chirp3 HD 65,113/900,000 (834,887 remaining). These are this product's ledger totals and internal caps.
@@ -14,7 +24,7 @@ Studio now accepts line-separated topics and submits them sequentially through t
 
 Exact-image network-disabled suites passed: Factory Next 202/202 and Factory v3 131/131; all test/service/acceptance mounts read-only, with no runtime source overlay. Isolated, internal and public health checks returned 200; the public form serves batch input. Before/after: 38 jobs, zero active, statuses 2 complete + 36 needs_attention; settings SHA unchanged; all 30 other container identities unchanged. The previous Studio container and prior rollback container are retained. No provider, search, TTS or new job calls occurred. Receipts: `acceptance/factory-v3/2026-10-24-studio-batch-ui-image-validation.json` and `acceptance/factory-v3/2026-10-24-studio-batch-ui-deployment.json`.
 
-This deploys batch intake only. There is still no new MP4 from this change, and Google TTS free-character balance remains unobservable; `project_ready=false` until an actual audited video and multi-topic production acceptance are recorded.
+This deploys batch intake only. There was no new MP4 from this change. The owner's later confirmation of the Google voice allocation supersedes the free-character visibility note; `project_ready=false` until an actual audited video and multi-topic production acceptance are recorded.
 
 ## Scientific-illustration classification and exact package — 2026-10-24
 
@@ -22,7 +32,7 @@ The exact candidate image `factory-v3:factory-next-d8525f9` (`sha256:8d31095f063
 
 One bounded run on the prior `107367f` image reached story review: all three required facts were covered and Russian language review passed, but a public-domain autumn landscape painting was classified as a scientific illustration and direct fact visual. Voice was stopped before TTS. The classification gate now distinguishes scientific diagrams/structural illustrations from artwork and requires that type in the inspection schema. The exact candidate was also run offline against the saved production state: asset `wikimedia:22161410` is rejected because the prior inspection has no `illustration_type`. Receipt: `acceptance/factory-next/2026-10-24-saved-actual-illustration-replay.json`. The saved old job remains at voice and was not continued on a different source revision.
 
-No TTS, alignment, render, audit, deployment, or Studio switch occurred. Google Cloud bills TTS by monthly characters and charges if free character limits are exceeded ([pricing](https://cloud.google.com/text-to-speech/pricing)). Its documented API usage metrics expose request counts, not billable character totals ([monitoring](https://docs.cloud.google.com/apis/docs/monitoring)). The configured gateway also has no character meter, so remaining free allowance cannot be established safely. Require a bounded free-only release plan and a visible character-usage check before any TTS. There is no new MP4; `project_ready=false`.
+No TTS, alignment, render, audit, deployment, or Studio switch occurred for that earlier candidate. The owner later confirmed the monthly Google voice allocation; the prior free-character visibility warning is superseded and is not a release gate. That image produced no new MP4; `project_ready=false`.
 
 Receipts: `acceptance/factory-v3/2026-10-24-exact-image-validation.json`, `acceptance/factory-v3/2026-10-24-boundary-inventory.json`, and `acceptance/factory-next/2026-10-24-story-plan.json`.
 
