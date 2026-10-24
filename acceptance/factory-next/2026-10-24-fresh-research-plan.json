@@ -30,5 +30,34 @@
     "Stop if billing is enabled, the free-tier proof is missing, or actual call counts exceed the limits."
   ],
   "authorization": "User authorized continuing the project; this plan limits the actual provider request to the free-tier guarded research stage.",
-  "status": "planned_not_started"
+  "status": "research_succeeded_but_original_plan_limit_exceeded",
+  "actual_result": {
+    "job_id": "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
+    "revision": "107367f60ff3d267e7f714687f8d485bfa15b210",
+    "checkpoint": {
+      "status": "ready",
+      "next_stage": "materials"
+    },
+    "required_fact_words": {
+      "total": 19,
+      "limit_total": 27,
+      "max_single": 9,
+      "limit_single": 13
+    },
+    "ledger": {
+      "metadata": 1,
+      "research_search": 1,
+      "source_fetch": 3,
+      "gemini": 4,
+      "all_succeeded": true
+    },
+    "gemini_call_keys": [
+      "material-brief",
+      "material-brief-review:1",
+      "material-brief-repair:review:1",
+      "material-brief-review:2"
+    ]
+  },
+  "stop_reason": "Actual research required four successful Gemini calls, exceeding the pre-recorded max of one. No later stage was advanced under that plan.",
+  "continuation": "No continuation under this plan; any continuation requires a separately recorded bounded plan."
 }
