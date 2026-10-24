@@ -51,6 +51,6 @@ class FactScopeTests(TestCase):
         self.assertEqual(len(self.calls),4)
 
     def test_repeated_overflow_stops_without_semantic_call(self):
-        with self.assertRaisesRegex(ValueError,'after 2 revisions'):
+        with self.assertRaisesRegex(ValueError,'after 3 revisions'):
             self.run_review(refuse_repair=True)
-        self.assertEqual(self.calls,['material-brief-repair:review:1','material-brief-repair:review:2'])
+        self.assertEqual(self.calls,['material-brief-repair:review:1','material-brief-repair:review:2','material-brief-repair:review:3'])

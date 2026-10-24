@@ -7,7 +7,8 @@ from unittest.mock import patch
 from factory_next.duration import revision_length_window, revision_length_fits, NaturalDurationRejected
 from factory_v3.gemini import ModelSchemaError
 from factory_next.preparation import PreparationStages
-from factory_next.voice_length_repair import sentence_contract, assemble_sentence_repair
+from factory_next.voice_length_repair import (sentence_contract, assemble_sentence_repair,
+    adaptive_overlength_sentence_contract)
 
 
 def beats(words):
@@ -33,8 +34,8 @@ class FakeGemini:
         return {'native_language_quality':True}
 
 
-def sentence_draft(window,scenes,words_per_sentence=None):
-    schema,counts=sentence_contract(scenes,window)
+def sentence_draft(window,scenes,words_per_sentence=None,sentence_count=None):
+    schema,counts=sentence_contract(scenes,window,sentence_count=sentence_count)
     if words_per_sentence is None:
         words_per_sentence=max(5,round(window['target_words']/sum(counts)))
     keys={}
@@ -216,6 +217,40 @@ class LengthProtectionTests(TestCase):
         self.assertEqual(len(text.split()),72)
         self.assertEqual(len(reply['beat_2']['sentence_2']),37)
         self.assertFalse(revision_length_fits(text,window))
+
+    def test_complete_overlength_response_gets_smaller_schema_and_keeps_all_beats(self):
+        scenes=self.context()['outputs']['story']['scenes']
+        window={'target_words':126,'min_words':94,'max_words':150,
+                'target_characters':980,'min_characters':637,
+                'max_characters':1519}
+        first_schema,first_counts=sentence_contract(scenes,window,
+                                                    sentence_count=12)
+        reply=sentence_draft(window,scenes,words_per_sentence=15)
+        self.assertEqual(sum(first_counts),12)
+        second_schema,second_counts=adaptive_overlength_sentence_contract(
+            reply,first_schema,scenes,window)
+        self.assertIsNotNone(second_schema)
+        self.assertEqual(sum(second_counts),9)
+        repaired=sentence_draft(window,scenes,words_per_sentence=14,
+                                 sentence_count=sum(second_counts))
+        result=assemble_sentence_repair(repaired,second_schema,scenes,window)
+        self.assertEqual(sum(len(x['narration'].split()) for x in result['beats']),126)
+        self.assertEqual([x['material_id'] for x in result['beats']],['p0','p1','p2'])
+        self.assertEqual([x['fact_ids'] for x in result['beats']],[['f0'],['f1'],['f2']])
+
+    def test_incomplete_or_already_in_window_reply_never_gets_second_schema(self):
+        scenes=self.context()['outputs']['story']['scenes']
+        window={'target_words':126,'min_words':94,'max_words':150,
+                'target_characters':980,'min_characters':637,
+                'max_characters':1519}
+        schema,_=sentence_contract(scenes,window,sentence_count=12)
+        long_reply=sentence_draft(window,scenes,words_per_sentence=15)
+        short_reply=sentence_draft(window,scenes,words_per_sentence=8)
+        missing=deepcopy(long_reply);del missing['beat_3']
+        self.assertEqual(adaptive_overlength_sentence_contract(
+            short_reply,schema,scenes,window),(None,None))
+        self.assertEqual(adaptive_overlength_sentence_contract(
+            missing,schema,scenes,window),(None,None))
 
     def test_duplicate_sentence_is_not_sent_for_tts(self):
         context=self.context()

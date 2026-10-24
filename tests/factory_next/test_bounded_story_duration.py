@@ -29,12 +29,12 @@ class Model:
         self.calls.append((key,instruction,deepcopy(schema)))
         if key=='next-story':
             return deepcopy(self.initial),{'cached':True}
-        if key=='next-story-length-repair:1':
+        if key.startswith('next-story-length-repair:'):
             assert set(schema['properties'])=={'beat_1','beat_2','beat_3'}
             fields=[(beat,sentence) for beat,row in schema['properties'].items()
                     for sentence in row['required']]
             total=context['target_words']
-            if self.revision.get('over_limit'):
+            if key.endswith(':1') and self.revision.get('over_limit'):
                 per_sentence=15
             else:
                 per_sentence=total//len(fields)
@@ -98,16 +98,22 @@ class StoryDurationRegressions(TestCase):
                 self.assertEqual(model.review_requests[0]['script'],result['script'])
                 check.assert_called_once()
 
-    def test_oversized_repair_fails_before_review(self):
+    def test_oversized_first_repair_gets_one_smaller_repair_then_review(self):
         first=first_story(76)
         model=Model(first,{'over_limit':True})
         stage=PreparationStages('/tmp',SimpleNamespace(gemini=model,
             review_script=model.review_script),lambda:None)
-        with patch('factory_next.preparation.compact_materials',return_value=[]):
-            with self.assertRaisesRegex(ValueError,'outside calibrated voice length window'):
-                stage.story(context(60,'unrelated topic'))
-        self.assertEqual(len(model.calls),2)
-        self.assertEqual(model.review_requests,[])
+        with patch('factory_next.preparation.validated_next_story',side_effect=validated), \
+             patch('factory_next.preparation.validate_native_surface'), \
+             patch('factory_next.preparation.validate_script_review'), \
+             patch('factory_next.preparation.compact_materials',return_value=[]):
+            result=stage.story(context(60,'unrelated topic'))
+        self.assertEqual([key for key,_,_ in model.calls],[
+            'next-story','next-story-length-repair:1','next-story-length-repair:2'])
+        self.assertEqual(sum(len(row['required']) for row in model.calls[1][2]['properties'].values()),12)
+        self.assertEqual(sum(len(row['required']) for row in model.calls[2][2]['properties'].values()),9)
+        self.assertLessEqual(len(result['script'].split()),150)
+        self.assertEqual(model.review_requests[0]['script'],result['script'])
 
     def test_normal_story_does_not_consume_extra_model_call(self):
         normal=first_story(33)

@@ -100,6 +100,46 @@ def adaptive_underlength_sentence_contract(reply, previous_schema, previous_scen
         return previous_schema,None
 
 
+def adaptive_overlength_sentence_contract(reply, previous_schema, previous_scenes, window):
+    """One bounded second sentence schema for a complete but overlong reply.
+
+    Retry only when every original field is present, complete, nonempty and
+    unique. Never use this path to repair missing, malformed or underlength text.
+    """
+    try:
+        if not isinstance(reply,dict) or set(reply)!=set(previous_schema['required']):
+            return None,None
+        sentences=[]
+        for beat,beat_schema in previous_schema['properties'].items():
+            body=reply[beat]
+            if not isinstance(body,dict) or set(body)!=set(beat_schema['required']):
+                return None,None
+            for key in beat_schema['required']:
+                field=beat_schema['properties'][key]
+                sentence=body[key]
+                if (not isinstance(sentence,str)
+                        or len(sentence.strip())<field.get('minLength',1)
+                        or len(sentence.strip())<5
+                        or sentence.strip()[-1:] not in ('.','!','?','…')):
+                    return None,None
+                sentences.append(sentence.strip())
+        if len({s.casefold() for s in sentences})!=len(sentences):
+            return None,None
+        observed_words=len(' '.join(sentences).split())
+        if observed_words<=window['max_words']:
+            return None,None
+        observed_per_sentence=observed_words/len(sentences)
+        proposed=math.ceil(window['target_words']/observed_per_sentence)
+        proposed=max(len(previous_scenes),proposed)
+        if proposed>=len(sentences):
+            return None,None
+        schema,counts=sentence_contract(previous_scenes,window,
+                                         sentence_count=proposed)
+        return schema,counts
+    except (KeyError,TypeError,ValueError,ZeroDivisionError):
+        return None,None
+
+
 def assemble_sentence_repair(result,schema,reviewed_scenes,window):
     validate_json(result,schema)
     beats=[];all_sentences=[]
