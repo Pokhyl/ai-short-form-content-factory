@@ -1,0 +1,16 @@
+{
+  "diagnostic_id": "f1b7a3c2-9d64-4e21-8c5a-6f03d2b8a417",
+  "status": "failed_before_provider",
+  "source_revision": "3a5310c69d43de3799bc7b4ea9f3fac838ce1c87",
+  "model": "gemini-3.1-flash-lite",
+  "gemini_calls": 0,
+  "search_calls": 0,
+  "photo_downloads": 0,
+  "tts_calls": 0,
+  "runtime_record_created": true,
+  "failure": "The runner returned ValueError before provider execution; the exact exception text was not retained.",
+  "diagnosis": "Source inspection shows gemini-3.1-flash-lite was absent from NARRATIVE_MODELS, so narrative_model_for rejected the proof before any provider request. This is the identified code-path explanation; the exception message itself was not captured.",
+  "follow_up": "Code candidate adds the primary free-tier model to the fixed narrative allowlist and a regression test. This diagnostic ID is immutable and will not be reused.",
+  "candidate_commit": "d9b8d317ca0f638b04aff82d50fa484960aa6ebf",
+  "note": "This is neither a provider availability result nor MP4 acceptance."
+}
