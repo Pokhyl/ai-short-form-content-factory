@@ -1,3 +1,13 @@
+## Google TTS timeout diagnosis — 2026-10-24
+
+Owner clarified that the monthly provider allowance is already established; do not reopen voice-provider selection or make TTS balance a release blocker. Production `factory.provider_budget_status` after the bounded run showed WaveNet 1,691/3,600,000 internal characters (3,598,309 remaining) and Chirp3 HD 65,113/900,000 (834,887 remaining). These are this product's ledger totals and internal caps.
+
+One new normal Studio job, `52a0d4af-f032-4650-bbb1-d52251ae52d4`, was accepted HTTP 201 on source `c54d517512a20dd62a9cd4f5d0479785b4dc3383`. Research, materials (7 selected photos) and story completed; Google TTS voice stage stopped with `HTTPFailure` / `EXTERNAL_HTTP_FAILURE`. One 388-character WaveNet attempt was committed in the usage ledger. No audio, render, or MP4 was accepted. This ID is terminal and must not be retried.
+
+The matching gateway execution started at the TTS ledger timestamp. The active production `VIDEO-V3-Credential-Gateway` allows 300 seconds for the Google TTS HTTP node and 300 seconds for the workflow; the app's `GoogleVoice` caller allowed only 60 seconds. Execution `13848` remained marked running 291 seconds after start and was later absent from `execution_entity`; its final status and upstream HTTP code were not retained. The timeout mismatch is a concrete robustness defect and a plausible cause, but the exact upstream failure is unverified.
+
+Candidate fix: wait 330 seconds for Google TTS and persist a restricted diagnostic receipt (HTTP status, machine error status/reason, numeric gateway execution ID only). Full local suites pass: Factory Next 203/203; Factory v3 131/131. Exact-image packaging, protected Studio deployment and one fresh normal acceptance run remain pending. `project_ready=false`.
+
 ## Sequential multi-topic Studio intake — 2026-10-24
 
 Studio now accepts line-separated topics and submits them sequentially through the existing API; each accepted topic gets an independent job ID. The existing queue and PostgreSQL provider budgets are unchanged. Candidate image `factory-v3:studio-batch-c54d517` (`sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922`, source `c54d517512a20dd62a9cd4f5d0479785b4dc3383`) is deployed to Studio only.
