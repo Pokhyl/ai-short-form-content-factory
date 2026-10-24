@@ -1,3 +1,13 @@
+## Scientific-illustration classification and exact package — 2026-10-24
+
+The exact candidate image `factory-v3:factory-next-d8525f9` (`sha256:8d31095f063beea7d5c1b9b95c8216c9606257eb4d51db4efed7bbb08509bbf1`, source `d8525f9ea8d388ea3a0e2de448262ca7802fe12f`) passes the packaged Factory Next suite 199/199 and Factory v3 suite 131/131. Both ran with networking disabled and test/service/acceptance mounts read-only. The candidate is not deployed.
+
+One bounded run on the prior `107367f` image reached story review: all three required facts were covered and Russian language review passed, but a public-domain autumn landscape painting was classified as a scientific illustration and direct fact visual. Voice was stopped before TTS. The classification gate now distinguishes scientific diagrams/structural illustrations from artwork and requires that type in the inspection schema; a regression rejects the observed painting. The saved old job remains at voice and was not continued on a different source revision.
+
+No TTS, alignment, render, audit, deployment, or Studio switch occurred. The configured gateway does not expose external current monthly TTS usage, so free quota cannot be verified before a voice request. Require a bounded free-only release plan and a visible quota check before any TTS. There is no new MP4; `project_ready=false`.
+
+Receipts: `acceptance/factory-v3/2026-10-24-exact-image-validation.json`, `acceptance/factory-v3/2026-10-24-boundary-inventory.json`, and `acceptance/factory-next/2026-10-24-story-plan.json`.
+
 ## Duration-scoped research correction — 2026-10-22
 Diagnostic51583821 is terminal DIAGNOSTIC_FAILED:4Gemini/4downloads/0search/0TTS. Material matching succeeded with extra approved photos; initial keyed narration preserved full facts, but its length correction removed required details from all3facts. Independent coverage review correctly rejected. Never repeat this ID or deploy674 based on its tests. Actual safe replies retained in tests/factory_next/fixtures/actual-owned-coverage-5158.json.
 
