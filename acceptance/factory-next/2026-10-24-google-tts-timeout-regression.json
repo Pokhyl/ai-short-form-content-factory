@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-24",
+  "production_job_id": "52a0d4af-f032-4650-bbb1-d52251ae52d4",
+  "source_revision": "c54d517512a20dd62a9cd4f5d0479785b4dc3383",
+  "studio_submission": {
+    "http_status": 201,
+    "topic": "Как образуется радуга",
+    "language": "ru",
+    "seconds": 30
+  },
+  "terminal_result": {
+    "status": "needs_attention",
+    "completed_stages": ["research", "materials", "story"],
+    "next_stage": "voice",
+    "error_type": "HTTPFailure",
+    "failure_reason": "EXTERNAL_HTTP_FAILURE",
+    "video_sha256": null
+  },
+  "google_tts_usage": {
+    "sku_family": "wavenet",
+    "characters": 388,
+    "state": "committed",
+    "total_committed_after_attempt": 1691,
+    "internal_limit": 3600000,
+    "remaining_internal_amount": 3598309
+  },
+  "timeout_evidence": {
+    "app_caller_seconds_before_fix": 60,
+    "active_gateway_google_tts_node_milliseconds": 300000,
+    "active_gateway_execution_timeout_seconds": 300,
+    "gateway_execution_id": 13848,
+    "gateway_execution_age_observed_seconds": 291,
+    "gateway_execution_final_status": "not retained; row later absent",
+    "upstream_http_status": "not retained"
+  },
+  "candidate_fix": {
+    "app_caller_timeout_seconds": 330,
+    "safe_failure_fields": ["http_status", "error_status", "error_reason", "gateway_execution_id"],
+    "excluded_fields": ["headers", "error_message", "provider_payload", "credentials"]
+  },
+  "local_validation": {
+    "factory_next_tests": "203/203 passed",
+    "factory_v3_tests": "131/131 passed"
+  },
+  "deployment_status": "pending exact-image packaging and protected Studio rollout",
+  "project_ready": false
+}
