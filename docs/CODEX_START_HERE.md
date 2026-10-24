@@ -1,3 +1,9 @@
+## Current continuation — 2026-10-24
+
+The live Studio is `factory-next-studio-v9`, image `factory-v3:studio-batch-c54d517`, source `c54d517512a20dd62a9cd4f5d0479785b4dc3383`. Batch-topic UI is deployed; tests and public health passed. Production Google TTS budget is active and below internal caps; the owner's monthly provider allowance is established, so do not reopen that question.
+
+Normal job `52a0d4af-f032-4650-bbb1-d52251ae52d4` is terminal `needs_attention` at voice after research/materials/story. One 388-character WaveNet call was recorded; do not resume or repeat this ID. Active gateway TTS node/workflow timeout is 300s, while app TTS client timeout was 60s; the gateway execution remained running 291s. Exact provider HTTP status was not retained. Candidate code now sets client timeout to 330s and persists only safe HTTP diagnostic fields. Local tests pass 203 Next + 131 Factory v3. Exact image build/deploy and fresh normal end-to-end acceptance are pending. Read `docs/RELEASE_GATE.md` top checkpoint and `acceptance/factory-next/2026-10-24-google-tts-timeout-regression.json` before production work. `project_ready=false`.
+
 # Current checkpoint — 2026-10-24
 
 - GitHub branch `fix/provider-deferral-sequence-20261020`; latest checkpoint commit `8de95a8305ba061d2b6cd0a4432153cea443de7c`. Exact live source revision: `c54d517512a20dd62a9cd4f5d0479785b4dc3383`; image `factory-v3:studio-batch-c54d517`, `sha256:54171dccaa5d6671a0292bc88a853b8c94bd5fe489b4cfe2fb5d46e9b3e74922`.
