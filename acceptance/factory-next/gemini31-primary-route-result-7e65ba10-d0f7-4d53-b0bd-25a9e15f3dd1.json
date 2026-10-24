@@ -1,0 +1,20 @@
+{
+  "diagnostic_id": "7e65ba10-d0f7-4d53-b0bd-25a9e15f3dd1",
+  "source_revision": "3a5310c69d43de3799bc7b4ea9f3fac838ce1c87",
+  "model": "gemini-3.1-flash-lite",
+  "model_route": "existing primary free-tier Gemini route",
+  "status": "reviewed",
+  "gemini_calls": 3,
+  "search_calls": 0,
+  "photo_downloads": 0,
+  "tts_calls": 0,
+  "source_job": "52a0d4af-f032-4650-bbb1-d52251ae52d4",
+  "reused_saved_sources": 3,
+  "generated_validated_facts": 3,
+  "required_fact_coverage": "passed: PreparationStages.research returned; it raises unless required IDs are nonempty, unique, and present in validated source facts",
+  "independent_review": "passed: research operation returned after its source review and validation",
+  "duration_seconds": 25.601,
+  "settings_changed": false,
+  "mp4_acceptance": false,
+  "audit_note": "The runner summary initially looked for required_fact_ids at the wrong level and reported 0. The research stage stores those IDs under request and enforces coverage before returning. No provider call was repeated."
+}
