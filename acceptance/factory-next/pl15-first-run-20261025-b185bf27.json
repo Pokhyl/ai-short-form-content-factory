@@ -7,8 +7,8 @@
     "seconds": 15
   },
   "runtime": {
-    "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
-    "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
+    "image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
+    "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
     "gemini_model": "gemini-3.5-flash-lite",
     "gateway_role": "gemini_narrative_lite",
     "google_voice": "existing fixed Google TTS route"
@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "READY_FOR_DEPLOYMENT_STALE_CHECKPOINTS_PRESERVED",
+  "status": "MODEL_ROUTING_FIX_DEPLOYED_NEW_PL15_RESERVED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,10 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "finish focused tests with network disabled",
-    "2": "build exact image at source revision e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
-    "3": "deploy with rollback container retained and health check",
-    "4": "reserve a new PL15 ID before one launch"
+    "1": "register new ID exactly once and checkpoint ready",
+    "2": "launch once after GitHub verification",
+    "3": "verify real MP4 or preserve terminal failure"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -127,7 +126,7 @@
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
     "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
-    "backup_container": "factory-next-studio-v9-before-voice-fix-20261025",
+    "backup_container": "factory-next-studio-v9-before-visual-model-fix-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
       "n8n_default",
@@ -154,11 +153,11 @@
       "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
       "public_health": 200
     },
-    "active_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
-    "active_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
+    "active_image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
+    "active_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
     "public_health": 200,
     "backup_container_state": "exited and retained",
-    "backup_image": "factory-v3:research-budget-a04f3c8c",
+    "backup_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
     "backup_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
     "active_jobs_at_verification": 0,
     "unlaunched_registration_pending_ids": [
@@ -166,20 +165,25 @@
       "05b4c294-5957-44d4-9045-9b1a5cf96ceb"
     ],
     "settings": {
-      "model": "gemini-3.5-flash-lite",
-      "billing_enabled": false,
-      "project_id": "gen-lang-client-0532024148",
-      "public_health": 200
-    }
+      "primary_model": "gemini-3.1-flash-lite",
+      "material_inspection_model": "gemini-3.5-flash-lite",
+      "billing_enabled": false
+    },
+    "backup_state": "exited and retained",
+    "other_running_container_ids_unchanged": true,
+    "stale_unregistered_checkpoints_preserved": [
+      "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
+      "18ff1836-52a8-4003-9d26-12d98e8a2ce5"
+    ]
   },
   "fresh_attempt": {
-    "job_id": "4121e1dd-40d9-47dc-b29a-a9c75bc65c0a",
+    "job_id": "0e443cf5-9fb3-4c99-9114-cf44e6f1a5fc",
     "request": {
       "topic": "Jak powstaje tęcza?",
       "language": "pl",
       "seconds": 15
     },
-    "status": "running",
+    "status": "reserved_not_registered",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -190,16 +194,9 @@
       "download": 32,
       "metadata": 1
     },
-    "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
-    "launch_count": 1,
-    "retry": "forbidden after failure/uncertain state",
-    "registration_created": true,
-    "checkpoint_status": "ready",
-    "next_stage": "research",
-    "billing_enabled": false,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_0177475e4dba"
+    "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
+    "launch_count": 0,
+    "retry": "forbidden after failure/uncertain state"
   },
   "previous_attempts": [
     {
@@ -399,6 +396,35 @@
           "succeeded": 1
         }
       }
+    },
+    {
+      "job_id": "4121e1dd-40d9-47dc-b29a-a9c75bc65c0a",
+      "request": {
+        "topic": "Jak powstaje tęcza?",
+        "language": "pl",
+        "seconds": 15
+      },
+      "status": "running",
+      "budget": {
+        "gemini": 26,
+        "source_fetch": 6,
+        "research_search": 1,
+        "search_pexels": 3,
+        "search_pixabay": 3,
+        "search_wikimedia": 3,
+        "download": 32,
+        "metadata": 1
+      },
+      "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
+      "launch_count": 1,
+      "retry": "forbidden after failure/uncertain state",
+      "registration_created": true,
+      "checkpoint_status": "ready",
+      "next_stage": "research",
+      "billing_enabled": false,
+      "launch_started": true,
+      "launch_operator": "factory_next.operator --steps 8 continue",
+      "launch_job_id": "job_0177475e4dba"
     }
   ],
   "provider_diagnosis": {
@@ -438,7 +464,7 @@
     "test_commit": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
     "change": "Factory Next material image inspection now uses the explicitly verified Gemini 3.5 free-tier model via a copied operations object; added a regression that confirms routing and that the primary model is not mutated.",
     "test_result": "27/27 passed from the candidate image itself; network disabled; image env revision exactly 40 characters.",
-    "deployment": "candidate verified; ready for production swap",
+    "deployment": "deployed; public health 200; rollback container retained",
     "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
     "candidate_image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
     "manifest_digest": "sha256:e01d5c097c7abf0f4418e03822c8c26704019ed278e8505718f1ffb2df3369c9",
