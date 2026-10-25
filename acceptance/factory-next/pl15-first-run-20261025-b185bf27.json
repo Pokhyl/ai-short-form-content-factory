@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "verify the committed RU45 checkpoint, register the exact new ID once, and launch once",
-    "2": "verify RU45 MP4 and public Studio record",
-    "3": "continue UK60 with a fresh checkpointed ID"
+    "1": "deploy and health-check the tested RU45 voice-fit candidate",
+    "2": "checkpoint, register, and launch a fresh RU45 ID once",
+    "3": "verify the RU45 MP4 and continue UK60"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -125,7 +125,7 @@
   "deployment": {
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
-    "candidate_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
     "backup_container": "factory-next-studio-v9-before-duration-repair-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
@@ -176,14 +176,15 @@
       "18ff1836-52a8-4003-9d26-12d98e8a2ce5"
     ],
     "current_active_jobs": 0,
-    "candidate_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+    "candidate_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
     "local_health": 200,
     "active_pipeline_executions": 0,
     "rollback_observations": [
       "First swap validation accidentally probed host loopback; old container restored automatically.",
       "Second swap used image CLI entrypoint instead of Studio server; old container restored automatically.",
       "Third swap set --entrypoint python3; candidate validated locally and publicly."
-    ]
+    ],
+    "candidate_image_id": "sha256:c6bbb595acd18f545d541fe9b1c4184caf71bf83447a1d5df339f35462033f9c"
   },
   "fresh_attempt": {
     "job_id": "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
@@ -923,5 +924,19 @@
     "backup_container": "factory-next-studio-v9-before-duration-repair-20261025",
     "active_jobs_at_verification": 0,
     "billing_enabled": false
+  },
+  "fix6": {
+    "path": "factory_next/preparation.py",
+    "local_code_commit": "b18570f9a0549d459ef466cb9c44288b333b9f3a",
+    "local_test_commit": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+    "github_code_commit": "219edb9bf3d54dbbbf6a9b4b36442d9f6fdfd794",
+    "github_test_commit": "16006a565dd5cb36aef8b93f7c4ec9aad53c34c8",
+    "change": "The one permitted variant correction now makes each medium beat meet the calculated per-beat word and character bands so its assembled narration fits the exact measured window. Use medium thinking only for the correction, retain low thinking for initial generation and preserve the same model, free-tier gate, and call budget.",
+    "test": "Exact candidate image; test_voice_variants, test_narrative_model, test_operator, test_pipeline; 28/28 passed with network disabled.",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
+    "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+    "image_id": "sha256:c6bbb595acd18f545d541fe9b1c4184caf71bf83447a1d5df339f35462033f9c",
+    "image_size_bytes": 309054841,
+    "status": "candidate_passed_tests_pending_deployment"
   }
 }
