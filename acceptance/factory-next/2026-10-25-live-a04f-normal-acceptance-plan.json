@@ -92,7 +92,48 @@
     "machine_pass": false,
     "video_or_hash": false,
     "receipt_path": "acceptance/factory-next/2026-10-25-live-a04f-normal-job-result.json",
-    "receipt_commit": "ba8237be03139764d8147ea900dd9674ead2e520",
-    "retries_or_resumes": "none"
+    "receipt_commit": "691b049c2e97e14656ee75cb46a907eb526f0e3a",
+    "retries_or_resumes": "none",
+    "provider_call_ledger": [
+      {
+        "kind": "metadata",
+        "state": "succeeded",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "kind": "research_search",
+        "state": "succeeded",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "kind": "source_fetch",
+        "state": "succeeded",
+        "status": 200,
+        "count": 3
+      },
+      {
+        "kind": "gemini",
+        "state": "succeeded",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "kind": "gemini",
+        "state": "unknown",
+        "error_code": "HTTPFailure",
+        "status": 503,
+        "error_status": "UNAVAILABLE",
+        "gateway_execution_id": "14061",
+        "count": 1
+      }
+    ],
+    "recovery_inspector": {
+      "eligible": false,
+      "reason": "not_explicit_model_unavailable"
+    },
+    "safety_note": "The Gemini 503 call is durably marked unknown. It cannot be assumed unexecuted or resent safely.",
+    "limits_note": "Observed metadata/search/fetch/Gemini call counts stayed within the bounded plan; token usage for the unknown call is not established."
   }
 }
