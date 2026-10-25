@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RUNNING_TOTAL_GATE",
+  "status": "RU45_STRUCTURED_VOICE_FIX_PENDING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,8 +112,8 @@
     "health_http": 200
   },
   "next": {
-    "1": "deploy and health-check the globally validated voice-fit candidate",
-    "2": "checkpoint, register, and launch a fresh RU45 ID once",
+    "1": "build and verify the structured sentence correction candidate",
+    "2": "deploy, checkpoint, and launch a fresh RU45 ID once",
     "3": "verify RU45 MP4 and continue UK60"
   },
   "candidate": {
@@ -193,7 +193,7 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "running",
+    "status": "needs_attention",
     "source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
     "registration_created": true,
@@ -207,7 +207,7 @@
     "media_absent_before_registration": true,
     "launch": "not launched; register only after this GitHub checkpoint",
     "registration_status": "preparing",
-    "checkpoint_status": "running",
+    "checkpoint_status": "needs_attention",
     "checkpoint_next_stage": "voice",
     "completed_stages": [
       "research",
@@ -219,7 +219,19 @@
     "launch_started": true,
     "launch_operator": "factory_next.operator --steps 8 continue",
     "launch_job_id": "job_278d1aed95c4",
-    "launch_source_revision": "8932a3074e2692f35af904489353ae031e58fe36"
+    "launch_source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
+    "error_type": "NaturalDurationRejected",
+    "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
+    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
+    "observed_tts_duration_ms": 38136,
+    "length_window": {
+      "min_words": 96,
+      "max_words": 108,
+      "min_characters": 619,
+      "max_characters": 727
+    },
+    "max_variant_words": 65,
+    "max_variant_characters": 476
   },
   "previous_attempts": [
     {
@@ -803,7 +815,7 @@
           "language": "ru",
           "seconds": 45
         },
-        "status": "running",
+        "status": "needs_attention",
         "source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
         "runtime_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
         "registration_created": true,
@@ -817,7 +829,7 @@
         "media_absent_before_registration": true,
         "launch": "not launched; register only after this GitHub checkpoint",
         "registration_status": "preparing",
-        "checkpoint_status": "running",
+        "checkpoint_status": "needs_attention",
         "checkpoint_next_stage": "voice",
         "completed_stages": [
           "research",
@@ -829,7 +841,19 @@
         "launch_started": true,
         "launch_operator": "factory_next.operator --steps 8 continue",
         "launch_job_id": "job_278d1aed95c4",
-        "launch_source_revision": "8932a3074e2692f35af904489353ae031e58fe36"
+        "launch_source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
+        "error_type": "NaturalDurationRejected",
+        "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
+        "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
+        "observed_tts_duration_ms": 38136,
+        "length_window": {
+          "min_words": 96,
+          "max_words": 108,
+          "min_characters": 619,
+          "max_characters": 727
+        },
+        "max_variant_words": 65,
+        "max_variant_characters": 476
       },
       "failed_attempt_history": [
         {
@@ -869,6 +893,25 @@
             "characters": 626
           },
           "root_cause": "The stricter thinking level produced long variants that include a globally valid 626-character/80-word combination. Local schema minLength bounds rejected individual alternatives that were only 1–3 characters below their per-beat bands before the exact global selector could choose the valid combination."
+        },
+        {
+          "job_id": "cb484faf-21bd-43aa-a336-b242cdfd53e2",
+          "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
+          "stage": "voice",
+          "source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
+          "retry": "forbidden for this ID",
+          "actual_duration_ms": 38136,
+          "length_window": {
+            "min_words": 96,
+            "max_words": 108,
+            "min_characters": 619,
+            "max_characters": 727
+          },
+          "maximum_variant_combination": {
+            "words": 65,
+            "characters": 476
+          },
+          "root_cause": "Even with global-only duration selection, Gemini's 9-alternative variant response stayed substantially under the numeric target, so no combination fit. The strategy is being replaced by the existing bounded complete-sentence voice rewrite, using the verified narrative model and a single optional repair."
         }
       ]
     }
@@ -972,5 +1015,14 @@
     "active_container": "factory-next-studio-v9",
     "container_id": "c4b2f1b156980a0548c19e51148a50ef818bc4eded8806cb82bc5c297d2bbcb1",
     "backup_container": "factory-next-studio-v9-before-total-gate-8932a30-20261025"
+  },
+  "fix8": {
+    "path": "factory_next/preparation.py",
+    "local_commit": "725658882437a66db618e46ed5beaac47f9fd7bd",
+    "github_preparation_commit": "1849889893f339ee29e269de212448cf1768f2f4",
+    "github_wiring_commit": "6e8091710e9b271a6118398731b1d6e329bb79ef",
+    "github_test_commit": "9b3bdc15c48a0259c44011417b89aa41297b27c1",
+    "change": "Route measured voice correction through the structured complete-sentence contract rather than generating nine alternatives. Use the configured verified narrative model, medium thinking, a 16384 token cap, exact aggregate word/character bounds, one optional structured repair, and the existing independent source/native review.",
+    "test": "Added exact regression for verified narrative-model routing and bounded thinking/token settings; exact candidate image pending."
   }
 }
