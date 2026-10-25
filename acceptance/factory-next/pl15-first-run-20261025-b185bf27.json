@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "EN30_FRESH_RUNNING",
+  "status": "EN30_MACHINE_PASS_RU45_CHECKPOINT_PENDING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "checkpoint and register EN30 on the deployed low-thinking revision",
-    "2": "launch exact EN30 ID once, verify audit and MP4",
-    "3": "continue RU45 and UK60 with fresh checkpointed IDs"
+    "1": "checkpoint and register RU45 on deployed revision",
+    "2": "launch exact RU45 ID once and verify its MP4",
+    "3": "continue UK60 with fresh checkpointed ID"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -570,15 +570,14 @@
     "mp4_created": true,
     "human_acceptance": false,
     "completed_matrix": [
-      "PL15"
+      "PL15",
+      "EN30"
     ],
     "remaining_matrix": [
-      "EN30",
       "RU45",
       "UK60"
     ],
-    "pl15_machine_pass": true,
-    "note": "PL15 passed all audit gates and is publicly accessible in Studio. EN30 attempt failed in voice; failed ID remains immutable."
+    "note": "PL15 and EN30 passed machine audit and are publicly accessible in Studio. Human acceptance requires owner review."
   },
   "fix2": {
     "path": "factory_next/preparation.py",
@@ -638,7 +637,7 @@
   },
   "matrix": {
     "EN30": {
-      "status": "running",
+      "status": "complete",
       "failed_attempts": [
         "d548181b-7bd1-48c9-9a45-642e93ea6975"
       ],
@@ -655,7 +654,7 @@
       "launch_count": 1,
       "billing_enabled": false,
       "registration_status": "preparing",
-      "checkpoint_status": "ready",
+      "checkpoint_status": "complete",
       "checkpoint_next_stage": "research",
       "provider_stage_calls": 0,
       "checkpoint_verified": true,
@@ -669,7 +668,36 @@
         "story",
         "voice"
       ],
-      "next_stage": "alignment"
+      "next_stage": "alignment",
+      "audit_passed": true,
+      "public_video_url": "https://studio.hodor.com.pl/factory-next/api/jobs/e577e215-034c-43b7-8959-2e842f0cf358/video",
+      "public_detail_url": "https://studio.hodor.com.pl/factory-next/api/jobs/e577e215-034c-43b7-8959-2e842f0cf358",
+      "bytes": 6953333,
+      "duration_ms": 30000,
+      "width": 1080,
+      "height": 1920,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sha256": "b82abd6913d1addba0f5de4620770a2cfdc47053a3e6c6fd50f28e4f2cbe418b",
+      "all_audit_gates_passed": true,
+      "source_citation_count": 3,
+      "scene_count": 3,
+      "all_scene_photos_attributed": true
+    },
+    "RU45": {
+      "status": "checkpoint_pending",
+      "job_id": "59917beb-71db-4f25-9e6e-a6722b5806f0",
+      "request": {
+        "topic": "Как образуется радуга?",
+        "language": "ru",
+        "seconds": 45
+      },
+      "source_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+      "state_absent_before_registration": true,
+      "database_preparations_before_registration": 0,
+      "registration_created": false,
+      "launch_count": 0,
+      "billing_enabled": false
     }
   },
   "fix4": {
