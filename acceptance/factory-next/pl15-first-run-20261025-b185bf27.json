@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "FAILED_NO_RETRY",
+  "status": "FIX_VERIFIED_NOT_DEPLOYED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -86,6 +86,23 @@
   },
   "verification": {
     "test": "tests/factory_next/test_voice_variants.py",
-    "result": "9/9 passed in isolated no-network container"
+    "result": "9/9 passed in isolated no-network container",
+    "full_factory_next_suite": {
+      "result": "199 tests; 7 failures, 2 errors",
+      "relevant_regression": "test_small_per_beat_overshoot_can_still_fit_measured_total passed",
+      "note": "Observed failures are in existing duration/fact-scope/budget/illustration/replay expectations; full-suite pass is not claimed."
+    }
+  },
+  "rollout_blocker": {
+    "free_disk_bytes_observed": 46137344,
+    "buildkit_cache_bytes": 13631488,
+    "docker_volumes_bytes": 4617089843.2,
+    "action": "no cleanup or deployment performed; inspect exact /var usage before deciding safe cache cleanup"
+  },
+  "next": {
+    "1": "resolve and document full-suite failures against current branch contracts",
+    "2": "recover safe build space without touching service volumes or unrelated task data",
+    "3": "build immutable image with exact GitHub source revision, verify packaged tests and deployed revision",
+    "4": "checkpoint a fresh job ID and budget before any new provider call"
   }
 }
