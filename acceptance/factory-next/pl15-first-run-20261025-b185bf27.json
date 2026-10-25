@@ -8,7 +8,7 @@
   },
   "runtime": {
     "image": "factory-v3:research-budget-a04f3c8c",
-    "source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "source_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
     "gemini_model": "gemini-3.5-flash-lite",
     "gateway_role": "gemini_narrative_lite",
     "google_voice": "existing fixed Google TTS route"
@@ -24,8 +24,8 @@
     "metadata": 1
   },
   "execution": {
-    "registration": "one time only",
-    "launch": "one time only after DB registration and GitHub plan verification",
+    "registration": "register this exact ID once; no launch in the registration step",
+    "launch": "launch this exact ID once after registration and GitHub checkpoint verification",
     "resume": "forbidden after failure/uncertain state",
     "automatic_provider_retries": 0,
     "paid_fallback": false
@@ -40,8 +40,8 @@
   "prerequisites": [
     "Studio health 200",
     "active jobs 0",
-    "settings proof explicitly selects 3.5, billing_enabled false, same project and credential fingerprint",
-    "job ID is absent from persistent job state and database"
+    "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
+    "ID absent from persistent job state and DB before registration"
   ],
-  "status": "ID CHECKPOINT ONLY; no database registration, Gemini/search/download/TTS call or job launch has occurred."
+  "status": "ID CHECKPOINT ONLY, pushed to GitHub. No DB registration, Gemini/search/download/TTS call or job launch has occurred."
 }
