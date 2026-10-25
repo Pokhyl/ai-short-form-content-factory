@@ -126,7 +126,10 @@ class MaterialInspectionModelRoutingTests(unittest.TestCase):
                        "supported_fact_ids":["f1","f2"]}):
             result=stage.materials({"outputs":{"research":source}})
         self.assertEqual(len(result["photos"]),3)
-        self.assertEqual(used_models,[verified])
+        self.assertEqual(len(used_models),1)
+        self.assertIsNot(used_models[0],verified)
+        self.assertEqual(used_models[0].model,"gemini-3.5-flash-lite")
+        self.assertEqual(used_models[0].default_thinking_level,"medium")
         self.assertIs(operations.gemini,primary)
 
 
