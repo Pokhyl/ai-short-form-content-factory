@@ -60,5 +60,11 @@
   "safety_note": "The Gemini 503 call is durably marked unknown. It cannot be assumed unexecuted or resent safely.",
   "limits_note": "Observed metadata/search/fetch/Gemini call counts stayed within the bounded plan; token usage for the unknown call is not established.",
   "action": "Terminal result recorded. No retry, resume, or replacement job submitted.",
-  "acceptance": "FAILED; no production video produced."
+  "acceptance": "FAILED; no production video produced.",
+  "source_diagnosis": {
+    "code_defect": "Gemini.generate called BudgetedCalls.run without allow_model_unavailable=True, so an explicit 503 UNAVAILABLE was persisted as generic HTTPFailure/unknown.",
+    "evidence": "The production call ledger records the Gemini request as HTTP 503 UNAVAILABLE with a gateway execution ID; the read-only recovery inspector rejected the old checkpoint as not_explicit_model_unavailable.",
+    "remediation_commit": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "historical_job_changed": false
+  }
 }
