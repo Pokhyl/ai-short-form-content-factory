@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "PL15_MACHINE_PASS_EN30_READY_TO_LAUNCH",
+  "status": "EN30_LOW_THINKING_FIX_BUILD_IN_PROGRESS",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "wait for EN30 pipeline result and audit",
-    "2": "register exact ID once, verify ready checkpoint, launch once",
-    "3": "verify MP4 bytes/hash/duration and audit; continue RU45 then UK60"
+    "1": "build and test the committed low-thinking fix in an exact candidate image",
+    "2": "deploy with health check, checkpoint fresh EN30 ID, launch once",
+    "3": "verify EN30 media then proceed RU45 and UK60"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -505,6 +505,36 @@
         "thoughts_token_count": 7860,
         "candidates_token_count": 317
       }
+    },
+    {
+      "job_id": "d548181b-7bd1-48c9-9a45-642e93ea6975",
+      "request": {
+        "topic": "How does a rainbow form?",
+        "language": "en",
+        "seconds": 30
+      },
+      "status": "needs_attention",
+      "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
+      "launch_count": 1,
+      "completed_stages": [
+        "research",
+        "materials",
+        "story"
+      ],
+      "stage": "voice",
+      "error_type": "ValueError",
+      "failure_code": "MODEL_RESPONSE_INVALID",
+      "safe_failure_details": {
+        "call_key": "next-voice-correction:2:next-measured-variants",
+        "http_status": 200,
+        "finish_reason": "MAX_TOKENS",
+        "max_output_tokens": 16384,
+        "total_tokens": 17233,
+        "thought_tokens": 15728,
+        "candidate_tokens": 642
+      },
+      "root_cause": "Factory Next binds Gemini 3.5 Flash-Lite to high thinking globally. The measured-variant generation consumed almost the entire token limit in thoughts and returned truncated JSON. Persisted response usage confirms MAX_TOKENS.",
+      "retry": "forbidden; immutable failed ID"
     }
   ],
   "provider_diagnosis": {
@@ -538,7 +568,8 @@
       "RU45",
       "UK60"
     ],
-    "note": "PL15 machine audit passed; owner review is still required for HUMAN acceptance."
+    "pl15_machine_pass": true,
+    "note": "PL15 passed all audit gates and is publicly accessible in Studio. EN30 attempt failed in voice; failed ID remains immutable."
   },
   "fix2": {
     "path": "factory_next/preparation.py",
@@ -598,7 +629,7 @@
   },
   "matrix": {
     "EN30": {
-      "status": "running",
+      "status": "failed_immutable",
       "job_id": "d548181b-7bd1-48c9-9a45-642e93ea6975",
       "request": {
         "topic": "How does a rainbow form?",
@@ -621,7 +652,24 @@
         "materials",
         "story"
       ],
-      "retry": "forbidden after failure/uncertain state"
+      "retry": "forbidden; new ID required",
+      "failure": "MODEL_RESPONSE_INVALID",
+      "failed_stage": "voice",
+      "failed_launch_count": 1,
+      "fix4_commit": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c"
     }
+  },
+  "fix4": {
+    "path": "factory_next/preparation.py",
+    "local_commit": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+    "github_code_commit": "ca24d3dcd744e6d22a372492ee0cfc4203218ac6",
+    "github_test_commit": "b98fefffcd8188c5ebaa7253df38f56dbcb13623",
+    "change": "Set thinking_level=low for measured-variant generation and its one repair only; retain the 16384 output limit, same free model and same call budget. Leave the global high reasoning mode unchanged for semantic evaluation.",
+    "test": "Added regression asserting both calls use low thinking and max_tokens=16384; exact image test pending.",
+    "evidence": "EN30 Gemini response: finishReason MAX_TOKENS; thoughts 15728; candidates 642; total 17233.",
+    "official_docs": [
+      "https://ai.google.dev/gemini-api/docs/thinking",
+      "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite"
+    ]
   }
 }
