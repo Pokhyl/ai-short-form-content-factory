@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RUNNING_NEW_ID",
+  "status": "RU45_SCHEMA_OVERRESTRICTED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,7 +193,7 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "running",
+    "status": "needs_attention",
     "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
     "registration_created": true,
@@ -207,7 +207,7 @@
     "media_absent_before_registration": true,
     "launch": "not launched; register only after this GitHub checkpoint",
     "registration_status": "preparing",
-    "checkpoint_status": "running",
+    "checkpoint_status": "needs_attention",
     "checkpoint_next_stage": "voice",
     "completed_stages": [
       "research",
@@ -219,7 +219,18 @@
     "launch_started": true,
     "launch_operator": "factory_next.operator --steps 8 continue",
     "launch_job_id": "job_4afb0ecd0bca",
-    "launch_source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17"
+    "launch_source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+    "error_type": "ModelSchemaError",
+    "failure_code": "MODEL_RESPONSE_INVALID",
+    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
+    "observed_tts_duration_ms": 42360,
+    "length_window": {
+      "min_words": 78,
+      "max_words": 88,
+      "min_characters": 614,
+      "max_characters": 720
+    },
+    "root_cause": "Globally valid whole-variant combinations were rejected by per-beat schema minLength constraints; the exact total duration validator never got to select them."
   },
   "previous_attempts": [
     {
@@ -803,7 +814,7 @@
           "language": "ru",
           "seconds": 45
         },
-        "status": "running",
+        "status": "needs_attention",
         "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
         "runtime_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
         "registration_created": true,
@@ -817,7 +828,7 @@
         "media_absent_before_registration": true,
         "launch": "not launched; register only after this GitHub checkpoint",
         "registration_status": "preparing",
-        "checkpoint_status": "running",
+        "checkpoint_status": "needs_attention",
         "checkpoint_next_stage": "voice",
         "completed_stages": [
           "research",
@@ -829,7 +840,18 @@
         "launch_started": true,
         "launch_operator": "factory_next.operator --steps 8 continue",
         "launch_job_id": "job_4afb0ecd0bca",
-        "launch_source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17"
+        "launch_source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+        "error_type": "ModelSchemaError",
+        "failure_code": "MODEL_RESPONSE_INVALID",
+        "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
+        "observed_tts_duration_ms": 42360,
+        "length_window": {
+          "min_words": 78,
+          "max_words": 88,
+          "min_characters": 614,
+          "max_characters": 720
+        },
+        "root_cause": "Globally valid whole-variant combinations were rejected by per-beat schema minLength constraints; the exact total duration validator never got to select them."
       },
       "failed_attempt_history": [
         {
@@ -846,6 +868,29 @@
           "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
           "retry": "forbidden for this ID",
           "actual_duration_ms": 39696
+        },
+        {
+          "job_id": "a763d1e6-b4c4-460d-b414-06b84019bfe8",
+          "failure_code": "MODEL_RESPONSE_INVALID",
+          "stage": "voice",
+          "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+          "retry": "forbidden for this ID",
+          "actual_duration_ms": 42360,
+          "length_window": {
+            "min_words": 78,
+            "max_words": 88,
+            "min_characters": 614,
+            "max_characters": 720
+          },
+          "generated_medium_totals": {
+            "words": 80,
+            "characters": 608
+          },
+          "reachable_whole_variant_combination": {
+            "words": 80,
+            "characters": 626
+          },
+          "root_cause": "The stricter thinking level produced long variants that include a globally valid 626-character/80-word combination. Local schema minLength bounds rejected individual alternatives that were only 1–3 characters below their per-beat bands before the exact global selector could choose the valid combination."
         }
       ]
     }
