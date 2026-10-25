@@ -176,7 +176,7 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
         self.assertEqual([kwargs.get("max_tokens") for _,kwargs,_ in model.generated],
                          [16384,16384])
         self.assertEqual([kwargs.get("thinking_level") for _,kwargs,_ in model.generated],
-                         ["low","low"])
+                         ["low","medium"])
         repair_data=model.generated[1][2][1]
         self.assertEqual(repair_data["duration_repair_diagnosis"]["classification"],
                          "all_variants_below_window")
@@ -185,4 +185,8 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
         self.assertIn("EXPAND every replacement version substantially",
                       model.generated[1][2][0])
         self.assertIn("at least 80 characters and 20 words are required",
+                      model.generated[1][2][0])
+        self.assertIn("medium version from EVERY beat MUST contain",
+                      model.generated[1][2][0])
+        self.assertIn("medium narration must total 20-30 words",
                       model.generated[1][2][0])
