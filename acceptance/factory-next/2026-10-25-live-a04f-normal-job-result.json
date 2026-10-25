@@ -62,9 +62,13 @@
   "action": "Terminal result recorded. No retry, resume, or replacement job submitted.",
   "acceptance": "FAILED; no production video produced.",
   "source_diagnosis": {
-    "code_defect": "Gemini.generate called BudgetedCalls.run without allow_model_unavailable=True, so an explicit 503 UNAVAILABLE was persisted as generic HTTPFailure/unknown.",
-    "evidence": "The production call ledger records the Gemini request as HTTP 503 UNAVAILABLE with a gateway execution ID; the read-only recovery inspector rejected the old checkpoint as not_explicit_model_unavailable.",
-    "remediation_commit": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "initial_inference": "The missing allow_model_unavailable flag was first treated as a code defect.",
+    "reassessment": "The credential gateway execution associated with a later 503 remained running with finished=false. Thus 503 plus gateway execution ID does not establish a final provider rejection; the original HTTPFailure/unknown handling is retained.",
+    "conclusion": "The downstream cause of the 503 is unresolved; no Google rejection is asserted.",
+    "classification_patch_commit": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "disposition": "rolled back",
+    "reassessment_receipt": "acceptance/factory-next/2026-10-25-gemini-503-classification-reassessment.json",
+    "reassessment_commit": "471a64f9dfda21bf5d111b157a1b8fb44318b495",
     "historical_job_changed": false
   }
 }
