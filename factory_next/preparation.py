@@ -405,9 +405,11 @@ class PreparationStages:
                    'maximum_characters':spec['maxLength']}
                   for field,spec in beat_schema['properties'].items()]
             for beat,beat_schema in repair_schema['properties'].items()}
-        revision_gemini=copy(self.operations.gemini)
+        revision_model=self.narrative_model or self.operations.gemini
+        revision_gemini=copy(revision_model)
         revision_gemini.calls=VoiceRevisionCalls(
-            self.operations.gemini.calls,attempt=context.get('_voice_correction_round',2))
+            revision_model.calls,attempt=context.get('_voice_correction_round',2))
+        revision_gemini.default_thinking_level='medium'
         try:
             draft,_=revision_gemini.generate(
             'next-measured-duration-revision',
@@ -438,7 +440,8 @@ class PreparationStages:
              'previous_reviewed_script':original['script'],
              'actual_voice_duration_ms':measured_ms,
              'length_window':window,'sentence_counts':sentence_counts,
-             'sentence_limits':sentence_limits},repair_schema)
+             'sentence_limits':sentence_limits},repair_schema,
+                max_tokens=16384,thinking_level='medium')
         except ModelSchemaError as error:
             # A completed provider response is already receipted. Do not
             # resend it; its parsed JSON can be input to one NEW correction.
@@ -505,7 +508,8 @@ class PreparationStages:
                  'invalid_reason':type(error).__name__,
                  'actual_voice_duration_ms':measured_ms,
                  'length_window':window,'sentence_counts':active_counts,
-                 'sentence_limits':active_limits},alternate)
+                 'sentence_limits':active_limits},alternate,
+                max_tokens=16384,thinking_level='medium')
             repaired=accept_completed_expansion(draft,alternate)
         draft=repaired
         scenes=validated_next_story(request,evidence,photos,draft)
