@@ -80,3 +80,51 @@ class ResearchModelRoutingTests(unittest.TestCase):
         self.assertEqual(primary.calls,[])
         self.assertIs(operations.gemini,primary)
         self.assertEqual(result['evidence'],evidence)
+
+
+class MaterialInspectionModelRoutingTests(unittest.TestCase):
+    def test_material_inspection_uses_verified_model_without_mutating_primary(self):
+        from hashlib import sha256
+        from unittest.mock import patch
+        from factory_next.preparation import PreparationStages
+
+        source_text="The source documents claim one, claim two, and claim three."
+        evidence={"sources":[{"id":"s1","url":"https://example.org/source",
+                    "text":source_text,"sha256":sha256(source_text.encode()).hexdigest()}],
+                  "facts":[{"id":f"f{i}","text":f"claim {word}",
+                    "support":[{"source_id":"s1","quote":source_text}]}
+                    for i,word in enumerate(("one","two","three"),1)]}
+        request={"topic":"A documented subject","language":"en","seconds":15,
+                 "visual_validation_mode":"gemini","required_fact_ids":["f1","f2","f3"]}
+        source={"request":request,"evidence":evidence,"queries":[]}
+        primary=SimpleNamespace(model="gemini-3.1-flash-lite")
+        verified=SimpleNamespace(model="gemini-3.5-flash-lite")
+        used_models=[]
+        class Operations:
+            def __init__(self):
+                self.gemini=primary
+            def discover(self,*args):
+                return [{"id":f"photo-{i}"} for i in range(3)]
+            def download(self,candidate):
+                identity=candidate["id"]
+                digest=sha256(identity.encode()).hexdigest()
+                return {"id":identity,"sha256":digest,"media_type":"photo",
+                        "visual_fingerprint":{"source_sha256":digest}}
+            def inspect_many(self,batch,*args):
+                used_models.append(self.gemini)
+                return [{"asset_id":asset["id"]} for asset in batch]
+
+        operations=Operations()
+        stage=PreparationStages("/unused",operations,lambda:None,
+                                narrative_model=verified)
+        with patch("factory_next.preparation.validate_material"), \
+             patch("factory_next.preparation.pixels"), \
+             patch("factory_next.preparation.same_photo",return_value=False), \
+             patch("factory_next.preparation.inspected_material",
+                   side_effect=lambda asset,*args: {
+                       "id":asset["id"],"sha256":asset["sha256"],
+                       "supported_fact_ids":["f1","f2"]}):
+            result=stage.materials({"outputs":{"research":source}})
+        self.assertEqual(len(result["photos"]),3)
+        self.assertEqual(used_models,[verified])
+        self.assertIs(operations.gemini,primary)
