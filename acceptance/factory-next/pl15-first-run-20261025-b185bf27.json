@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_INSPECTION_FIX_CHECKPOINTED",
+  "status": "RU45_RUNNING_BOUNDED_INSPECTION",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,11 +193,11 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "registered_ready_before_launch",
+    "status": "running",
     "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
     "registration_created": true,
-    "launch_count": 0,
+    "launch_count": 1,
     "billing_enabled": false,
     "provider_stage_calls": 0,
     "next_stage": "research",
@@ -207,11 +207,15 @@
     "media_absent_before_registration": true,
     "launch": "not launched; register only after this GitHub checkpoint",
     "registration_status": "preparing",
-    "checkpoint_status": "ready",
+    "checkpoint_status": "running",
     "checkpoint_next_stage": "research",
     "completed_stages": [],
     "registered_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
-    "checkpoint_verified": true
+    "checkpoint_verified": true,
+    "launch_started": true,
+    "launch_operator": "factory_next.operator --steps 8 continue",
+    "launch_job_id": "job_81716e68af07",
+    "launch_source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655"
   },
   "previous_attempts": [
     {
@@ -795,11 +799,11 @@
           "language": "ru",
           "seconds": 45
         },
-        "status": "registered_ready_before_launch",
+        "status": "running",
         "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
         "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
         "registration_created": true,
-        "launch_count": 0,
+        "launch_count": 1,
         "billing_enabled": false,
         "provider_stage_calls": 0,
         "next_stage": "research",
@@ -809,11 +813,15 @@
         "media_absent_before_registration": true,
         "launch": "not launched; register only after this GitHub checkpoint",
         "registration_status": "preparing",
-        "checkpoint_status": "ready",
+        "checkpoint_status": "running",
         "checkpoint_next_stage": "research",
         "completed_stages": [],
         "registered_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
-        "checkpoint_verified": true
+        "checkpoint_verified": true,
+        "launch_started": true,
+        "launch_operator": "factory_next.operator --steps 8 continue",
+        "launch_job_id": "job_81716e68af07",
+        "launch_source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655"
       },
       "failed_attempt_history": [
         {
