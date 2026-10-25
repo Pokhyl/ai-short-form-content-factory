@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "VOICE_TOKEN_FIX_PL15_MATERIALS_IN_PROGRESS",
+  "status": "VOICE_TOKEN_FIX_PL15_VOICE_IN_PROGRESS",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -199,13 +199,15 @@
     "retry": "forbidden after failure/uncertain state",
     "registration_created": true,
     "checkpoint_status": "running",
-    "next_stage": "materials",
+    "next_stage": "voice",
     "billing_enabled": false,
     "launch_started": true,
     "launch_operator": "factory_next.operator --steps 8 continue",
     "launch_job_id": "job_b11f4523a8a4",
     "completed_stages": [
-      "research"
+      "research",
+      "materials",
+      "story"
     ]
   },
   "previous_attempts": [
