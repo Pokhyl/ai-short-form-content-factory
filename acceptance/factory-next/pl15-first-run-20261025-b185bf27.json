@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "SECOND_PL15_SINGLE_LAUNCH_IN_PROGRESS",
+  "status": "BLOCKED_GEMINI_503_NO_MP4",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "register new ID once; verify ready checkpoint",
-    "2": "checkpoint before one launch",
-    "3": "verify render artifact or preserve terminal failure"
+    "1": "wait for Gemini 3.5 Flash-Lite to recover; 503 UNAVAILABLE occurred on two separate fresh IDs in material image inspection",
+    "2": "resume acceptance only with another new ID after confirming provider recovery; no paid fallback",
+    "3": "complete PL15 MP4 acceptance, then EN30/RU45/UK60 sequentially"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -178,7 +178,7 @@
       "language": "pl",
       "seconds": 15
     },
-    "status": "running",
+    "status": "needs_attention",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -192,14 +192,24 @@
     "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
     "provider_stage_calls": 0,
     "launch_count": 1,
-    "retry": "forbidden after failure/uncertain state",
+    "retry": "forbidden; immutable ID",
     "registration_created": true,
-    "checkpoint_status": "ready",
-    "next_stage": "research",
+    "checkpoint_status": "needs_attention",
+    "next_stage": "materials",
     "billing_enabled": false,
     "launch_started": true,
     "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_2858fc598eba"
+    "launch_job_id": "job_2858fc598eba",
+    "completed_stages": [
+      "research"
+    ],
+    "error_type": "HTTPFailure",
+    "failure_code": "EXTERNAL_HTTP_FAILURE",
+    "safe_failure_details": {
+      "http_status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14094"
+    }
   },
   "previous_attempts": [
     {
