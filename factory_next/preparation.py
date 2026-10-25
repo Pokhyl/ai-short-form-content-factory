@@ -105,7 +105,10 @@ class PreparationStages:
             # Route multimodal inspections through the explicitly verified free
             # Factory Next model instead of the legacy primary model.
             operations=copy(self.operations)
-            operations.gemini=self.narrative_model
+            operations.gemini=copy(self.narrative_model)
+            # Multimodal inspection is a bounded classification task. Keep its
+            # reasoning below the global high setting used for semantic review.
+            operations.gemini.default_thinking_level='medium'
         operations.topic=request['topic']
         operations.visual_validation_mode=request['visual_validation_mode']
         operations.allow_source_illustrations=True
