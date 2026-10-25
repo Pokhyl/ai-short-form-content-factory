@@ -165,7 +165,7 @@ class Gemini:
                 raise ValueError("Gemini authorization unavailable")
             return self.http.request_receipt("POST", url, body,
                 headers={"x-goog-api-key": credential}, timeout=model_request_timeout(self.model))
-        receipt = self.calls.run(key, "gemini", identity, send, allow_model_unavailable=True)
+        receipt = self.calls.run(key, "gemini", identity, send)
         raw = receipt["body"]
         if raw.get("promptFeedback", {}).get("blockReason"):
             raise ValueError("model prompt blocked")
