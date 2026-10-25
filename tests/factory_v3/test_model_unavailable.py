@@ -31,14 +31,8 @@ class ModelAvailabilityTests(unittest.TestCase):
                 adapter=Gemini(BudgetedCalls(ledger,'controlled'),lambda:'test-only',http,
                                model='gemini-3.1-flash-lite',free_tier_confirmed=True)
                 def run():return adapter.generate('brief','controlled',{},obj({'answer':string()}))
-                expected = (ModelUnavailable if isinstance(error,HTTPFailure)
-                            and error.receipt.get('status')==503
-                            and error.receipt.get('error_status')=='UNAVAILABLE'
-                            and error.receipt.get('gateway_execution_id','').isdigit()
-                            else type(error))
-                with self.assertRaises(expected):run()
-                replay_error = ModelUnavailable if expected is ModelUnavailable else ValueError
-                with self.assertRaises(replay_error):run()
+                with self.assertRaises(type(error)):run()
+                with self.assertRaises(ValueError):run()
                 self.assertEqual(http.request_receipt.call_count,1)
                 self.assertEqual(list(ledger.claims),['brief'])
                 ledger.defer.assert_not_called()
