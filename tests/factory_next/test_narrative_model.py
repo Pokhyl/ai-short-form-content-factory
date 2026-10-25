@@ -173,3 +173,5 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
                          ["next-measured-variants","next-measured-variants-repair"])
         self.assertEqual([args.get("max_tokens") for _,args in model.generated],
                          [16384,16384])
+        self.assertEqual([args.get("thinking_level") for _,args in model.generated],
+                         ["low","low"])
