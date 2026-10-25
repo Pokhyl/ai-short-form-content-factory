@@ -18,6 +18,47 @@
     "video_url_present": false,
     "video_sha256_present": false
   },
+  "provider_call_ledger": [
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "status": 200,
+      "count": 3
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "kind": "gemini",
+      "state": "unknown",
+      "error_code": "HTTPFailure",
+      "status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14061",
+      "count": 1
+    }
+  ],
+  "recovery_inspector": {
+    "eligible": false,
+    "reason": "not_explicit_model_unavailable"
+  },
+  "safety_note": "The Gemini 503 call is durably marked unknown. It cannot be assumed unexecuted or resent safely.",
+  "limits_note": "Observed metadata/search/fetch/Gemini call counts stayed within the bounded plan; token usage for the unknown call is not established.",
   "action": "Terminal result recorded. No retry, resume, or replacement job submitted.",
   "acceptance": "FAILED; no production video produced."
 }
