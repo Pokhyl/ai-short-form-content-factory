@@ -207,14 +207,17 @@
     "launch": "not launched; register only after this GitHub checkpoint",
     "registration_status": "preparing",
     "checkpoint_status": "running",
-    "checkpoint_next_stage": "research",
-    "completed_stages": [],
+    "checkpoint_next_stage": "materials",
+    "completed_stages": [
+      "research"
+    ],
     "registered_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
     "checkpoint_verified": true,
     "launch_started": true,
     "launch_operator": "factory_next.operator --steps 8 continue",
     "launch_job_id": "job_5a15944bfd26",
-    "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb"
+    "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+    "last_observed_at_utc": "2026-10-25T19:34:00Z"
   },
   "previous_attempts": [
     {
@@ -813,14 +816,17 @@
         "launch": "not launched; register only after this GitHub checkpoint",
         "registration_status": "preparing",
         "checkpoint_status": "running",
-        "checkpoint_next_stage": "research",
-        "completed_stages": [],
+        "checkpoint_next_stage": "materials",
+        "completed_stages": [
+          "research"
+        ],
         "registered_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
         "checkpoint_verified": true,
         "launch_started": true,
         "launch_operator": "factory_next.operator --steps 8 continue",
         "launch_job_id": "job_5a15944bfd26",
-        "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb"
+        "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+        "last_observed_at_utc": "2026-10-25T19:34:00Z"
       }
     }
   },
