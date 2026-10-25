@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "PL15_MACHINE_PASS_EN30_CHECKPOINT_PENDING",
+  "status": "PL15_MACHINE_PASS_EN30_READY_TO_LAUNCH",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -593,7 +593,7 @@
   },
   "matrix": {
     "EN30": {
-      "status": "checkpoint_pending",
+      "status": "ready",
       "job_id": "d548181b-7bd1-48c9-9a45-642e93ea6975",
       "request": {
         "topic": "How does a rainbow form?",
@@ -601,9 +601,14 @@
         "seconds": 30
       },
       "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
-      "registration_created": false,
+      "registration_created": true,
       "launch_count": 0,
-      "billing_enabled": false
+      "billing_enabled": false,
+      "checkpoint_status": "ready",
+      "next_stage": "research",
+      "registration_status": "preparing",
+      "provider_stage_calls": 0,
+      "checkpoint_verified": true
     }
   }
 }
