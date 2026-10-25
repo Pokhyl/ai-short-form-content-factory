@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "CANDIDATE_BUILT_VERIFIED_NOT_DEPLOYED",
+  "status": "DEPLOYMENT_READY",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -119,5 +119,24 @@
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-705648d",
     "source_revision": "705648d439e536bb4b9009ecb9e37491a4d11a32f",
     "manifest_digest": "sha256:e9c73816f2cc29db92ba13a56f180ca80a912285e2b503431be7b66a6fad51a5"
+  },
+  "deployment": {
+    "target_container": "factory-next-studio-v9",
+    "old_image": "factory-v3:research-budget-a04f3c8c",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-705648d",
+    "backup_container": "factory-next-studio-v9-before-voice-fix-20261025",
+    "caddy_route": "factory-next-studio-v9:3003 unchanged",
+    "networks": [
+      "n8n_default",
+      "shorts-v2_default"
+    ],
+    "mounts": [
+      "shorts-v2_media_data:/data",
+      "/var/lib/factory-v3/settings.json:/run/factory-v3/settings.json:ro"
+    ],
+    "database_migration": false,
+    "active_jobs_before_swap": 0,
+    "other_running_containers_before_swap": 17,
+    "rollback": "retain stopped original image/container; on failed health, remove candidate, restore original name, reconnect both networks and start old container"
   }
 }
