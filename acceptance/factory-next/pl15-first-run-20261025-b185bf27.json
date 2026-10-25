@@ -666,9 +666,10 @@
       "completed_stages": [
         "research",
         "materials",
-        "story"
+        "story",
+        "voice"
       ],
-      "next_stage": "voice"
+      "next_stage": "alignment"
     }
   },
   "fix4": {
