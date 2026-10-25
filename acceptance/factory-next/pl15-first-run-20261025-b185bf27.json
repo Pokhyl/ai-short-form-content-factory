@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "PL15_SINGLE_LAUNCH_IN_PROGRESS",
+  "status": "PL15_FAILED_MATERIALS_HTTP_503",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -178,7 +178,7 @@
       "language": "pl",
       "seconds": 15
     },
-    "status": "running",
+    "status": "needs_attention",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -192,9 +192,9 @@
     "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
     "provider_calls": 0,
     "launch_count": 1,
-    "retry": "forbidden after failure/uncertain state",
+    "retry": "forbidden; immutable ID",
     "registration_created": true,
-    "checkpoint_status": "running",
+    "checkpoint_status": "needs_attention",
     "next_stage": "materials",
     "billing_enabled": false,
     "provider_stage_calls": 0,
@@ -203,6 +203,13 @@
     "launch_job_id": "job_f2558304fbcb",
     "completed_stages": [
       "research"
-    ]
+    ],
+    "error_type": "HTTPFailure",
+    "failure_code": "EXTERNAL_HTTP_FAILURE",
+    "safe_failure_details": {
+      "http_status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14086"
+    }
   }
 }
