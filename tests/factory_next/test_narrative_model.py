@@ -189,7 +189,7 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
         repair_schema=model.generated[1][2][2]
         def has_length_constraint(value):
             if isinstance(value,dict):
-                return any(key in value for key in ("minLength","maxLength")) or any(
+                return "minLength" in value or any(
                     has_length_constraint(item) for item in value.values())
             if isinstance(value,list):
                 return any(has_length_constraint(item) for item in value)
