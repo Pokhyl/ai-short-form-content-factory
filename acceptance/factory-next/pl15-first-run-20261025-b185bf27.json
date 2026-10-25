@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "PL15_FAILED_MATERIALS_HTTP_503",
+  "status": "SECOND_PL15_RESERVED_AFTER_PROVIDER_503",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "register the new PL15 ID once and verify ready checkpoint",
-    "2": "checkpoint registration in GitHub, then launch once",
-    "3": "verify MP4 bytes/hash/duration, frame/audio identity, citations, and licenses"
+    "1": "register new ID once; verify ready checkpoint",
+    "2": "checkpoint before one launch",
+    "3": "verify render artifact or preserve terminal failure"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -172,13 +172,13 @@
     }
   },
   "fresh_attempt": {
-    "job_id": "1892fda4-0428-48d1-b70b-a4b202183c3a",
+    "job_id": "664a0c0f-2313-4006-b1fc-501ebdd5249b",
     "request": {
       "topic": "Jak powstaje tęcza?",
       "language": "pl",
       "seconds": 15
     },
-    "status": "needs_attention",
+    "status": "reserved_not_registered",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -190,26 +190,51 @@
       "metadata": 1
     },
     "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
-    "provider_calls": 0,
-    "launch_count": 1,
-    "retry": "forbidden; immutable ID",
-    "registration_created": true,
-    "checkpoint_status": "needs_attention",
-    "next_stage": "materials",
-    "billing_enabled": false,
     "provider_stage_calls": 0,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_started": true,
-    "launch_job_id": "job_f2558304fbcb",
-    "completed_stages": [
-      "research"
-    ],
-    "error_type": "HTTPFailure",
-    "failure_code": "EXTERNAL_HTTP_FAILURE",
-    "safe_failure_details": {
-      "http_status": 503,
-      "error_status": "UNAVAILABLE",
-      "gateway_execution_id": "14086"
+    "launch_count": 0,
+    "retry": "forbidden after failure/uncertain state"
+  },
+  "previous_attempts": [
+    {
+      "job_id": "1892fda4-0428-48d1-b70b-a4b202183c3a",
+      "request": {
+        "topic": "Jak powstaje tęcza?",
+        "language": "pl",
+        "seconds": 15
+      },
+      "status": "needs_attention",
+      "budget": {
+        "gemini": 26,
+        "source_fetch": 6,
+        "research_search": 1,
+        "search_pexels": 3,
+        "search_pixabay": 3,
+        "search_wikimedia": 3,
+        "download": 32,
+        "metadata": 1
+      },
+      "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
+      "provider_calls": 0,
+      "launch_count": 1,
+      "retry": "forbidden; immutable ID",
+      "registration_created": true,
+      "checkpoint_status": "needs_attention",
+      "next_stage": "materials",
+      "billing_enabled": false,
+      "provider_stage_calls": 0,
+      "launch_operator": "factory_next.operator --steps 8 continue",
+      "launch_started": true,
+      "launch_job_id": "job_f2558304fbcb",
+      "completed_stages": [
+        "research"
+      ],
+      "error_type": "HTTPFailure",
+      "failure_code": "EXTERNAL_HTTP_FAILURE",
+      "safe_failure_details": {
+        "http_status": 503,
+        "error_status": "UNAVAILABLE",
+        "gateway_execution_id": "14086"
+      }
     }
-  }
+  ]
 }
