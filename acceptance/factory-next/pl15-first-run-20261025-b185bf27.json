@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_READY_FOR_NEW_CHECKPOINT",
+  "status": "RU45_FRESH_ATTEMPT_CHECKPOINTED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -187,17 +187,17 @@
     "candidate_image_id": "sha256:c6bbb595acd18f545d541fe9b1c4184caf71bf83447a1d5df339f35462033f9c"
   },
   "fresh_attempt": {
-    "job_id": "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
+    "job_id": "a763d1e6-b4c4-460d-b414-06b84019bfe8",
     "request": {
       "topic": "Как образуется радуга?",
       "language": "ru",
       "seconds": 45
     },
-    "status": "needs_attention",
-    "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
-    "runtime_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
-    "registration_created": true,
-    "launch_count": 1,
+    "status": "checkpointed_before_registration",
+    "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+    "runtime_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
+    "registration_created": false,
+    "launch_count": 0,
     "billing_enabled": false,
     "provider_stage_calls": 0,
     "next_stage": "research",
@@ -205,40 +205,7 @@
     "preparation_absent_before_registration": true,
     "ledger_absent_before_registration": true,
     "media_absent_before_registration": true,
-    "launch": "not launched; register only after this GitHub checkpoint",
-    "registration_status": "preparing",
-    "checkpoint_status": "needs_attention",
-    "checkpoint_next_stage": "voice",
-    "completed_stages": [
-      "research",
-      "materials",
-      "story"
-    ],
-    "registered_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
-    "checkpoint_verified": true,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_5a15944bfd26",
-    "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
-    "error_type": "ModelSchemaError",
-    "failure_code": "MODEL_RESPONSE_INVALID",
-    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-    "observed_tts_duration_ms": 39696,
-    "length_window": {
-      "min_words": 86,
-      "max_words": 96,
-      "target_words": 91,
-      "min_characters": 629,
-      "max_characters": 739,
-      "target_characters": 684
-    },
-    "failed_repair_totals": {
-      "maximum_possible_characters": 445,
-      "maximum_possible_words": 64,
-      "required_minimum_characters": 629,
-      "required_minimum_words": 86
-    },
-    "root_cause": "The repair response remained far below the measured duration window (medium variants 418 characters/59 words; longest possible combination 445 characters/64 words). The newly added per-variant minimum-length schema then correctly rejected the response before it could be selected. The prompt was explicit but Gemini low-thinking did not follow it."
+    "launch": "not launched; register only after this GitHub checkpoint"
   },
   "previous_attempts": [
     {
@@ -816,17 +783,17 @@
       },
       "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3.",
       "next_attempt": {
-        "job_id": "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
+        "job_id": "a763d1e6-b4c4-460d-b414-06b84019bfe8",
         "request": {
           "topic": "Как образуется радуга?",
           "language": "ru",
           "seconds": 45
         },
-        "status": "needs_attention",
-        "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
-        "runtime_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
-        "registration_created": true,
-        "launch_count": 1,
+        "status": "checkpointed_before_registration",
+        "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+        "runtime_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
+        "registration_created": false,
+        "launch_count": 0,
         "billing_enabled": false,
         "provider_stage_calls": 0,
         "next_stage": "research",
@@ -834,41 +801,25 @@
         "preparation_absent_before_registration": true,
         "ledger_absent_before_registration": true,
         "media_absent_before_registration": true,
-        "launch": "not launched; register only after this GitHub checkpoint",
-        "registration_status": "preparing",
-        "checkpoint_status": "needs_attention",
-        "checkpoint_next_stage": "voice",
-        "completed_stages": [
-          "research",
-          "materials",
-          "story"
-        ],
-        "registered_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
-        "checkpoint_verified": true,
-        "launch_started": true,
-        "launch_operator": "factory_next.operator --steps 8 continue",
-        "launch_job_id": "job_5a15944bfd26",
-        "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
-        "error_type": "ModelSchemaError",
-        "failure_code": "MODEL_RESPONSE_INVALID",
-        "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-        "observed_tts_duration_ms": 39696,
-        "length_window": {
-          "min_words": 86,
-          "max_words": 96,
-          "target_words": 91,
-          "min_characters": 629,
-          "max_characters": 739,
-          "target_characters": 684
+        "launch": "not launched; register only after this GitHub checkpoint"
+      },
+      "failed_attempt_history": [
+        {
+          "job_id": "59917beb-71db-4f25-9e6e-a6722b5806f0",
+          "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
+          "stage": "voice",
+          "source_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+          "retry": "forbidden for this ID"
         },
-        "failed_repair_totals": {
-          "maximum_possible_characters": 445,
-          "maximum_possible_words": 64,
-          "required_minimum_characters": 629,
-          "required_minimum_words": 86
-        },
-        "root_cause": "The repair response remained far below the measured duration window (medium variants 418 characters/59 words; longest possible combination 445 characters/64 words). The newly added per-variant minimum-length schema then correctly rejected the response before it could be selected. The prompt was explicit but Gemini low-thinking did not follow it."
-      }
+        {
+          "job_id": "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
+          "failure_code": "MODEL_RESPONSE_INVALID",
+          "stage": "voice",
+          "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+          "retry": "forbidden for this ID",
+          "actual_duration_ms": 39696
+        }
+      ]
     }
   },
   "fix4": {
