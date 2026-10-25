@@ -10,7 +10,16 @@
     "image_id": "sha256:2329cb4c1a1b5286735186dec11241866a337e5ac31c48c2fee0054cdba7c0de",
     "image_tag": "factory-v3:research-budget-a04f3c8c",
     "tts_client_timeout_seconds": 330,
-    "exact_image_suite": "running; must pass before submission"
+    "exact_image_suite": {
+      "result": "PASS",
+      "factory_next_tests": 207,
+      "factory_v3_tests": 131,
+      "total_tests": 338,
+      "exit_code": 0,
+      "network": "none",
+      "receipt_path": "acceptance/factory-next/2026-10-25-live-a04f-exact-image-test-receipt.json",
+      "receipt_commit": "b34e3591a8240e647f0676a2f30e119c6db952c7"
+    }
   },
   "request": {
     "topic": "Почему листья осенью меняют цвет?",
@@ -69,6 +78,6 @@
     "7ff430fd-98f6-4817-bfc1-10865e285163",
     "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2"
   ],
-  "status": "planned_waiting_for_exact_image_suite",
+  "status": "ready_for_one_bounded_submission",
   "authorization": "Owner explicitly instructed to continue the project on 2026-10-25; existing project authorization covers one bounded production acceptance after release gates."
 }
