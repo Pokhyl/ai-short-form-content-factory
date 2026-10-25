@@ -533,7 +533,11 @@ class PreparationStages:
         bands={name:{'min_characters':max(5,round(target*.88)),
                      'max_characters':min(2000,round(target*1.12))}
                for name,target in targets.items()}
-        schema=variant_contract(scenes,targets)
+        # Per-beat bands guide generation, but are advisory. Gemini can miss
+        # a local band by a few characters while the assembled narration
+        # still fits the measured duration. Enforce exact duration and
+        # source coverage in choose_variants and the independent review.
+        schema=variant_contract(scenes)
         band_instruction='; '.join(
             f"{name}: {bands[name]['min_characters']}-{bands[name]['max_characters']} characters"
             for name in ('short','medium','long'))
