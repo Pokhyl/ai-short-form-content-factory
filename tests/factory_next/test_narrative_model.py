@@ -238,7 +238,7 @@ class MeasuredSentenceRevisionRoutingTests(unittest.TestCase):
              patch("factory_next.preparation.validate_native_surface"), \
              patch("factory_next.preparation.validate_script_review"), \
              patch("factory_next.preparation.compact_materials",return_value=[]):
-            result=stage._revise_story(context,15000)
+            result=stage.revise_story(context,15000)
         self.assertEqual(result["scenes"],revised)
         self.assertEqual(len(verified.generated),1)
         self.assertEqual(verified.generated[0][0],"next-measured-duration-revision")
