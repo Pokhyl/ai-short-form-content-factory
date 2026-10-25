@@ -125,7 +125,7 @@
   "deployment": {
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
-    "candidate_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
     "backup_container": "factory-next-studio-v9-before-total-gate-8932a30-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
@@ -176,7 +176,7 @@
       "18ff1836-52a8-4003-9d26-12d98e8a2ce5"
     ],
     "current_active_jobs": 0,
-    "candidate_revision": "8932a3074e2692f35af904489353ae031e58fe36",
+    "candidate_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
     "local_health": 200,
     "active_pipeline_executions": 0,
     "rollback_observations": [
@@ -184,7 +184,7 @@
       "Second swap used image CLI entrypoint instead of Studio server; old container restored automatically.",
       "Third swap set --entrypoint python3; candidate validated locally and publicly."
     ],
-    "candidate_image_id": "sha256:816e227fa5ed7a7eb203c37d48a42ef18476df4cbd3cb63900e1ae14bf415150"
+    "candidate_image_id": "sha256:3f02a57fd87a52b5f2cb123e0c773b7c0295ac059a1d1166141e4c0890170fa0"
   },
   "fresh_attempt": {
     "job_id": "cb484faf-21bd-43aa-a336-b242cdfd53e2",
@@ -1023,6 +1023,21 @@
     "github_wiring_commit": "6e8091710e9b271a6118398731b1d6e329bb79ef",
     "github_test_commit": "9b3bdc15c48a0259c44011417b89aa41297b27c1",
     "change": "Route measured voice correction through the structured complete-sentence contract rather than generating nine alternatives. Use the configured verified narrative model, medium thinking, a 16384 token cap, exact aggregate word/character bounds, one optional structured repair, and the existing independent source/native review.",
-    "test": "Added exact regression for verified narrative-model routing and bounded thinking/token settings; exact candidate image pending."
+    "test": "Added exact regression for verified narrative-model routing and bounded thinking/token settings; exact candidate image pending.",
+    "local_followup_commit": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
+    "exact_image_tests": {
+      "tests": [
+        "test_voice_variants",
+        "test_narrative_model",
+        "test_operator",
+        "test_pipeline"
+      ],
+      "result": "29/29 passed; network disabled; exact revision verified"
+    },
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
+    "source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
+    "image_id": "sha256:3f02a57fd87a52b5f2cb123e0c773b7c0295ac059a1d1166141e4c0890170fa0",
+    "image_size_bytes": 309055019,
+    "status": "candidate_passed_tests_pending_deployment"
   }
 }
