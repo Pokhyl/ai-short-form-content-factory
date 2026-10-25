@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-25",
+  "repository": "Pokhyl/ai-short-form-content-factory",
+  "branch": "codex/repair-overlong-story-20261024",
+  "source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+  "image_tag": "factory-v3:research-budget-a04f3c8c-gemini503-0944bd80",
+  "image_id": "sha256:1f905fd4541beea553c5225d5bab7e3a5d3486cd5039ff2f0662c84336e6b29b",
+  "base_image_id": "sha256:2329cb4c1a1b5286735186dec11241866a337e5ac31c48c2fee0054cdba7c0de",
+  "runner": {
+    "network": "none",
+    "filesystem": "read-only root; temporary /tmp only",
+    "test_mounts": "read-only",
+    "source_overlay": "none; packaged fixed module in built image",
+    "exit_code": 0,
+    "duration_seconds": 110.57
+  },
+  "suites": [
+    {
+      "path": "tests/factory_next",
+      "tests": 207,
+      "result": "PASS"
+    },
+    {
+      "path": "tests/factory_v3",
+      "tests": 132,
+      "result": "PASS"
+    }
+  ],
+  "total_tests": 339,
+  "overall_result": "PASS",
+  "behavior": {
+    "explicit_gateway_503": "classified as ModelUnavailable",
+    "automatic_retry": "none",
+    "ambiguous_operations": "remain terminal"
+  }
+}
