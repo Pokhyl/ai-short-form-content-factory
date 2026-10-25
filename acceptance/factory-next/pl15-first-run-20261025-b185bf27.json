@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "checkpoint and register RU45 on deployed revision",
-    "2": "launch exact RU45 ID once and verify its MP4",
-    "3": "continue UK60 with fresh checkpointed ID"
+    "1": "verify the committed RU45 checkpoint, register the exact new ID once, and launch once",
+    "2": "verify RU45 MP4 and public Studio record",
+    "3": "continue UK60 with a fresh checkpointed ID"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -186,62 +186,25 @@
     ]
   },
   "fresh_attempt": {
-    "job_id": "3eaf9bda-4d33-4e5b-b8ed-4d5c64edfa5c",
+    "job_id": "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
     "request": {
-      "topic": "Jak powstaje tęcza?",
-      "language": "pl",
-      "seconds": 15
+      "topic": "Как образуется радуга?",
+      "language": "ru",
+      "seconds": 45
     },
-    "status": "complete",
-    "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
-    "registration_created": true,
-    "launch_count": 1,
+    "status": "checkpointed_before_registration",
+    "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+    "runtime_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
+    "registration_created": false,
+    "launch_count": 0,
     "billing_enabled": false,
-    "completed_stages": [
-      "research",
-      "materials",
-      "story",
-      "voice",
-      "alignment",
-      "edit",
-      "render",
-      "audit"
-    ],
-    "audit_passed": true,
-    "video_path": "/data/renders/3eaf9bda-4d33-4e5b-b8ed-4d5c64edfa5c/final.mp4",
-    "bytes": 3600847,
-    "duration_ms": 15000,
-    "width": 1080,
-    "height": 1920,
-    "video_codec": "h264",
-    "audio_codec": "aac",
-    "sha256": "8343abcb7e781a7789d80496f97f684da282b162c5b0cfb6c4ad5849b9395df3",
-    "audio_correlation": 0.9999904749514786,
-    "original_audio_correlation": 0.9999904629099173,
-    "audit_gates_passed": [
-      "exact_duration",
-      "video_format",
-      "audio_format",
-      "frame_count",
-      "original_audio_unchanged",
-      "fitted_audio_unchanged",
-      "video_sha256",
-      "distinct_photo_count",
-      "reviewed_photo_set",
-      "exact_visual_timeline",
-      "staged_photo_bytes",
-      "whole_photo_policy",
-      "natural_voice_speed",
-      "full_decode",
-      "fitted_narration_preserved",
-      "original_narration_preserved"
-    ],
-    "launch_job_id": "job_b11f4523a8a4",
-    "public_video_url": "https://studio.hodor.com.pl/factory-next/api/jobs/3eaf9bda-4d33-4e5b-b8ed-4d5c64edfa5c/video",
-    "public_detail_url": "https://studio.hodor.com.pl/factory-next/api/jobs/3eaf9bda-4d33-4e5b-b8ed-4d5c64edfa5c",
-    "source_citation_count": 3,
-    "scene_count": 3,
-    "all_scene_photo_attribution_fields_present": true
+    "provider_stage_calls": 0,
+    "next_stage": "research",
+    "state_absent_before_registration": true,
+    "preparation_absent_before_registration": true,
+    "ledger_absent_before_registration": true,
+    "media_absent_before_registration": true,
+    "launch": "not launched; register only after this GitHub checkpoint"
   },
   "previous_attempts": [
     {
@@ -817,7 +780,28 @@
         "target_words": 87,
         "target_characters": 654
       },
-      "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3."
+      "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3.",
+      "next_attempt": {
+        "job_id": "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
+        "request": {
+          "topic": "Как образуется радуга?",
+          "language": "ru",
+          "seconds": 45
+        },
+        "status": "checkpointed_before_registration",
+        "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+        "runtime_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
+        "registration_created": false,
+        "launch_count": 0,
+        "billing_enabled": false,
+        "provider_stage_calls": 0,
+        "next_stage": "research",
+        "state_absent_before_registration": true,
+        "preparation_absent_before_registration": true,
+        "ledger_absent_before_registration": true,
+        "media_absent_before_registration": true,
+        "launch": "not launched; register only after this GitHub checkpoint"
+      }
     }
   },
   "fix4": {
