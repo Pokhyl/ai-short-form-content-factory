@@ -615,7 +615,11 @@ class PreparationStages:
             repair_bands={name:{'min_characters':max(5,round(target*.90)),
                                 'max_characters':min(2000,round(target*1.10))}
                           for name,target in repair_targets.items()}
-            repair_schema=variant_contract(scenes,repair_targets)
+            # Per-beat targets guide the model, but the authoritative gate is
+            # the assembled script's exact measured word/character window.
+            # Do not reject an otherwise valid total because one alternative
+            # misses a soft local band by a few characters.
+            repair_schema=schema
             repair_instruction=(
                 f" CORRECTIVE VOICE-FIT: the previous response is unusable because its largest "
                 f"possible combination was only {maximum_characters} characters and {maximum_words} "
