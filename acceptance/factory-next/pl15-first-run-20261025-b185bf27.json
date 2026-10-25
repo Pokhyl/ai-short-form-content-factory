@@ -708,9 +708,10 @@
       "launch_job_id": "job_dedcfff845f3",
       "retry": "forbidden after failure/uncertain state",
       "completed_stages": [
-        "research"
+        "research",
+        "materials"
       ],
-      "next_stage": "materials"
+      "next_stage": "story"
     }
   },
   "fix4": {
