@@ -187,11 +187,8 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
         self.assertIn("medium narration must total 20-30 words",
                       model.generated[1][2][0])
         repair_schema=model.generated[1][2][2]
-        def has_length_constraint(value):
-            if isinstance(value,dict):
-                return "minLength" in value or any(
-                    has_length_constraint(item) for item in value.values())
-            if isinstance(value,list):
-                return any(has_length_constraint(item) for item in value)
-            return False
-        self.assertFalse(has_length_constraint(repair_schema))
+        for label in ("short","medium","long"):
+            narration_schema=repair_schema["properties"]["beat_1"]["properties"][
+                label]["properties"]["narration"]
+            self.assertEqual(narration_schema.get("minLength"),1)
+            self.assertEqual(narration_schema.get("maxLength"),2000)
