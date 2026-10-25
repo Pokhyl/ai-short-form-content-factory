@@ -216,8 +216,7 @@
     "launch_started": true,
     "launch_operator": "factory_next.operator --steps 8 continue",
     "launch_job_id": "job_5a15944bfd26",
-    "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
-    "last_observed_at_utc": "2026-10-25T19:34:00Z"
+    "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb"
   },
   "previous_attempts": [
     {
@@ -825,8 +824,7 @@
         "launch_started": true,
         "launch_operator": "factory_next.operator --steps 8 continue",
         "launch_job_id": "job_5a15944bfd26",
-        "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
-        "last_observed_at_utc": "2026-10-25T19:34:00Z"
+        "launch_source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb"
       }
     }
   },
