@@ -662,7 +662,11 @@
       "launch_started": true,
       "launch_operator": "factory_next.operator --steps 8 continue",
       "launch_job_id": "job_6d2f8b79e65a",
-      "retry": "forbidden after failure/uncertain state"
+      "retry": "forbidden after failure/uncertain state",
+      "completed_stages": [
+        "research"
+      ],
+      "next_stage": "materials"
     }
   },
   "fix4": {
