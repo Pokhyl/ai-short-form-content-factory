@@ -664,9 +664,11 @@
       "launch_job_id": "job_6d2f8b79e65a",
       "retry": "forbidden after failure/uncertain state",
       "completed_stages": [
-        "research"
+        "research",
+        "materials",
+        "story"
       ],
-      "next_stage": "materials"
+      "next_stage": "voice"
     }
   },
   "fix4": {
