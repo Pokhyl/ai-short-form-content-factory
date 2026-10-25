@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-25",
+  "repository": "Pokhyl/ai-short-form-content-factory",
+  "branch": "codex/repair-overlong-story-20261024",
+  "source_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+  "image": {
+    "id": "sha256:2329cb4c1a1b5286735186dec11241866a337e5ac31c48c2fee0054cdba7c0de",
+    "tag": "factory-v3:research-budget-a04f3c8c"
+  },
+  "runner": {
+    "network": "none",
+    "filesystem": "read-only root; temporary /tmp only",
+    "mounts": "tests, acceptance, services, and factory_v3/Dockerfile read-only",
+    "background_job_id": "job_b0b6078ec4a6",
+    "exit_code": 0,
+    "duration_seconds": 113.15
+  },
+  "suites": [
+    {
+      "path": "tests/factory_next",
+      "tests": 207,
+      "result": "PASS"
+    },
+    {
+      "path": "tests/factory_v3",
+      "tests": 131,
+      "result": "PASS"
+    }
+  ],
+  "total_tests": 338,
+  "overall_result": "PASS",
+  "note": "Expected negative-test diagnostics appeared in output; both unittest commands completed successfully."
+}
