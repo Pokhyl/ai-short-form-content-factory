@@ -192,3 +192,60 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
                 label]["properties"]["narration"]
             self.assertEqual(narration_schema.get("minLength"),1)
             self.assertEqual(narration_schema.get("maxLength"),2000)
+
+ 
+
+class MeasuredSentenceRevisionRoutingTests(unittest.TestCase):
+    def test_voice_fit_uses_verified_narrative_model_with_bounded_medium_reasoning(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from factory_next.preparation import PreparationStages
+
+        original_scene={"id":"scene-1","material_id":"photo-1",
+                        "evidence_ids":["f1"],"narration":"Original sentence."}
+        revised=[{"id":"scene-1","material_id":"photo-1",
+                  "evidence_ids":["f1"],"narration":"A reviewed revised sentence."}]
+        evidence={"facts":[{"id":"f1","text":"A source fact."}]}
+        request={"topic":"A test topic","language":"en","seconds":15,
+                 "required_fact_ids":["f1"]}
+        context={"outputs":{"research":{"request":request,"evidence":evidence},
+                            "materials":{"photos":[{"id":"photo-1"}]},
+                            "story":{"scenes":[original_scene],
+                                     "script":"Original sentence."}}}
+        class Model:
+            def __init__(self):
+                self.calls=object()
+                self.default_thinking_level="high"
+                self.generated=[]
+                self.reviewed=[]
+            def generate(self,key,*args,**kwargs):
+                self.generated.append((key,args,kwargs))
+                return {},None
+            def review_script(self,data):
+                self.reviewed.append(data)
+                return {"native_language_quality":True}
+        primary=Model(); verified=Model()
+        stage=PreparationStages("/unused",SimpleNamespace(gemini=primary),
+                                lambda:None,narrative_model=verified)
+        window={"min_words":24,"max_words":32,"target_words":28,
+                "min_characters":120,"max_characters":160,"target_characters":140}
+        schema={"properties":{"beat_1":{"properties":{"sentence_1":{
+            "minLength":1,"maxLength":160}}}}}
+        with patch("factory_next.preparation.revision_length_window",return_value=window), \
+             patch("factory_next.preparation.sentence_contract",return_value=(schema,[1])), \
+             patch("factory_next.preparation.assemble_sentence_repair",return_value={"beats":revised}), \
+             patch("factory_next.preparation.validated_next_story",return_value=revised), \
+             patch("factory_next.preparation.validate_native_surface"), \
+             patch("factory_next.preparation.validate_script_review"), \
+             patch("factory_next.preparation.compact_materials",return_value=[]):
+            result=stage._revise_story(context,15000)
+        self.assertEqual(result["scenes"],revised)
+        self.assertEqual(len(verified.generated),1)
+        self.assertEqual(verified.generated[0][0],"next-measured-duration-revision")
+        self.assertEqual(verified.generated[0][2].get("max_tokens"),16384)
+        self.assertEqual(verified.generated[0][2].get("thinking_level"),"medium")
+        self.assertEqual(len(verified.reviewed),1)
+        self.assertEqual(primary.generated,[])
+        self.assertEqual(primary.reviewed,[])
+        self.assertEqual(primary.default_thinking_level,"high")
+        self.assertEqual(verified.default_thinking_level,"high")
