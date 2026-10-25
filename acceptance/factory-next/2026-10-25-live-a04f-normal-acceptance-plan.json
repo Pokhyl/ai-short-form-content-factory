@@ -78,7 +78,7 @@
     "7ff430fd-98f6-4817-bfc1-10865e285163",
     "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2"
   ],
-  "status": "remediation_deployed_acceptance_retry_plan_committed",
+  "status": "acceptance_failed_gateway_outcome_unreconciled",
   "authorization": "Owner explicitly instructed to continue the project on 2026-10-25; existing project authorization covers one bounded production acceptance after release gates.",
   "result": {
     "job_id": "678d75d5-1c74-4f16-a52c-f86f53f530af",
@@ -149,14 +149,12 @@
       "receipt_commit": "3c84ba286808722634a12bde4b555e0b72c3df39"
     },
     "deployment": {
-      "status": "deployed",
-      "image_tag": "factory-v3:research-budget-a04f3c8c-gemini503-0944bd80",
-      "image_id": "sha256:1f905fd4541beea553c5225d5bab7e3a5d3486cd5039ff2f0662c84336e6b29b",
-      "source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
-      "container": "factory-next-studio-v9",
-      "prior_container_preserved_stopped": "factory-next-studio-v9-backup-20261025",
+      "status": "rolled_back",
+      "reason": "A later gateway execution remained running after HTTP 503, so the new ModelUnavailable classification was not proven safe.",
+      "restored_image_id": "sha256:2329cb4c1a1b5286735186dec11241866a337e5ac31c48c2fee0054cdba7c0de",
+      "restored_source_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
       "public_health": "HTTP 200",
-      "database_or_other_containers_changed": false
+      "github_code_revert_commit": "a17689f3cfb15642be93743657950a640d90ee23"
     },
     "packaged_image": {
       "tag": "factory-v3:research-budget-a04f3c8c-gemini503-0944bd80",
@@ -171,6 +169,8 @@
       "failure": "research HTTP 503 UNAVAILABLE",
       "retry_or_resume": "none"
     },
-    "next_acceptance_plan": "acceptance/factory-next/2026-10-25-live-gemini503-fix-normal-acceptance-plan.json"
+    "next_acceptance_plan": "none until gateway execution outcome can be reconciled",
+    "reassessment_receipt": "acceptance/factory-next/2026-10-25-gemini-503-classification-reassessment.json",
+    "reassessment_commit": "471a64f9dfda21bf5d111b157a1b8fb44318b495"
   }
 }
