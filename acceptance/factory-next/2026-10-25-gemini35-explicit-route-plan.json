@@ -1,21 +1,23 @@
 {
   "diagnostic_id": "factory-next-gemini35-explicit-route-20261025",
   "created_utc": "2026-10-25",
-  "scope": "Explicitly select the already evaluated free Gemini 3.5 route after two immutable Gemini 3.1 research-stage 503 failures, then continue the product release matrix.",
+  "scope": "Explicitly select the already evaluated free Gemini 3.5 route after two immutable Gemini 3.1 research-stage 503 failures, then continue product release acceptance.",
   "live_evidence": {
     "image": "factory-v3:research-budget-a04f3c8c",
-    "runtime_source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
-    "current_selected_model": "gemini-3.1-flash-lite",
+    "runtime_source_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+    "current_selected_model": "gemini-3.5-flash-lite",
     "active_jobs_at_preflight": 0,
     "failures": [
       {
         "id": "678d75d5-1c74-4f16-a52c-f86f53f530af",
+        "source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
         "stage": "research",
         "http_status": 503,
         "error_status": "UNAVAILABLE"
       },
       {
         "id": "bf76a1b4-34e9-45f2-8817-9ed4c4e1a427",
+        "source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
         "stage": "research",
         "http_status": 503,
         "error_status": "UNAVAILABLE"
@@ -34,12 +36,13 @@
     "docs/PROVIDER_POLICY.md",
     "acceptance/factory-next/gemini31-runtime-full-tests-20261024.json",
     "acceptance/factory-next/2026-10-24-saved-actual-illustration-replay.json",
-    "tests/factory_next/test_narrative_model.py: 6/6 pass on source copied from the running image; verifies explicit research model routing, same budget meter, proof binding, high reasoning mode and no error fallback"
+    "tests/factory_next/test_narrative_model.py: 6/6 pass on the source copied from the running image; explicit research routing, same budget meter, proof binding, high reasoning mode and no error fallback"
   ],
   "changes": [
-    "No source-code or workflow change is needed for this route: the running image already has the fixed 3.5 gateway role and proof-bound model selection used by Factory Next research.",
-    "Update only factory_next_narrative_proof.model and verification_id in the private Studio settings; retain existing project and credential fingerprint.",
-    "Back up private settings outside Git and retain current image/container for rollback."
+    "The running image already contains the fixed 3.5 gateway role and proof-bound model selection used by Factory Next research.",
+    "Updated only factory_next_narrative_proof.model and verification_id in private Studio settings; retained project and credential binding.",
+    "Private pre-change settings backup retained outside Git.",
+    "Restarted only factory-next-studio-v9 once; health is 200, running image is unchanged, runtime now selects 3.5, and active job count is 0."
   ],
   "release_limits": {
     "PL15": {
@@ -84,11 +87,11 @@
     }
   },
   "execution": [
-    "Before rollout, recheck Studio health, zero active jobs, selected model, container and workflow/database/other-service fingerprints.",
-    "Back up settings, change only the two proof fields, restart factory-next-studio-v9 once, then verify health, runtime model and protected-state equality.",
-    "Submit one new PL15 acceptance. Commit its exact ID and budget before its single launch; preserve both failed IDs.",
-    "After each terminal pass, proceed in order EN30, RU45, UK60 with fresh IDs and prelaunch checkpoints. On failure, preserve the ID and close its blockers offline; never retry or resume.",
+    "A new PL15 ID and budget are committed to GitHub. No database registration or provider request has occurred for that ID.",
+    "Register that exact ID once without launching; verify the DB row and ready checkpoint against revision a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f.",
+    "After verifying registration and this GitHub checkpoint, launch the exact ID once. On failure or uncertainty, preserve it; never retry or resume.",
+    "After each terminal pass, proceed in order EN30, RU45, UK60 with fresh prelaunch checkpoints.",
     "Inspect actual MP4 bytes, duration, audio identity, frames, citations and licenses; owner HUMAN acceptance is still required."
   ],
-  "status": "PLAN ONLY. At creation: no settings mutation, provider call, job creation or container restart."
+  "status": "ROUTE UPDATED AND RESTARTED; PL15 ID checkpoint pushed; job is not yet registered or launched."
 }
