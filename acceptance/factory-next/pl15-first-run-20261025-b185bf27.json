@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "DEPLOYMENT_READY",
+  "status": "ROLLED_BACK_INVALID_REVISION",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -116,8 +116,8 @@
     "4": "checkpoint a fresh job ID and budget before any new provider call"
   },
   "candidate": {
-    "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-705648d",
-    "source_revision": "705648d439e536bb4b9009ecb9e37491a4d11a32f",
+    "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
+    "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
     "manifest_digest": "sha256:e9c73816f2cc29db92ba13a56f180ca80a912285e2b503431be7b66a6fad51a5"
   },
   "deployment": {
@@ -137,6 +137,19 @@
     "database_migration": false,
     "active_jobs_before_swap": 0,
     "other_running_containers_before_swap": 17,
-    "rollback": "retain stopped original image/container; on failed health, remove candidate, restore original name, reconnect both networks and start old container"
+    "rollback": "retain stopped original image/container; on failed health, remove candidate, restore original name, reconnect both networks and start old container",
+    "failed_candidate": {
+      "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-705648d",
+      "revision": "705648d439e536bb4b9009ecb9e37491a4d11a32f",
+      "observed_revision_length": 41,
+      "start_error": "ValueError exact built source revision required",
+      "result": "container stopped before serving; no jobs/provider calls",
+      "rollback": "original container restored; public health 200"
+    },
+    "rollback_verified": {
+      "active_image": "factory-v3:research-budget-a04f3c8c",
+      "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+      "public_health": 200
+    }
   }
 }
