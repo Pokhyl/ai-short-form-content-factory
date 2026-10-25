@@ -122,6 +122,11 @@ class GeminiTests(unittest.TestCase):
         with self.assertRaises(ValueError):self.generate()
         self.assertEqual(sends,[270])
 
+    def test_gemini_calls_enable_explicit_model_unavailable_recovery(self):
+        with patch.object(self.adapter.calls, "run", wraps=self.adapter.calls.run) as run:
+            self.generate()
+        self.assertTrue(run.call_args.kwargs["allow_model_unavailable"])
+
     def test_existing_model_keeps_its_transport_deadline(self):
         self.generate()
         self.assertEqual(self.http.requests[0][-1],90)
