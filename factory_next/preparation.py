@@ -580,12 +580,64 @@ class PreparationStages:
         try:
             draft=choose_variants(reply,scenes,window)
         except NaturalDurationRejected:
+            measured=variant_measurements(reply)
+            per_beat_chars=max(30,round(window['target_characters']/len(scenes)))
+            per_beat_words=max(8,round(window['target_words']/len(scenes)))
+            totals={'characters':{},'words':{}}
+            for label in ('short','medium','long'):
+                totals['characters'][label]=sum(
+                    measured.get('beat_'+str(i+1),{}).get(label,{}).get('characters',0)
+                    for i in range(len(scenes)))
+                totals['words'][label]=sum(
+                    measured.get('beat_'+str(i+1),{}).get(label,{}).get('words',0)
+                    for i in range(len(scenes)))
+            maximum_characters=sum(max(
+                (row.get(label,{}).get('characters',0) for label in ('short','medium','long')),
+                default=0) for row in measured.values())
+            maximum_words=sum(max(
+                (row.get(label,{}).get('words',0) for label in ('short','medium','long')),
+                default=0) for row in measured.values())
+            classification=('all_variants_below_window'
+                if maximum_characters < window['min_characters']
+                or maximum_words < window['min_words'] else 'no_valid_combination')
+            diagnosis={'classification':classification,
+                'maximum_possible_total_characters':maximum_characters,
+                'required_minimum_total_characters':window['min_characters'],
+                'maximum_possible_total_words':maximum_words,
+                'required_minimum_total_words':window['min_words'],
+                'variant_totals':totals}
+            repair_targets={name:round(per_beat_chars*factor)
+                for name,factor in (('short',.90),('medium',1.00),('long',1.10))}
+            repair_bands={name:{'min_characters':max(5,round(target*.90)),
+                                'max_characters':min(2000,round(target*1.10))}
+                          for name,target in repair_targets.items()}
+            repair_schema=variant_contract(scenes,repair_targets)
+            repair_instruction=(
+                f" The measured variants cannot reach the required total: the largest possible "
+                f"combination is {maximum_characters} characters and {maximum_words} words, "
+                f"while at least {window['min_characters']} characters and {window['min_words']} "
+                f"words are required. EXPAND every replacement version substantially. For each "
+                f"of {len(scenes)} beats, target about {per_beat_words} words and {per_beat_chars} "
+                "characters in the medium version; the short and long versions should target "
+                f"{repair_targets['short']} and {repair_targets['long']} characters per beat. "
+                f"Use these hard character bands per beat: {repair_bands}. Do not reuse the "
+                "previous short narration lengths. Keep short < medium < long, preserve each "
+                "assigned source fact, and add only explanatory detail directly supported by "
+                "those facts. The assembled medium versions should land inside the supplied "
+                "total word and character window."
+                if classification=='all_variants_below_window' else
+                " The previous completed variants have NO whole-beat combination within the "
+                "total window. Use the measured lengths and total window to adjust the versions "
+                "so at least one whole-variant combination fits. Do not repeat the same lengths; "
+                "preserve overall source claim coverage.")
             reply,_=model.generate('next-measured-variants-repair',
-                prompt+" The previous completed variants have NO combination within the total "
-                "window. Use their measured lengths to adjust the short/medium/long versions; "
-                "do not repeat the same lengths. Preserve overall source claim coverage.",
+                prompt+repair_instruction,
                 {**data,'previous_variants':reply,
-                 'measured_variant_lengths':variant_measurements(reply)},schema,
+                 'measured_variant_lengths':measured,
+                 'duration_repair_diagnosis':diagnosis,
+                 'repair_character_targets':repair_targets,
+                 'repair_character_bands':repair_bands,
+                 'repair_word_target_per_beat':per_beat_words},repair_schema,
                 max_tokens=16384,thinking_level='low')
             draft=choose_variants(reply,scenes,window)
         selected=validated_next_story(request,evidence,photos,draft)
