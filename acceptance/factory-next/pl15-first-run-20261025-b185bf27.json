@@ -192,10 +192,10 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "checkpointed_before_registration",
+    "status": "registered_ready_before_launch",
     "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
-    "registration_created": false,
+    "registration_created": true,
     "launch_count": 0,
     "billing_enabled": false,
     "provider_stage_calls": 0,
@@ -204,7 +204,13 @@
     "preparation_absent_before_registration": true,
     "ledger_absent_before_registration": true,
     "media_absent_before_registration": true,
-    "launch": "not launched; register only after this GitHub checkpoint"
+    "launch": "not launched; register only after this GitHub checkpoint",
+    "registration_status": "preparing",
+    "checkpoint_status": "ready",
+    "checkpoint_next_stage": "research",
+    "completed_stages": [],
+    "registered_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+    "checkpoint_verified": true
   },
   "previous_attempts": [
     {
@@ -788,10 +794,10 @@
           "language": "ru",
           "seconds": 45
         },
-        "status": "checkpointed_before_registration",
+        "status": "registered_ready_before_launch",
         "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
         "runtime_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
-        "registration_created": false,
+        "registration_created": true,
         "launch_count": 0,
         "billing_enabled": false,
         "provider_stage_calls": 0,
@@ -800,7 +806,13 @@
         "preparation_absent_before_registration": true,
         "ledger_absent_before_registration": true,
         "media_absent_before_registration": true,
-        "launch": "not launched; register only after this GitHub checkpoint"
+        "launch": "not launched; register only after this GitHub checkpoint",
+        "registration_status": "preparing",
+        "checkpoint_status": "ready",
+        "checkpoint_next_stage": "research",
+        "completed_stages": [],
+        "registered_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+        "checkpoint_verified": true
       }
     }
   },
