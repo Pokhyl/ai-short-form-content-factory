@@ -147,6 +147,7 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
                            "story":{"scenes":scenes,"script":"Original sentence."}}}
         class Model:
             def __init__(self):
+                self.calls=object()
                 self.generated=[]
             def generate(self,key,*args,**kwargs):
                 self.generated.append((key,kwargs))
