@@ -7,8 +7,8 @@
     "seconds": 15
   },
   "runtime": {
-    "image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
-    "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
+    "image": "factory-v3:research-budget-a04f3c8c-voice-budget-fca21d3",
+    "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
     "gemini_model": "gemini-3.5-flash-lite",
     "gateway_role": "gemini_narrative_lite",
     "google_voice": "existing fixed Google TTS route"
@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "VOICE_TOKEN_FIX_CANDIDATE_VERIFIED",
+  "status": "VOICE_TOKEN_FIX_DEPLOYED_NEW_PL15_RESERVED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,10 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "build exact candidate revision fca21d38a2f4951f337f25ebaae5703955f57592",
-    "2": "run 28 focused tests inside candidate image",
-    "3": "deploy with rollback container retained",
-    "4": "reserve fresh PL15 and launch once"
+    "1": "register new ID once and checkpoint ready",
+    "2": "launch once after checkpoint verification",
+    "3": "verify actual MP4 and acceptance gates"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -127,7 +126,7 @@
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
     "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
-    "backup_container": "factory-next-studio-v9-before-visual-model-fix-20261025",
+    "backup_container": "factory-next-studio-v9-before-voice-budget-fix-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
       "n8n_default",
@@ -154,11 +153,11 @@
       "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
       "public_health": 200
     },
-    "active_image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
-    "active_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
+    "active_image": "factory-v3:research-budget-a04f3c8c-voice-budget-fca21d3",
+    "active_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
     "public_health": 200,
     "backup_container_state": "exited and retained",
-    "backup_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
+    "backup_image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
     "backup_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
     "active_jobs_at_verification": 0,
     "unlaunched_registration_pending_ids": [
@@ -178,13 +177,13 @@
     ]
   },
   "fresh_attempt": {
-    "job_id": "0e443cf5-9fb3-4c99-9114-cf44e6f1a5fc",
+    "job_id": "3eaf9bda-4d33-4e5b-b8ed-4d5c64edfa5c",
     "request": {
       "topic": "Jak powstaje tęcza?",
       "language": "pl",
       "seconds": 15
     },
-    "status": "needs_attention",
+    "status": "reserved_not_registered",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -195,31 +194,9 @@
       "download": 32,
       "metadata": 1
     },
-    "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
-    "launch_count": 1,
-    "retry": "forbidden; immutable ID",
-    "registration_created": true,
-    "checkpoint_status": "needs_attention",
-    "next_stage": "voice",
-    "billing_enabled": false,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_926a17c80c1a",
-    "completed_stages": [
-      "research",
-      "materials",
-      "story"
-    ],
-    "error_type": "ValueError",
-    "failure_code": "MODEL_RESPONSE_INVALID",
-    "safe_failure_details": {
-      "gemini_http_status": 200,
-      "finish_reason": "MAX_TOKENS",
-      "max_output_tokens": 8192,
-      "total_token_count": 9033,
-      "thoughts_token_count": 7860,
-      "candidates_token_count": 317
-    }
+    "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
+    "launch_count": 0,
+    "retry": "forbidden after failure/uncertain state"
   },
   "previous_attempts": [
     {
@@ -448,6 +425,50 @@
       "launch_started": true,
       "launch_operator": "factory_next.operator --steps 8 continue",
       "launch_job_id": "job_0177475e4dba"
+    },
+    {
+      "job_id": "0e443cf5-9fb3-4c99-9114-cf44e6f1a5fc",
+      "request": {
+        "topic": "Jak powstaje tęcza?",
+        "language": "pl",
+        "seconds": 15
+      },
+      "status": "needs_attention",
+      "budget": {
+        "gemini": 26,
+        "source_fetch": 6,
+        "research_search": 1,
+        "search_pexels": 3,
+        "search_pixabay": 3,
+        "search_wikimedia": 3,
+        "download": 32,
+        "metadata": 1
+      },
+      "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
+      "launch_count": 1,
+      "retry": "forbidden; immutable ID",
+      "registration_created": true,
+      "checkpoint_status": "needs_attention",
+      "next_stage": "voice",
+      "billing_enabled": false,
+      "launch_started": true,
+      "launch_operator": "factory_next.operator --steps 8 continue",
+      "launch_job_id": "job_926a17c80c1a",
+      "completed_stages": [
+        "research",
+        "materials",
+        "story"
+      ],
+      "error_type": "ValueError",
+      "failure_code": "MODEL_RESPONSE_INVALID",
+      "safe_failure_details": {
+        "gemini_http_status": 200,
+        "finish_reason": "MAX_TOKENS",
+        "max_output_tokens": 8192,
+        "total_token_count": 9033,
+        "thoughts_token_count": 7860,
+        "candidates_token_count": 317
+      }
     }
   ],
   "provider_diagnosis": {
@@ -531,7 +552,7 @@
     "change": "Set measured-variant generation and its single repair to the Gemini wrapper's supported 16384 output-token maximum; keep same free model, call budget, and no-retry behavior.",
     "test_result": "28/28 passed from candidate image itself; network disabled; exact 40-character revision.",
     "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-budget-fca21d3",
-    "deployment": "candidate verified; ready for production swap",
+    "deployment": "deployed; public health 200; rollback container retained",
     "manifest_digest": "sha256:66790b971dbdeb9828c5fed45a17f55bba3835fe9ca5f8ec383208f9688af0cb",
     "config_digest": "sha256:3ba41c1123c7115a950bc6f433268ec9b6c90fbb2017d6e2e883453279c892d1",
     "image_size_bytes": 309052857
