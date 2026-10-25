@@ -78,7 +78,7 @@
     "7ff430fd-98f6-4817-bfc1-10865e285163",
     "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2"
   ],
-  "status": "acceptance_failed_research_503_no_retry",
+  "status": "acceptance_failed_remediation_tested_not_deployed",
   "authorization": "Owner explicitly instructed to continue the project on 2026-10-25; existing project authorization covers one bounded production acceptance after release gates.",
   "result": {
     "job_id": "678d75d5-1c74-4f16-a52c-f86f53f530af",
@@ -134,6 +134,20 @@
       "reason": "not_explicit_model_unavailable"
     },
     "safety_note": "The Gemini 503 call is durably marked unknown. It cannot be assumed unexecuted or resent safely.",
-    "limits_note": "Observed metadata/search/fetch/Gemini call counts stayed within the bounded plan; token usage for the unknown call is not established."
+    "limits_note": "Observed metadata/search/fetch/Gemini call counts stayed within the bounded plan; token usage for the unknown call is not established.",
+    "source_diagnosis_commit": "fa7bd7aa2a82e9ceb2420ab3e7695192ef0e080c"
+  },
+  "remediation": {
+    "defect": "Gemini calls did not opt into explicit gateway-proven 503 classification.",
+    "code_commit": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "tests": {
+      "result": "PASS",
+      "factory_next": 207,
+      "factory_v3": 132,
+      "total": 339,
+      "receipt": "acceptance/factory-next/2026-10-25-gemini-503-classification-test-receipt.json",
+      "receipt_commit": "3c84ba286808722634a12bde4b555e0b72c3df39"
+    },
+    "deployment": "pending"
   }
 }
