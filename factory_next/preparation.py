@@ -98,23 +98,27 @@ class PreparationStages:
         source=context['outputs']['research'];request=source['request'];evidence=source['evidence']
         facts=validate_evidence(evidence)
         # A resumed materials stage uses a NEW operations object. The original
-        # research() call assigned self.operations.topic only in memory; without
-        # restoring it the same saved photo-inspection call hashes differently,
-        # and PostgreSQL correctly rejects the supposedly identical replay.
-        # The source-backed checkpoint, not a fresh caller value, owns this input.
-        self.operations.topic=request['topic']
-        self.operations.visual_validation_mode=request['visual_validation_mode']
-        self.operations.allow_source_illustrations=True
+        # research() call assigned topic only in memory; restore it from the
+        # source-backed checkpoint so the same inspection call hashes identically.
+        operations=self.operations
+        if self.narrative_model is not None:
+            # Route multimodal inspections through the explicitly verified free
+            # Factory Next model instead of the legacy primary model.
+            operations=copy(self.operations)
+            operations.gemini=self.narrative_model
+        operations.topic=request['topic']
+        operations.visual_validation_mode=request['visual_validation_mode']
+        operations.allow_source_illustrations=True
         from factory_v3.download import PhotoDownload
         from material_first.portrait import PortraitDownload
-        source_downloader=getattr(self.operations,"downloader",None)
+        source_downloader=getattr(operations,"downloader",None)
         if (isinstance(source_downloader,PortraitDownload)
                 and isinstance(source_downloader.downloader,PhotoDownload)):
             # Opt in ONLY for Factory Next. A corrupt original still-image
             # must be durably recorded as unusable and skipped, never turn an
             # otherwise viable story into an ambiguous terminal download.
             source_downloader.downloader.skip_invalid_local_media=True
-        candidates=self.operations.discover(deepcopy(request),deepcopy(source['queries']))
+        candidates=operations.discover(deepcopy(request),deepcopy(source['queries']))
         if not isinstance(candidates,list) or len(candidates)>candidate_limit(request['seconds'],TOPIC_POLICY):
             raise ValueError('photo corpus exceeded bounded discovery budget')
         assets=[];photos=[];hashes=set();identities=set();fingerprints=[]
@@ -130,7 +134,7 @@ class PreparationStages:
             batch=[]
             for candidate in candidates[offset:offset+4]:
                 try:
-                    asset=self.operations.download(deepcopy(candidate))
+                    asset=operations.download(deepcopy(candidate))
                     validate_material(self.root,asset,self.probe)
                 except (ResourceUnavailable,MaterialResolutionUnavailable):
                     continue
@@ -145,7 +149,7 @@ class PreparationStages:
                 identities.add(asset['id']);hashes.add(asset['sha256']);fingerprints.append(fingerprint)
                 batch.append(asset)
             if not batch:continue
-            receipts=self.operations.inspect_many(deepcopy(batch),deepcopy(evidence))
+            receipts=operations.inspect_many(deepcopy(batch),deepcopy(evidence))
             if len(receipts)!=len(batch):raise ValueError('photo inspection omitted input')
             for asset,receipt in zip(batch,receipts):
                 photo=inspected_material(asset,receipt,evidence,facts,'gemini_scientific')
