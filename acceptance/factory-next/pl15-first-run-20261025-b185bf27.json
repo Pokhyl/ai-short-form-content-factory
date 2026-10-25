@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "EN30_LOW_THINKING_FIX_BUILD_IN_PROGRESS",
+  "status": "DEPLOY_LOW_THINKING_FIX_IN_PROGRESS",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -125,8 +125,8 @@
   "deployment": {
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
-    "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
-    "backup_container": "factory-next-studio-v9-before-voice-budget-fix-20261025",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-low-thinking-40b6d22",
+    "backup_container": "factory-next-studio-v9-before-low-thinking-fix-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
       "n8n_default",
@@ -174,7 +174,9 @@
     "stale_unregistered_checkpoints_preserved": [
       "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
       "18ff1836-52a8-4003-9d26-12d98e8a2ce5"
-    ]
+    ],
+    "current_active_jobs": 0,
+    "candidate_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c"
   },
   "fresh_attempt": {
     "job_id": "3eaf9bda-4d33-4e5b-b8ed-4d5c64edfa5c",
@@ -670,6 +672,21 @@
     "official_docs": [
       "https://ai.google.dev/gemini-api/docs/thinking",
       "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite"
-    ]
+    ],
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-low-thinking-40b6d22",
+    "source_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+    "image_id": "sha256:64c5a173b9fe8290e9b36aa18a8b68083f7552a137e5053c0738b977edd06c61",
+    "manifest_digest": "sha256:41b3aa9ced13f4d90014f9c4f60922a7a7e393d295f71be16406b9499870b96d",
+    "config_digest": "sha256:354e67453f2380e12bc09fcbc936201b9f44b4de67be9460ca1ee2344cbf783a",
+    "image_size_bytes": 309052966,
+    "exact_image_tests": {
+      "tests": [
+        "test_voice_variants",
+        "test_narrative_model",
+        "test_operator",
+        "test_pipeline"
+      ],
+      "result": "28/28 passed; network disabled; exact revision verified"
+    }
   }
 }
