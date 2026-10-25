@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "MODEL_ROUTING_FIX_PL15_VOICE_IN_PROGRESS",
+  "status": "VOICE_VARIANTS_TRUNCATED_MAX_TOKENS_FIXING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "register new ID exactly once and checkpoint ready",
-    "2": "launch once after GitHub verification",
-    "3": "verify real MP4 or preserve terminal failure"
+    "1": "raise only measured-variant output cap to 16384 (Gemini wrapper maximum) and add regression",
+    "2": "test and deploy exact source revision",
+    "3": "reserve a new ID before next PL15 launch; leave this ID immutable"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -183,7 +183,7 @@
       "language": "pl",
       "seconds": 15
     },
-    "status": "running",
+    "status": "needs_attention",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -196,9 +196,9 @@
     },
     "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
     "launch_count": 1,
-    "retry": "forbidden after failure/uncertain state",
+    "retry": "forbidden; immutable ID",
     "registration_created": true,
-    "checkpoint_status": "running",
+    "checkpoint_status": "needs_attention",
     "next_stage": "voice",
     "billing_enabled": false,
     "launch_started": true,
@@ -208,7 +208,17 @@
       "research",
       "materials",
       "story"
-    ]
+    ],
+    "error_type": "ValueError",
+    "failure_code": "MODEL_RESPONSE_INVALID",
+    "safe_failure_details": {
+      "gemini_http_status": 200,
+      "finish_reason": "MAX_TOKENS",
+      "max_output_tokens": 8192,
+      "total_token_count": 9033,
+      "thoughts_token_count": 7860,
+      "candidates_token_count": 317
+    }
   },
   "previous_attempts": [
     {
@@ -500,5 +510,14 @@
     ],
     "stale_checkpoint_handling": "unregistered, not running; preserve unchanged on shared /data volume; no current revision can resume them",
     "current_active_pipeline_executions": 0
+  },
+  "voice_truncation_diagnosis": {
+    "call_key": "next-voice-correction:2:next-measured-variants",
+    "finish_reason": "MAX_TOKENS",
+    "configured_output_limit": 8192,
+    "observed_total_tokens": 9033,
+    "thought_tokens": 7860,
+    "candidate_tokens": 317,
+    "source": "persisted Gemini response usageMetadata; no response text copied"
   }
 }
