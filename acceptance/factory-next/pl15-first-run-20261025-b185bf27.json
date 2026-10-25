@@ -209,6 +209,33 @@
       "http_status": 503,
       "error_status": "UNAVAILABLE",
       "gateway_execution_id": "14094"
+    },
+    "ledger_calls": {
+      "gemini": {
+        "succeeded": 2,
+        "unknown": 1
+      },
+      "research_search": {
+        "succeeded": 1
+      },
+      "source_fetch": {
+        "succeeded": 3
+      },
+      "search_pexels": {
+        "succeeded": 3
+      },
+      "search_pixabay": {
+        "succeeded": 3
+      },
+      "search_wikimedia": {
+        "succeeded": 3
+      },
+      "download": {
+        "succeeded": 4
+      },
+      "metadata": {
+        "succeeded": 1
+      }
     }
   },
   "previous_attempts": [
@@ -251,6 +278,33 @@
         "http_status": 503,
         "error_status": "UNAVAILABLE",
         "gateway_execution_id": "14086"
+      },
+      "ledger_calls": {
+        "gemini": {
+          "succeeded": 2,
+          "unknown": 1
+        },
+        "research_search": {
+          "succeeded": 1
+        },
+        "source_fetch": {
+          "succeeded": 3
+        },
+        "search_pexels": {
+          "succeeded": 3
+        },
+        "search_pixabay": {
+          "succeeded": 3
+        },
+        "search_wikimedia": {
+          "succeeded": 3
+        },
+        "download": {
+          "succeeded": 4
+        },
+        "metadata": {
+          "succeeded": 1
+        }
       }
     }
   ]
