@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import unittest
+from unittest.mock import patch
 import test_catalog
 from test_preparation import FakeLedger
 from factory_v3.gemini import Gemini, obj, string, array, provider_schema
