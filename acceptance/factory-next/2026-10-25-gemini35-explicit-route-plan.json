@@ -1,0 +1,94 @@
+{
+  "diagnostic_id": "factory-next-gemini35-explicit-route-20261025",
+  "created_utc": "2026-10-25",
+  "scope": "Explicitly select the already evaluated free Gemini 3.5 route after two immutable Gemini 3.1 research-stage 503 failures, then continue the product release matrix.",
+  "live_evidence": {
+    "image": "factory-v3:research-budget-a04f3c8c",
+    "runtime_source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "current_selected_model": "gemini-3.1-flash-lite",
+    "active_jobs_at_preflight": 0,
+    "failures": [
+      {
+        "id": "678d75d5-1c74-4f16-a52c-f86f53f530af",
+        "stage": "research",
+        "http_status": 503,
+        "error_status": "UNAVAILABLE"
+      },
+      {
+        "id": "bf76a1b4-34e9-45f2-8817-9ed4c4e1a427",
+        "stage": "research",
+        "http_status": 503,
+        "error_status": "UNAVAILABLE"
+      }
+    ]
+  },
+  "selected_route": {
+    "model": "gemini-3.5-flash-lite",
+    "fixed_gateway_role": "gemini_narrative_lite",
+    "verification_id": "767b4d5b-4c85-42b4-8be2-98a319ab04eb",
+    "standard_free_tier": true,
+    "billing_enabled": false,
+    "same_project_and_credential_fingerprint": true
+  },
+  "evidence": [
+    "docs/PROVIDER_POLICY.md",
+    "acceptance/factory-next/gemini31-runtime-full-tests-20261024.json",
+    "acceptance/factory-next/2026-10-24-saved-actual-illustration-replay.json",
+    "tests/factory_next/test_narrative_model.py: 6/6 pass on source copied from the running image; verifies explicit research model routing, same budget meter, proof binding, high reasoning mode and no error fallback"
+  ],
+  "changes": [
+    "No source-code or workflow change is needed for this route: the running image already has the fixed 3.5 gateway role and proof-bound model selection used by Factory Next research.",
+    "Update only factory_next_narrative_proof.model and verification_id in the private Studio settings; retain existing project and credential fingerprint.",
+    "Back up private settings outside Git and retain current image/container for rollback."
+  ],
+  "release_limits": {
+    "PL15": {
+      "gemini": 26,
+      "source_fetch": 6,
+      "research_search": 1,
+      "search_pexels": 3,
+      "search_pixabay": 3,
+      "search_wikimedia": 3,
+      "download": 32,
+      "metadata": 1
+    },
+    "EN30": {
+      "gemini": 27,
+      "source_fetch": 6,
+      "research_search": 1,
+      "search_pexels": 3,
+      "search_pixabay": 3,
+      "search_wikimedia": 3,
+      "download": 36,
+      "metadata": 1
+    },
+    "RU45": {
+      "gemini": 28,
+      "source_fetch": 6,
+      "research_search": 1,
+      "search_pexels": 3,
+      "search_pixabay": 3,
+      "search_wikimedia": 3,
+      "download": 40,
+      "metadata": 1
+    },
+    "UK60": {
+      "gemini": 30,
+      "source_fetch": 6,
+      "research_search": 1,
+      "search_pexels": 3,
+      "search_pixabay": 3,
+      "search_wikimedia": 3,
+      "download": 45,
+      "metadata": 1
+    }
+  },
+  "execution": [
+    "Before rollout, recheck Studio health, zero active jobs, selected model, container and workflow/database/other-service fingerprints.",
+    "Back up settings, change only the two proof fields, restart factory-next-studio-v9 once, then verify health, runtime model and protected-state equality.",
+    "Submit one new PL15 acceptance. Commit its exact ID and budget before its single launch; preserve both failed IDs.",
+    "After each terminal pass, proceed in order EN30, RU45, UK60 with fresh IDs and prelaunch checkpoints. On failure, preserve the ID and close its blockers offline; never retry or resume.",
+    "Inspect actual MP4 bytes, duration, audio identity, frames, citations and licenses; owner HUMAN acceptance is still required."
+  ],
+  "status": "PLAN ONLY. At creation: no settings mutation, provider call, job creation or container restart."
+}
