@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "THIRD_PL15_RESERVED_AFTER_BACKOFF",
+  "status": "THIRD_PL15_CHECKPOINTED_READY_TO_LAUNCH",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -178,7 +178,7 @@
       "language": "pl",
       "seconds": 15
     },
-    "status": "reserved_waiting_backoff",
+    "status": "registration_ready",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -192,7 +192,11 @@
     "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
     "provider_stage_calls": 0,
     "launch_count": 0,
-    "retry": "forbidden after failure/uncertain state"
+    "retry": "forbidden after failure/uncertain state",
+    "registration_created": true,
+    "checkpoint_status": "ready",
+    "next_stage": "research",
+    "billing_enabled": false
   },
   "previous_attempts": [
     {
