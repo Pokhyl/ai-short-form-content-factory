@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "VOICE_TOKEN_FIX_PL15_VOICE_IN_PROGRESS",
+  "status": "PL15_MACHINE_PASS_EN30_CHECKPOINT_PENDING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "register new ID once and checkpoint ready",
-    "2": "launch once after checkpoint verification",
-    "3": "verify actual MP4 and acceptance gates"
+    "1": "checkpoint EN30 ID and verify GitHub before registration",
+    "2": "register exact ID once, verify ready checkpoint, launch once",
+    "3": "verify MP4 bytes/hash/duration and audit; continue RU45 then UK60"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -183,32 +183,51 @@
       "language": "pl",
       "seconds": 15
     },
-    "status": "running",
-    "budget": {
-      "gemini": 26,
-      "source_fetch": 6,
-      "research_search": 1,
-      "search_pexels": 3,
-      "search_pixabay": 3,
-      "search_wikimedia": 3,
-      "download": 32,
-      "metadata": 1
-    },
+    "status": "complete",
     "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
-    "launch_count": 1,
-    "retry": "forbidden after failure/uncertain state",
     "registration_created": true,
-    "checkpoint_status": "running",
-    "next_stage": "voice",
+    "launch_count": 1,
     "billing_enabled": false,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_b11f4523a8a4",
     "completed_stages": [
       "research",
       "materials",
-      "story"
-    ]
+      "story",
+      "voice",
+      "alignment",
+      "edit",
+      "render",
+      "audit"
+    ],
+    "audit_passed": true,
+    "video_path": "/data/renders/3eaf9bda-4d33-4e5b-b8ed-4d5c64edfa5c/final.mp4",
+    "bytes": 3600847,
+    "duration_ms": 15000,
+    "width": 1080,
+    "height": 1920,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "sha256": "8343abcb7e781a7789d80496f97f684da282b162c5b0cfb6c4ad5849b9395df3",
+    "audio_correlation": 0.9999904749514786,
+    "original_audio_correlation": 0.9999904629099173,
+    "audit_gates_passed": [
+      "exact_duration",
+      "video_format",
+      "audio_format",
+      "frame_count",
+      "original_audio_unchanged",
+      "fitted_audio_unchanged",
+      "video_sha256",
+      "distinct_photo_count",
+      "reviewed_photo_set",
+      "exact_visual_timeline",
+      "staged_photo_bytes",
+      "whole_photo_policy",
+      "natural_voice_speed",
+      "full_decode",
+      "fitted_narration_preserved",
+      "original_narration_preserved"
+    ],
+    "launch_job_id": "job_b11f4523a8a4"
   },
   "previous_attempts": [
     {
@@ -503,15 +522,18 @@
     "evidence": "PreparationStages.materials called operations.inspect_many on the primary runtime model; settings proof selects 3.1 primary and 3.5 only as narrative_model."
   },
   "release_state": {
-    "status": "incomplete",
-    "mp4_created": false,
+    "status": "partial",
+    "mp4_created": true,
     "human_acceptance": false,
+    "completed_matrix": [
+      "PL15"
+    ],
     "remaining_matrix": [
-      "PL15",
       "EN30",
       "RU45",
       "UK60"
-    ]
+    ],
+    "note": "PL15 machine audit passed; owner review is still required for HUMAN acceptance."
   },
   "fix2": {
     "path": "factory_next/preparation.py",
@@ -568,5 +590,20 @@
     "manifest_digest": "sha256:66790b971dbdeb9828c5fed45a17f55bba3835fe9ca5f8ec383208f9688af0cb",
     "config_digest": "sha256:3ba41c1123c7115a950bc6f433268ec9b6c90fbb2017d6e2e883453279c892d1",
     "image_size_bytes": 309052857
+  },
+  "matrix": {
+    "EN30": {
+      "status": "checkpoint_pending",
+      "job_id": "d548181b-7bd1-48c9-9a45-642e93ea6975",
+      "request": {
+        "topic": "How does a rainbow form?",
+        "language": "en",
+        "seconds": 30
+      },
+      "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
+      "registration_created": false,
+      "launch_count": 0,
+      "billing_enabled": false
+    }
   }
 }
