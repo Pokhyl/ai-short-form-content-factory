@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "DEPLOY_LOW_THINKING_FIX_IN_PROGRESS",
+  "status": "EN30_FRESH_CHECKPOINT_PENDING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "build and test the committed low-thinking fix in an exact candidate image",
-    "2": "deploy with health check, checkpoint fresh EN30 ID, launch once",
-    "3": "verify EN30 media then proceed RU45 and UK60"
+    "1": "checkpoint and register EN30 on the deployed low-thinking revision",
+    "2": "launch exact EN30 ID once, verify audit and MP4",
+    "3": "continue RU45 and UK60 with fresh checkpointed IDs"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -153,12 +153,12 @@
       "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
       "public_health": 200
     },
-    "active_image": "factory-v3:research-budget-a04f3c8c-voice-budget-fca21d3",
-    "active_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
+    "active_image": "factory-v3:research-budget-a04f3c8c-low-thinking-40b6d22",
+    "active_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
     "public_health": 200,
     "backup_container_state": "exited and retained",
-    "backup_image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
-    "backup_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+    "backup_image": "factory-v3:research-budget-a04f3c8c-voice-budget-fca21d3",
+    "backup_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
     "active_jobs_at_verification": 0,
     "unlaunched_registration_pending_ids": [
       "edd2402b-6ead-408e-93dc-0a7ede211532",
@@ -176,7 +176,14 @@
       "18ff1836-52a8-4003-9d26-12d98e8a2ce5"
     ],
     "current_active_jobs": 0,
-    "candidate_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c"
+    "candidate_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+    "local_health": 200,
+    "active_pipeline_executions": 0,
+    "rollback_observations": [
+      "First swap validation accidentally probed host loopback; old container restored automatically.",
+      "Second swap used image CLI entrypoint instead of Studio server; old container restored automatically.",
+      "Third swap set --entrypoint python3; candidate validated locally and publicly."
+    ]
   },
   "fresh_attempt": {
     "job_id": "3eaf9bda-4d33-4e5b-b8ed-4d5c64edfa5c",
@@ -631,34 +638,22 @@
   },
   "matrix": {
     "EN30": {
-      "status": "failed_immutable",
-      "job_id": "d548181b-7bd1-48c9-9a45-642e93ea6975",
+      "status": "checkpoint_pending",
+      "failed_attempts": [
+        "d548181b-7bd1-48c9-9a45-642e93ea6975"
+      ],
+      "job_id": "e577e215-034c-43b7-8959-2e842f0cf358",
       "request": {
         "topic": "How does a rainbow form?",
         "language": "en",
         "seconds": 30
       },
-      "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
-      "registration_created": true,
-      "launch_count": 1,
-      "billing_enabled": false,
-      "checkpoint_status": "running",
-      "next_stage": "voice",
-      "registration_status": "preparing",
-      "provider_stage_calls": 0,
-      "checkpoint_verified": true,
-      "launch_job_id": "job_f0fdf41bcb51",
-      "launch_operator": "factory_next.operator --steps 8 continue",
-      "completed_stages": [
-        "research",
-        "materials",
-        "story"
-      ],
-      "retry": "forbidden; new ID required",
-      "failure": "MODEL_RESPONSE_INVALID",
-      "failed_stage": "voice",
-      "failed_launch_count": 1,
-      "fix4_commit": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c"
+      "source_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+      "state_absent_before_registration": true,
+      "database_preparations_before_registration": 0,
+      "registration_created": false,
+      "launch_count": 0,
+      "billing_enabled": false
     }
   },
   "fix4": {
@@ -687,6 +682,7 @@
         "test_pipeline"
       ],
       "result": "28/28 passed; network disabled; exact revision verified"
-    }
+    },
+    "deployment": "deployed; local and public health 200; previous container retained for rollback"
   }
 }
