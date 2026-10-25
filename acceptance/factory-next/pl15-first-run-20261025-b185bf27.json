@@ -194,12 +194,15 @@
     "launch_count": 1,
     "retry": "forbidden after failure/uncertain state",
     "registration_created": true,
-    "checkpoint_status": "ready",
-    "next_stage": "research",
+    "checkpoint_status": "running",
+    "next_stage": "materials",
     "billing_enabled": false,
     "provider_stage_calls": 0,
     "launch_operator": "factory_next.operator --steps 8 continue",
     "launch_started": true,
-    "launch_job_id": "job_f2558304fbcb"
+    "launch_job_id": "job_f2558304fbcb",
+    "completed_stages": [
+      "research"
+    ]
   }
 }
