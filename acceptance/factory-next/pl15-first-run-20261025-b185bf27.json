@@ -1,0 +1,47 @@
+{
+  "plan_id": "pl15-first-run-20261025-b185bf27",
+  "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
+  "request": {
+    "topic": "Jak powstaje tęcza?",
+    "language": "pl",
+    "seconds": 15
+  },
+  "runtime": {
+    "image": "factory-v3:research-budget-a04f3c8c",
+    "source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "gemini_model": "gemini-3.5-flash-lite",
+    "gateway_role": "gemini_narrative_lite",
+    "google_voice": "existing fixed Google TTS route"
+  },
+  "budget": {
+    "gemini": 26,
+    "source_fetch": 6,
+    "research_search": 1,
+    "search_pexels": 3,
+    "search_pixabay": 3,
+    "search_wikimedia": 3,
+    "download": 32,
+    "metadata": 1
+  },
+  "execution": {
+    "registration": "one time only",
+    "launch": "one time only after DB registration and GitHub plan verification",
+    "resume": "forbidden after failure/uncertain state",
+    "automatic_provider_retries": 0,
+    "paid_fallback": false
+  },
+  "acceptance": [
+    "terminal machine pass",
+    "actual MP4 bytes/hash and duration",
+    "frame and audio identity checks",
+    "source citations and photo-license attribution",
+    "no HUMAN acceptance claim until owner review"
+  ],
+  "prerequisites": [
+    "Studio health 200",
+    "active jobs 0",
+    "settings proof explicitly selects 3.5, billing_enabled false, same project and credential fingerprint",
+    "job ID is absent from persistent job state and database"
+  ],
+  "status": "ID CHECKPOINT ONLY; no database registration, Gemini/search/download/TTS call or job launch has occurred."
+}
