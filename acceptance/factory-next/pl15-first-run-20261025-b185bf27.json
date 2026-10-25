@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "VISUAL_MODEL_FIX_CANDIDATE_VERIFIED",
+  "status": "READY_FOR_DEPLOYMENT_STALE_CHECKPOINTS_PRESERVED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -443,6 +443,24 @@
     "candidate_image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
     "manifest_digest": "sha256:e01d5c097c7abf0f4418e03822c8c26704019ed278e8505718f1ffb2df3369c9",
     "config_digest": "sha256:43dcd9baa0ec14280bb2f34b1f5648f85dc2c73eafe7af50976960fd8046f5b7",
-    "image_size_bytes": 309052848
+    "image_size_bytes": 309052848,
+    "stale_unregistered_checkpoints": [
+      {
+        "job_id": "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2",
+        "language": "ru",
+        "seconds": 15,
+        "next_stage": "voice",
+        "revision": "107367f60ff3d267e7f714687f8d485bfa15b210"
+      },
+      {
+        "job_id": "18ff1836-52a8-4003-9d26-12d98e8a2ce5",
+        "language": "pl",
+        "seconds": 15,
+        "next_stage": "voice",
+        "revision": "e9d629879d0d93b8eaa218aa27cc73cd1d2a30cf"
+      }
+    ],
+    "stale_checkpoint_handling": "unregistered, not running; preserve unchanged on shared /data volume; no current revision can resume them",
+    "current_active_pipeline_executions": 0
   }
 }
