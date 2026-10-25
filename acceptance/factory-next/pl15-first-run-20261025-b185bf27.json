@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RUNNING_STRUCTURED_REVISION",
+  "status": "RU45_MATERIAL_INSPECTION_BUDGET_FIX_PENDING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,7 +193,7 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "running",
+    "status": "needs_attention",
     "source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
     "registration_created": true,
@@ -207,7 +207,7 @@
     "media_absent_before_registration": true,
     "launch": "not launched; register only after this GitHub checkpoint",
     "registration_status": "preparing",
-    "checkpoint_status": "running",
+    "checkpoint_status": "needs_attention",
     "checkpoint_next_stage": "materials",
     "completed_stages": [
       "research"
@@ -217,7 +217,12 @@
     "launch_started": true,
     "launch_operator": "factory_next.operator --steps 8 continue",
     "launch_job_id": "job_312870c40540",
-    "launch_source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0"
+    "launch_source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
+    "error_type": "ValueError",
+    "failure_code": "MODEL_RESPONSE_INVALID",
+    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
+    "failed_call_key": "material-inspect-batch:7224d08260e33d929b131634834996c58b22b548de75045645b07a999d3de3c9",
+    "finish_reason": "MAX_TOKENS"
   },
   "previous_attempts": [
     {
@@ -801,7 +806,7 @@
           "language": "ru",
           "seconds": 45
         },
-        "status": "running",
+        "status": "needs_attention",
         "source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
         "runtime_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
         "registration_created": true,
@@ -815,7 +820,7 @@
         "media_absent_before_registration": true,
         "launch": "not launched; register only after this GitHub checkpoint",
         "registration_status": "preparing",
-        "checkpoint_status": "running",
+        "checkpoint_status": "needs_attention",
         "checkpoint_next_stage": "materials",
         "completed_stages": [
           "research"
@@ -825,7 +830,12 @@
         "launch_started": true,
         "launch_operator": "factory_next.operator --steps 8 continue",
         "launch_job_id": "job_312870c40540",
-        "launch_source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0"
+        "launch_source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
+        "error_type": "ValueError",
+        "failure_code": "MODEL_RESPONSE_INVALID",
+        "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
+        "failed_call_key": "material-inspect-batch:7224d08260e33d929b131634834996c58b22b548de75045645b07a999d3de3c9",
+        "finish_reason": "MAX_TOKENS"
       },
       "failed_attempt_history": [
         {
@@ -884,6 +894,22 @@
             "characters": 476
           },
           "root_cause": "Even with global-only duration selection, Gemini's 9-alternative variant response stayed substantially under the numeric target, so no combination fit. The strategy is being replaced by the existing bounded complete-sentence voice rewrite, using the verified narrative model and a single optional repair."
+        },
+        {
+          "job_id": "be666572-6b8f-4487-acfb-4da84bd4b98c",
+          "failure_code": "MODEL_RESPONSE_INVALID",
+          "stage": "materials",
+          "source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
+          "retry": "forbidden for this ID",
+          "failed_call_key": "material-inspect-batch:7224d08260e33d929b131634834996c58b22b548de75045645b07a999d3de3c9",
+          "provider_finish_reason": "MAX_TOKENS",
+          "safe_usage": {
+            "prompt_tokens": 7100,
+            "thought_tokens": 7065,
+            "candidate_tokens": 1108,
+            "total_tokens": 15273
+          },
+          "root_cause": "The verified Gemini 3.5 Flash-Lite model used high thinking for multimodal image inspection. One image batch exhausted the output token limit after several successful batches."
         }
       ]
     }
@@ -1014,5 +1040,10 @@
     "active_container": "factory-next-studio-v9",
     "container_id": "30c9ab35c92f648ee25558dca657e751033ed98705774d54168b351470455f52",
     "backup_container": "factory-next-studio-v9-before-structured-voice-1baab16-20261025"
+  },
+  "fix9": {
+    "path": "factory_next/preparation.py",
+    "change": "Set medium thinking only on the copied verified model used for image inspection, preventing high-thinking token exhaustion while leaving research and semantic evaluation settings unchanged.",
+    "status": "planned_after_immutable_materials_failure"
   }
 }
