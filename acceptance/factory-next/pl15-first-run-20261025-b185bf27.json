@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_IMAGE_INSPECTION_FIX_READY",
+  "status": "RU45_READY_AFTER_INSPECTION_FIX",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -126,7 +126,7 @@
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
     "candidate_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
-    "backup_container": "factory-next-studio-v9-before-structured-voice-1baab16-20261025",
+    "backup_container": "factory-next-studio-v9-before-bounded-inspection-30a5e1d-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
       "n8n_default",
@@ -153,8 +153,8 @@
       "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
       "public_health": 200
     },
-    "active_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
-    "active_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
+    "active_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
+    "active_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
     "public_health": 200,
     "backup_container_state": "exited and retained",
     "backup_image": "factory-v3:research-budget-a04f3c8c-voice-budget-fca21d3",
@@ -1044,7 +1044,7 @@
   "fix9": {
     "path": "factory_next/preparation.py",
     "change": "Set medium thinking only on the copied verified model used for image inspection, preventing high-thinking token exhaustion while leaving research and semantic evaluation settings unchanged.",
-    "status": "candidate_passed_tests_pending_deployment",
+    "status": "deployed_public_health_200",
     "local_commit": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
     "github_code_commit": "b81f13d966222598feecaef7ef5b3055df3e4692",
     "github_test_commit": "c05982ca00fabef7a60788d5a13baa2c84e34e51",
@@ -1060,6 +1060,9 @@
     "candidate_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
     "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
     "image_id": "sha256:6a74f869261cdca81509c4e25364bb24299edb06b4d9d5e649b49067c9565fbc",
-    "image_size_bytes": 309055104
+    "image_size_bytes": 309055104,
+    "active_container": "factory-next-studio-v9",
+    "container_id": "77f5c86c78c1ec033c7348b381d4035c9239c8eeab8f7e56d2ce7ba1818e6308",
+    "backup_container": "factory-next-studio-v9-before-bounded-inspection-30a5e1d-20261025"
   }
 }
