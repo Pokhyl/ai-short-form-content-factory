@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "VOICE_VARIANTS_TRUNCATED_MAX_TOKENS_FIXING",
+  "status": "VOICE_TOKEN_BUDGET_FIX_TESTS_GREEN_BUILDING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,10 @@
     "health_http": 200
   },
   "next": {
-    "1": "raise only measured-variant output cap to 16384 (Gemini wrapper maximum) and add regression",
-    "2": "test and deploy exact source revision",
-    "3": "reserve a new ID before next PL15 launch; leave this ID immutable"
+    "1": "build exact candidate revision fca21d38a2f4951f337f25ebaae5703955f57592",
+    "2": "run 28 focused tests inside candidate image",
+    "3": "deploy with rollback container retained",
+    "4": "reserve fresh PL15 and launch once"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -518,6 +519,18 @@
     "observed_total_tokens": 9033,
     "thought_tokens": 7860,
     "candidate_tokens": 317,
-    "source": "persisted Gemini response usageMetadata; no response text copied"
+    "source": "persisted Gemini response usageMetadata; no response text copied",
+    "repair_action": "raise output limit to 16384 for initial and repair variant calls only"
+  },
+  "fix3": {
+    "path": "factory_next/preparation.py",
+    "commit": "ab079b97c37ecd56aaf780ec2b53dcdb62b73e11",
+    "test_path": "tests/factory_next/test_narrative_model.py",
+    "test_commit": "fca21d38a2f4951f337f25ebaae5703955f57592",
+    "source_revision": "fca21d38a2f4951f337f25ebaae5703955f57592",
+    "change": "Set measured-variant generation and its single repair to the Gemini wrapper's supported 16384 output-token maximum; keep same free model, call budget, and no-retry behavior.",
+    "test_result": "28/28 focused runtime-image tests passed with network disabled, including both 16384 limits.",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-budget-fca21d3",
+    "deployment": "building exact revision"
   }
 }
