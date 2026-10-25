@@ -606,30 +606,36 @@ class PreparationStages:
                 'maximum_possible_total_words':maximum_words,
                 'required_minimum_total_words':window['min_words'],
                 'variant_totals':totals}
+            minimum_words_per_beat=(window['min_words']+len(scenes)-1)//len(scenes)
+            maximum_words_per_beat=window['max_words']//len(scenes)
+            minimum_characters_per_beat=(window['min_characters']+len(scenes)-1)//len(scenes)
+            maximum_characters_per_beat=window['max_characters']//len(scenes)
             repair_targets={name:round(per_beat_chars*factor)
-                for name,factor in (('short',.90),('medium',1.00),('long',1.10))}
+                for name,factor in (('short',.94),('medium',1.00),('long',1.06))}
             repair_bands={name:{'min_characters':max(5,round(target*.90)),
                                 'max_characters':min(2000,round(target*1.10))}
                           for name,target in repair_targets.items()}
             repair_schema=variant_contract(scenes,repair_targets)
             repair_instruction=(
-                f" The measured variants cannot reach the required total: the largest possible "
-                f"combination is {maximum_characters} characters and {maximum_words} words, "
-                f"while at least {window['min_characters']} characters and {window['min_words']} "
-                f"words are required. EXPAND every replacement version substantially. For each "
-                f"of {len(scenes)} beats, target about {per_beat_words} words and {per_beat_chars} "
-                "characters in the medium version; the short and long versions should target "
-                f"{repair_targets['short']} and {repair_targets['long']} characters per beat. "
-                f"Use these hard character bands per beat: {repair_bands}. Do not reuse the "
-                "previous short narration lengths. Keep short < medium < long, preserve each "
-                "assigned source fact, and add only explanatory detail directly supported by "
-                "those facts. The assembled medium versions should land inside the supplied "
-                "total word and character window."
+                f" CORRECTIVE VOICE-FIT: the previous response is unusable because its largest "
+                f"possible combination was only {maximum_characters} characters and {maximum_words} "
+                f"words. The medium version from EVERY beat MUST contain {minimum_words_per_beat}-"
+                f"{maximum_words_per_beat} words and {minimum_characters_per_beat}-"
+                f"{maximum_characters_per_beat} characters including spaces. Thus the assembled "
+                f"medium narration must total {window['min_words']}-{window['max_words']} words "
+                f"and {window['min_characters']}-{window['max_characters']} characters. Aim for "
+                f"{per_beat_words} words and {per_beat_chars} characters per medium beat. "
+                f"For short/medium/long, target these per-beat character counts: {repair_targets}; "
+                f"keep each within its schema band {repair_bands} and keep short < medium < long. "
+                "Expand with complete explanatory sentences that state the supplied fact's "
+                "conditions, cause, and result; do not add a new claim or repeat the same idea. "
+                "Preserve each beat's supplied fact_ids. The single medium selection must fit the "
+                "numeric total above."
                 if classification=='all_variants_below_window' else
-                " The previous completed variants have NO whole-beat combination within the "
-                "total window. Use the measured lengths and total window to adjust the versions "
-                "so at least one whole-variant combination fits. Do not repeat the same lengths; "
-                "preserve overall source claim coverage.")
+                " CORRECTIVE VOICE-FIT: the previous completed variants have NO whole-beat "
+                "combination within the total window. Adjust their measured lengths so at least "
+                "one complete combination meets the supplied numeric word and character bounds. "
+                "Preserve all supplied source claim coverage.")
             reply,_=model.generate('next-measured-variants-repair',
                 prompt+repair_instruction,
                 {**data,'previous_variants':reply,
@@ -638,7 +644,7 @@ class PreparationStages:
                  'repair_character_targets':repair_targets,
                  'repair_character_bands':repair_bands,
                  'repair_word_target_per_beat':per_beat_words},repair_schema,
-                max_tokens=16384,thinking_level='low')
+                max_tokens=16384,thinking_level='medium')
             draft=choose_variants(reply,scenes,window)
         selected=validated_next_story(request,evidence,photos,draft)
         script=' '.join(scene['narration'] for scene in selected)
