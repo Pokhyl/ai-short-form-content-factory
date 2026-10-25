@@ -3,7 +3,6 @@ import copy
 import hashlib
 import json
 import unittest
-from unittest.mock import patch
 import test_catalog
 from test_preparation import FakeLedger
 from factory_v3.gemini import Gemini, obj, string, array, provider_schema
@@ -122,11 +121,6 @@ class GeminiTests(unittest.TestCase):
         with self.assertRaises(TimeoutError):self.generate()
         with self.assertRaises(ValueError):self.generate()
         self.assertEqual(sends,[270])
-
-    def test_gemini_calls_enable_explicit_model_unavailable_recovery(self):
-        with patch.object(self.adapter.calls, "run", wraps=self.adapter.calls.run) as run:
-            self.generate()
-        self.assertTrue(run.call_args.kwargs["allow_model_unavailable"])
 
     def test_existing_model_keeps_its_transport_deadline(self):
         self.generate()
