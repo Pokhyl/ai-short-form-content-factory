@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "THIRD_PL15_SINGLE_LAUNCH_IN_PROGRESS",
+  "status": "BLOCKED_GEMINI_503_NO_ACCEPTANCE_VIDEO",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,10 @@
     "health_http": 200
   },
   "next": {
-    "1": "launch once with the new ID only after backoff",
-    "2": "stop fresh attempts if provider remains overloaded; record terminal result",
-    "3": "on success complete MP4 acceptance and then EN30/RU45/UK60 sequentially"
+    "1": "stop further provider submissions until Gemini 3.5 Flash-Lite capacity recovers; three fresh IDs received 503 high-demand in materials visual inspection",
+    "2": "keep all failed IDs immutable and billing_enabled false; no paid fallback",
+    "3": "after provider recovers, continue with a fresh checkpointed PL15, then EN30/RU45/UK60 sequentially",
+    "4": "release remains incomplete: no accepted MP4 or human acceptance"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -178,7 +179,7 @@
       "language": "pl",
       "seconds": 15
     },
-    "status": "running",
+    "status": "needs_attention",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -192,9 +193,9 @@
     "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
     "provider_stage_calls": 0,
     "launch_count": 1,
-    "retry": "forbidden after failure/uncertain state",
+    "retry": "forbidden; immutable ID",
     "registration_created": true,
-    "checkpoint_status": "running",
+    "checkpoint_status": "needs_attention",
     "next_stage": "materials",
     "billing_enabled": false,
     "launch_started": true,
@@ -202,7 +203,41 @@
     "launch_job_id": "job_dead14101c53",
     "completed_stages": [
       "research"
-    ]
+    ],
+    "error_type": "HTTPFailure",
+    "failure_code": "EXTERNAL_HTTP_FAILURE",
+    "safe_failure_details": {
+      "http_status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14102"
+    },
+    "ledger_calls": {
+      "gemini": {
+        "succeeded": 2,
+        "unknown": 1
+      },
+      "research_search": {
+        "succeeded": 1
+      },
+      "source_fetch": {
+        "succeeded": 3
+      },
+      "search_pexels": {
+        "succeeded": 3
+      },
+      "search_pixabay": {
+        "succeeded": 3
+      },
+      "search_wikimedia": {
+        "succeeded": 3
+      },
+      "download": {
+        "succeeded": 4
+      },
+      "metadata": {
+        "succeeded": 1
+      }
+    }
   },
   "previous_attempts": [
     {
@@ -344,11 +379,17 @@
   "provider_diagnosis": {
     "type": "503 UNAVAILABLE",
     "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
-    "occurrences": 2,
+    "occurrences": 3,
     "stage": "materials visual inspection",
     "model": "gemini-3.5-flash-lite",
     "billing_enabled": false,
     "paid_fallback": false,
-    "same_id_retry": "forbidden"
+    "same_id_retry": "forbidden",
+    "gateway_execution_ids": [
+      "14086",
+      "14094",
+      "14102"
+    ],
+    "same_message": true
   }
 }
