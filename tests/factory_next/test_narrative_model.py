@@ -128,3 +128,47 @@ class MaterialInspectionModelRoutingTests(unittest.TestCase):
         self.assertEqual(len(result["photos"]),3)
         self.assertEqual(used_models,[verified])
         self.assertIs(operations.gemini,primary)
+
+
+class MeasuredVariantTokenBudgetTests(unittest.TestCase):
+    def test_initial_and_repair_generation_use_supported_16384_token_limit(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from factory_next.preparation import PreparationStages
+        from factory_next.duration import NaturalDurationRejected
+
+        scenes=[{"id":"scene-1","evidence_ids":["f1"],"narration":"Original sentence."}]
+        selected=[{"id":"scene-1","evidence_ids":["f1"],"narration":"A revised sentence."}]
+        evidence={"facts":[{"id":"f1","text":"A source fact."}]}
+        request={"topic":"A test topic","language":"en","seconds":15,
+                 "required_fact_ids":["f1"]}
+        context={"outputs":{"research":{"request":request,"evidence":evidence},
+                           "materials":{"photos":[{"id":"photo-1"}]},
+                           "story":{"scenes":scenes,"script":"Original sentence."}}}
+        class Model:
+            def __init__(self):
+                self.calls=[]
+            def generate(self,key,*args,**kwargs):
+                self.calls.append((key,kwargs))
+                return {},None
+            def review_script(self,*args,**kwargs):
+                return {"native_language_quality":True}
+        model=Model()
+        stage=PreparationStages("/unused",SimpleNamespace(gemini=model),
+                                lambda:None,narrative_model=model)
+        window={"min_words":1,"max_words":20,"target_words":8,
+                "min_characters":5,"max_characters":100,"target_characters":30}
+        with patch("factory_next.preparation.revision_length_window",return_value=window), \
+             patch("factory_next.fact_allocation.allocate_scene_facts",return_value=scenes), \
+             patch("factory_next.voice_variants.choose_variants",
+                   side_effect=[NaturalDurationRejected("test repair path"),selected]), \
+             patch("factory_next.voice_variants.variant_measurements",return_value={}), \
+             patch("factory_next.preparation.validated_next_story",return_value=selected), \
+             patch("factory_next.preparation.validate_native_surface"), \
+             patch("factory_next.preparation.validate_script_review"):
+            result=stage._revise_story_variants(context,15000)
+        self.assertEqual(result["scenes"],selected)
+        self.assertEqual([key for key,_ in model.calls],
+                         ["next-measured-variants","next-measured-variants-repair"])
+        self.assertEqual([args.get("max_tokens") for _,args in model.calls],
+                         [16384,16384])
