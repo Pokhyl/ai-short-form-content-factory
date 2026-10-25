@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-25",
+  "repository": "Pokhyl/ai-short-form-content-factory",
+  "branch": "codex/repair-overlong-story-20261024",
+  "source_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+  "image_id": "sha256:2329cb4c1a1b5286735186dec11241866a337e5ac31c48c2fee0054cdba7c0de",
+  "job_id": "678d75d5-1c74-4f16-a52c-f86f53f530af",
+  "intake": "normal public Studio POST; accepted as queued",
+  "result": {
+    "status": "needs_attention",
+    "next_stage": "research",
+    "completed_stages": [],
+    "error_type": "HTTPFailure",
+    "failure_reason": "EXTERNAL_HTTP_FAILURE",
+    "http_status": 503,
+    "error_status": "UNAVAILABLE",
+    "machine_pass": false,
+    "video_url_present": false,
+    "video_sha256_present": false
+  },
+  "action": "Terminal result recorded. No retry, resume, or replacement job submitted.",
+  "acceptance": "FAILED; no production video produced."
+}
