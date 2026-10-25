@@ -7,8 +7,8 @@
     "seconds": 15
   },
   "runtime": {
-    "image": "factory-v3:research-budget-a04f3c8c",
-    "source_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+    "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
+    "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
     "gemini_model": "gemini-3.5-flash-lite",
     "gateway_role": "gemini_narrative_lite",
     "google_voice": "existing fixed Google TTS route"
@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "CANDIDATE_READY_FOR_SWAP",
+  "status": "DEPLOYED_VERIFIED_NEW_PL15_RESERVED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -107,14 +107,14 @@
   "rollout_blocker": {
     "free_disk_bytes_observed": 173015040,
     "cleanup": "apt download cache only, 112 MB; no data volumes/logs removed",
-    "active_image": "factory-v3:research-budget-a04f3c8c",
-    "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f"
+    "active_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
+    "active_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
+    "health_http": 200
   },
   "next": {
-    "1": "resolve and document full-suite failures against current branch contracts",
-    "2": "recover safe build space without touching service volumes or unrelated task data",
-    "3": "build immutable image with exact GitHub source revision, verify packaged tests and deployed revision",
-    "4": "checkpoint a fresh job ID and budget before any new provider call"
+    "1": "register the new PL15 ID once and verify ready checkpoint",
+    "2": "checkpoint registration in GitHub, then launch once",
+    "3": "verify MP4 bytes/hash/duration, frame/audio identity, citations, and licenses"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -125,7 +125,7 @@
   "deployment": {
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
-    "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-705648d",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
     "backup_container": "factory-next-studio-v9-before-voice-fix-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
@@ -152,6 +152,46 @@
       "active_image": "factory-v3:research-budget-a04f3c8c",
       "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
       "public_health": 200
+    },
+    "active_image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
+    "active_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
+    "public_health": 200,
+    "backup_container_state": "exited and retained",
+    "backup_image": "factory-v3:research-budget-a04f3c8c",
+    "backup_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+    "active_jobs_at_verification": 0,
+    "unlaunched_registration_pending_ids": [
+      "edd2402b-6ead-408e-93dc-0a7ede211532",
+      "05b4c294-5957-44d4-9045-9b1a5cf96ceb"
+    ],
+    "settings": {
+      "model": "gemini-3.5-flash-lite",
+      "billing_enabled": false,
+      "project_id": "gen-lang-client-0532024148",
+      "public_health": 200
     }
+  },
+  "fresh_attempt": {
+    "job_id": "1892fda4-0428-48d1-b70b-a4b202183c3a",
+    "request": {
+      "topic": "Jak powstaje tęcza?",
+      "language": "pl",
+      "seconds": 15
+    },
+    "status": "reserved_not_registered",
+    "budget": {
+      "gemini": 26,
+      "source_fetch": 6,
+      "research_search": 1,
+      "search_pexels": 3,
+      "search_pixabay": 3,
+      "search_wikimedia": 3,
+      "download": 32,
+      "metadata": 1
+    },
+    "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
+    "provider_calls": 0,
+    "launch_count": 0,
+    "retry": "forbidden"
   }
 }
