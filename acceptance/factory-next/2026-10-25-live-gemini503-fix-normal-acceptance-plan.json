@@ -61,6 +61,56 @@
     "studio_health": "HTTP 200 on deployed image.",
     "prior_503_job": "678d75d5-1c74-4f16-a52c-f86f53f530af; immutable, no retry."
   },
-  "status": "planned_waiting_for_fresh_preflight",
-  "authorization": "Owner instructed to continue after the first bounded attempt failed. This plan authorizes exactly one fresh job on the tested deployed fix; no repeat after this attempt fails."
+  "status": "acceptance_failed_research_503_no_retry",
+  "authorization": "Owner instructed to continue after the first bounded attempt failed. This plan authorizes exactly one fresh job on the tested deployed fix; no repeat after this attempt fails.",
+  "result": {
+    "job_id": "bf76a1b4-34e9-45f2-8817-9ed4c4e1a427",
+    "status": "needs_attention",
+    "next_stage": "research",
+    "completed_stages": [],
+    "error_type": "ModelUnavailable",
+    "http_status": 503,
+    "error_status": "UNAVAILABLE",
+    "gateway_execution_id": "14064",
+    "machine_pass": false,
+    "video_produced": false,
+    "provider_call_ledger": [
+      {
+        "kind": "metadata",
+        "state": "succeeded",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "kind": "research_search",
+        "state": "succeeded",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "kind": "source_fetch",
+        "state": "succeeded",
+        "status": 200,
+        "count": 3
+      },
+      {
+        "kind": "gemini",
+        "state": "succeeded",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "kind": "gemini",
+        "state": "failed",
+        "error_code": "ModelUnavailable",
+        "status": 503,
+        "error_status": "UNAVAILABLE",
+        "gateway_execution_id": "14064",
+        "count": 1
+      }
+    ],
+    "result_receipt": "acceptance/factory-next/2026-10-25-live-gemini503-fix-normal-job-result.json",
+    "result_commit": "253e3283efff7f2ed499dc77277c4f39abedaad5",
+    "retries_or_resumes": "none"
+  }
 }
