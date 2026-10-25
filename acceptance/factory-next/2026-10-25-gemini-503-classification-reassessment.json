@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-25",
+  "finding": "Gateway HTTP 503 UNAVAILABLE did not prove that the downstream provider operation had definitively ended.",
+  "evidence": {
+    "gateway_execution_id": "14064",
+    "workflow_id": "VIDEO-V3-Credential-Gateway",
+    "state_at_read": "running",
+    "finished": false,
+    "stopped_at": null,
+    "associated_job": "bf76a1b4-34e9-45f2-8817-9ed4c4e1a427"
+  },
+  "reassessment": "The patch that classified 503 plus execution ID as ModelUnavailable was premature. The n8n execution was still running, so the durable receipt does not establish a final Google rejection. The original conservative HTTPFailure/unknown behavior is retained.",
+  "deployment": {
+    "patched_image_id": "sha256:1f905fd4541beea553c5225d5bab7e3a5d3486cd5039ff2f0662c84336e6b29b",
+    "patched_image_rolled_back": true,
+    "restored_image_id": "sha256:2329cb4c1a1b5286735186dec11241866a337e5ac31c48c2fee0054cdba7c0de",
+    "restored_source_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+    "public_studio_health": "HTTP 200"
+  },
+  "source_and_tests": "Branch files were restored to the pre-classification source/test revisions; the prior 338-test receipt for that exact image remains applicable.",
+  "actions": [
+    "No jobs retried or resumed.",
+    "No n8n executions or database rows mutated.",
+    "No production video produced; acceptance remains incomplete."
+  ]
+}
