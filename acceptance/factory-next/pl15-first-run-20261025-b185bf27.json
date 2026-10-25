@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "MODEL_ROUTING_FIX_TESTS_GREEN_BUILDING",
+  "status": "VISUAL_MODEL_FIX_CANDIDATE_VERIFIED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -437,9 +437,12 @@
     "test_path": "tests/factory_next/test_narrative_model.py",
     "test_commit": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
     "change": "Factory Next material image inspection now uses the explicitly verified Gemini 3.5 free-tier model via a copied operations object; added a regression that confirms routing and that the primary model is not mutated.",
-    "test_result": "27/27 passed in the existing runtime image with network disabled; includes model-routing regression",
-    "deployment": "building exact source revision",
+    "test_result": "27/27 passed from the candidate image itself; network disabled; image env revision exactly 40 characters.",
+    "deployment": "candidate verified; ready for production swap",
     "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
-    "candidate_image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7"
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-visual-model-fix-e0df8b7",
+    "manifest_digest": "sha256:e01d5c097c7abf0f4418e03822c8c26704019ed278e8505718f1ffb2df3369c9",
+    "config_digest": "sha256:43dcd9baa0ec14280bb2f34b1f5648f85dc2c73eafe7af50976960fd8046f5b7",
+    "image_size_bytes": 309052848
   }
 }
