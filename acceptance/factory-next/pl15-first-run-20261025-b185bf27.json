@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "ROLLED_BACK_INVALID_REVISION",
+  "status": "CANDIDATE_READY_FOR_SWAP",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -100,6 +100,7 @@
       ],
       "result": "25/25 passed, network disabled",
       "revision_verified": true,
+      "revision_length": 40,
       "patch_present": true
     }
   },
@@ -118,7 +119,8 @@
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
     "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
-    "manifest_digest": "sha256:e9c73816f2cc29db92ba13a56f180ca80a912285e2b503431be7b66a6fad51a5"
+    "manifest_digest": "sha256:2d6f3ddcfada0d6ffae871b0c250cd6a9e48cf1d13336df922cb458589122b04",
+    "config_digest": "sha256:dfd73805c5c9c9373591dc72ffaaf7b087ab526822b68021841a7f720e50d219"
   },
   "deployment": {
     "target_container": "factory-next-studio-v9",
