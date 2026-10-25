@@ -43,5 +43,15 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "ID CHECKPOINT ONLY, pushed to GitHub. No DB registration, Gemini/search/download/TTS call or job launch has occurred."
+  "status": "REGISTERED_READY_NOT_LAUNCHED",
+  "registration": {
+    "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
+    "created": true,
+    "checkpoint_status": "ready",
+    "next_stage": "research",
+    "source_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
+    "billing_enabled": false,
+    "provider_stage_calls": 0,
+    "launch_count": 0
+  }
 }
