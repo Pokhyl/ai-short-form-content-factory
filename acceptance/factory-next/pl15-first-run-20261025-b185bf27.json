@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "BLOCKED_GEMINI_503_NO_ACCEPTANCE_VIDEO",
+  "status": "FOURTH_PL15_RESERVED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,10 +112,8 @@
     "health_http": 200
   },
   "next": {
-    "1": "stop further provider submissions until Gemini 3.5 Flash-Lite capacity recovers; three fresh IDs received 503 high-demand in materials visual inspection",
-    "2": "keep all failed IDs immutable and billing_enabled false; no paid fallback",
-    "3": "after provider recovers, continue with a fresh checkpointed PL15, then EN30/RU45/UK60 sequentially",
-    "4": "release remains incomplete: no accepted MP4 or human acceptance"
+    "1": "register new ID once, verify ready checkpoint, then launch once",
+    "2": "if Gemini again returns 503, stop and keep ID immutable"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -173,13 +171,13 @@
     }
   },
   "fresh_attempt": {
-    "job_id": "01a46a96-eb04-43ef-b17d-25d955ee3151",
+    "job_id": "4121e1dd-40d9-47dc-b29a-a9c75bc65c0a",
     "request": {
       "topic": "Jak powstaje tęcza?",
       "language": "pl",
       "seconds": 15
     },
-    "status": "needs_attention",
+    "status": "reserved_not_registered",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -191,52 +189,8 @@
       "metadata": 1
     },
     "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
-    "launch_count": 1,
-    "retry": "forbidden; immutable ID",
-    "registration_created": true,
-    "checkpoint_status": "needs_attention",
-    "next_stage": "materials",
-    "billing_enabled": false,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_dead14101c53",
-    "completed_stages": [
-      "research"
-    ],
-    "error_type": "HTTPFailure",
-    "failure_code": "EXTERNAL_HTTP_FAILURE",
-    "safe_failure_details": {
-      "http_status": 503,
-      "error_status": "UNAVAILABLE",
-      "gateway_execution_id": "14102"
-    },
-    "ledger_calls": {
-      "gemini": {
-        "succeeded": 2,
-        "unknown": 1
-      },
-      "research_search": {
-        "succeeded": 1
-      },
-      "source_fetch": {
-        "succeeded": 3
-      },
-      "search_pexels": {
-        "succeeded": 3
-      },
-      "search_pixabay": {
-        "succeeded": 3
-      },
-      "search_wikimedia": {
-        "succeeded": 3
-      },
-      "download": {
-        "succeeded": 4
-      },
-      "metadata": {
-        "succeeded": 1
-      }
-    }
+    "launch_count": 0,
+    "retry": "forbidden after failure/uncertain state"
   },
   "previous_attempts": [
     {
@@ -342,6 +296,72 @@
         "http_status": 503,
         "error_status": "UNAVAILABLE",
         "gateway_execution_id": "14094"
+      },
+      "ledger_calls": {
+        "gemini": {
+          "succeeded": 2,
+          "unknown": 1
+        },
+        "research_search": {
+          "succeeded": 1
+        },
+        "source_fetch": {
+          "succeeded": 3
+        },
+        "search_pexels": {
+          "succeeded": 3
+        },
+        "search_pixabay": {
+          "succeeded": 3
+        },
+        "search_wikimedia": {
+          "succeeded": 3
+        },
+        "download": {
+          "succeeded": 4
+        },
+        "metadata": {
+          "succeeded": 1
+        }
+      }
+    },
+    {
+      "job_id": "01a46a96-eb04-43ef-b17d-25d955ee3151",
+      "request": {
+        "topic": "Jak powstaje tęcza?",
+        "language": "pl",
+        "seconds": 15
+      },
+      "status": "needs_attention",
+      "budget": {
+        "gemini": 26,
+        "source_fetch": 6,
+        "research_search": 1,
+        "search_pexels": 3,
+        "search_pixabay": 3,
+        "search_wikimedia": 3,
+        "download": 32,
+        "metadata": 1
+      },
+      "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
+      "launch_count": 1,
+      "retry": "forbidden; immutable ID",
+      "registration_created": true,
+      "checkpoint_status": "needs_attention",
+      "next_stage": "materials",
+      "billing_enabled": false,
+      "launch_started": true,
+      "launch_operator": "factory_next.operator --steps 8 continue",
+      "launch_job_id": "job_dead14101c53",
+      "completed_stages": [
+        "research"
+      ],
+      "error_type": "HTTPFailure",
+      "failure_code": "EXTERNAL_HTTP_FAILURE",
+      "safe_failure_details": {
+        "http_status": 503,
+        "error_status": "UNAVAILABLE",
+        "gateway_execution_id": "14102"
       },
       "ledger_calls": {
         "gemini": {
