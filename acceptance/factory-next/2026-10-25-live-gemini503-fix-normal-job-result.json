@@ -59,7 +59,7 @@
     }
   ],
   "code_fix_observed": "Explicit gateway 503 is now durably classified as ModelUnavailable rather than HTTPFailure/unknown.",
-  "external_failure_scope": "The Studio received HTTP 503 UNAVAILABLE from the credential gateway. The associated n8n execution was still running at the latest read; the downstream cause and final provider outcome are unresolved.",
+  "external_failure_scope": "Studio received HTTP 503 UNAVAILABLE from the credential gateway. Execution 14064 was running at the last state read and later disappeared from execution_entity; its terminal outcome is unavailable. Do not attribute the 503 to Google definitively.",
   "action": "Terminal result recorded. No retry, resume, or replacement job submitted.",
   "acceptance": "FAILED; no production video produced.",
   "classification_reassessment": {
@@ -71,6 +71,12 @@
     "interpretation": "The persisted ModelUnavailable state was produced by the temporary image and is not proof that Google definitively rejected the call.",
     "app_rollback_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
     "reassessment_receipt": "acceptance/factory-next/2026-10-25-gemini-503-classification-reassessment.json",
-    "reassessment_commit": "471a64f9dfda21bf5d111b157a1b8fb44318b495"
+    "reassessment_commit": "471a64f9dfda21bf5d111b157a1b8fb44318b495",
+    "final_lookup": {
+      "execution_id": "14064",
+      "execution_entity_row_count": 0,
+      "terminal_status": "not available",
+      "conclusion": "downstream provider outcome remains unconfirmed"
+    }
   }
 }
