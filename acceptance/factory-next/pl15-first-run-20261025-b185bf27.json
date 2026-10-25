@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "FIX_VERIFIED_NOT_DEPLOYED",
+  "status": "CANDIDATE_BUILT_VERIFIED_NOT_DEPLOYED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -89,20 +89,35 @@
     "result": "9/9 passed in isolated no-network container",
     "full_factory_next_suite": {
       "result": "199 tests; 7 failures, 2 errors",
-      "relevant_regression": "test_small_per_beat_overshoot_can_still_fit_measured_total passed",
-      "note": "Observed failures are in existing duration/fact-scope/budget/illustration/replay expectations; full-suite pass is not claimed."
+      "note": "Failures are in current duration/fact-scope/budget/illustration/replay fixtures, not the 25 targeted suites; full-suite pass is not claimed."
+    },
+    "exact_image": {
+      "tests": [
+        "test_voice_variants",
+        "test_narrative_model",
+        "test_operator",
+        "test_pipeline"
+      ],
+      "result": "25/25 passed, network disabled",
+      "revision_verified": true,
+      "patch_present": true
     }
   },
   "rollout_blocker": {
-    "free_disk_bytes_observed": 46137344,
-    "buildkit_cache_bytes": 13631488,
-    "docker_volumes_bytes": 4617089843.2,
-    "action": "no cleanup or deployment performed; inspect exact /var usage before deciding safe cache cleanup"
+    "free_disk_bytes_observed": 173015040,
+    "cleanup": "apt download cache only, 112 MB; no data volumes/logs removed",
+    "active_image": "factory-v3:research-budget-a04f3c8c",
+    "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f"
   },
   "next": {
     "1": "resolve and document full-suite failures against current branch contracts",
     "2": "recover safe build space without touching service volumes or unrelated task data",
     "3": "build immutable image with exact GitHub source revision, verify packaged tests and deployed revision",
     "4": "checkpoint a fresh job ID and budget before any new provider call"
+  },
+  "candidate": {
+    "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-705648d",
+    "source_revision": "705648d439e536bb4b9009ecb9e37491a4d11a32f",
+    "manifest_digest": "sha256:e9c73816f2cc29db92ba13a56f180ca80a912285e2b503431be7b66a6fad51a5"
   }
 }
