@@ -610,14 +610,16 @@
       "launch_count": 1,
       "billing_enabled": false,
       "checkpoint_status": "running",
-      "next_stage": "materials",
+      "next_stage": "voice",
       "registration_status": "preparing",
       "provider_stage_calls": 0,
       "checkpoint_verified": true,
       "launch_job_id": "job_f0fdf41bcb51",
       "launch_operator": "factory_next.operator --steps 8 continue",
       "completed_stages": [
-        "research"
+        "research",
+        "materials",
+        "story"
       ],
       "retry": "forbidden after failure/uncertain state"
     }
