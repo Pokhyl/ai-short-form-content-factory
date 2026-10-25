@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "FOURTH_PL15_LAUNCH_IN_PROGRESS",
+  "status": "MODEL_ROUTING_FIX_TESTING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,8 +112,10 @@
     "health_http": 200
   },
   "next": {
-    "1": "register new ID once, verify ready checkpoint, then launch once",
-    "2": "if Gemini again returns 503, stop and keep ID immutable"
+    "1": "finish focused tests with network disabled",
+    "2": "build exact image at source revision e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
+    "3": "deploy with rollback container retained and health check",
+    "4": "reserve a new PL15 ID before one launch"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -413,7 +415,10 @@
       "14094",
       "14102"
     ],
-    "same_message": true
+    "same_message": true,
+    "material_model": "gemini-3.1-flash-lite",
+    "narrative_model": "gemini-3.5-flash-lite",
+    "evidence": "PreparationStages.materials called operations.inspect_many on the primary runtime model; settings proof selects 3.1 primary and 3.5 only as narrative_model."
   },
   "release_state": {
     "status": "incomplete",
@@ -425,5 +430,14 @@
       "RU45",
       "UK60"
     ]
+  },
+  "fix2": {
+    "path": "factory_next/preparation.py",
+    "commit": "e58aa786973ff52e71e33b9f674cfabb8a3ce8aa",
+    "test_path": "tests/factory_next/test_narrative_model.py",
+    "test_commit": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
+    "change": "Factory Next material image inspection now uses the explicitly verified Gemini 3.5 free-tier model via a copied operations object; added a regression that confirms routing and that the primary model is not mutated.",
+    "test_result": "running exact-image focused suite",
+    "deployment": "not deployed"
   }
 }
