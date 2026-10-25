@@ -208,9 +208,12 @@
     "launch": "not launched; register only after this GitHub checkpoint",
     "registration_status": "preparing",
     "checkpoint_status": "running",
-    "checkpoint_next_stage": "materials",
+    "checkpoint_next_stage": "alignment",
     "completed_stages": [
-      "research"
+      "research",
+      "materials",
+      "story",
+      "voice"
     ],
     "registered_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
     "checkpoint_verified": true,
@@ -816,9 +819,12 @@
         "launch": "not launched; register only after this GitHub checkpoint",
         "registration_status": "preparing",
         "checkpoint_status": "running",
-        "checkpoint_next_stage": "materials",
+        "checkpoint_next_stage": "alignment",
         "completed_stages": [
-          "research"
+          "research",
+          "materials",
+          "story",
+          "voice"
         ],
         "registered_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
         "checkpoint_verified": true,
