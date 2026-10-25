@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-25",
+  "repository": "Pokhyl/ai-short-form-content-factory",
+  "branch": "codex/repair-overlong-story-20261024",
+  "source_revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+  "image_id": "sha256:1f905fd4541beea553c5225d5bab7e3a5d3486cd5039ff2f0662c84336e6b29b",
+  "job_id": "bf76a1b4-34e9-45f2-8817-9ed4c4e1a427",
+  "request": {
+    "topic": "Почему листья осенью меняют цвет?",
+    "language": "ru",
+    "seconds": 15,
+    "intake": "normal public Studio POST"
+  },
+  "result": {
+    "status": "needs_attention",
+    "next_stage": "research",
+    "completed_stages": [],
+    "error_type": "ModelUnavailable",
+    "http_status": 503,
+    "error_status": "UNAVAILABLE",
+    "gateway_execution_id": "14064",
+    "machine_pass": false,
+    "video_url_present": false,
+    "video_sha256_present": false
+  },
+  "provider_call_ledger": [
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "status": 200,
+      "count": 3
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "kind": "gemini",
+      "state": "failed",
+      "error_code": "ModelUnavailable",
+      "status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14064",
+      "count": 1
+    }
+  ],
+  "code_fix_observed": "Explicit gateway 503 is now durably classified as ModelUnavailable rather than HTTPFailure/unknown.",
+  "external_failure_scope": "The durable receipt identifies HTTP 503 UNAVAILABLE from the credential gateway path; it does not expose a more specific downstream cause.",
+  "action": "Terminal result recorded. No retry, resume, or replacement job submitted.",
+  "acceptance": "FAILED; no production video produced."
+}
