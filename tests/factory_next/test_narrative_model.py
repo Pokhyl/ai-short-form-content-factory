@@ -147,9 +147,9 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
                            "story":{"scenes":scenes,"script":"Original sentence."}}}
         class Model:
             def __init__(self):
-                self.calls=[]
+                self.generated=[]
             def generate(self,key,*args,**kwargs):
-                self.calls.append((key,kwargs))
+                self.generated.append((key,kwargs))
                 return {},None
             def review_script(self,*args,**kwargs):
                 return {"native_language_quality":True}
@@ -168,7 +168,7 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
              patch("factory_next.preparation.validate_script_review"):
             result=stage._revise_story_variants(context,15000)
         self.assertEqual(result["scenes"],selected)
-        self.assertEqual([key for key,_ in model.calls],
+        self.assertEqual([key for key,_ in model.generated],
                          ["next-measured-variants","next-measured-variants-repair"])
-        self.assertEqual([args.get("max_tokens") for _,args in model.calls],
+        self.assertEqual([args.get("max_tokens") for _,args in model.generated],
                          [16384,16384])
