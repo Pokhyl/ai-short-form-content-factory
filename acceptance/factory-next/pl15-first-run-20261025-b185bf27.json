@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_READY_TO_LAUNCH",
+  "status": "RU45_RUNNING",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -685,7 +685,7 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "ready",
+      "status": "running",
       "job_id": "59917beb-71db-4f25-9e6e-a6722b5806f0",
       "request": {
         "topic": "Как образуется радуга?",
@@ -696,13 +696,17 @@
       "state_absent_before_registration": true,
       "database_preparations_before_registration": 0,
       "registration_created": true,
-      "launch_count": 0,
+      "launch_count": 1,
       "billing_enabled": false,
       "registration_status": "preparing",
       "checkpoint_status": "ready",
       "checkpoint_next_stage": "research",
       "provider_stage_calls": 0,
-      "checkpoint_verified": true
+      "checkpoint_verified": true,
+      "launch_started": true,
+      "launch_operator": "factory_next.operator --steps 8 continue",
+      "launch_job_id": "job_dedcfff845f3",
+      "retry": "forbidden after failure/uncertain state"
     }
   },
   "fix4": {
