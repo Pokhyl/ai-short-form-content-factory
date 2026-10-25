@@ -191,7 +191,6 @@
       "metadata": 1
     },
     "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
-    "provider_stage_calls": 0,
     "launch_count": 1,
     "retry": "forbidden; immutable ID",
     "registration_created": true,
@@ -259,14 +258,12 @@
         "metadata": 1
       },
       "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
-      "provider_calls": 0,
       "launch_count": 1,
       "retry": "forbidden; immutable ID",
       "registration_created": true,
       "checkpoint_status": "needs_attention",
       "next_stage": "materials",
       "billing_enabled": false,
-      "provider_stage_calls": 0,
       "launch_operator": "factory_next.operator --steps 8 continue",
       "launch_started": true,
       "launch_job_id": "job_f2558304fbcb",
@@ -327,7 +324,6 @@
         "metadata": 1
       },
       "source_revision": "043c9cf25c52c196e055e4723cf3d424b9716f89",
-      "provider_stage_calls": 0,
       "launch_count": 1,
       "retry": "forbidden; immutable ID",
       "registration_created": true,
@@ -391,5 +387,16 @@
       "14102"
     ],
     "same_message": true
+  },
+  "release_state": {
+    "status": "incomplete",
+    "mp4_created": false,
+    "human_acceptance": false,
+    "remaining_matrix": [
+      "PL15",
+      "EN30",
+      "RU45",
+      "UK60"
+    ]
   }
 }
