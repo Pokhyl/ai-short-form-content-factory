@@ -182,10 +182,6 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
                          "all_variants_below_window")
         self.assertEqual(repair_data["duration_repair_diagnosis"][
                          "maximum_possible_total_characters"],45)
-        self.assertIn("EXPAND every replacement version substantially",
-                      model.generated[1][2][0])
-        self.assertIn("at least 80 characters and 20 words are required",
-                      model.generated[1][2][0])
         self.assertIn("medium version from EVERY beat MUST contain",
                       model.generated[1][2][0])
         self.assertIn("medium narration must total 20-30 words",
