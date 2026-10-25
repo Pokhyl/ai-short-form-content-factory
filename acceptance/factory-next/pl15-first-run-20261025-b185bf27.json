@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_SCHEMA_OVERRESTRICTED",
+  "status": "RU45_TOTAL_LENGTH_FIX_READY",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "deploy and health-check the tested RU45 voice-fit candidate",
+    "1": "deploy and health-check the globally validated voice-fit candidate",
     "2": "checkpoint, register, and launch a fresh RU45 ID once",
-    "3": "verify the RU45 MP4 and continue UK60"
+    "3": "verify RU45 MP4 and continue UK60"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -125,7 +125,7 @@
   "deployment": {
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
-    "candidate_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
     "backup_container": "factory-next-studio-v9-before-medium-repair-e59d4b9-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
@@ -176,7 +176,7 @@
       "18ff1836-52a8-4003-9d26-12d98e8a2ce5"
     ],
     "current_active_jobs": 0,
-    "candidate_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+    "candidate_revision": "8932a3074e2692f35af904489353ae031e58fe36",
     "local_health": 200,
     "active_pipeline_executions": 0,
     "rollback_observations": [
@@ -184,7 +184,7 @@
       "Second swap used image CLI entrypoint instead of Studio server; old container restored automatically.",
       "Third swap set --entrypoint python3; candidate validated locally and publicly."
     ],
-    "candidate_image_id": "sha256:c6bbb595acd18f545d541fe9b1c4184caf71bf83447a1d5df339f35462033f9c"
+    "candidate_image_id": "sha256:816e227fa5ed7a7eb203c37d48a42ef18476df4cbd3cb63900e1ae14bf415150"
   },
   "fresh_attempt": {
     "job_id": "a763d1e6-b4c4-460d-b414-06b84019bfe8",
@@ -965,5 +965,31 @@
     "active_container": "factory-next-studio-v9",
     "container_id": "9fcf2d39bdbf6ee3cc1d8bd4e3746fc0b9193b16c4faab9f4865fac94bf24a60",
     "backup_container": "factory-next-studio-v9-before-medium-repair-e59d4b9-20261025"
+  },
+  "fix7": {
+    "path": "factory_next/preparation.py",
+    "local_code_commit": "f1a31ab7caecd1f023c1ac96f13295220edd0e5e",
+    "local_test_commits": [
+      "291bb149d0162dbb61428680043e68abd112957d",
+      "8932a3074e2692f35af904489353ae031e58fe36"
+    ],
+    "github_code_commit": "64854dbd6d1472979f66dadf29b8cea1cecc23a7",
+    "github_test_commit": "5c0b9a1a6942612301d0deaab5f8ccbf57e984b2",
+    "change": "Keep quantitative per-beat repair guidance and medium thinking, but allow all complete schema-valid alternatives through; enforce the exact assembled duration only in choose_variants. This preserves valid whole-variant combinations despite small local character-band misses.",
+    "regression": "Asserts voice-repair schema retains only baseline nonempty/max-2000 narration bounds, not per-variant minimum bands.",
+    "exact_image_tests": {
+      "tests": [
+        "test_voice_variants",
+        "test_narrative_model",
+        "test_operator",
+        "test_pipeline"
+      ],
+      "result": "28/28 passed; network disabled; exact revision verified"
+    },
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
+    "source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
+    "image_id": "sha256:816e227fa5ed7a7eb203c37d48a42ef18476df4cbd3cb63900e1ae14bf415150",
+    "image_size_bytes": 309054918,
+    "status": "candidate_passed_tests_pending_deployment"
   }
 }
