@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_READY_AFTER_INSPECTION_FIX",
+  "status": "RU45_INSPECTION_FIX_CHECKPOINTED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -187,17 +187,17 @@
     "candidate_image_id": "sha256:6a74f869261cdca81509c4e25364bb24299edb06b4d9d5e649b49067c9565fbc"
   },
   "fresh_attempt": {
-    "job_id": "be666572-6b8f-4487-acfb-4da84bd4b98c",
+    "job_id": "4f724cd2-9601-46c7-9031-893c34672c70",
     "request": {
       "topic": "Как образуется радуга?",
       "language": "ru",
       "seconds": 45
     },
-    "status": "needs_attention",
-    "source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
-    "runtime_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
-    "registration_created": true,
-    "launch_count": 1,
+    "status": "checkpointed_before_registration",
+    "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
+    "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
+    "registration_created": false,
+    "launch_count": 0,
     "billing_enabled": false,
     "provider_stage_calls": 0,
     "next_stage": "research",
@@ -205,24 +205,7 @@
     "preparation_absent_before_registration": true,
     "ledger_absent_before_registration": true,
     "media_absent_before_registration": true,
-    "launch": "not launched; register only after this GitHub checkpoint",
-    "registration_status": "preparing",
-    "checkpoint_status": "needs_attention",
-    "checkpoint_next_stage": "materials",
-    "completed_stages": [
-      "research"
-    ],
-    "registered_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
-    "checkpoint_verified": true,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_312870c40540",
-    "launch_source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
-    "error_type": "ValueError",
-    "failure_code": "MODEL_RESPONSE_INVALID",
-    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-    "failed_call_key": "material-inspect-batch:7224d08260e33d929b131634834996c58b22b548de75045645b07a999d3de3c9",
-    "finish_reason": "MAX_TOKENS"
+    "launch": "not launched; register only after this GitHub checkpoint"
   },
   "previous_attempts": [
     {
@@ -800,17 +783,17 @@
       },
       "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3.",
       "next_attempt": {
-        "job_id": "be666572-6b8f-4487-acfb-4da84bd4b98c",
+        "job_id": "4f724cd2-9601-46c7-9031-893c34672c70",
         "request": {
           "topic": "Как образуется радуга?",
           "language": "ru",
           "seconds": 45
         },
-        "status": "needs_attention",
-        "source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
-        "runtime_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
-        "registration_created": true,
-        "launch_count": 1,
+        "status": "checkpointed_before_registration",
+        "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
+        "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
+        "registration_created": false,
+        "launch_count": 0,
         "billing_enabled": false,
         "provider_stage_calls": 0,
         "next_stage": "research",
@@ -818,24 +801,7 @@
         "preparation_absent_before_registration": true,
         "ledger_absent_before_registration": true,
         "media_absent_before_registration": true,
-        "launch": "not launched; register only after this GitHub checkpoint",
-        "registration_status": "preparing",
-        "checkpoint_status": "needs_attention",
-        "checkpoint_next_stage": "materials",
-        "completed_stages": [
-          "research"
-        ],
-        "registered_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
-        "checkpoint_verified": true,
-        "launch_started": true,
-        "launch_operator": "factory_next.operator --steps 8 continue",
-        "launch_job_id": "job_312870c40540",
-        "launch_source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
-        "error_type": "ValueError",
-        "failure_code": "MODEL_RESPONSE_INVALID",
-        "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-        "failed_call_key": "material-inspect-batch:7224d08260e33d929b131634834996c58b22b548de75045645b07a999d3de3c9",
-        "finish_reason": "MAX_TOKENS"
+        "launch": "not launched; register only after this GitHub checkpoint"
       },
       "failed_attempt_history": [
         {
