@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-25",
+  "purpose": "One fresh normal-production acceptance on the deployed Gemini 503 classification fix; do not mutate or resume the prior terminal job.",
+  "repository": "Pokhyl/ai-short-form-content-factory",
+  "branch": "codex/repair-overlong-story-20261024",
+  "source": {
+    "revision": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "image_tag": "factory-v3:research-budget-a04f3c8c-gemini503-0944bd80",
+    "image_id": "sha256:1f905fd4541beea553c5225d5bab7e3a5d3486cd5039ff2f0662c84336e6b29b",
+    "deployed_container": "factory-next-studio-v9"
+  },
+  "change": {
+    "commit": "0944bd801267a4a63365a21d275d6e0dee1d5850",
+    "behavior": "Explicit gateway 503 UNAVAILABLE is classified as ModelUnavailable; ambiguous operations remain terminal and are never automatically resent.",
+    "packaged_test_receipt": "acceptance/factory-next/2026-10-25-gemini-503-packaged-image-test-receipt.json",
+    "packaged_test_result": "339 tests PASS"
+  },
+  "request": {
+    "topic": "Почему листья осенью меняют цвет?",
+    "language": "ru",
+    "seconds": 15,
+    "intake": "POST https://studio.hodor.com.pl/factory-next/api/jobs",
+    "new_job_uuid_required": true,
+    "previous_failed_job_is_immutable": "678d75d5-1c74-4f16-a52c-f86f53f530af"
+  },
+  "provider": {
+    "gemini_model": "gemini-3.1-flash-lite",
+    "route": "proof-bound existing primary free-tier route",
+    "billing_enabled": false,
+    "standard_free_tier": true,
+    "paid_fallback": false,
+    "google_voice": "ru-RU-Wavenet-D"
+  },
+  "limits": {
+    "gemini_requests_max": 27,
+    "metadata_calls_max": 1,
+    "research_searches_max": 1,
+    "source_fetches_max": 6,
+    "image_searches_max_per_provider": 3,
+    "image_providers": [
+      "Pixabay",
+      "Pexels",
+      "Wikimedia"
+    ],
+    "selected_image_downloads_max": 35,
+    "tts_synthesis_attempts_max": 3,
+    "renders_max": 1,
+    "automatic_pipeline_stages": 8
+  },
+  "stop_conditions": [
+    "Stop if live source revision or image ID differs from the pinned values.",
+    "Stop if proof-bound free-tier/billing/project binding does not validate.",
+    "Stop if any current Studio job is running before submission.",
+    "Stop on the first failed, deferred, unknown, or needs_attention stage; do not retry, resume, or create another job.",
+    "Stop if observed calls exceed the per-job limits or any paid route is selected.",
+    "Accept only when all eight stages complete, machine_pass is true, and the audited MP4 is retrievable with metadata/hash recorded.",
+    "Human listening or human acceptance is not inferred from machine QA."
+  ],
+  "preflight": {
+    "public_jobs_snapshot": "57 records: 52 needs_attention, 3 complete, 2 registration_pending; no running jobs.",
+    "studio_health": "HTTP 200 on deployed image.",
+    "prior_503_job": "678d75d5-1c74-4f16-a52c-f86f53f530af; immutable, no retry."
+  },
+  "status": "planned_waiting_for_fresh_preflight",
+  "authorization": "Owner instructed to continue after the first bounded attempt failed. This plan authorizes exactly one fresh job on the tested deployed fix; no repeat after this attempt fails."
+}
