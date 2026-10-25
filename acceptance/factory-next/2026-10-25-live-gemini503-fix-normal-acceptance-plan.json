@@ -61,7 +61,7 @@
     "studio_health": "HTTP 200 on deployed image.",
     "prior_503_job": "678d75d5-1c74-4f16-a52c-f86f53f530af; immutable, no retry."
   },
-  "status": "acceptance_failed_gateway_execution_unreconciled_no_retry",
+  "status": "acceptance_failed_gateway_outcome_unreconciled_no_retry",
   "authorization": "Owner instructed to continue after the first bounded attempt failed. This plan authorizes exactly one fresh job on the tested deployed fix; no repeat after this attempt fails.",
   "result": {
     "job_id": "bf76a1b4-34e9-45f2-8817-9ed4c4e1a427",
@@ -124,6 +124,11 @@
     "receipt_commit": "471a64f9dfda21bf5d111b157a1b8fb44318b495",
     "current_studio_image_id": "sha256:2329cb4c1a1b5286735186dec11241866a337e5ac31c48c2fee0054cdba7c0de",
     "current_studio_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
-    "no_more_jobs_until_reconciled": true
+    "no_more_jobs_until_reconciled": true,
+    "final_lookup": {
+      "execution_entity_row_count": 0,
+      "terminal_status": "not available",
+      "conclusion": "downstream provider outcome remains unconfirmed"
+    }
   }
 }
