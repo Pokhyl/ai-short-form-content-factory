@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "MODEL_ROUTING_FIX_PL15_CHECKPOINTED_READY",
+  "status": "MODEL_ROUTING_FIX_PL15_LAUNCH_IN_PROGRESS",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -183,7 +183,7 @@
       "language": "pl",
       "seconds": 15
     },
-    "status": "registration_ready",
+    "status": "running",
     "budget": {
       "gemini": 26,
       "source_fetch": 6,
@@ -195,12 +195,15 @@
       "metadata": 1
     },
     "source_revision": "e0df8b72b293c65f9e1da1a1c11515fe6cbbc069",
-    "launch_count": 0,
+    "launch_count": 1,
     "retry": "forbidden after failure/uncertain state",
     "registration_created": true,
     "checkpoint_status": "ready",
     "next_stage": "research",
-    "billing_enabled": false
+    "billing_enabled": false,
+    "launch_started": true,
+    "launch_operator": "factory_next.operator --steps 8 continue",
+    "launch_job_id": "job_926a17c80c1a"
   },
   "previous_attempts": [
     {
