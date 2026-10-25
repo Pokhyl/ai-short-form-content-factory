@@ -2,6 +2,7 @@ import unittest
 from copy import deepcopy
 from factory_next.voice_variants import choose_variants,variant_contract
 from factory_next.duration import NaturalDurationRejected
+from factory_v3.gemini import validate_json
 class WholeVariantTests(unittest.TestCase):
  def setUp(self):
   self.scenes=[{"material_id":"image"+str(i),"evidence_ids":["fact"+str(i)]} for i in range(3)]
@@ -23,6 +24,15 @@ class WholeVariantTests(unittest.TestCase):
    self.assertEqual(beat["material_id"],"image"+str(i))
    self.assertEqual(beat["fact_ids"],["fact"+str(i)])
   self.assertEqual(len(" ".join(x["narration"] for x in out["beats"])),len(" ".join(expected)))
+ def test_small_per_beat_overshoot_can_still_fit_measured_total(self):
+  reply=deepcopy(self.reply)
+  reply["beat_2"]["medium"]["narration"] = reply["beat_2"]["medium"]["narration"].rstrip(".") + " with one extra detail."
+  expected=[reply["beat_1"]["medium"]["narration"],reply["beat_2"]["medium"]["narration"],reply["beat_3"]["medium"]["narration"]]
+  strict=variant_contract(self.scenes,{"short":40,"medium":42,"long":60})
+  with self.assertRaises(ValueError):validate_json(reply,strict)
+  validate_json(reply,variant_contract(self.scenes))
+  out=choose_variants(reply,self.scenes,self.window(" ".join(expected)))
+  self.assertEqual(" ".join(x["narration"] for x in out["beats"])," ".join(expected))
  def test_no_valid_combination_does_not_relax_total_window(self):
   with self.assertRaises(NaturalDurationRejected):
    choose_variants(self.reply,self.scenes,self.window("Five small words fit here."))
