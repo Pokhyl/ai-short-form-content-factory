@@ -15,7 +15,7 @@ class ActualStoryReplay(TestCase):
         responses={r['key']:r for r in saved['responses']}
         seen=[]
         class Calls:
-            def run(self,key,kind,identity,send,**kwargs):
+            def run(self,key,kind,identity,send):
                 response=responses[key]
                 verify_saved_request(identity,response['request_hash'])
                 seen.append(key)
