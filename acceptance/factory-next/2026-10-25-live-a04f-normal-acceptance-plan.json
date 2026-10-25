@@ -78,6 +78,21 @@
     "7ff430fd-98f6-4817-bfc1-10865e285163",
     "b0e0ac28-07f1-4212-a14f-c6c7b617b1b2"
   ],
-  "status": "ready_for_one_bounded_submission",
-  "authorization": "Owner explicitly instructed to continue the project on 2026-10-25; existing project authorization covers one bounded production acceptance after release gates."
+  "status": "acceptance_failed_research_503_no_retry",
+  "authorization": "Owner explicitly instructed to continue the project on 2026-10-25; existing project authorization covers one bounded production acceptance after release gates.",
+  "result": {
+    "job_id": "678d75d5-1c74-4f16-a52c-f86f53f530af",
+    "status": "needs_attention",
+    "first_stage": "research",
+    "completed_stages": [],
+    "error_type": "HTTPFailure",
+    "failure_reason": "EXTERNAL_HTTP_FAILURE",
+    "http_status": 503,
+    "error_status": "UNAVAILABLE",
+    "machine_pass": false,
+    "video_or_hash": false,
+    "receipt_path": "acceptance/factory-next/2026-10-25-live-a04f-normal-job-result.json",
+    "receipt_commit": "ba8237be03139764d8147ea900dd9674ead2e520",
+    "retries_or_resumes": "none"
+  }
 }
