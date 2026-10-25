@@ -150,28 +150,39 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
                 self.calls=object()
                 self.generated=[]
             def generate(self,key,*args,**kwargs):
-                self.generated.append((key,kwargs))
+                self.generated.append((key,kwargs,args))
                 return {},None
             def review_script(self,*args,**kwargs):
                 return {"native_language_quality":True}
         model=Model()
         stage=PreparationStages("/unused",SimpleNamespace(gemini=model),
                                 lambda:None,narrative_model=model)
-        window={"min_words":1,"max_words":20,"target_words":8,
-                "min_characters":5,"max_characters":100,"target_characters":30}
+        window={"min_words":20,"max_words":30,"target_words":25,
+                "min_characters":80,"max_characters":110,"target_characters":95}
         with patch("factory_next.preparation.revision_length_window",return_value=window), \
              patch("factory_next.fact_allocation.allocate_scene_facts",return_value=scenes), \
              patch("factory_next.voice_variants.choose_variants",
                    side_effect=[NaturalDurationRejected("test repair path"),selected]), \
-             patch("factory_next.voice_variants.variant_measurements",return_value={}), \
+             patch("factory_next.voice_variants.variant_measurements",return_value={
+                  "beat_1":{label:{"words":8,"characters":45}
+                            for label in ("short","medium","long")}}), \
              patch("factory_next.preparation.validated_next_story",return_value=selected), \
              patch("factory_next.preparation.validate_native_surface"), \
              patch("factory_next.preparation.validate_script_review"):
             result=stage._revise_story_variants(context,15000)
         self.assertEqual(result["scenes"],selected)
-        self.assertEqual([key for key,_ in model.generated],
+        self.assertEqual([key for key,_,_ in model.generated],
                          ["next-measured-variants","next-measured-variants-repair"])
-        self.assertEqual([args.get("max_tokens") for _,args in model.generated],
+        self.assertEqual([kwargs.get("max_tokens") for _,kwargs,_ in model.generated],
                          [16384,16384])
-        self.assertEqual([args.get("thinking_level") for _,args in model.generated],
+        self.assertEqual([kwargs.get("thinking_level") for _,kwargs,_ in model.generated],
                          ["low","low"])
+        repair_data=model.generated[1][2][1]
+        self.assertEqual(repair_data["duration_repair_diagnosis"]["classification"],
+                         "all_variants_below_window")
+        self.assertEqual(repair_data["duration_repair_diagnosis"][
+                         "maximum_possible_total_characters"],45)
+        self.assertIn("EXPAND every replacement version substantially",
+                      model.generated[1][2][0])
+        self.assertIn("at least 80 characters and 20 words are required",
+                      model.generated[1][2][0])
