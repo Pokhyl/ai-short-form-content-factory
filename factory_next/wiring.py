@@ -92,7 +92,6 @@ def connected_adapters(runtime, job_id, *, preflight_gate=None):
     # and inspections in their durable preparation budget ledger.
     narrative=narrative_model_for(runtime,producer)
     preparation=PreparationStages(runtime.root,producer.operations,producer.authorize,narrative_model=narrative)
-    preparation.variant_correction=narrative is not None
     tts=GoogleVoice(lambda:'gateway-managed',runtime.gateway)
     voice=VoiceStages(runtime.root,tts,runtime.direct,runtime.ledger)
     media=MediaStages(runtime.root)
