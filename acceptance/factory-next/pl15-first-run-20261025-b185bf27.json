@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_READY_AFTER_TOTAL_GATE",
+  "status": "RU45_TOTAL_GATE_CHECKPOINTED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -187,17 +187,17 @@
     "candidate_image_id": "sha256:816e227fa5ed7a7eb203c37d48a42ef18476df4cbd3cb63900e1ae14bf415150"
   },
   "fresh_attempt": {
-    "job_id": "a763d1e6-b4c4-460d-b414-06b84019bfe8",
+    "job_id": "cb484faf-21bd-43aa-a336-b242cdfd53e2",
     "request": {
       "topic": "Как образуется радуга?",
       "language": "ru",
       "seconds": 45
     },
-    "status": "needs_attention",
-    "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
-    "runtime_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
-    "registration_created": true,
-    "launch_count": 1,
+    "status": "checkpointed_before_registration",
+    "source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
+    "runtime_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
+    "registration_created": false,
+    "launch_count": 0,
     "billing_enabled": false,
     "provider_stage_calls": 0,
     "next_stage": "research",
@@ -205,32 +205,7 @@
     "preparation_absent_before_registration": true,
     "ledger_absent_before_registration": true,
     "media_absent_before_registration": true,
-    "launch": "not launched; register only after this GitHub checkpoint",
-    "registration_status": "preparing",
-    "checkpoint_status": "needs_attention",
-    "checkpoint_next_stage": "voice",
-    "completed_stages": [
-      "research",
-      "materials",
-      "story"
-    ],
-    "registered_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
-    "checkpoint_verified": true,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_4afb0ecd0bca",
-    "launch_source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
-    "error_type": "ModelSchemaError",
-    "failure_code": "MODEL_RESPONSE_INVALID",
-    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-    "observed_tts_duration_ms": 42360,
-    "length_window": {
-      "min_words": 78,
-      "max_words": 88,
-      "min_characters": 614,
-      "max_characters": 720
-    },
-    "root_cause": "Globally valid whole-variant combinations were rejected by per-beat schema minLength constraints; the exact total duration validator never got to select them."
+    "launch": "not launched; register only after this GitHub checkpoint"
   },
   "previous_attempts": [
     {
@@ -808,17 +783,17 @@
       },
       "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3.",
       "next_attempt": {
-        "job_id": "a763d1e6-b4c4-460d-b414-06b84019bfe8",
+        "job_id": "cb484faf-21bd-43aa-a336-b242cdfd53e2",
         "request": {
           "topic": "Как образуется радуга?",
           "language": "ru",
           "seconds": 45
         },
-        "status": "needs_attention",
-        "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
-        "runtime_image": "factory-v3:research-budget-a04f3c8c-voice-medium-repair-e59d4b9",
-        "registration_created": true,
-        "launch_count": 1,
+        "status": "checkpointed_before_registration",
+        "source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
+        "runtime_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
+        "registration_created": false,
+        "launch_count": 0,
         "billing_enabled": false,
         "provider_stage_calls": 0,
         "next_stage": "research",
@@ -826,32 +801,7 @@
         "preparation_absent_before_registration": true,
         "ledger_absent_before_registration": true,
         "media_absent_before_registration": true,
-        "launch": "not launched; register only after this GitHub checkpoint",
-        "registration_status": "preparing",
-        "checkpoint_status": "needs_attention",
-        "checkpoint_next_stage": "voice",
-        "completed_stages": [
-          "research",
-          "materials",
-          "story"
-        ],
-        "registered_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
-        "checkpoint_verified": true,
-        "launch_started": true,
-        "launch_operator": "factory_next.operator --steps 8 continue",
-        "launch_job_id": "job_4afb0ecd0bca",
-        "launch_source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
-        "error_type": "ModelSchemaError",
-        "failure_code": "MODEL_RESPONSE_INVALID",
-        "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-        "observed_tts_duration_ms": 42360,
-        "length_window": {
-          "min_words": 78,
-          "max_words": 88,
-          "min_characters": 614,
-          "max_characters": 720
-        },
-        "root_cause": "Globally valid whole-variant combinations were rejected by per-beat schema minLength constraints; the exact total duration validator never got to select them."
+        "launch": "not launched; register only after this GitHub checkpoint"
       },
       "failed_attempt_history": [
         {
@@ -891,6 +841,19 @@
             "characters": 626
           },
           "root_cause": "The stricter thinking level produced long variants that include a globally valid 626-character/80-word combination. Local schema minLength bounds rejected individual alternatives that were only 1–3 characters below their per-beat bands before the exact global selector could choose the valid combination."
+        },
+        {
+          "job_id": "a763d1e6-b4c4-460d-b414-06b84019bfe8",
+          "failure_code": "MODEL_RESPONSE_INVALID",
+          "stage": "voice",
+          "source_revision": "e59d4b9f609a5f7203c1d74efc7c0db6b6a7ca17",
+          "retry": "forbidden for this ID",
+          "actual_duration_ms": 42360,
+          "reachable_whole_variant_combination": {
+            "words": 80,
+            "characters": 626
+          },
+          "rejection": "local per-variant minLength prevented whole-combination selection"
         }
       ]
     }
