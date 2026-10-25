@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_STRUCTURED_REVISION_READY",
+  "status": "RU45_STRUCTURED_CHECKPOINTED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -187,17 +187,17 @@
     "candidate_image_id": "sha256:3f02a57fd87a52b5f2cb123e0c773b7c0295ac059a1d1166141e4c0890170fa0"
   },
   "fresh_attempt": {
-    "job_id": "cb484faf-21bd-43aa-a336-b242cdfd53e2",
+    "job_id": "be666572-6b8f-4487-acfb-4da84bd4b98c",
     "request": {
       "topic": "Как образуется радуга?",
       "language": "ru",
       "seconds": 45
     },
-    "status": "needs_attention",
-    "source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
-    "runtime_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
-    "registration_created": true,
-    "launch_count": 1,
+    "status": "checkpointed_before_registration",
+    "source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
+    "runtime_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
+    "registration_created": false,
+    "launch_count": 0,
     "billing_enabled": false,
     "provider_stage_calls": 0,
     "next_stage": "research",
@@ -205,33 +205,7 @@
     "preparation_absent_before_registration": true,
     "ledger_absent_before_registration": true,
     "media_absent_before_registration": true,
-    "launch": "not launched; register only after this GitHub checkpoint",
-    "registration_status": "preparing",
-    "checkpoint_status": "needs_attention",
-    "checkpoint_next_stage": "voice",
-    "completed_stages": [
-      "research",
-      "materials",
-      "story"
-    ],
-    "registered_revision": "8932a3074e2692f35af904489353ae031e58fe36",
-    "checkpoint_verified": true,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_278d1aed95c4",
-    "launch_source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
-    "error_type": "NaturalDurationRejected",
-    "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
-    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-    "observed_tts_duration_ms": 38136,
-    "length_window": {
-      "min_words": 96,
-      "max_words": 108,
-      "min_characters": 619,
-      "max_characters": 727
-    },
-    "max_variant_words": 65,
-    "max_variant_characters": 476
+    "launch": "not launched; register only after this GitHub checkpoint"
   },
   "previous_attempts": [
     {
@@ -809,17 +783,17 @@
       },
       "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3.",
       "next_attempt": {
-        "job_id": "cb484faf-21bd-43aa-a336-b242cdfd53e2",
+        "job_id": "be666572-6b8f-4487-acfb-4da84bd4b98c",
         "request": {
           "topic": "Как образуется радуга?",
           "language": "ru",
           "seconds": 45
         },
-        "status": "needs_attention",
-        "source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
-        "runtime_image": "factory-v3:research-budget-a04f3c8c-total-length-gate-8932a30",
-        "registration_created": true,
-        "launch_count": 1,
+        "status": "checkpointed_before_registration",
+        "source_revision": "1baab1604ef5cfe714008834f683b9f504d0a5b0",
+        "runtime_image": "factory-v3:research-budget-a04f3c8c-structured-voice-revision-1baab16",
+        "registration_created": false,
+        "launch_count": 0,
         "billing_enabled": false,
         "provider_stage_calls": 0,
         "next_stage": "research",
@@ -827,33 +801,7 @@
         "preparation_absent_before_registration": true,
         "ledger_absent_before_registration": true,
         "media_absent_before_registration": true,
-        "launch": "not launched; register only after this GitHub checkpoint",
-        "registration_status": "preparing",
-        "checkpoint_status": "needs_attention",
-        "checkpoint_next_stage": "voice",
-        "completed_stages": [
-          "research",
-          "materials",
-          "story"
-        ],
-        "registered_revision": "8932a3074e2692f35af904489353ae031e58fe36",
-        "checkpoint_verified": true,
-        "launch_started": true,
-        "launch_operator": "factory_next.operator --steps 8 continue",
-        "launch_job_id": "job_278d1aed95c4",
-        "launch_source_revision": "8932a3074e2692f35af904489353ae031e58fe36",
-        "error_type": "NaturalDurationRejected",
-        "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
-        "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-        "observed_tts_duration_ms": 38136,
-        "length_window": {
-          "min_words": 96,
-          "max_words": 108,
-          "min_characters": 619,
-          "max_characters": 727
-        },
-        "max_variant_words": 65,
-        "max_variant_characters": 476
+        "launch": "not launched; register only after this GitHub checkpoint"
       },
       "failed_attempt_history": [
         {
