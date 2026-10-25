@@ -575,7 +575,7 @@ class PreparationStages:
               'per_beat_character_targets':targets,
               'per_beat_character_bands':bands,
               'total_length_window':window,'measured_voice_ms':measured_ms}
-        reply,_=model.generate('next-measured-variants',prompt,data,schema)
+        reply,_=model.generate('next-measured-variants',prompt,data,schema,max_tokens=16384)
         try:
             draft=choose_variants(reply,scenes,window)
         except NaturalDurationRejected:
@@ -584,7 +584,7 @@ class PreparationStages:
                 "window. Use their measured lengths to adjust the short/medium/long versions; "
                 "do not repeat the same lengths. Preserve overall source claim coverage.",
                 {**data,'previous_variants':reply,
-                 'measured_variant_lengths':variant_measurements(reply)},schema)
+                 'measured_variant_lengths':variant_measurements(reply)},schema,max_tokens=16384)
             draft=choose_variants(reply,scenes,window)
         selected=validated_next_story(request,evidence,photos,draft)
         script=' '.join(scene['narration'] for scene in selected)
