@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RUNNING",
+  "status": "RU45_FAILED_VOICE_DURATION_OUT_OF_RANGE",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -125,8 +125,8 @@
   "deployment": {
     "target_container": "factory-next-studio-v9",
     "old_image": "factory-v3:research-budget-a04f3c8c",
-    "candidate_image": "factory-v3:research-budget-a04f3c8c-low-thinking-40b6d22",
-    "backup_container": "factory-next-studio-v9-before-low-thinking-fix-20261025",
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
+    "backup_container": "factory-next-studio-v9-before-duration-repair-20261025",
     "caddy_route": "factory-next-studio-v9:3003 unchanged",
     "networks": [
       "n8n_default",
@@ -153,8 +153,8 @@
       "active_revision": "a04f3c8cadf2312f4dd1c471ee3b546bc544fe4f",
       "public_health": 200
     },
-    "active_image": "factory-v3:research-budget-a04f3c8c-low-thinking-40b6d22",
-    "active_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+    "active_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
+    "active_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
     "public_health": 200,
     "backup_container_state": "exited and retained",
     "backup_image": "factory-v3:research-budget-a04f3c8c-voice-budget-fca21d3",
@@ -176,7 +176,7 @@
       "18ff1836-52a8-4003-9d26-12d98e8a2ce5"
     ],
     "current_active_jobs": 0,
-    "candidate_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+    "candidate_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
     "local_health": 200,
     "active_pipeline_executions": 0,
     "rollback_observations": [
@@ -685,7 +685,7 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "running",
+      "status": "needs_attention",
       "job_id": "59917beb-71db-4f25-9e6e-a6722b5806f0",
       "request": {
         "topic": "Как образуется радуга?",
@@ -706,12 +706,118 @@
       "launch_started": true,
       "launch_operator": "factory_next.operator --steps 8 continue",
       "launch_job_id": "job_dedcfff845f3",
-      "retry": "forbidden after failure/uncertain state",
+      "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
       "completed_stages": [
         "research",
-        "materials"
+        "materials",
+        "story"
       ],
-      "next_stage": "story"
+      "next_stage": "voice",
+      "failed_attempts": [
+        "59917beb-71db-4f25-9e6e-a6722b5806f0"
+      ],
+      "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
+      "error_type": "NaturalDurationRejected",
+      "observed_tts_duration_ms": 31848,
+      "failed_voice_variants": {
+        "initial": {
+          "beat_1": [
+            {
+              "characters": 119,
+              "words": 16
+            },
+            {
+              "characters": 127,
+              "words": 17
+            },
+            {
+              "characters": 139,
+              "words": 18
+            }
+          ],
+          "beat_2": [
+            {
+              "characters": 97,
+              "words": 15
+            },
+            {
+              "characters": 108,
+              "words": 16
+            },
+            {
+              "characters": 132,
+              "words": 18
+            }
+          ],
+          "beat_3": [
+            {
+              "characters": 106,
+              "words": 14
+            },
+            {
+              "characters": 114,
+              "words": 15
+            },
+            {
+              "characters": 128,
+              "words": 19
+            }
+          ]
+        },
+        "single_repair": {
+          "beat_1": [
+            {
+              "characters": 120,
+              "words": 16
+            },
+            {
+              "characters": 127,
+              "words": 17
+            },
+            {
+              "characters": 144,
+              "words": 18
+            }
+          ],
+          "beat_2": [
+            {
+              "characters": 96,
+              "words": 15
+            },
+            {
+              "characters": 109,
+              "words": 16
+            },
+            {
+              "characters": 121,
+              "words": 17
+            }
+          ],
+          "beat_3": [
+            {
+              "characters": 106,
+              "words": 15
+            },
+            {
+              "characters": 112,
+              "words": 15
+            },
+            {
+              "characters": 127,
+              "words": 18
+            }
+          ]
+        }
+      },
+      "measured_voice_length_window": {
+        "min_words": 82,
+        "max_words": 92,
+        "min_characters": 602,
+        "max_characters": 706,
+        "target_words": 87,
+        "target_characters": 654
+      },
+      "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3."
     }
   },
   "fix4": {
@@ -742,5 +848,30 @@
       "result": "28/28 passed; network disabled; exact revision verified"
     },
     "deployment": "deployed; local and public health 200; previous container retained for rollback"
+  },
+  "fix5": {
+    "path": "factory_next/preparation.py",
+    "local_commit": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+    "github_code_commit": "52afd9f5a35186409d7128ff0f60deec08641249",
+    "github_test_commit": "7b600abbba6519ad3f9bcf140f7063c8f871429a",
+    "change": "Compute maximum reachable words/characters from measured variants. When every choice is underlength, include numeric deficit and explicit per-beat expansion targets/bands in the single correction; validate against a bounded schema.",
+    "exact_image_tests": {
+      "tests": [
+        "test_voice_variants",
+        "test_narrative_model",
+        "test_operator",
+        "test_pipeline"
+      ],
+      "result": "28/28 passed; network disabled; exact revision verified"
+    },
+    "candidate_image": "factory-v3:research-budget-a04f3c8c-low-thinking-duration-repair-33bcdf1",
+    "source_revision": "33bcdf1ed1463be762c2ea74cbee0a11895e95bb",
+    "image_id": "sha256:c1e7c551468c01dc707bdd62644267114cca947018bec52b920ee6f694b61ac4",
+    "image_size_bytes": 309054520,
+    "deployment": "deployed; public and local Studio health 200; previous container retained for rollback",
+    "active_container": "factory-next-studio-v9",
+    "backup_container": "factory-next-studio-v9-before-duration-repair-20261025",
+    "active_jobs_at_verification": 0,
+    "billing_enabled": false
   }
 }
