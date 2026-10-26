@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_FRESH_ATTEMPT_CHECKPOINTED",
+  "status": "RU45_REGISTERED_READY_TO_LAUNCH",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,10 +193,10 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "checkpointed_prelaunch",
+    "status": "registered_ready_to_launch",
     "source_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d (read-only /app bind from committed revision)",
-    "registration_created": false,
+    "registration_created": true,
     "launch_count": 0,
     "billing_enabled": false,
     "preflight": {
@@ -211,7 +211,11 @@
       "project_match": true,
       "credential_fingerprint_match": true
     },
-    "launch": "pending registration; exact job ID checkpointed in GitHub"
+    "launch": "pending one operator continue call after this checkpoint",
+    "checkpoint_status": "ready",
+    "checkpoint_next_stage": "research",
+    "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
+    "registration_status": "preparing"
   },
   "previous_attempts": [
     {
@@ -797,7 +801,12 @@
         "ledger_calls_before_registration": 0,
         "billing_enabled": false,
         "checkpoint": "GitHub updated before registration",
-        "launch_count": 0
+        "launch_count": 0,
+        "registration_created": true,
+        "registration_status": "preparing",
+        "checkpoint_status": "ready",
+        "checkpoint_next_stage": "research",
+        "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b"
       },
       "failed_attempt_history": [
         {
@@ -1082,8 +1091,8 @@
   "fix10": {
     "path": "material_first/visuals.py",
     "commit": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
-    "github_code_commit": "pending",
-    "github_test_commit": "pending",
+    "github_code_commit": "49d9421b4c21b063aeaff26bf54e0422fb9f2eef",
+    "github_test_commit": "5958c6f8d56848f4fd34bac5f6edb5da5c033c08",
     "change": "Allow a reviewed story-stage photo anchor to remain a valid visual match when independently generated evidence IDs differ; direct factual overlap remains preferred.",
     "tests": {
       "exact_image_timeline": "5/5 passed",
