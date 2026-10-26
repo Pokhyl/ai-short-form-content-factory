@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_GEMINI31_FREE_TIER_CHECKPOINTED",
+  "status": "RU45_REGISTERED_READY_GEMINI31",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,10 +193,10 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "checkpointed_prelaunch",
+    "status": "registered_ready_to_launch",
     "source_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
-    "registration_created": false,
+    "registration_created": true,
     "launch_count": 0,
     "billing_enabled": false,
     "preflight": {
@@ -211,7 +211,12 @@
       "narrative_free_model": "gemini-3.5-flash-lite",
       "same_project_and_credential": true
     },
-    "launch": "not launched; registered only after this checkpoint"
+    "launch": "pending one operator continue call after this checkpoint",
+    "registration_status": "preparing",
+    "checkpoint_status": "ready",
+    "checkpoint_next_stage": "research",
+    "registered_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+    "studio_record_linked": true
   },
   "previous_attempts": [
     {
@@ -808,7 +813,13 @@
         "narrative_model": "gemini-3.5-flash-lite",
         "project_and_credential_match": true,
         "launch_count": 0,
-        "github_checkpoint": "this record"
+        "github_checkpoint": "this record",
+        "registration_created": true,
+        "registration_status": "preparing",
+        "checkpoint_status": "ready",
+        "checkpoint_next_stage": "research",
+        "registered_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+        "studio_record_linked": true
       },
       "failed_attempt_history": [
         {
