@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RUNNING_BOUNDED_INSPECTION",
+  "status": "RU45_FRESH_ATTEMPT_CHECKPOINTED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -187,40 +187,31 @@
     "candidate_image_id": "sha256:6a74f869261cdca81509c4e25364bb24299edb06b4d9d5e649b49067c9565fbc"
   },
   "fresh_attempt": {
-    "job_id": "4f724cd2-9601-46c7-9031-893c34672c70",
+    "job_id": "cbfdc558-5168-4f9d-ada6-6c384b67f058",
     "request": {
       "topic": "Как образуется радуга?",
       "language": "ru",
       "seconds": 45
     },
-    "status": "running",
-    "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
-    "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
-    "registration_created": true,
-    "launch_count": 1,
+    "status": "checkpointed_prelaunch",
+    "source_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
+    "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d (read-only /app bind from committed revision)",
+    "registration_created": false,
+    "launch_count": 0,
     "billing_enabled": false,
-    "provider_stage_calls": 0,
-    "next_stage": "research",
-    "state_absent_before_registration": true,
-    "preparation_absent_before_registration": true,
-    "ledger_absent_before_registration": true,
-    "media_absent_before_registration": true,
-    "launch": "not launched; register only after this GitHub checkpoint",
-    "registration_status": "preparing",
-    "checkpoint_status": "running",
-    "checkpoint_next_stage": "alignment",
-    "completed_stages": [
-      "research",
-      "materials",
-      "story",
-      "voice"
-    ],
-    "registered_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
-    "checkpoint_verified": true,
-    "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_81716e68af07",
-    "launch_source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655"
+    "preflight": {
+      "studio_health": 200,
+      "public_health": 200,
+      "active_jobs": 0,
+      "state_absent": true,
+      "api_absent": true,
+      "preparation_rows_before": 0,
+      "ledger_calls_before": 0,
+      "gemini_model": "gemini-3.5-flash-lite",
+      "project_match": true,
+      "credential_fingerprint_match": true
+    },
+    "launch": "pending registration; exact job ID checkpointed in GitHub"
   },
   "previous_attempts": [
     {
@@ -664,14 +655,14 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "needs_attention",
-      "job_id": "59917beb-71db-4f25-9e6e-a6722b5806f0",
+      "status": "ready_for_fresh_attempt",
+      "job_id": "cbfdc558-5168-4f9d-ada6-6c384b67f058",
       "request": {
         "topic": "Как образуется радуга?",
         "language": "ru",
         "seconds": 45
       },
-      "source_revision": "40b6d22ad4c7b9ae8f0b7b8a740dbe98520b475c",
+      "source_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
       "state_absent_before_registration": true,
       "database_preparations_before_registration": 0,
       "registration_created": true,
@@ -693,7 +684,8 @@
       ],
       "next_stage": "voice",
       "failed_attempts": [
-        "59917beb-71db-4f25-9e6e-a6722b5806f0"
+        "59917beb-71db-4f25-9e6e-a6722b5806f0",
+        "cbfdc558-5168-4f9d-ada6-6c384b67f058"
       ],
       "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
       "error_type": "NaturalDurationRejected",
@@ -798,40 +790,14 @@
       },
       "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3.",
       "next_attempt": {
-        "job_id": "4f724cd2-9601-46c7-9031-893c34672c70",
-        "request": {
-          "topic": "Как образуется радуга?",
-          "language": "ru",
-          "seconds": 45
-        },
-        "status": "running",
-        "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
-        "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
-        "registration_created": true,
-        "launch_count": 1,
-        "billing_enabled": false,
-        "provider_stage_calls": 0,
-        "next_stage": "research",
+        "job_id": "cbfdc558-5168-4f9d-ada6-6c384b67f058",
+        "source_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
         "state_absent_before_registration": true,
-        "preparation_absent_before_registration": true,
-        "ledger_absent_before_registration": true,
-        "media_absent_before_registration": true,
-        "launch": "not launched; register only after this GitHub checkpoint",
-        "registration_status": "preparing",
-        "checkpoint_status": "running",
-        "checkpoint_next_stage": "alignment",
-        "completed_stages": [
-          "research",
-          "materials",
-          "story",
-          "voice"
-        ],
-        "registered_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
-        "checkpoint_verified": true,
-        "launch_started": true,
-        "launch_operator": "factory_next.operator --steps 8 continue",
-        "launch_job_id": "job_81716e68af07",
-        "launch_source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655"
+        "preparation_rows_before_registration": 0,
+        "ledger_calls_before_registration": 0,
+        "billing_enabled": false,
+        "checkpoint": "GitHub updated before registration",
+        "launch_count": 0
       },
       "failed_attempt_history": [
         {
@@ -906,6 +872,22 @@
             "total_tokens": 15273
           },
           "root_cause": "The verified Gemini 3.5 Flash-Lite model used high thinking for multimodal image inspection. One image batch exhausted the output token limit after several successful batches."
+        },
+        {
+          "job_id": "cbfdc558-5168-4f9d-ada6-6c384b67f058",
+          "status": "needs_attention",
+          "stage": "edit",
+          "failure_code": "STAGE_VALIDATION_FAILED",
+          "error_type": "EditUnavailable",
+          "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
+          "completed_stages": [
+            "research",
+            "materials",
+            "story",
+            "voice",
+            "alignment"
+          ],
+          "retry": "forbidden for this ID"
         }
       ]
     }
@@ -1060,5 +1042,60 @@
     "active_container": "factory-next-studio-v9",
     "container_id": "77f5c86c78c1ec033c7348b381d4035c9239c8eeab8f7e56d2ce7ba1818e6308",
     "backup_container": "factory-next-studio-v9-before-bounded-inspection-30a5e1d-20261025"
+  },
+  "last_ru45_attempt": {
+    "job_id": "4f724cd2-9601-46c7-9031-893c34672c70",
+    "request": {
+      "topic": "Как образуется радуга?",
+      "language": "ru",
+      "seconds": 45
+    },
+    "status": "running",
+    "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
+    "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
+    "registration_created": true,
+    "launch_count": 1,
+    "billing_enabled": false,
+    "provider_stage_calls": 0,
+    "next_stage": "research",
+    "state_absent_before_registration": true,
+    "preparation_absent_before_registration": true,
+    "ledger_absent_before_registration": true,
+    "media_absent_before_registration": true,
+    "launch": "not launched; register only after this GitHub checkpoint",
+    "registration_status": "preparing",
+    "checkpoint_status": "running",
+    "checkpoint_next_stage": "alignment",
+    "completed_stages": [
+      "research",
+      "materials",
+      "story",
+      "voice"
+    ],
+    "registered_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
+    "checkpoint_verified": true,
+    "launch_started": true,
+    "launch_operator": "factory_next.operator --steps 8 continue",
+    "launch_job_id": "job_81716e68af07",
+    "launch_source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655"
+  },
+  "fix10": {
+    "path": "material_first/visuals.py",
+    "commit": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
+    "github_code_commit": "pending",
+    "github_test_commit": "pending",
+    "change": "Allow a reviewed story-stage photo anchor to remain a valid visual match when independently generated evidence IDs differ; direct factual overlap remains preferred.",
+    "tests": {
+      "exact_image_timeline": "5/5 passed",
+      "exact_image_ffmpeg_media": "1/1 passed",
+      "full_factory_next_suite": "timed out at 55 seconds; no full-suite pass claimed"
+    },
+    "deployment": {
+      "revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
+      "public_health": 200,
+      "local_health": 200,
+      "backup_container": "factory-next-studio-v9-before-anchor-efa92c4",
+      "backup_state": "exited"
+    }
   }
 }
