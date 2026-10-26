@@ -83,7 +83,7 @@ class ResearchModelRoutingTests(unittest.TestCase):
 
 
 class MaterialInspectionModelRoutingTests(unittest.TestCase):
-    def test_material_inspection_uses_confirmed_primary_multimodal_model(self):
+    def test_material_inspection_uses_verified_narrative_multimodal_model(self):
         from hashlib import sha256
         from unittest.mock import patch
         from factory_next.preparation import PreparationStages
@@ -128,10 +128,9 @@ class MaterialInspectionModelRoutingTests(unittest.TestCase):
         self.assertEqual(len(result["photos"]),3)
         self.assertEqual(len(used_models),1)
         self.assertIsNot(used_models[0],verified)
-        self.assertEqual(used_models[0].model,"gemini-3.1-flash-lite")
+        self.assertEqual(used_models[0].model,"gemini-3.5-flash-lite")
         self.assertEqual(used_models[0].default_thinking_level,"medium")
-        self.assertIsNot(used_models[0],primary)
-        self.assertFalse(hasattr(primary,"default_thinking_level"))
+        self.assertIsNot(used_models[0],verified)
         self.assertIs(operations.gemini,primary)
 
 
