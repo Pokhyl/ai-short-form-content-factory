@@ -174,8 +174,12 @@ def ordered_visuals(payload, timings, source_duration_ms, *, slot_count=None, re
     def score(v,scene):
         material=observations[v['material_id']]
         overlap=len(set(scene['evidence_ids']) & set(material['supported_fact_ids']))
-        if policy==TOPIC_POLICY and not overlap: return 0
-        return 3*(scene.get('visual_target_id') in material.get('matched_visual_targets',{}))+overlap
+        # A reviewed narration anchor is already bound to this exact photo by
+        # the story stage. Keep that explicit relation usable when fact IDs
+        # differ across independently generated stages.
+        anchor_match = scene.get('material_id') == material.get('id')
+        if policy==TOPIC_POLICY and not overlap and not anchor_match: return 0
+        return 3*(scene.get('visual_target_id') in material.get('matched_visual_targets',{}))+overlap+int(anchor_match)
     if policy!=TOPIC_POLICY:
         unused=list(payload['visuals']);result=[]
         for cut,scene in slots:
