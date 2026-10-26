@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_GEMINI35_CHECKPOINTED_PRELAUNCH",
+  "status": "RU45_REGISTERED_READY_GEMINI35",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,10 +193,10 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "checkpointed_prelaunch",
+    "status": "registered_ready_prelaunch",
     "source_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
-    "registration_created": false,
+    "registration_created": true,
     "launch_count": 0,
     "billing_enabled": false,
     "preflight": {
@@ -210,7 +210,12 @@
       "selected_image_model": "gemini-3.5-flash-lite",
       "project_credential_match": true
     },
-    "launch": "not launched; registered only after this GitHub checkpoint"
+    "launch": "pending Studio record link; this GitHub checkpoint precedes auto-start",
+    "registration_status": "preparing",
+    "checkpoint_status": "ready",
+    "checkpoint_next_stage": "research",
+    "registered_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
+    "studio_record_linked": false
   },
   "previous_attempts": [
     {
@@ -807,7 +812,13 @@
         "selected_image_model": "gemini-3.5-flash-lite",
         "project_credential_match": true,
         "launch_count": 0,
-        "github_checkpoint": "this record"
+        "github_checkpoint": "this record",
+        "registration_created": true,
+        "registration_status": "preparing",
+        "checkpoint_status": "ready",
+        "checkpoint_next_stage": "research",
+        "registered_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
+        "studio_record_linked": false
       },
       "failed_attempt_history": [
         {
