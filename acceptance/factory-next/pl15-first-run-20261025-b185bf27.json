@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RUNNING_ANCHOR_FIX",
+  "status": "RU45_GEMINI503_DIAGNOSED_GEMINI31_FIX_CHECKPOINTED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,7 +193,7 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "running",
+    "status": "needs_attention",
     "source_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d (read-only /app bind from committed revision)",
     "registration_created": true,
@@ -223,7 +223,15 @@
       "research"
     ],
     "studio_record_linked": true,
-    "next_stage": "materials"
+    "next_stage": "materials",
+    "error_type": "HTTPFailure",
+    "failure_code": "EXTERNAL_HTTP_FAILURE",
+    "failure_details": {
+      "http_status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14270"
+    },
+    "retry": "forbidden"
   },
   "previous_attempts": [
     {
@@ -667,7 +675,7 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "running",
+      "status": "needs_attention",
       "job_id": "cbfdc558-5168-4f9d-ada6-6c384b67f058",
       "request": {
         "topic": "Как образуется радуга?",
@@ -701,8 +709,8 @@
         "be666572-6b8f-4487-acfb-4da84bd4b98c",
         "cbfdc558-5168-4f9d-ada6-6c384b67f058"
       ],
-      "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
-      "error_type": "NaturalDurationRejected",
+      "failure_code": "EXTERNAL_HTTP_FAILURE",
+      "error_type": "HTTPFailure",
       "observed_tts_duration_ms": 31848,
       "failed_voice_variants": {
         "initial": {
@@ -907,6 +915,21 @@
             "alignment"
           ],
           "retry": "forbidden for this ID"
+        },
+        {
+          "job_id": "cbfdc558-5168-4f9d-ada6-6c384b67f058",
+          "failure_code": "EXTERNAL_HTTP_FAILURE",
+          "stage": "materials",
+          "error_type": "HTTPFailure",
+          "http_status": 503,
+          "error_status": "UNAVAILABLE",
+          "gateway_execution_id": "14270",
+          "source_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
+          "completed_stages": [
+            "research"
+          ],
+          "retry": "forbidden for this ID",
+          "provider_message": "This model is currently experiencing high demand."
         }
       ],
       "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
@@ -1118,5 +1141,20 @@
       "backup_container": "factory-next-studio-v9-before-anchor-efa92c4",
       "backup_state": "exited"
     }
+  },
+  "fix11": {
+    "path": "factory_next/preparation.py",
+    "local_commit": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+    "github_code_commit": "ea6d1f0593c782f0c578594d2446460316aade43",
+    "github_test_commit": "72b977a163a8b6a6281545674449932753e0fd4f",
+    "change": "Route photo inspection through the confirmed free-tier Gemini 3.1 Flash-Lite model at medium reasoning. Keep Gemini 3.5 reserved for narrative/story/review; no paid fallback.",
+    "evidence": "Google's official Gemini API model page lists text and image inputs for Gemini 3.1 Flash-Lite.",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+    "verification": {
+      "exact_image_tests": "23/23 passed: narrative model, timeline, material budget stop",
+      "network": "disabled",
+      "full_factory_next_suite": "previous run timed out at 55s; not claimed passing"
+    },
+    "deployment": "pending"
   }
 }
