@@ -102,12 +102,11 @@ class PreparationStages:
         # source-backed checkpoint so the same inspection call hashes identically.
         operations=self.operations
         if self.narrative_model is not None:
-            # Photo inspection uses the same confirmed free-tier multimodal
-            # primary as research. Keep its bounded classification at medium;
-            # reserve the separately verified narrative model for story and
-            # language review so temporary load on that route cannot block photos.
+            # Use the separately verified free-tier multimodal route for image
+            # inspection; this same route completed a live materials stage.
+            # Keep inspection reasoning at medium to bound the classification task.
             operations=copy(self.operations)
-            operations.gemini=copy(self.operations.gemini)
+            operations.gemini=copy(self.narrative_model)
             operations.gemini.default_thinking_level='medium'
         operations.topic=request['topic']
         operations.visual_validation_mode=request['visual_validation_mode']
