@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_REGISTERED_READY_GEMINI35",
+  "status": "RU45_RUNNING_GEMINI35_INSPECTION_ROUTE",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,11 +193,11 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "registered_ready_prelaunch",
+    "status": "running",
     "source_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
     "registration_created": true,
-    "launch_count": 0,
+    "launch_count": 1,
     "billing_enabled": false,
     "preflight": {
       "public_health": 200,
@@ -210,12 +210,15 @@
       "selected_image_model": "gemini-3.5-flash-lite",
       "project_credential_match": true
     },
-    "launch": "pending Studio record link; this GitHub checkpoint precedes auto-start",
+    "launch": "Studio claimed the registered job once; do not invoke operator continue",
     "registration_status": "preparing",
-    "checkpoint_status": "ready",
+    "checkpoint_status": "running",
     "checkpoint_next_stage": "research",
     "registered_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
-    "studio_record_linked": false
+    "studio_record_linked": true,
+    "launch_started": true,
+    "launch_mode": "Studio automatic scheduler",
+    "completed_stages": []
   },
   "previous_attempts": [
     {
@@ -659,7 +662,7 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "checkpointed_prelaunch",
+      "status": "running",
       "job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
       "request": {
         "topic": "Как образуется радуга?",
@@ -681,9 +684,7 @@
       "launch_operator": "factory_next.operator --steps 8 continue",
       "launch_job_id": "job_3fd9cf3f7348",
       "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-      "completed_stages": [
-        "research"
-      ],
+      "completed_stages": [],
       "next_stage": "materials",
       "failed_attempts": [
         "59917beb-71db-4f25-9e6e-a6722b5806f0",
@@ -943,7 +944,7 @@
       ],
       "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
       "studio_record_linked": true,
-      "launch_mode": "Studio scheduler auto-advanced",
+      "launch_mode": "Studio automatic scheduler",
       "active_provider_call": "material-brief",
       "provider_calls_so_far": {
         "gemini_succeeded": 2,
