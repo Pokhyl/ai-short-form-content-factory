@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RUNNING_GEMINI35_INSPECTION_ROUTE",
+  "status": "RU45_BLOCKED_FREE_TIER_PROVIDER_503",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -112,9 +112,9 @@
     "health_http": 200
   },
   "next": {
-    "1": "build and verify the structured sentence correction candidate",
-    "2": "deploy, checkpoint, and launch a fresh RU45 ID once",
-    "3": "verify RU45 MP4 and continue UK60"
+    "1": "Wait for free-tier Gemini capacity to recover; do not retry any failed ID",
+    "2": "Before a fresh RU45 attempt, verify a new safe provider route or observed availability and checkpoint it",
+    "3": "Complete RU45, then process and audit UK60"
   },
   "candidate": {
     "image": "factory-v3:research-budget-a04f3c8c-voice-variant-fix-043c9cf",
@@ -193,7 +193,7 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "running",
+    "status": "needs_attention",
     "source_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
     "registration_created": true,
@@ -212,13 +212,25 @@
     },
     "launch": "Studio claimed the registered job once; do not invoke operator continue",
     "registration_status": "preparing",
-    "checkpoint_status": "running",
+    "checkpoint_status": "needs_attention",
     "checkpoint_next_stage": "research",
     "registered_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
     "studio_record_linked": true,
     "launch_started": true,
     "launch_mode": "Studio automatic scheduler",
-    "completed_stages": []
+    "completed_stages": [],
+    "failure_code": "EXTERNAL_HTTP_FAILURE",
+    "error_type": "HTTPFailure",
+    "stage": "research",
+    "provider_call": "material-brief-review:1",
+    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
+    "provider_calls_so_far": {
+      "gemini_succeeded": 1,
+      "gemini_unknown": 1,
+      "research_search": 1,
+      "source_fetch": 4,
+      "failed_call": "material-brief-review:1"
+    }
   },
   "previous_attempts": [
     {
@@ -521,12 +533,27 @@
       },
       "root_cause": "Factory Next binds Gemini 3.5 Flash-Lite to high thinking globally. The measured-variant generation consumed almost the entire token limit in thoughts and returned truncated JSON. Persisted response usage confirms MAX_TOKENS.",
       "retry": "forbidden; immutable failed ID"
+    },
+    {
+      "job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
+      "status": "needs_attention",
+      "failure_code": "EXTERNAL_HTTP_FAILURE",
+      "stage": "research",
+      "provider_call": "material-brief-review:1",
+      "error_type": "HTTPFailure",
+      "http_status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14282",
+      "source_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
+      "completed_stages": [],
+      "retry": "forbidden for this ID",
+      "provider_message": "This model is currently experiencing high demand."
     }
   ],
   "provider_diagnosis": {
     "type": "503 UNAVAILABLE",
     "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
-    "occurrences": 3,
+    "occurrences": 4,
     "stage": "materials visual inspection",
     "model": "gemini-3.5-flash-lite",
     "billing_enabled": false,
@@ -540,7 +567,16 @@
     "same_message": true,
     "material_model": "gemini-3.1-flash-lite",
     "narrative_model": "gemini-3.5-flash-lite",
-    "evidence": "PreparationStages.materials called operations.inspect_many on the primary runtime model; settings proof selects 3.1 primary and 3.5 only as narrative_model."
+    "evidence": "PreparationStages.materials called operations.inspect_many on the primary runtime model; settings proof selects 3.1 primary and 3.5 only as narrative_model.",
+    "models": [
+      "gemini-3.1-flash-lite",
+      "gemini-3.5-flash-lite"
+    ],
+    "latest_stage": "research review",
+    "latest_execution_id": "14282",
+    "latest_job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
+    "latest_message": "This model is currently experiencing high demand.",
+    "conclusion": "Free-tier capacity is intermittently unavailable on both configured models. No safe provider route is verified while billing is disabled."
   },
   "release_state": {
     "status": "partial",
@@ -554,7 +590,14 @@
       "RU45",
       "UK60"
     ],
-    "note": "PL15 and EN30 passed machine audit and are publicly accessible in Studio. Human acceptance requires owner review."
+    "note": "PL15 and EN30 passed machine audit and are publicly accessible in Studio. Human acceptance requires owner review.",
+    "RU45": "blocked_external_503",
+    "project_complete": false,
+    "remaining": [
+      "RU45",
+      "UK60"
+    ],
+    "updated_at": "2026-10-26"
   },
   "fix2": {
     "path": "factory_next/preparation.py",
@@ -662,7 +705,7 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "running",
+      "status": "needs_attention",
       "job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
       "request": {
         "topic": "Как образуется радуга?",
@@ -683,9 +726,9 @@
       "launch_started": true,
       "launch_operator": "factory_next.operator --steps 8 continue",
       "launch_job_id": "job_3fd9cf3f7348",
-      "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
+      "retry": "forbidden for this ID",
       "completed_stages": [],
-      "next_stage": "materials",
+      "next_stage": "research",
       "failed_attempts": [
         "59917beb-71db-4f25-9e6e-a6722b5806f0",
         "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
@@ -693,7 +736,8 @@
         "cb484faf-21bd-43aa-a336-b242cdfd53e2",
         "be666572-6b8f-4487-acfb-4da84bd4b98c",
         "cbfdc558-5168-4f9d-ada6-6c384b67f058",
-        "343df920-f428-42eb-bc96-f67acf4ed2db"
+        "343df920-f428-42eb-bc96-f67acf4ed2db",
+        "a8470597-b4a8-48cc-a998-10653d979d69"
       ],
       "failure_code": "EXTERNAL_HTTP_FAILURE",
       "error_type": "HTTPFailure",
@@ -940,6 +984,21 @@
           ],
           "retry": "forbidden for this ID",
           "provider_message": "This model is currently experiencing high demand."
+        },
+        {
+          "job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
+          "status": "needs_attention",
+          "failure_code": "EXTERNAL_HTTP_FAILURE",
+          "stage": "research",
+          "provider_call": "material-brief-review:1",
+          "error_type": "HTTPFailure",
+          "http_status": 503,
+          "error_status": "UNAVAILABLE",
+          "gateway_execution_id": "14282",
+          "source_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
+          "completed_stages": [],
+          "retry": "forbidden for this ID",
+          "provider_message": "This model is currently experiencing high demand."
         }
       ],
       "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
@@ -956,7 +1015,15 @@
         "search_wikimedia": 3,
         "downloads_succeeded": 4,
         "active_provider_call": "material-inspect-batch"
-      }
+      },
+      "stage": "research",
+      "provider_call": "material-brief-review:1",
+      "failure_details": {
+        "http_status": 503,
+        "error_status": "UNAVAILABLE",
+        "gateway_execution_id": "14282"
+      },
+      "blocker": "Google Gemini free-tier 503 high demand across both configured free models; no paid fallback; do not launch another attempt until a verified availability/configuration change."
     }
   },
   "fix4": {
@@ -1111,14 +1178,14 @@
     "backup_container": "factory-next-studio-v9-before-bounded-inspection-30a5e1d-20261025"
   },
   "last_ru45_attempt": {
-    "job_id": "343df920-f428-42eb-bc96-f67acf4ed2db",
+    "job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
     "request": {
       "topic": "Как образуется радуга?",
       "language": "ru",
       "seconds": 45
     },
     "status": "needs_attention",
-    "source_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+    "source_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
     "registration_created": true,
     "launch_count": 1,
@@ -1131,43 +1198,29 @@
       "api_absent": true,
       "preparation_rows_before": 0,
       "ledger_calls_before": 0,
-      "confirmed_primary_free_model": "gemini-3.1-flash-lite",
-      "narrative_free_model": "gemini-3.5-flash-lite",
-      "same_project_and_credential": true
+      "selected_image_model": "gemini-3.5-flash-lite",
+      "project_credential_match": true
     },
-    "launch": "pending one operator continue call after this checkpoint",
+    "launch": "Studio claimed the registered job once; do not invoke operator continue",
     "registration_status": "preparing",
-    "checkpoint_status": "running",
+    "checkpoint_status": "needs_attention",
     "checkpoint_next_stage": "research",
-    "registered_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+    "registered_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
     "studio_record_linked": true,
     "launch_started": true,
-    "launch_mode": "Studio scheduler auto-advanced the registered job after its persisted Studio record was linked",
-    "launch_operator": "operator continue was invoked once but saw status=running and returned ValueError; it did not start a second provider operation",
-    "launch_job_id": "job_3fd9cf3f7348",
-    "completed_stages": [
-      "research"
-    ],
-    "provider_call_started": "material-brief",
-    "retry": "forbidden",
-    "next_stage": "materials",
+    "launch_mode": "Studio automatic scheduler",
+    "completed_stages": [],
+    "failure_code": "EXTERNAL_HTTP_FAILURE",
+    "error_type": "HTTPFailure",
+    "stage": "research",
+    "provider_call": "material-brief-review:1",
+    "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
     "provider_calls_so_far": {
-      "gemini_succeeded": 2,
-      "gemini_started": 1,
+      "gemini_succeeded": 1,
+      "gemini_unknown": 1,
       "research_search": 1,
       "source_fetch": 4,
-      "search_pexels": 3,
-      "search_pixabay": 3,
-      "search_wikimedia": 3,
-      "downloads_succeeded": 4,
-      "active_provider_call": "material-inspect-batch"
-    },
-    "error_type": "HTTPFailure",
-    "failure_code": "EXTERNAL_HTTP_FAILURE",
-    "failure_details": {
-      "http_status": 503,
-      "error_status": "UNAVAILABLE",
-      "gateway_execution_id": "14279"
+      "failed_call": "material-brief-review:1"
     }
   },
   "fix10": {
