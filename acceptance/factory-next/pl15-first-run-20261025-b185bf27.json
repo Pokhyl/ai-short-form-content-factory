@@ -219,8 +219,11 @@
     "launch_started": true,
     "launch_operator": "factory_next.operator --steps 8 continue",
     "launch_job_id": "job_5833794324ac",
-    "completed_stages": [],
-    "studio_record_linked": true
+    "completed_stages": [
+      "research"
+    ],
+    "studio_record_linked": true,
+    "next_stage": "materials"
   },
   "previous_attempts": [
     {
@@ -686,8 +689,10 @@
       "launch_operator": "factory_next.operator --steps 8 continue",
       "launch_job_id": "job_5833794324ac",
       "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-      "completed_stages": [],
-      "next_stage": "research",
+      "completed_stages": [
+        "research"
+      ],
+      "next_stage": "materials",
       "failed_attempts": [
         "59917beb-71db-4f25-9e6e-a6722b5806f0",
         "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
