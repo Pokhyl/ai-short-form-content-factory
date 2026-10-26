@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_REGISTERED_READY_GEMINI31",
+  "status": "RU45_RUNNING_GEMINI31_INSPECTION_ROUTE",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,11 +193,11 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "registered_ready_to_launch",
+    "status": "running",
     "source_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
     "registration_created": true,
-    "launch_count": 0,
+    "launch_count": 1,
     "billing_enabled": false,
     "preflight": {
       "public_health": 200,
@@ -213,10 +213,17 @@
     },
     "launch": "pending one operator continue call after this checkpoint",
     "registration_status": "preparing",
-    "checkpoint_status": "ready",
+    "checkpoint_status": "running",
     "checkpoint_next_stage": "research",
     "registered_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
-    "studio_record_linked": true
+    "studio_record_linked": true,
+    "launch_started": true,
+    "launch_mode": "Studio scheduler auto-advanced the registered job after its persisted Studio record was linked",
+    "launch_operator": "operator continue was invoked once but saw status=running and returned ValueError; it did not start a second provider operation",
+    "launch_job_id": "job_3fd9cf3f7348",
+    "completed_stages": [],
+    "provider_call_started": "material-brief",
+    "retry": "no repeat; Studio owns the active step"
   },
   "previous_attempts": [
     {
@@ -660,7 +667,7 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "checkpointed_prelaunch",
+      "status": "running",
       "job_id": "343df920-f428-42eb-bc96-f67acf4ed2db",
       "request": {
         "topic": "Как образуется радуга?",
@@ -680,11 +687,9 @@
       "checkpoint_verified": true,
       "launch_started": true,
       "launch_operator": "factory_next.operator --steps 8 continue",
-      "launch_job_id": "job_5833794324ac",
+      "launch_job_id": "job_3fd9cf3f7348",
       "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-      "completed_stages": [
-        "research"
-      ],
+      "completed_stages": [],
       "next_stage": "materials",
       "failed_attempts": [
         "59917beb-71db-4f25-9e6e-a6722b5806f0",
@@ -928,7 +933,9 @@
         }
       ],
       "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
-      "studio_record_linked": true
+      "studio_record_linked": true,
+      "launch_mode": "Studio scheduler auto-advanced",
+      "active_provider_call": "material-brief"
     }
   },
   "fix4": {
