@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RUNNING_GEMINI31_INSPECTION_ROUTE",
+  "status": "RU45_GEMINI31_MATERIALS_ACTIVE",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -221,9 +221,23 @@
     "launch_mode": "Studio scheduler auto-advanced the registered job after its persisted Studio record was linked",
     "launch_operator": "operator continue was invoked once but saw status=running and returned ValueError; it did not start a second provider operation",
     "launch_job_id": "job_3fd9cf3f7348",
-    "completed_stages": [],
+    "completed_stages": [
+      "research"
+    ],
     "provider_call_started": "material-brief",
-    "retry": "no repeat; Studio owns the active step"
+    "retry": "no repeat; Studio owns the active step",
+    "next_stage": "materials",
+    "provider_calls_so_far": {
+      "gemini_succeeded": 2,
+      "gemini_started": 1,
+      "research_search": 1,
+      "source_fetch": 4,
+      "search_pexels": 3,
+      "search_pixabay": 3,
+      "search_wikimedia": 3,
+      "downloads_succeeded": 4,
+      "active_provider_call": "material-inspect-batch"
+    }
   },
   "previous_attempts": [
     {
@@ -689,7 +703,9 @@
       "launch_operator": "factory_next.operator --steps 8 continue",
       "launch_job_id": "job_3fd9cf3f7348",
       "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-      "completed_stages": [],
+      "completed_stages": [
+        "research"
+      ],
       "next_stage": "materials",
       "failed_attempts": [
         "59917beb-71db-4f25-9e6e-a6722b5806f0",
@@ -935,7 +951,18 @@
       "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
       "studio_record_linked": true,
       "launch_mode": "Studio scheduler auto-advanced",
-      "active_provider_call": "material-brief"
+      "active_provider_call": "material-brief",
+      "provider_calls_so_far": {
+        "gemini_succeeded": 2,
+        "gemini_started": 1,
+        "research_search": 1,
+        "source_fetch": 4,
+        "search_pexels": 3,
+        "search_pixabay": 3,
+        "search_wikimedia": 3,
+        "downloads_succeeded": 4,
+        "active_provider_call": "material-inspect-batch"
+      }
     }
   },
   "fix4": {
