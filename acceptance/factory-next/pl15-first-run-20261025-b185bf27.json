@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_GEMINI31_MATERIALS_ACTIVE",
+  "status": "RU45_RESTORE_PROVEN_MULTIMODAL_ROUTE_CHECKPOINTED",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,7 +193,7 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "running",
+    "status": "needs_attention",
     "source_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
     "registration_created": true,
@@ -225,7 +225,7 @@
       "research"
     ],
     "provider_call_started": "material-brief",
-    "retry": "no repeat; Studio owns the active step",
+    "retry": "forbidden",
     "next_stage": "materials",
     "provider_calls_so_far": {
       "gemini_succeeded": 2,
@@ -237,6 +237,13 @@
       "search_wikimedia": 3,
       "downloads_succeeded": 4,
       "active_provider_call": "material-inspect-batch"
+    },
+    "error_type": "HTTPFailure",
+    "failure_code": "EXTERNAL_HTTP_FAILURE",
+    "failure_details": {
+      "http_status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14279"
     }
   },
   "previous_attempts": [
@@ -681,7 +688,7 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "running",
+      "status": "needs_attention",
       "job_id": "343df920-f428-42eb-bc96-f67acf4ed2db",
       "request": {
         "topic": "Как образуется радуга?",
@@ -713,7 +720,8 @@
         "a763d1e6-b4c4-460d-b414-06b84019bfe8",
         "cb484faf-21bd-43aa-a336-b242cdfd53e2",
         "be666572-6b8f-4487-acfb-4da84bd4b98c",
-        "cbfdc558-5168-4f9d-ada6-6c384b67f058"
+        "cbfdc558-5168-4f9d-ada6-6c384b67f058",
+        "343df920-f428-42eb-bc96-f67acf4ed2db"
       ],
       "failure_code": "EXTERNAL_HTTP_FAILURE",
       "error_type": "HTTPFailure",
@@ -941,6 +949,21 @@
           "error_status": "UNAVAILABLE",
           "gateway_execution_id": "14270",
           "source_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
+          "completed_stages": [
+            "research"
+          ],
+          "retry": "forbidden for this ID",
+          "provider_message": "This model is currently experiencing high demand."
+        },
+        {
+          "job_id": "343df920-f428-42eb-bc96-f67acf4ed2db",
+          "failure_code": "EXTERNAL_HTTP_FAILURE",
+          "stage": "materials",
+          "error_type": "HTTPFailure",
+          "http_status": 503,
+          "error_status": "UNAVAILABLE",
+          "gateway_execution_id": "14279",
+          "source_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
           "completed_stages": [
             "research"
           ],
@@ -1195,5 +1218,18 @@
       ],
       "backup_state": "stopped and retained"
     }
+  },
+  "fix12": {
+    "path": "factory_next/preparation.py",
+    "local_commit": "12a4244a6046672860d7c776bf56bca7af48ecc6",
+    "github_code_commit": "958c47fb5251ae35b207a0364737fd21b9525557",
+    "github_test_commit": "d353ca33f06b0bbb03e423d129b533dc6680a21a",
+    "change": "Restore photo inspection to verified free-tier Gemini 3.5 Flash-Lite, at medium reasoning. The attempt using the confirmed primary Gemini 3.1 image route received HTTP 503/high demand; the 3.5 route had completed live material inspection in the prior RU45 attempt.",
+    "verification": {
+      "exact_image_tests": "23/23 passed: narrative model routing, timeline, material budget stop",
+      "network": "disabled",
+      "full_factory_next_suite": "55s timeout earlier; not claimed passing"
+    },
+    "deployment": "pending"
   }
 }
