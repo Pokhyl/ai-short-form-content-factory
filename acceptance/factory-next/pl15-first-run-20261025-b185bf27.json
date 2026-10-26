@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_REGISTERED_READY_TO_LAUNCH",
+  "status": "RU45_RUNNING_ANCHOR_FIX",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -193,11 +193,11 @@
       "language": "ru",
       "seconds": 45
     },
-    "status": "registered_ready_to_launch",
+    "status": "running",
     "source_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d (read-only /app bind from committed revision)",
     "registration_created": true,
-    "launch_count": 0,
+    "launch_count": 1,
     "billing_enabled": false,
     "preflight": {
       "studio_health": 200,
@@ -211,11 +211,16 @@
       "project_match": true,
       "credential_fingerprint_match": true
     },
-    "launch": "pending one operator continue call after this checkpoint",
-    "checkpoint_status": "ready",
+    "launch": "started once; do not repeat",
+    "checkpoint_status": "running",
     "checkpoint_next_stage": "research",
     "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
-    "registration_status": "preparing"
+    "registration_status": "preparing",
+    "launch_started": true,
+    "launch_operator": "factory_next.operator --steps 8 continue",
+    "launch_job_id": "job_5833794324ac",
+    "completed_stages": [],
+    "studio_record_linked": true
   },
   "previous_attempts": [
     {
@@ -659,7 +664,7 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "ready_for_fresh_attempt",
+      "status": "running",
       "job_id": "cbfdc558-5168-4f9d-ada6-6c384b67f058",
       "request": {
         "topic": "Как образуется радуга?",
@@ -673,22 +678,22 @@
       "launch_count": 1,
       "billing_enabled": false,
       "registration_status": "preparing",
-      "checkpoint_status": "ready",
+      "checkpoint_status": "running",
       "checkpoint_next_stage": "research",
       "provider_stage_calls": 0,
       "checkpoint_verified": true,
       "launch_started": true,
       "launch_operator": "factory_next.operator --steps 8 continue",
-      "launch_job_id": "job_dedcfff845f3",
+      "launch_job_id": "job_5833794324ac",
       "retry": "forbidden; immutable failed ID will not be resumed or relaunched",
-      "completed_stages": [
-        "research",
-        "materials",
-        "story"
-      ],
-      "next_stage": "voice",
+      "completed_stages": [],
+      "next_stage": "research",
       "failed_attempts": [
         "59917beb-71db-4f25-9e6e-a6722b5806f0",
+        "2bdf05ec-def6-40e6-9f61-3df43aa8eb31",
+        "a763d1e6-b4c4-460d-b414-06b84019bfe8",
+        "cb484faf-21bd-43aa-a336-b242cdfd53e2",
+        "be666572-6b8f-4487-acfb-4da84bd4b98c",
         "cbfdc558-5168-4f9d-ada6-6c384b67f058"
       ],
       "failure_code": "VOICE_DURATION_OUT_OF_RANGE",
@@ -898,7 +903,9 @@
           ],
           "retry": "forbidden for this ID"
         }
-      ]
+      ],
+      "registered_revision": "efa92c4148e382cb80e0b98bc374a1f2866f7e0b",
+      "studio_record_linked": true
     }
   },
   "fix4": {
