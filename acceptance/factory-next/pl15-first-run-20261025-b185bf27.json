@@ -43,7 +43,7 @@
     "settings selects 3.5 with billing_enabled false and the same project and credential fingerprint",
     "ID absent from persistent job state and DB before registration"
   ],
-  "status": "RU45_RESTORE_PROVEN_MULTIMODAL_ROUTE_CHECKPOINTED",
+  "status": "RU45_GEMINI35_CHECKPOINTED_PRELAUNCH",
   "registration": {
     "job_id": "b185bf27-d39c-4bc5-9075-480171d746e3",
     "created": true,
@@ -187,17 +187,17 @@
     "candidate_image_id": "sha256:6a74f869261cdca81509c4e25364bb24299edb06b4d9d5e649b49067c9565fbc"
   },
   "fresh_attempt": {
-    "job_id": "343df920-f428-42eb-bc96-f67acf4ed2db",
+    "job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
     "request": {
       "topic": "Как образуется радуга?",
       "language": "ru",
       "seconds": 45
     },
-    "status": "needs_attention",
-    "source_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+    "status": "checkpointed_prelaunch",
+    "source_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
     "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
-    "registration_created": true,
-    "launch_count": 1,
+    "registration_created": false,
+    "launch_count": 0,
     "billing_enabled": false,
     "preflight": {
       "public_health": 200,
@@ -207,44 +207,10 @@
       "api_absent": true,
       "preparation_rows_before": 0,
       "ledger_calls_before": 0,
-      "confirmed_primary_free_model": "gemini-3.1-flash-lite",
-      "narrative_free_model": "gemini-3.5-flash-lite",
-      "same_project_and_credential": true
+      "selected_image_model": "gemini-3.5-flash-lite",
+      "project_credential_match": true
     },
-    "launch": "pending one operator continue call after this checkpoint",
-    "registration_status": "preparing",
-    "checkpoint_status": "running",
-    "checkpoint_next_stage": "research",
-    "registered_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
-    "studio_record_linked": true,
-    "launch_started": true,
-    "launch_mode": "Studio scheduler auto-advanced the registered job after its persisted Studio record was linked",
-    "launch_operator": "operator continue was invoked once but saw status=running and returned ValueError; it did not start a second provider operation",
-    "launch_job_id": "job_3fd9cf3f7348",
-    "completed_stages": [
-      "research"
-    ],
-    "provider_call_started": "material-brief",
-    "retry": "forbidden",
-    "next_stage": "materials",
-    "provider_calls_so_far": {
-      "gemini_succeeded": 2,
-      "gemini_started": 1,
-      "research_search": 1,
-      "source_fetch": 4,
-      "search_pexels": 3,
-      "search_pixabay": 3,
-      "search_wikimedia": 3,
-      "downloads_succeeded": 4,
-      "active_provider_call": "material-inspect-batch"
-    },
-    "error_type": "HTTPFailure",
-    "failure_code": "EXTERNAL_HTTP_FAILURE",
-    "failure_details": {
-      "http_status": 503,
-      "error_status": "UNAVAILABLE",
-      "gateway_execution_id": "14279"
-    }
+    "launch": "not launched; registered only after this GitHub checkpoint"
   },
   "previous_attempts": [
     {
@@ -688,14 +654,14 @@
       "all_scene_photos_attributed": true
     },
     "RU45": {
-      "status": "needs_attention",
-      "job_id": "343df920-f428-42eb-bc96-f67acf4ed2db",
+      "status": "checkpointed_prelaunch",
+      "job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
       "request": {
         "topic": "Как образуется радуга?",
         "language": "ru",
         "seconds": 45
       },
-      "source_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+      "source_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
       "state_absent_before_registration": true,
       "database_preparations_before_registration": 0,
       "registration_created": true,
@@ -826,7 +792,7 @@
       },
       "root_cause": "The one permitted correction adjusted variant lengths only slightly. No whole-variant combination reached the recalculated window for the measured 31.848-second MP3.",
       "next_attempt": {
-        "job_id": "343df920-f428-42eb-bc96-f67acf4ed2db",
+        "job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
         "request": {
           "topic": "Как образуется радуга?",
           "language": "ru",
@@ -838,17 +804,10 @@
         "ledger_calls_before_registration": 0,
         "active_jobs": 0,
         "billing_enabled": false,
-        "free_tier_primary_model": "gemini-3.1-flash-lite",
-        "narrative_model": "gemini-3.5-flash-lite",
-        "project_and_credential_match": true,
+        "selected_image_model": "gemini-3.5-flash-lite",
+        "project_credential_match": true,
         "launch_count": 0,
-        "github_checkpoint": "this record",
-        "registration_created": true,
-        "registration_status": "preparing",
-        "checkpoint_status": "ready",
-        "checkpoint_next_stage": "research",
-        "registered_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
-        "studio_record_linked": true
+        "github_checkpoint": "this record"
       },
       "failed_attempt_history": [
         {
@@ -1140,40 +1099,64 @@
     "backup_container": "factory-next-studio-v9-before-bounded-inspection-30a5e1d-20261025"
   },
   "last_ru45_attempt": {
-    "job_id": "4f724cd2-9601-46c7-9031-893c34672c70",
+    "job_id": "343df920-f428-42eb-bc96-f67acf4ed2db",
     "request": {
       "topic": "Как образуется радуга?",
       "language": "ru",
       "seconds": 45
     },
-    "status": "running",
-    "source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
-    "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d",
+    "status": "needs_attention",
+    "source_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+    "runtime_image": "factory-v3:research-budget-a04f3c8c-bounded-inspection-30a5e1d with read-only committed /app bind",
     "registration_created": true,
     "launch_count": 1,
     "billing_enabled": false,
-    "provider_stage_calls": 0,
-    "next_stage": "research",
-    "state_absent_before_registration": true,
-    "preparation_absent_before_registration": true,
-    "ledger_absent_before_registration": true,
-    "media_absent_before_registration": true,
-    "launch": "not launched; register only after this GitHub checkpoint",
+    "preflight": {
+      "public_health": 200,
+      "local_health": 200,
+      "active_jobs": 0,
+      "state_absent": true,
+      "api_absent": true,
+      "preparation_rows_before": 0,
+      "ledger_calls_before": 0,
+      "confirmed_primary_free_model": "gemini-3.1-flash-lite",
+      "narrative_free_model": "gemini-3.5-flash-lite",
+      "same_project_and_credential": true
+    },
+    "launch": "pending one operator continue call after this checkpoint",
     "registration_status": "preparing",
     "checkpoint_status": "running",
-    "checkpoint_next_stage": "alignment",
-    "completed_stages": [
-      "research",
-      "materials",
-      "story",
-      "voice"
-    ],
-    "registered_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655",
-    "checkpoint_verified": true,
+    "checkpoint_next_stage": "research",
+    "registered_revision": "7a603ea596cbc6a92eaa821c6072c8e4f421c65a",
+    "studio_record_linked": true,
     "launch_started": true,
-    "launch_operator": "factory_next.operator --steps 8 continue",
-    "launch_job_id": "job_81716e68af07",
-    "launch_source_revision": "30a5e1d5e6085f130845b9e002eed06f9e1f2655"
+    "launch_mode": "Studio scheduler auto-advanced the registered job after its persisted Studio record was linked",
+    "launch_operator": "operator continue was invoked once but saw status=running and returned ValueError; it did not start a second provider operation",
+    "launch_job_id": "job_3fd9cf3f7348",
+    "completed_stages": [
+      "research"
+    ],
+    "provider_call_started": "material-brief",
+    "retry": "forbidden",
+    "next_stage": "materials",
+    "provider_calls_so_far": {
+      "gemini_succeeded": 2,
+      "gemini_started": 1,
+      "research_search": 1,
+      "source_fetch": 4,
+      "search_pexels": 3,
+      "search_pixabay": 3,
+      "search_wikimedia": 3,
+      "downloads_succeeded": 4,
+      "active_provider_call": "material-inspect-batch"
+    },
+    "error_type": "HTTPFailure",
+    "failure_code": "EXTERNAL_HTTP_FAILURE",
+    "failure_details": {
+      "http_status": 503,
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14279"
+    }
   },
   "fix10": {
     "path": "material_first/visuals.py",
@@ -1230,6 +1213,13 @@
       "network": "disabled",
       "full_factory_next_suite": "55s timeout earlier; not claimed passing"
     },
-    "deployment": "pending"
+    "deployment": {
+      "active_container": "factory-next-studio-v9",
+      "active_revision": "12a4244a6046672860d7c776bf56bca7af48ecc6",
+      "local_health": 200,
+      "public_health": 200,
+      "backup_container": "factory-next-studio-v9-before-gemini35-12a4244",
+      "backup_state": "stopped and retained"
+    }
   }
 }
