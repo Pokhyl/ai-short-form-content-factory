@@ -43,6 +43,13 @@ class MeasuredEditTests(unittest.TestCase):
         scenes[0]['narration']='Very long words ' * 50
         self.assertEqual(first,compile_edit(scenes,photos,timings,duration,15))
 
+    def test_reviewed_scene_anchor_covers_fact_id_mismatch(self):
+        scenes,photos,timings,duration=self.inputs(15)
+        for i,scene in enumerate(scenes):
+            photos[i*10]['supported_fact_ids']=['different-fact']
+        plan=compile_edit(scenes,photos,timings,duration,15)
+        self.assertTrue({'0-0','1-0','2-0'} <= {s['material_id'] for s in plan['shots']})
+
     def test_bad_audio_alignment_and_duplicate_assets_are_rejected(self):
         scenes,photos,timings,duration=self.inputs(15)
         for invalid in (10000,15001,float('nan')):
