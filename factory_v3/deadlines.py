@@ -11,4 +11,4 @@ def model_request_timeout(model):
 
 
 def upstream_timeout_ms(provider):
-    return (NARRATIVE_UPSTREAM_SECONDS if provider in {"gemini_narrative", "gemini_narrative_lite"} else 120) * 1000
+    return (NARRATIVE_UPSTREAM_SECONDS if provider in {"gemini_narrative", "gemini_narrative_lite", "gemini_narrative_25"} else 120) * 1000

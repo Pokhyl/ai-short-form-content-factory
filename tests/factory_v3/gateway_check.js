@@ -107,3 +107,20 @@ const liteNode=workflow.nodes.find(n=>n.name==='Upstream gemini_narrative_lite')
 assert.deepStrictEqual(liteNode.credentials,workflow.nodes.find(n=>n.name==='Upstream gemini').credentials);
 assert.strictEqual(liteNode.parameters.options.timeout,240000);
 assert.strictEqual(liteNode.retryOnFail,false);
+
+const narrative25Body=structuredClone(good.gemini.body);
+narrative25Body.generationConfig.thinkingConfig={thinkingBudget:2048};
+const narrative25=validate({provider:'gemini_narrative_25',request:{body:narrative25Body}});
+assert.strictEqual(narrative25.url,'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent');
+assert.deepStrictEqual(narrative25.body,narrative25Body);
+for (const thinkingBudget of [-2,1,511,24577,1.5]) {
+  const invalid=structuredClone(narrative25Body);
+  invalid.generationConfig.thinkingConfig={thinkingBudget};
+  assert.throws(()=>validate({provider:'gemini_narrative_25',request:{body:invalid}}));
+}
+assert.throws(()=>validate({provider:'gemini_narrative_25',request:{body:{...good.gemini.body,
+  generationConfig:{...good.gemini.body.generationConfig,thinkingConfig:{thinkingLevel:'high'}}}}}));
+const narrative25Node=workflow.nodes.find(n=>n.name==='Upstream gemini_narrative_25');
+assert.deepStrictEqual(narrative25Node.credentials,workflow.nodes.find(n=>n.name==='Upstream gemini').credentials);
+assert.strictEqual(narrative25Node.parameters.options.timeout,240000);
+assert.strictEqual(narrative25Node.retryOnFail,false);

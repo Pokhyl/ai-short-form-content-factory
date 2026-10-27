@@ -39,6 +39,14 @@ class NarrativeModelProofTests(unittest.TestCase):
         self.assertEqual(self.original.model,'gemini-3.1-flash-lite')
         self.proof['billing_enabled']=True
         with self.assertRaises(ValueError):narrative_model_for(self.runtime,self.producer)
+    def test_verified_25_lite_is_opt_in_and_keeps_shared_budget(self):
+        self.proof['model']='gemini-2.5-flash-lite'
+        selected=narrative_model_for(self.runtime,self.producer)
+        self.assertEqual(selected.model,'gemini-2.5-flash-lite')
+        self.assertEqual(selected.default_thinking_level,'medium')
+        self.assertIs(selected.calls,self.calls)
+        self.assertEqual(self.original.model,'gemini-3.1-flash-lite')
+
     def test_missing_opt_in_preserves_existing_behavior(self):
         del self.runtime.settings['factory_next_narrative_proof']
         self.assertIsNone(narrative_model_for(self.runtime,self.producer))
@@ -197,7 +205,6 @@ class MeasuredVariantTokenBudgetTests(unittest.TestCase):
             self.assertEqual(narration_schema.get("minLength"),1)
             self.assertEqual(narration_schema.get("maxLength"),2000)
 
- 
 
 class MeasuredSentenceRevisionRoutingTests(unittest.TestCase):
     def test_voice_fit_uses_verified_narrative_model_with_bounded_medium_reasoning(self):

@@ -25,11 +25,12 @@ function validateProviderRequest(input) {
       throw new Error('unsupported Pexels settings');
     }
     url = 'https://api.pexels.com/v1/search';
-  } else if (provider === 'gemini' || provider === 'gemini_narrative' || provider === 'gemini_narrative_lite') {
+  } else if (provider === 'gemini' || provider === 'gemini_narrative' || provider === 'gemini_narrative_lite' || provider === 'gemini_narrative_25') {
     method = 'POST';
     url = 'https://generativelanguage.googleapis.com/v1beta/models/' +
       (provider === 'gemini_narrative' ? 'gemini-3.8-flash' :
-       provider === 'gemini_narrative_lite' ? 'gemini-3.5-flash-lite' : model) + ':generateContent';
+       provider === 'gemini_narrative_lite' ? 'gemini-3.5-flash-lite' :
+       provider === 'gemini_narrative_25' ? 'gemini-2.5-flash-lite' : model) + ':generateContent';
     if (!body || Object.keys(body).some(k => !['systemInstruction','contents','generationConfig'].includes(k)) ||
         !Array.isArray(body.contents) || body.contents.length !== 1 ||
         body.generationConfig?.candidateCount !== 1 ||
@@ -37,7 +38,12 @@ function validateProviderRequest(input) {
         Object.keys(body.generationConfig || {}).some(k => !['candidateCount','maxOutputTokens','responseMimeType','responseJsonSchema','thinkingConfig'].includes(k)) ||
         (body.generationConfig?.thinkingConfig !== undefined &&
           (Object.keys(body.generationConfig.thinkingConfig).length !== 1 ||
-           !['low','medium','high'].includes(body.generationConfig.thinkingConfig.thinkingLevel))) ||
+           (provider === 'gemini_narrative_25' ?
+             (!Number.isInteger(body.generationConfig.thinkingConfig.thinkingBudget) ||
+              ![0,-1].includes(body.generationConfig.thinkingConfig.thinkingBudget) &&
+              (body.generationConfig.thinkingConfig.thinkingBudget < 512 ||
+               body.generationConfig.thinkingConfig.thinkingBudget > 24576)) :
+             !['low','medium','high'].includes(body.generationConfig.thinkingConfig.thinkingLevel)))) ||
         !Number.isInteger(body.generationConfig?.maxOutputTokens) ||
         body.generationConfig.maxOutputTokens < 1 || body.generationConfig.maxOutputTokens > 16384 ||
         JSON.stringify(body).length > 14 * 1024 * 1024) throw new Error('unsupported Gemini request');

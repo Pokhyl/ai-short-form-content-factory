@@ -145,6 +145,18 @@ class GeminiTests(unittest.TestCase):
                 self.adapter.generate("bad", "controlled", {}, obj({"answer": string()}),
                                       thinking_level=invalid)
 
+    def test_25_flash_lite_maps_levels_to_supported_budgets(self):
+        self.adapter.model='gemini-2.5-flash-lite'
+        for level,budget in [('low',512),('medium',2048),('high',8192)]:
+            with self.subTest(level=level):
+                self.http.requests.clear()
+                result=self.adapter.generate('25-'+level,'controlled',{'question':'test'},
+                    obj({'answer':string()}),thinking_level=level)
+                config=self.http.requests[-1][2]['generationConfig']['thinkingConfig']
+                self.assertEqual(config,{'thinkingBudget':budget})
+                self.assertEqual(result[1]['thinking_budget'],budget)
+                self.assertNotIn('thinkingLevel',config)
+
     def test_invalid_schema_and_duplicate_fields_are_rejected(self):
         self.http.result = {"answer": "test", "approval": True}
         with self.assertRaisesRegex(ValueError, "schema"):

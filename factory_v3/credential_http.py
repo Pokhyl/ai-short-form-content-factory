@@ -7,7 +7,8 @@ GATEWAY = "http://ai-short-form-n8n:5678/webhook/factory-v3-internal-provider"
 MODEL = "gemini-3.1-flash-lite"
 NARRATIVE_MODEL = "gemini-3.8-flash"
 NARRATIVE_LITE_MODEL = "gemini-3.5-flash-lite"
-NARRATIVE_MODELS = (NARRATIVE_MODEL, NARRATIVE_LITE_MODEL)
+NARRATIVE_25_MODEL = "gemini-2.5-flash-lite"
+NARRATIVE_MODELS = (NARRATIVE_MODEL, NARRATIVE_LITE_MODEL, NARRATIVE_25_MODEL)
 NARRATIVE_PROOF_MODELS = (MODEL, *NARRATIVE_MODELS)
 
 
@@ -64,6 +65,8 @@ class CredentialHTTP:
             provider = "gemini_narrative"
         elif parsed.hostname == "generativelanguage.googleapis.com" and parsed.path == "/v1beta/models/" + NARRATIVE_LITE_MODEL + ":generateContent" and method == "POST" and not query:
             provider = "gemini_narrative_lite"
+        elif parsed.hostname == "generativelanguage.googleapis.com" and parsed.path == "/v1beta/models/" + NARRATIVE_25_MODEL + ":generateContent" and method == "POST" and not query:
+            provider = "gemini_narrative_25"
         elif parsed.hostname == "texttospeech.googleapis.com" and parsed.path == "/v1/text:synthesize" and method == "POST" and not query:
             provider = "google_tts"
         elif parsed.hostname == "commons.wikimedia.org" and parsed.path == "/w/api.php" and method == "GET":

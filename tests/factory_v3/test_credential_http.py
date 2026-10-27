@@ -49,6 +49,16 @@ class CredentialHTTPTests(unittest.TestCase):
                     "https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent", {})
         self.assertEqual(len(self.http.calls),1)
 
+    def test_25_flash_lite_has_its_own_fixed_route(self):
+        self.transport.request_receipt('POST',
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent', {})
+        self.assertEqual(self.http.calls[0][2]['provider'],'gemini_narrative_25')
+        for model in ('gemini-2.5-pro','gemini-2.5-flash','gemini-2.5-flash-lite-preview'):
+            with self.assertRaises(ValueError):
+                self.transport.request_receipt('POST',
+                    'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent', {})
+        self.assertEqual(len(self.http.calls),1)
+
     def test_lite_role_is_fixed_and_unavailable_is_not_fallback(self):
         self.http.status=503
         with self.assertRaises(HTTPFailure):
