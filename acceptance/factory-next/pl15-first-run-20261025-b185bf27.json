@@ -577,7 +577,7 @@
     "latest_execution_id": "14284",
     "latest_job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
     "latest_message": "HTTP 503 UNAVAILABLE; Google reported current model demand",
-    "conclusion": "The configured free-tier models and the previously wired Gemini 3.8 Flash route all returned UNAVAILABLE. The 2.5 models are access-limited to prior users and are not an approved/verified route for this project. No safe free-tier route is presently available.",
+    "conclusion": "Free Gemini remains unavailable on the latest live probe; production work cannot advance under the no-paid-fallback rule.",
     "route_probe": {
       "model": "gemini-3.8-flash",
       "http_status": 503,
@@ -587,6 +587,14 @@
       "billing_enabled": false,
       "one_call": true,
       "provider_response": "This model is currently experiencing high demand."
+    },
+    "latest_check_date": "2026-10-27",
+    "latest_model_probe": {
+      "model": "gemini-3.8-flash",
+      "error_status": "UNAVAILABLE",
+      "gateway_execution_id": "14285",
+      "job_created": false,
+      "checked_at": "2026-10-27T15:09:42.335Z"
     }
   },
   "release_state": {
@@ -608,8 +616,8 @@
       "RU45",
       "UK60"
     ],
-    "updated_at": "2026-10-26",
-    "blocker": "503 UNAVAILABLE on three free-tier Gemini model routes; paid fallback disabled; no eligible 2.5 route confirmed"
+    "updated_at": "2026-10-27",
+    "blocker": "Live Gemini 3.8 free route probe returned UNAVAILABLE (gateway execution 14285)"
   },
   "fix2": {
     "path": "factory_next/preparation.py",
