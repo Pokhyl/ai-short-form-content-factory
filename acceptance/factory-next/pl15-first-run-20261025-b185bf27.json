@@ -577,7 +577,7 @@
     "latest_execution_id": "14284",
     "latest_job_id": "a8470597-b4a8-48cc-a998-10653d979d69",
     "latest_message": "HTTP 503 UNAVAILABLE; Google reported current model demand",
-    "conclusion": "Free Gemini remains unavailable on the latest live probe; production work cannot advance under the no-paid-fallback rule.",
+    "conclusion": "No currently responsive free Gemini route: 3.1 and 3.8 return 503 UNAVAILABLE; 3.5 route timed out. Do not register RU45 until one approved route responds.",
     "route_probe": {
       "model": "gemini-3.8-flash",
       "http_status": 503,
@@ -595,6 +595,27 @@
       "gateway_execution_id": "14285",
       "job_created": false,
       "checked_at": "2026-10-27T15:09:42.335Z"
+    },
+    "latest_route_check": {
+      "models": [
+        {
+          "model": "gemini-3.1-flash-lite",
+          "result": "503 UNAVAILABLE",
+          "gateway_execution_id": "14286"
+        },
+        {
+          "model": "gemini-3.5-flash-lite",
+          "result": "TimeoutError",
+          "gateway_execution_id": null
+        },
+        {
+          "model": "gemini-3.8-flash",
+          "result": "503 UNAVAILABLE",
+          "gateway_execution_id": "14288"
+        }
+      ],
+      "production_job_created": false,
+      "checked_at": "2026-10-27T15:15:33.438Z"
     }
   },
   "release_state": {
@@ -617,7 +638,7 @@
       "UK60"
     ],
     "updated_at": "2026-10-27",
-    "blocker": "Live Gemini 3.8 free route probe returned UNAVAILABLE (gateway execution 14285)"
+    "blocker": "Latest live route check: 3.1=503 (14286), 3.5=timeout, 3.8=503 (14288); no production job created"
   },
   "fix2": {
     "path": "factory_next/preparation.py",
