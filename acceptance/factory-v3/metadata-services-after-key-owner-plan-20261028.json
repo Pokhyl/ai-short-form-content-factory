@@ -34,5 +34,21 @@
     "After both services are enabled, query only the verified key owner project for identity and billing state.",
     "Store no secrets, tokens, response bodies, or user messages; remove temporary credential export."
   ],
-  "status": "planned"
+  "status": "executed",
+  "execution_result": {
+    "receipt": "acceptance/factory-v3/metadata-services-after-key-owner-20261028.json",
+    "receipt_commit": "dd22e744311be4039042b8aafe3d38010a763cd5",
+    "disabled_services_enabled": [
+      "cloudresourcemanager.googleapis.com",
+      "cloudbilling.googleapis.com"
+    ],
+    "service_enable_posts": 2,
+    "project_id": "gen-lang-client-0532024148",
+    "billing_enabled": false,
+    "external_http_calls": 9,
+    "billing_mutations": 0,
+    "iam_mutations": 0,
+    "generation_search_tts_calls": 0,
+    "credential_export_removed": true
+  }
 }
