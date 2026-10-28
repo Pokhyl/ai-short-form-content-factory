@@ -1,0 +1,31 @@
+{
+  "diagnostic_id": "v3-project-billing-after-key-owner-20261028",
+  "credential_id": "8KbFC6GBZOd18bzG",
+  "project_number": "529636078126",
+  "http_calls_started": 2,
+  "max_http_calls": 3,
+  "calls": [
+    {
+      "kind": "oauth_refresh",
+      "status": 200
+    },
+    {
+      "kind": "project_info",
+      "status": 403,
+      "error_status": "PERMISSION_DENIED",
+      "reason": "SERVICE_DISABLED",
+      "domain": "googleapis.com",
+      "service": "cloudresourcemanager.googleapis.com",
+      "consumer": "projects/852325278216"
+    }
+  ],
+  "generation_calls": 0,
+  "search_calls": 0,
+  "tts_calls": 0,
+  "billing_mutations": 0,
+  "status": "blocked",
+  "stop_reason": "project_info_rejected",
+  "credential_export_removed": true,
+  "started_at": "2026-10-28T15:07:25.596936+00:00",
+  "finished_at": "2026-10-28T15:07:34.811003+00:00"
+}
