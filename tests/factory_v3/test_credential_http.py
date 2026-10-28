@@ -1,7 +1,9 @@
 """Controlled gateway responses; no native workflow or provider calls."""
 import json
 import unittest
-from factory_v3.credential_http import CredentialHTTP, GATEWAY, MODEL
+from factory_v3.credential_http import (CredentialHTTP, GATEWAY, MODEL,
+    METADATA_CALLER_TIMEOUT_SECONDS)
+from factory_v3.deadlines import upstream_timeout_ms
 from factory_v3.http import HTTPFailure
 
 
@@ -19,6 +21,14 @@ class CredentialHTTPTests(unittest.TestCase):
     def setUp(self):
         self.http = HTTP()
         self.transport = CredentialHTTP("controlled-broker-token-" + "x"*32, self.http)
+
+    def test_metadata_caller_waits_for_bounded_upstream_completion(self):
+        self.transport.metadata("model")
+        self.transport.metadata("billing", {"project_id":"verified-project"})
+        self.assertEqual([call[-1] for call in self.http.calls],
+                         [METADATA_CALLER_TIMEOUT_SECONDS] * 2)
+        self.assertGreater(METADATA_CALLER_TIMEOUT_SECONDS,
+                           upstream_timeout_ms("google_metadata") / 1000)
 
     def test_virtual_pixabay_key_never_forwarded_to_native_request_body(self):
         receipt = self.transport.request_receipt("GET",
