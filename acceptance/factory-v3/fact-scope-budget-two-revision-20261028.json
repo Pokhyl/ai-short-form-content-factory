@@ -27,7 +27,7 @@
     "billing_enabled": false,
     "standard_free_tier": true,
     "gemini_2_5_route_selected": false,
-    "billing_metadata_probe": "previous HTTP 502 unresolved; stale execution 14290 canceled; no generation attempted",
+    "billing_metadata_probe": "one bounded read-only request after checkpoint commit: HTTP 502 in 3.47s; not caller timeout; billing remains unknown; no retries/generation; see acceptance/factory-v3/billing-metadata-timeout-diagnostic-20261028.json",
     "execution_14290": "canceled stale running marker",
     "generation_attempt": "not made"
   },
@@ -38,5 +38,5 @@
     "UK60": "not completed",
     "project_complete": false
   },
-  "next_step": "Record a fresh bounded plan, then make at most one read-only Google Cloud Billing metadata GET through the existing gateway with a 130s caller timeout, no Gemini/TTS/search/generation, and stop on any error, unknown result, or non-200. Diagnose transport before any saved-source RU45 boundary."
+  "next_step": "Inspect the corresponding n8n gateway execution/error using read-only logs or database access, no provider request. Diagnose the 502 and prepare any further bounded action as a new committed checkpoint."
 }
