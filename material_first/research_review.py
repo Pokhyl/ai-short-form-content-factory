@@ -94,9 +94,8 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
     # An initially malformed draft may consume one repair before it is ready
     # for semantic review. Keep one additional correction available when that
     # reviewed revision still contains a specifically rejected claim.
-    # Keep the normal two repair slots, with one separately metered extra
-    # correction for a narrowly identified duration-budget overflow. This lets
-    # the model select a smaller essential scope without weakening source checks.
+    # Keep the normal two repair slots. Duration-budget overflow uses those
+    # same bounded slots; it never receives an extra provider correction.
     photo_repairs_used=0
     for attempt in range(4):
         semantic_reviewed = False
@@ -168,10 +167,9 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
         budget_scope_only=(len(failures)==1 and failures[0].startswith(
             'required fact scope exceeds narration budget:'))
         eligible_extra_fact_repair=(
-            (not check_photos and attempt==2 and photo_repairs_used>0
-             and semantic_reviewed and bool(failures)
-             and all(failure.startswith('fact ') for failure in failures))
-            or (attempt==2 and budget_scope_only))
+            not check_photos and attempt==2 and photo_repairs_used>0
+            and semantic_reviewed and bool(failures)
+            and all(failure.startswith('fact ') for failure in failures))
         if attempt == 3 or (attempt == 2 and not eligible_extra_fact_repair):
             revision_count=attempt
             raise ValueError(f'research preflight failed after {revision_count} revisions: '+'; '.join(failures))
