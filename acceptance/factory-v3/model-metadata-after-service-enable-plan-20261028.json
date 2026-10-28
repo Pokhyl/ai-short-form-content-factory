@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-model-metadata-after-service-enable-20261028",
+  "purpose": "Check one read-only Gemini model metadata request after enabling the exact API Keys/Cloud Resource Manager/Cloud Billing APIs and confirming the key owner's project is unbilled.",
+  "credential_id": "V3GeminiFreeTier20261005",
+  "project_id": "gen-lang-client-0532024148",
+  "model": "gemini-3.5-flash-lite",
+  "endpoint": "GET https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite",
+  "http_call_budget": 1,
+  "retries": 0,
+  "provider_call_budget": {
+    "generation": 0,
+    "search": 0,
+    "tts": 0,
+    "media_download": 0
+  },
+  "billing_mutations": 0,
+  "output_allowlist": [
+    "http_status",
+    "error_status",
+    "error_reason",
+    "model_name",
+    "supported_generation_methods",
+    "input_token_limit",
+    "output_token_limit"
+  ],
+  "safeguards": [
+    "Export only the exact Gemini API key credential to a temporary mode-0600 file.",
+    "Never print or persist the API key or response body.",
+    "Make one metadata GET only; no retry and no content generation."
+  ],
+  "status": "planned"
+}
