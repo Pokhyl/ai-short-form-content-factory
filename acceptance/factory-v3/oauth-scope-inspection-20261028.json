@@ -1,0 +1,16 @@
+{
+  "diagnostic_id": "v3-oauth-scope-inspection-20261028",
+  "credential_id": "8KbFC6GBZOd18bzG",
+  "external_http_calls": 0,
+  "generation_calls": 0,
+  "search_calls": 0,
+  "tts_calls": 0,
+  "mutations": 0,
+  "status": "inspected",
+  "oauth_token_data_present": true,
+  "scope_field_present": true,
+  "cloud_platform_read_only_scope_present": false,
+  "cloud_platform_scope_present": true,
+  "temporary_container_export_removed": true,
+  "temporary_host_export_removed": true
+}
