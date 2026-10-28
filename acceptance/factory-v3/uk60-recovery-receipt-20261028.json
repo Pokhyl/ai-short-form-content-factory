@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-28",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "duration_seconds": 60,
+  "attempts": [
+    {
+      "request_id": "c4af9d72-f8fc-41ae-a54a-134540491acd",
+      "source_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+      "status": "unknown",
+      "terminal_stage": "research brief review repair",
+      "provider_result": "HTTP 503 UNAVAILABLE"
+    },
+    {
+      "request_id": "8b11d620-692a-4f6e-9565-cdf8b86208c1",
+      "source_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+      "status": "unknown",
+      "terminal_stage": "research brief review repair",
+      "provider_result": "HTTP 503 UNAVAILABLE"
+    }
+  ],
+  "outputs": {
+    "final_mp4": false,
+    "final_mp3": false,
+    "machine_qa": false,
+    "human_pass": false
+  },
+  "google_tts_synthesis_calls": 0,
+  "free_disk_mib_after_attempts": 586,
+  "deployed_application_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+  "code_fix_commits": [
+    "b26e9608b840310eabc0fd721c82020f1a580dc5",
+    "f671c8300db27fee6d619a9d129fe4ae46c8a3f9"
+  ],
+  "code_fix_summary": "Explicit Gemini 503 UNAVAILABLE responses during preparation are classified as definitive provider failures rather than ambiguous started calls. Code is committed on the work branch but is not deployed.",
+  "retry_policy": "No further provider or stage retries were made.",
+  "completion": "not_complete",
+  "blocker": "The deployed Gemini endpoint returned HTTP 503 UNAVAILABLE twice during research-plan repair. No prepared media plan exists, so voice synthesis, rendering, and QA could not start."
+}
