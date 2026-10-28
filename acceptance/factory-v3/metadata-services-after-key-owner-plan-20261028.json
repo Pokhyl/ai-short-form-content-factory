@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-enable-required-metadata-services-20261028",
+  "purpose": "Enable only Google metadata APIs confirmed or verified disabled for the OAuth consumer project, then check billing state for the selected Gemini key's verified parent project.",
+  "oauth_consumer_project_number": "852325278216",
+  "gemini_key_owner_project_number": "529636078126",
+  "services_to_check_and_enable_if_disabled": [
+    "cloudresourcemanager.googleapis.com",
+    "cloudbilling.googleapis.com"
+  ],
+  "http_call_budget": {
+    "oauth_refresh": 1,
+    "service_state_checks": 2,
+    "enable_posts_max": 2,
+    "operation_polls_max": 4,
+    "project_info": 1,
+    "billing_info": 1,
+    "total_max": 11
+  },
+  "mutations": {
+    "service_enable_posts_max": 2,
+    "billing_changes": 0,
+    "iam_changes": 0
+  },
+  "provider_call_budget": {
+    "generation": 0,
+    "search": 0,
+    "tts": 0
+  },
+  "safeguards": [
+    "Check service state first and enable a service only if state is DISABLED.",
+    "Use only the exact consumer project and the two metadata services listed.",
+    "Poll only operations returned by this run, at most twice per enable operation.",
+    "After both services are enabled, query only the verified key owner project for identity and billing state.",
+    "Store no secrets, tokens, response bodies, or user messages; remove temporary credential export."
+  ],
+  "status": "planned"
+}
