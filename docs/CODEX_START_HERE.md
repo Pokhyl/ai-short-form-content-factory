@@ -4,9 +4,11 @@ Two targeted fixes are committed on `codex/gemini25-route-20261027`: duration-sc
 
 Not deployed. Live app health still reports `project_ready=false`; production image revision `a873e6...` is not identified as a commit in this candidate branch. Active Factory Next proof selects `gemini-3.5-flash-lite`, with billing disabled and Standard free tier confirmed; Gemini 2.5 route is not selected.
 
-One bounded read-only billing metadata request was made after its plan was committed. It returned HTTP 502 in 3.47s; no retries, Gemini, search, TTS, or new production jobs. Billing remains unknown. Matching n8n execution 14291 was observed running for 453s, exceeding the configured 120s provider timeout and 300s workflow timeout. Provider retries are disabled; the workflow continues HTTP errors to its sanitizer and does not save terminal success/error execution data. Later DB reads found no execution row/data, so the upstream result cannot be recovered. This does not identify the provider as the cause. Receipt: `acceptance/factory-v3/billing-metadata-timeout-diagnostic-20261028.json`.
+One bounded read-only billing metadata request was made after its plan was committed. It returned HTTP 502 in 3.47s; no retries, Gemini, search, TTS, or new production jobs. Billing remains unknown. Matching n8n execution 14291 was observed running for 453s, exceeding the configured 120s provider timeout and 300s workflow timeout. Provider retries are disabled; the workflow continues HTTP errors to its sanitizer and does not save terminal execution data. Later reads found no execution row/data, so the upstream result cannot be recovered. This does not identify the provider as the cause.
 
-Next: diagnose why the gateway returns early HTTP 502 while an execution exceeds both configured deadlines, and add durable sanitized terminal diagnostics. Use code/config and safe checks without provider calls. Any future external request requires a fresh committed one-call plan. Do not repeat this request.
+The saved-source diagnostic harness now preserves safe HTTP failure receipt fields (status/reason/gateway execution ID) instead of dropping them. Syntax compilation passed with zero provider calls; commit `bb953ba`. Detailed receipt: `acceptance/factory-v3/billing-metadata-timeout-diagnostic-20261028.json`.
+
+Next: diagnose why the gateway returns early HTTP 502 while an execution exceeds both configured deadlines, and make terminal results recoverable. Use code/config and safe checks without provider calls. Any future external request requires a fresh committed one-call plan. Do not repeat the lost request.
 
 Acceptance remains PL15/EN30 pass, RU45 pending, UK60 incomplete. Project is not complete. Do not deploy or claim readiness based on offline tests.
 
