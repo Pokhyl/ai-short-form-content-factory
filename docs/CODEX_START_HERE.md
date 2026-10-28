@@ -1,3 +1,11 @@
+## Two-revision duration-scope fix — 2026-10-28
+
+Candidate fix is committed on `codex/gemini25-route-20261027`: source `29c5b5aa20537b64d821109655c66e668813dcc0`, test fixture `972ec3e250c95f290e1345cc3f84b6c1c7929c44`, acceptance receipt `44ea66051c516ef6edaf4cce6288bcabde37ae66`. Duration-scope overflow previously had an extra branch that permitted a third repair. It now uses the existing two repair slots; source, semantic, and coverage gates are unchanged. The photo-only test mock now respects the restricted response schema and server-owned fact bindings.
+
+Exact focused verification: 16 tests passed across `tests.factory_next.test_fact_scope` and `tests.material_first.test_research_review`; `git diff --check` passed; zero provider calls. Packaged-image verification and deployment are pending. Docker inventory timed out; last observed free disk was 595 MB. Do not delete media, databases, or images to make space. The active Factory Next proof selects `gemini-3.5-flash-lite` with billing disabled and Standard free tier confirmed; the new Gemini 2.5 route is not selected. The prior read-only billing metadata probe returned HTTP 502; execution 14290 is canceled, and no generation was attempted.
+
+Next: complete exact-source packaged verification without touching production state, then diagnose the saved billing transport failure before any provider request. Acceptance remains PL15/EN30 pass, RU45 pending, UK60 incomplete, project not complete. Preserve immutable jobs and free-only policy.
+
 ## Current continuation — 2026-10-24
 
 The live Studio is `factory-next-studio-v9`, image `factory-v3:studio-batch-c54d517`, source `c54d517512a20dd62a9cd4f5d0479785b4dc3383`. Batch-topic UI is deployed; tests and public health passed. Production Google TTS budget is active and below internal caps; the owner's monthly provider allowance is established, so do not reopen that question.
