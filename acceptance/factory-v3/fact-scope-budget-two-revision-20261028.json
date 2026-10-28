@@ -1,19 +1,25 @@
 {
   "date": "2026-10-28",
   "branch": "codex/gemini25-route-20261027",
-  "change": "Stop duration-scoped fact-budget overflow after the existing two repair slots; align photo-only repair test mock with its restricted schema.",
+  "change": "Stop duration-scoped fact-budget overflow after the existing two repair slots; align photo-only repair test mock with its restricted schema. Also align Google billing-metadata caller timeout with its 120s native upstream bound.",
   "commits": {
     "source": "29c5b5aa20537b64d821109655c66e668813dcc0",
-    "test": "972ec3e250c95f290e1345cc3f84b6c1c7929c44"
+    "test": "972ec3e250c95f290e1345cc3f84b6c1c7929c44",
+    "metadata_timeout_source": "ed9d0c63655df6d2291a737e1eaf0c64d46f11ad",
+    "metadata_timeout_test": "5aa91249240d540f222361ad1ed94122f45a37b9"
   },
   "verification": {
-    "tests": "16 passed: tests.factory_next.test_fact_scope and tests.material_first.test_research_review",
+    "tests": "24 passed inside exact network-disabled candidate image: credential HTTP, fact scope, and research review",
     "diff_check": "passed",
     "external_provider_calls": 0
   },
   "packaging": {
-    "exact_candidate_image": "pending",
-    "reason": "Docker system inventory timed out; filesystem has 595 MB free. No images or project data removed."
+    "exact_candidate_image": "factory-v3:preflight-timeouts-20261028",
+    "digest": "sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd",
+    "base": "factory-v3:gemini25-route-a873e6e",
+    "network": "disabled",
+    "runtime_source_overlay": false,
+    "deployment": "not deployed"
   },
   "provider_state": {
     "selected_factory_next_model": "gemini-3.5-flash-lite",
@@ -21,7 +27,7 @@
     "billing_enabled": false,
     "standard_free_tier": true,
     "gemini_2_5_route_selected": false,
-    "billing_metadata_probe": "HTTP 502; no positive result",
+    "billing_metadata_probe": "previous HTTP 502 unresolved; stale execution 14290 canceled; no generation attempted",
     "execution_14290": "canceled stale running marker",
     "generation_attempt": "not made"
   },
@@ -32,5 +38,5 @@
     "UK60": "not completed",
     "project_complete": false
   },
-  "next_step": "Package the exact current source on the existing production runtime base with network disabled, run the same tests inside the image, then resume only the preplanned saved-source RU45 boundary if billing metadata failure has been diagnosed."
+  "next_step": "Record a fresh bounded plan, then make at most one read-only Google Cloud Billing metadata GET through the existing gateway with a 130s caller timeout, no Gemini/TTS/search/generation, and stop on any error, unknown result, or non-200. Diagnose transport before any saved-source RU45 boundary."
 }
