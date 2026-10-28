@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-key-owner-lookup-after-service-enable-20261028",
+  "purpose": "Verify that enabling API Keys API removed the previous SERVICE_DISABLED blocker and resolve the selected Gemini API key's parent project.",
+  "exact_credential_ids": {
+    "gemini": "V3GeminiFreeTier20261005",
+    "google_oauth": "8KbFC6GBZOd18bzG"
+  },
+  "precondition": {
+    "service": "apikeys.googleapis.com",
+    "consumer_project_number": "852325278216",
+    "confirmed_enabled": true
+  },
+  "http_call_budget": {
+    "oauth_refresh": 1,
+    "key_owner_lookup": 1,
+    "total_max": 2
+  },
+  "outputs_allowlist": [
+    "oauth_refresh_http_status",
+    "key_owner_http_status",
+    "key_owner_error_status",
+    "key_owner_error_reason",
+    "key_owner_parent_project_number",
+    "key_resource_id"
+  ],
+  "provider_call_budget": {
+    "generation": 0,
+    "search": 0,
+    "tts": 0
+  },
+  "retries": 0,
+  "billing_mutations": 0,
+  "safeguards": [
+    "Export only the two exact credential IDs to temporary mode-0600 files.",
+    "Persist only sanitized owner project/key resource identifiers or constrained error fields; never persist key strings, tokens, or response messages.",
+    "Stop after the single key-owner lookup."
+  ],
+  "status": "planned"
+}
