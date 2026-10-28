@@ -4,6 +4,17 @@
   "purpose": "After owner grants access, verify the exact selected Gemini key -> Google project -> billingDisabled=false chain.",
   "candidate_image": "factory-v3:preflight-timeouts-20261028",
   "candidate_image_digest": "sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd",
+  "selected_model": "gemini-3.5-flash-lite",
+  "credential_records": [
+    {
+      "provider": "Gemini API key",
+      "credential_id": "V3GeminiFreeTier20261005"
+    },
+    {
+      "provider": "Google OAuth",
+      "credential_id": "8KbFC6GBZOd18bzG"
+    }
+  ],
   "credentials_to_export": 2,
   "http_call_budget": {
     "oauth_refresh": 1,
@@ -29,7 +40,7 @@
   ],
   "execution_constraints": [
     "Use a fresh diagnostic ID and new output receipt; preserve v3-account-boundary-20261005.",
-    "Export only existing Gemini and Google OAuth credential records to mode-0600 temporary files; never print or persist secrets.",
+    "Export only the two exact credential IDs above to mode-0600 temporary files; never print or persist secrets.",
     "Delete temporary credential exports after completion."
   ],
   "status": "plan-only-not-executed"
