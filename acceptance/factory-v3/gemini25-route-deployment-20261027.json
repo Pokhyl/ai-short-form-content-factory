@@ -1,9 +1,15 @@
 {
-  "date": "2026-10-27",
+  "date": "2026-10-28",
   "change": "Gemini 2.5 Flash-Lite fixed narrative route",
   "repository": "Pokhyl/ai-short-form-content-factory",
   "branch": "codex/gemini25-route-20261027",
   "code_commit": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+  "implementation": {
+    "unit_tests": "49 passed",
+    "model": "gemini-2.5-flash-lite",
+    "thinking_config": "documented thinkingBudget mapping",
+    "paid_fallback": false
+  },
   "gateway_deployment": {
     "workflow_id": "VIDEO-V3-Credential-Gateway",
     "published": true,
@@ -17,11 +23,24 @@
     "prechange_export_sha256": "c2b7fef06f9d3f51b12cd7f4bb1a28e5a184a98b2b4a691873ee609d3e111ffa"
   },
   "application_runtime": {
-    "deployed_revision": "4811eae0fa6f1f21a753e1a50ca80dacd1de65a3",
-    "new_client_code_deployed": false,
-    "reason": "Host filesystem had 6 MB free (100% used); an image build was not attempted.",
-    "model_25_free_tier_proof": "not established; current settings proof is for a different model and does not establish standard_free_tier for Gemini 2.5 Flash-Lite",
-    "model_25_generation_probe": "not run"
+    "deployed_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+    "image": "sha256:41e098f91a01ffb08b9372d458a8c912880207ef82bb3e5577cceb8c5d6491b5",
+    "health": "healthy",
+    "endpoint_http": 200,
+    "model_25_client_loaded": true,
+    "proof": {
+      "billing_disabled": true,
+      "project_id_present": true,
+      "credential_sha_present": true,
+      "bound_model_is_25": false,
+      "standard_free_tier_proven": false
+    },
+    "generation_probe": "not run; model-specific standard-free-tier proof is missing",
+    "paid_fallback": false
+  },
+  "host": {
+    "filesystem_free_after_build": "604 MB",
+    "previous_app_image_backup": "/var/lib/factory-v3/durable-deferrals-20261016/compose-override.yaml.pre-gemini25-20261028"
   },
   "acceptance": {
     "PL15": "pass",
