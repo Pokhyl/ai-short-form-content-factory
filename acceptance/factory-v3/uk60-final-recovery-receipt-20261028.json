@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-28",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "duration_seconds": 60,
+  "attempts": [
+    {
+      "request_id": "c4af9d72-f8fc-41ae-a54a-134540491acd",
+      "model": "gemini-3.1-flash-lite",
+      "status": "unknown",
+      "outcome": "503 UNAVAILABLE during research brief review repair"
+    },
+    {
+      "request_id": "8b11d620-692a-4f6e-9565-cdf8b86208c1",
+      "model": "gemini-3.1-flash-lite",
+      "status": "unknown",
+      "outcome": "503 UNAVAILABLE during research brief review repair"
+    },
+    {
+      "request_id": "6a020d1f-41b8-4f6a-9479-62bb3f0015b7",
+      "model": "gemini-3.1-flash-lite",
+      "status": "failed",
+      "error_code": "ResourceUnavailable",
+      "outcome": "old server scheduler consumed the deferred retry without issuing another provider request"
+    },
+    {
+      "request_id": "0c5e4350-58b5-4322-9a8c-ccf3a8276503",
+      "model": "gemini-3.1-flash-lite",
+      "status": "unknown",
+      "outcome": "credential gateway transport timeout; no retry"
+    },
+    {
+      "request_id": "d648111d-d453-4e65-bb2d-9ea458083122",
+      "model": "gemini-3.5-flash-lite",
+      "status": "failed",
+      "error_code": "ModelUnavailable",
+      "outcome": "explicit 503 UNAVAILABLE twice; bounded retry exhausted"
+    },
+    {
+      "request_id": "83c735ea-0ec5-4c1c-b942-740bb2fc8812",
+      "model": "gemini-2.5-flash-lite",
+      "status": "failed",
+      "error_code": "ModelUnavailable",
+      "outcome": "explicit 503 UNAVAILABLE twice; bounded retry exhausted"
+    }
+  ],
+  "provider_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+  "verified_free_tier_models": [
+    "gemini-3.1-flash-lite",
+    "gemini-3.5-flash-lite",
+    "gemini-2.5-flash-lite"
+  ],
+  "project_billing_enabled": false,
+  "outputs": {
+    "prepared_jobs": 0,
+    "final_mp4": false,
+    "final_mp3": false,
+    "machine_qa": false,
+    "human_pass": false
+  },
+  "google_tts_synthesis_calls": 0,
+  "google_tts_charge": 0,
+  "disk_free_mib": 585,
+  "deployed_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+  "code_fix_commits": [
+    "b26e9608b840310eabc0fd721c82020f1a580dc5",
+    "f671c8300db27fee6d619a9d129fe4ae46c8a3f9",
+    "7302dfd0b0208ffa31d2c86f175cc8305aa642a0"
+  ],
+  "code_fix_deployed": false,
+  "deployment_reason": "The active service root filesystem is read-only; the host checkout is dirty and diverged, and other preparations were active or waiting. The service was not restarted to avoid disrupting those jobs.",
+  "completion": "not_complete"
+}
