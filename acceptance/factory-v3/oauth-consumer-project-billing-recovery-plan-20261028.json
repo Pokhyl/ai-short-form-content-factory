@@ -1,0 +1,36 @@
+{
+  "diagnostic_id": "v3-oauth-consumer-project-billing-recovery-20261028",
+  "follows": "v3-oauth-consumer-project-billing-20261028",
+  "reason": "Previous invocation stopped locally with PermissionError while reading the root-owned docker-copied temporary credential; it began zero HTTP calls and removed the remote export. Use a root-owned local temporary file path for this single recovery attempt.",
+  "credential_ref": "n8n Google account credential 8KbFC6GBZOd18bzG",
+  "project_number": "852325278216",
+  "max_credential_exports": 1,
+  "max_http_requests": 3,
+  "max_http_timeout_seconds": 12,
+  "max_response_bytes": 1048576,
+  "calls": [
+    "OAuth refresh POST once",
+    "Cloud Resource Manager project identity GET once",
+    "Cloud Billing billingInfo GET once for that exact project ID"
+  ],
+  "forbidden": {
+    "generation": 0,
+    "search": 0,
+    "photo_search": 0,
+    "tts": 0,
+    "billing_mutations": 0,
+    "credential_mutations": 0,
+    "retries": 0
+  },
+  "stop_conditions": [
+    "Any local/export/auth/project/billing ambiguity",
+    "Any non-200 response or malformed payload",
+    "Project-number identity mismatch",
+    "billingEnabled true or missing"
+  ],
+  "previous_attempt_receipt": {
+    "http_calls_started": 0,
+    "remote_credential_export_removed": true
+  },
+  "receipt": "Sanitized receipt only; never retain or print tokens, API key, refresh token, or client secret."
+}
