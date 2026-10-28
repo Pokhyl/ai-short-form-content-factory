@@ -42,6 +42,13 @@
       "status": "failed",
       "error_code": "ModelUnavailable",
       "outcome": "explicit 503 UNAVAILABLE twice; bounded retry exhausted"
+    },
+    {
+      "request_id": "333171c0-5687-4f24-a4c8-4e4a991c28df",
+      "model": "gemini-2.5-flash-lite",
+      "status": "failed",
+      "error_code": "ModelUnavailable",
+      "outcome": "four explicit HTTP 503 rejections total; three bounded exponential-backoff retries at 60/120/240 seconds exhausted"
     }
   ],
   "provider_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
@@ -69,5 +76,18 @@
   ],
   "code_fix_deployed": false,
   "deployment_reason": "The active service root filesystem is read-only; the host checkout is dirty and diverged, and other preparations were active or waiting. The service was not restarted to avoid disrupting those jobs.",
-  "completion": "not_complete"
+  "completion": "not_complete",
+  "retry_policy_final": {
+    "explicit_503_responses": 4,
+    "bounded_retries": 3,
+    "delay_seconds": [
+      60,
+      120,
+      240
+    ],
+    "same_request_body": true,
+    "timeout_retries": 0,
+    "paid_fallback": false
+  },
+  "blocker": "All three verified free-tier Gemini models returned explicit 503 overload responses, including after bounded backoff. No configured alternate provider is available; paid Gemini fallback is disabled."
 }
