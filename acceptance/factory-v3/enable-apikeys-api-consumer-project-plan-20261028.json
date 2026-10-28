@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-enable-apikeys-service-consumer-project-20261028",
+  "purpose": "Resolve the confirmed SERVICE_DISABLED error by enabling only the API Keys API in the exact OAuth consumer project named by Google's error metadata.",
+  "evidence": {
+    "previous_diagnostic_id": "v3-classify-key-owner-denial-20261028",
+    "error_status": "PERMISSION_DENIED",
+    "error_reason": "SERVICE_DISABLED",
+    "service": "apikeys.googleapis.com",
+    "consumer_project_number": "852325278216"
+  },
+  "mutation": {
+    "method": "POST Service Usage services.enable",
+    "target": "projects/852325278216/services/apikeys.googleapis.com",
+    "count": 1
+  },
+  "http_call_budget": {
+    "oauth_refresh": 1,
+    "enable": 1,
+    "operation_status_poll_max": 3,
+    "total_max": 5
+  },
+  "disallowed": {
+    "other_services": true,
+    "billing_changes": true,
+    "generation": true,
+    "search": true,
+    "tts": true,
+    "retries": true
+  },
+  "safeguards": [
+    "Use only the exact consumer project and API named by the Google error.",
+    "Do not change IAM, project billing, other APIs, or n8n workflows.",
+    "Make at most one enable POST; poll only its returned operation up to three times.",
+    "Persist only HTTP status, constrained error fields, operation completion state, and target."
+  ],
+  "status": "planned"
+}
