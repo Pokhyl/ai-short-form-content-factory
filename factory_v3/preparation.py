@@ -81,6 +81,17 @@ class PreparationLedger:
             "FROM factory_v3.preparation_deferrals d JOIN factory_v3.preparations p ON p.id=d.preparation_id "
             "WHERE p.id=%s::uuid AND p.status='preparing' AND d.state='waiting'", (request_id,))
 
+    def retry_call_key(self, request_id, failed_key):
+        return self.postgres._call(
+            "SELECT retry_call_key FROM factory_v3.preparation_deferrals "
+            "WHERE preparation_id=%s::uuid AND failed_call_key=%s AND state='running'",
+            (request_id, failed_key))
+
+    def retry_used(self, request_id):
+        return bool(self.postgres._call(
+            "SELECT EXISTS(SELECT 1 FROM factory_v3.preparation_deferrals "
+            "WHERE preparation_id=%s::uuid)", (request_id,)))
+
     def ready(self):
         return self.postgres._call("SELECT coalesce(jsonb_agg(id),'[]'::jsonb) FROM ("
             "SELECT p.id FROM factory_v3.preparation_deferrals d JOIN factory_v3.preparations p ON p.id=d.preparation_id "
@@ -130,10 +141,16 @@ class BudgetedCalls:
             raise PreparationDeferred(result['retry_at'])
 
     def run(self, key, kind, public_request, invoke, *, allow_unavailable=False, allow_model_unavailable=False):
+        # Replay only a provider rejection explicitly recorded as unavailable.
+        retry_key = self.ledger.retry_call_key(self.request_id, key)
+        if retry_key:
+            key = retry_key
         # Include all identity-affecting settings, NEVER credentials.
         claim = self.ledger.claim(self.request_id, key, kind, digest(public_request))
         if claim.get("unavailable"):
             if allow_model_unavailable and kind == 'gemini' and model_unavailable_receipt(claim['response']):
+                if not self.ledger.retry_used(self.request_id) and ':availability:' not in key:
+                    self.defer_unavailable(key, key + ':availability:2', 60)
                 raise ModelUnavailable(claim['response'])
             raise ResourceUnavailable(claim["response"])
         if claim["cached"]:
@@ -150,6 +167,8 @@ class BudgetedCalls:
                     and model_unavailable_receipt(receipt)):
                 # A lost ledger write still blocks another send via its started claim.
                 self.ledger.model_unavailable(self.request_id, key, receipt)
+                if not self.ledger.retry_used(self.request_id) and ':availability:' not in key:
+                    self.defer_unavailable(key, key + ':availability:2', 60)
                 raise ModelUnavailable(receipt) from None
             if allow_unavailable and isinstance(receipt, dict) and (receipt.get("status") in {403, 404, 410} or
                     (kind == "download" and receipt.get("status") == 429)):
