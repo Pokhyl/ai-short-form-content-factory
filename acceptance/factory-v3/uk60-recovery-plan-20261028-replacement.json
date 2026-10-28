@@ -1,0 +1,57 @@
+{
+  "request_id": "8b11d620-692a-4f6e-9565-cdf8b86208c1",
+  "diagnostic_id": "uk60-replacement-after-503-20261028",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "active_source_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+  "purpose": "Replacement UK60 product attempt after the prior immutable recovery request stopped on an explicit Gemini 503; the prior request remains unchanged.",
+  "execution": "One new immutable request: create once and prepare once; stop on any provider failure or ambiguity. If preparation succeeds and disk gates pass, use the already-approved single Google TTS synthesis, then one alignment, render, and QA stage each. Never retry a failed or ambiguous call or stage.",
+  "maximum_budgets": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini": 54,
+    "download": 51,
+    "metadata": 1,
+    "search_pixabay": 51,
+    "search_pexels": 51,
+    "search_wikimedia": 51,
+    "google_tts_synthesis": 1,
+    "tts_project": "n8n-drive-voiceover",
+    "tts_billing_enabled": true,
+    "user_approved_one_tts_call_with_possible_charge": true,
+    "per_photo_download_limit_bytes": 8388608,
+    "maximum_candidate_photo_bytes": 427819008
+  },
+  "preflight": {
+    "initial_free_disk_mib": 586,
+    "minimum_free_disk_before_tts_mib": 250,
+    "minimum_free_disk_before_render_mib": 150,
+    "no_container_image_build": true,
+    "no_deployment": true,
+    "no_cleanup_or_prune": true
+  },
+  "forbidden": {
+    "retries": 0,
+    "model_fallback": 0,
+    "paid_gemini_fallback": 0,
+    "extra_tts": 0,
+    "billing_changes": 0,
+    "credential_changes": 0,
+    "old_job_mutations": 0,
+    "human_review_mutation": 0
+  },
+  "stop_conditions": [
+    "Gemini 503 or other provider failure is terminal for this request; no second attempt",
+    "Any provider call becomes unknown, ambiguous, failed, or exceeds the durable budget",
+    "Preparation failure or stale resource identity",
+    "Less than 250 MiB free before TTS",
+    "Less than 150 MiB free before render",
+    "Any job/stage status already claimed or terminal",
+    "Output missing or hash/QA mismatch"
+  ],
+  "acceptance": "Machine QA and exact MP4 availability are required. HUMAN PASS remains false until the user reviews the exact MP4.",
+  "replaces_request_id": "c4af9d72-f8fc-41ae-a54a-134540491acd"
+}
