@@ -1,0 +1,73 @@
+{
+  "request_id": "6a020d1f-41b8-4f6a-9479-62bb3f0015b7",
+  "diagnostic_id": "uk60-recovery-explicit-503-retry-20261028",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "active_source_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+  "purpose": "One fresh immutable UK60 product attempt after two previous requests stopped at Gemini 503. Allow only one delayed replay of an explicit 503 UNAVAILABLE call with its durable response receipt; no transport or timeout retries.",
+  "execution": "Create once; prepare once. On first explicit Gemini 503 UNAVAILABLE, persist the rejection and defer the same request identity for 60 seconds with a distinct durable availability key; resume once. Stop on any ambiguous failure or second provider rejection. If prepared and disk gates pass, use the previously approved single Google TTS synthesis, then one alignment, render, and QA step each.",
+  "maximum_budgets": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini": 54,
+    "download": 51,
+    "metadata": 1,
+    "search_pixabay": 51,
+    "search_pexels": 51,
+    "search_wikimedia": 51,
+    "google_tts_synthesis": 1,
+    "tts_project": "n8n-drive-voiceover",
+    "tts_billing_enabled": true,
+    "user_approved_one_tts_call_with_possible_charge": true,
+    "per_photo_download_limit_bytes": 8388608,
+    "maximum_candidate_photo_bytes": 427819008
+  },
+  "preflight": {
+    "initial_free_disk_mib": 586,
+    "minimum_free_disk_before_tts_mib": 250,
+    "minimum_free_disk_before_render_mib": 150,
+    "no_container_image_build": true,
+    "no_deployment": true,
+    "no_cleanup_or_prune": true
+  },
+  "forbidden": {
+    "non_503_retries": 0,
+    "model_fallback": 0,
+    "paid_gemini_fallback": 0,
+    "extra_tts": 0,
+    "billing_changes": 0,
+    "credential_changes": 0,
+    "old_job_mutations": 0,
+    "human_review_mutation": 0
+  },
+  "stop_conditions": [
+    "A second Gemini 503, any non-503 provider failure, ambiguous/unknown operation, or exhausted budget",
+    "Any provider call becomes unknown, ambiguous, failed, or exceeds the durable budget",
+    "Preparation failure or stale resource identity",
+    "Less than 250 MiB free before TTS",
+    "Less than 150 MiB free before render",
+    "Any job/stage status already claimed or terminal",
+    "Output missing or hash/QA mismatch"
+  ],
+  "acceptance": "Machine QA and exact MP4 availability are required. HUMAN PASS remains false until the user reviews the exact MP4.",
+  "replaces_request_id": "8b11d620-692a-4f6e-9565-cdf8b86208c1",
+  "retry_policy": {
+    "gemini_explicit_503_unavailable": 1,
+    "delay_seconds": 60,
+    "request_identity_must_match": true,
+    "distinct_durable_retry_key": true,
+    "all_other_retries": 0
+  },
+  "source_patch": {
+    "commits": [
+      "b26e9608b840310eabc0fd721c82020f1a580dc5",
+      "f671c8300db27fee6d619a9d129fe4ae46c8a3f9",
+      "7302dfd0b0208ffa31d2c86f175cc8305aa642a0"
+    ],
+    "target_image_digest": "sha256:41e098f91a01ffb08b9372d458a8c912880207ef82bb3e5577cceb8c5d6491b5",
+    "deployment_mode": "one-shot container with read-only source bind mounts; no service restart or image build"
+  }
+}
