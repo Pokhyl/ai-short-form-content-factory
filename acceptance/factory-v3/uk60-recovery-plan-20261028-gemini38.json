@@ -1,0 +1,55 @@
+{
+  "request_id": "b13e1a1835d0df6-a38f-4c12-9b64-c79842c2d1db",
+  "diagnostic_id": "uk60-recovery-gemini38-free-20261028",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "active_source_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+  "model": "gemini-3.8-flash",
+  "purpose": "One request on a free-tier Gemini model not used by prior attempts; the existing credential gateway already allowlists this exact model.",
+  "verification": {
+    "official_models_page": "https://ai.google.dev/gemini-api/docs/models",
+    "official_pricing_page": "https://ai.google.dev/gemini-api/docs/pricing",
+    "free_tier": true,
+    "project_billing_enabled": false
+  },
+  "execution": "Create the request once; prepare once in the isolated one-shot container, allowing only up to three retries of an identical payload after explicit 503 UNAVAILABLE with 60/120/240 second backoff. Do not retry timeouts or ambiguous results. If preparation succeeds and disk gates pass, use the previously approved one Google TTS synthesis, then one alignment, render, and QA step each.",
+  "retry_policy": {
+    "explicit_503_retries": 3,
+    "delay_seconds": [
+      60,
+      120,
+      240
+    ],
+    "same_request_body": true,
+    "transport_timeout_retries": 0,
+    "other_retries": 0
+  },
+  "preflight": {
+    "initial_free_disk_mib": 585,
+    "minimum_free_disk_before_tts_mib": 250,
+    "minimum_free_disk_before_render_mib": 150,
+    "no_container_image_build": true,
+    "no_service_restart": true,
+    "no_cleanup_or_prune": true
+  },
+  "maximum_budgets": {
+    "google_tts_synthesis": 1,
+    "tts_project": "n8n-drive-voiceover",
+    "per_photo_download_limit_bytes": 8388608,
+    "maximum_candidate_photo_bytes": 427819008
+  },
+  "forbidden": {
+    "paid_gemini_fallback": 0,
+    "extra_tts": 0,
+    "billing_changes": 0,
+    "credential_changes": 0,
+    "old_job_mutations": 0,
+    "human_review_mutation": 0
+  },
+  "acceptance": "Machine QA and exact MP4 availability required. HUMAN PASS remains false until the user reviews the exact MP4.",
+  "replaces_request_id": "333171c0-5687-4f24-a4c8-4e4a991c28df",
+  "code_change": "Only isolated ephemeral settings and model constant will change; active service image and production container will not be modified."
+}
