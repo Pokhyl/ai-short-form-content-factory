@@ -42,7 +42,7 @@
     "human_review_mutation": 0
   },
   "stop_conditions": [
-    "A timeout, unknown/ambiguous provider result, or second Gemini 503",
+    "A timeout or unknown/ambiguous provider result, or more than three retries after explicit Gemini 503 UNAVAILABLE responses",
     "Any provider call becomes unknown, ambiguous, failed, or exceeds the durable budget",
     "Preparation failure or stale resource identity",
     "Less than 250 MiB free before TTS",
