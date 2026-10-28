@@ -1,0 +1,48 @@
+{
+  "diagnostic_id": "v3-oauth-consumer-project-billing-20261028",
+  "created_at_local": "2026-10-28 Europe/Warsaw",
+  "purpose": "Read-only check whether the verified Google OAuth consumer project used by the existing Google account credential has billing enabled, before any new TTS request.",
+  "credential_ref": "n8n Google account credential 8KbFC6GBZOd18bzG",
+  "consumer_project_number": "852325278216",
+  "steps": [
+    {
+      "method": "POST",
+      "endpoint": "https://oauth2.googleapis.com/token",
+      "purpose": "refresh the existing OAuth credential once"
+    },
+    {
+      "method": "GET",
+      "endpoint": "https://cloudresourcemanager.googleapis.com/v3/projects/852325278216",
+      "purpose": "verify the exact project identity"
+    },
+    {
+      "method": "GET",
+      "endpoint": "https://cloudbilling.googleapis.com/v1/projects/{verified_project_id}/billingInfo",
+      "purpose": "read billingEnabled for the same verified project"
+    }
+  ],
+  "limits": {
+    "max_http_requests": 3,
+    "max_credential_exports": 1,
+    "max_call_duration_seconds": 12,
+    "max_response_bytes": 1048576
+  },
+  "forbidden": {
+    "gemini_generation": 0,
+    "web_search": 0,
+    "photo_search": 0,
+    "tts_synthesis": 0,
+    "billing_mutations": 0,
+    "credential_or_key_mutations": 0,
+    "retries": 0
+  },
+  "stop_conditions": [
+    "OAuth refresh fails",
+    "project identity does not match project number 852325278216",
+    "billing endpoint fails, returns malformed data, or project identity mismatches",
+    "billingEnabled is true or missing",
+    "transport outcome is ambiguous"
+  ],
+  "output": "Sanitized receipt only; no token, refresh token, client secret, API key, or response body written to Git.",
+  "next": "Only if billingEnabled=false and project identity is verified, prepare a separate bounded fresh UK60 product request. Otherwise stop the paid-capable provider path and report the concrete blocker."
+}
