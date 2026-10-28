@@ -27,9 +27,9 @@
   "handling": {
     "terminal": true,
     "repeat_allowed": false,
-    "reason": "The single caller request returned normalized HTTP 502 in 3.47s. The matching n8n execution was observed running for 453s with the gateway's google_metadata node configured for 120000ms and retries disabled. A later read found its execution_entity and execution_data rows absent, so the upstream outcome cannot be recovered. Caller timeout alignment did not resolve the issue. The wrapper also failed while formatting error metadata; no retry was made."
+    "reason": "The single request returned normalized HTTP 502 in 3.47s. Execution 14291 remained running for 453s, exceeding both the 120s provider HTTP timeout and 300s workflow timeout. Workflow source says HTTP errors continue to sanitizer, retries are disabled, and terminal execution data is not saved. Later DB reads found no row/data; therefore the terminal provider result and exact failure cause are unknown. No retry was made."
   },
-  "next_step": "Diagnose why one gateway request returns HTTP 502 while its execution is long-running and later disappears. Use code/config and safe health checks only. Do not make another provider request until new bounded plan is committed.",
+  "next_step": "Inspect n8n execution/timeout semantics and add durable, sanitized terminal diagnostics for this gateway path. Validate without provider calls. Before a future external call, commit a new one-call plan; do not repeat the lost request.",
   "gateway_execution": {
     "id": "14291",
     "workflow": "VIDEO-V3-Credential-Gateway",
@@ -42,6 +42,16 @@
     "node_execution_stack_at_last_read": [
       "Authenticated provider request"
     ],
-    "later_read": "execution_entity and execution_data rows were absent; final upstream node response could not be recovered"
+    "later_read": "execution_entity and execution_data rows were absent; final upstream node response could not be recovered",
+    "observation": "Execution 14291 was running 453s, exceeding configured 300s workflow timeout; later no execution rows remained. Workflow config disables saving success/error execution data, so the terminal node result is unavailable."
+  },
+  "gateway_workflow_config": {
+    "workflow_execution_timeout_seconds": 300,
+    "provider_http_timeout_ms": 120000,
+    "provider_retry_on_fail": false,
+    "provider_on_error": "continueRegularOutput",
+    "webhook_response_mode": "responseNode",
+    "save_success_execution": "none",
+    "save_error_execution": "none"
   }
 }
