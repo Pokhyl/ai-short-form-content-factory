@@ -46,7 +46,8 @@ def safe(value):
 
 def api(kind,method,url,token,body=None):
  if record["http_calls_started"]>=5: raise Stop("http_call_budget_exceeded")
- headers={"User-Agent":"ContentFactoryV3/1.0","Accept":"application/json","Authorization":"Bearer "+token}
+ headers={"User-Agent":"ContentFactoryV3/1.0","Accept":"application/json"}
+ if token: headers["Authorization"]="Bearer "+token
  data=None
  if body is not None:
   headers["Content-Type"]="application/json"
