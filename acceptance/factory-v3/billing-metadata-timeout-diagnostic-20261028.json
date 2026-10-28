@@ -29,7 +29,7 @@
     "repeat_allowed": false,
     "reason": "The single caller request returned normalized HTTP 502 in 3.47s. A sole recent n8n gateway execution (14291, timestamp-correlated but not ID-confirmed) remained running for 453s, exceeding the configured 120s provider HTTP timeout and 300s workflow timeout. Workflow source says HTTP errors continue to sanitizer, retries are disabled, and terminal execution data is not saved. Later DB reads found no row/data; the terminal provider result and exact relation to this request remain unknown. No retry was made."
   },
-  "next_step": "Inspect n8n execution/timeout semantics and add durable, sanitized terminal diagnostics for this gateway path. Validate without provider calls. Before a future external call, commit a new one-call plan; do not repeat the lost request.",
+  "next_step": "Diagnose gateway failure using existing source/config. The new metadata-only runner is available only after a fresh committed plan; do not rerun the lost request.",
   "gateway_execution": {
     "id": "14291",
     "workflow": "VIDEO-V3-Credential-Gateway",
@@ -60,5 +60,11 @@
     "path": "scripts/check_saved_native_paragraph.py",
     "change": "Persist sanitized HTTPFailure receipt fields (status, error_status, error_reason, gateway_execution_id) in call and terminal receipts.",
     "verification": "Python syntax compilation passed; zero provider calls."
+  },
+  "metadata_only_runner": {
+    "commit": "39a21cf3e05da004bdbe4bded441ef1409ba6373",
+    "path": "scripts/check_billing_metadata_only.py",
+    "purpose": "One read-only billing metadata call maximum; refuses stale/duplicate diagnostic IDs; saves only safe result fields and failure receipt; contains no Gemini/search/TTS path.",
+    "verification": "Python syntax compilation passed; script not executed; provider calls 0."
   }
 }
