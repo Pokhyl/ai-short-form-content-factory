@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-project-billing-after-key-owner-20261028",
+  "purpose": "Resolve the exact Gemini key owner project ID and verify its billing state after the API Keys API was enabled.",
+  "key_owner_parent_project_number": "529636078126",
+  "credential_ids": {
+    "gemini": "V3GeminiFreeTier20261005",
+    "google_oauth": "8KbFC6GBZOd18bzG"
+  },
+  "http_call_budget": {
+    "oauth_refresh": 1,
+    "project_info": 1,
+    "billing_info": 1,
+    "total_max": 3
+  },
+  "provider_call_budget": {
+    "generation": 0,
+    "search": 0,
+    "tts": 0
+  },
+  "mutations": 0,
+  "retries": 0,
+  "safeguards": [
+    "Query only the exact project returned by key owner lookup.",
+    "Read project identity and billing state only; make no billing or IAM changes.",
+    "Store only project ID, project number, billingEnabled, and sanitized errors.",
+    "Remove temporary credential exports."
+  ],
+  "status": "planned"
+}
