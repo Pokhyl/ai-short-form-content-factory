@@ -1,0 +1,38 @@
+{
+  "diagnostic_id": "v3-oauth-consumer-billing-identity-resolution-20261028",
+  "follows": "v3-oauth-consumer-project-billing-recovery-20261028",
+  "reason": "OAuth refresh and Resource Manager GET returned HTTP 200, but the local check stopped because it required projectNumber to be present and equal; preserve the prior stop, resolve the canonical projectId and any returned projectNumber, then query billing only if the resource identity is unambiguous.",
+  "credential_ref": "n8n Google account credential 8KbFC6GBZOd18bzG",
+  "requested_project_number": "852325278216",
+  "max_credential_exports": 1,
+  "max_http_requests": 3,
+  "permitted_calls": [
+    "OAuth refresh POST once",
+    "Resource Manager GET for projects/852325278216 once",
+    "Cloud Billing GET for the exact projectId returned by that successful GET, only when projectId is valid and any returned projectNumber matches"
+  ],
+  "output_fields": [
+    "sanitized status",
+    "canonical projectId",
+    "projectNumber if returned",
+    "billingEnabled",
+    "HTTP status codes",
+    "credential export removed"
+  ],
+  "forbidden": {
+    "generation": 0,
+    "search": 0,
+    "photo_search": 0,
+    "tts": 0,
+    "billing_mutations": 0,
+    "credential_mutations": 0,
+    "retries": 0
+  },
+  "stop_conditions": [
+    "Any export/auth/network error",
+    "No projectId, malformed projectId, or conflicting projectNumber if returned",
+    "Billing identity mismatch or non-200/malformed response",
+    "billingEnabled true or missing"
+  ],
+  "note": "A 200 identity response is bound to the exact numeric resource path; if projectNumber is omitted, accept only its valid projectId and require billingInfo.projectId to equal it."
+}
