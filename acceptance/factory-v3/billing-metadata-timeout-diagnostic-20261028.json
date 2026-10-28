@@ -27,7 +27,17 @@
   "handling": {
     "terminal": true,
     "repeat_allowed": false,
-    "reason": "HTTP 502 returned quickly; caller timeout mismatch does not explain this result. The diagnostic wrapper then hit an attribute-name bug while formatting the error, so no provider response details were retained. No retry was made."
+    "reason": "The single caller request produced normalized HTTP 502 in 3.47s. The corresponding n8n execution 14291 remained running for 453s, far beyond the configured 120s node timeout. The caller timeout mismatch is not sufficient to explain the failure; gateway execution/HTTP-node timeout enforcement or response handling is the blocker. A wrapper attribute-name bug prevented retaining normalized gateway error fields. No retry was made."
   },
-  "next_step": "Inspect the corresponding n8n gateway execution and sanitized node error from logs/database, without making another provider request. Then update this receipt and checkpoint before any later provider call."
+  "next_step": "Diagnose why the gateway HTTP Request execution remains active past its configured timeout and why the caller receives an early 502. Use saved execution data and workflow code only; do not repeat any provider request until a new bounded plan is committed.",
+  "gateway_execution": {
+    "id": "14291",
+    "workflow": "VIDEO-V3-Credential-Gateway",
+    "status": "running",
+    "elapsed_at_last_read_seconds": 453,
+    "native_node": "Upstream google_metadata",
+    "native_node_timeout_ms": 120000,
+    "native_retry_on_fail": false,
+    "execution_data": "no completed node runData recorded; execution remains active"
+  }
 }
