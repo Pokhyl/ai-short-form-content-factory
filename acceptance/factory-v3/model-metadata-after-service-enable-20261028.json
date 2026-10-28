@@ -1,0 +1,26 @@
+{
+  "diagnostic_id": "v3-model-metadata-after-service-enable-20261028",
+  "credential_id": "V3GeminiFreeTier20261005",
+  "project_id": "gen-lang-client-0532024148",
+  "model": "gemini-3.5-flash-lite",
+  "http_calls_started": 1,
+  "max_http_calls": 1,
+  "http_status": 200,
+  "model_name": "models/gemini-3.5-flash-lite",
+  "supported_generation_methods": [
+    "generateContent",
+    "countTokens",
+    "createCachedContent",
+    "batchGenerateContent"
+  ],
+  "input_token_limit": 1048576,
+  "output_token_limit": 65536,
+  "generation_calls": 0,
+  "search_calls": 0,
+  "tts_calls": 0,
+  "billing_mutations": 0,
+  "status": "passed",
+  "credential_export_removed": true,
+  "started_at": "2026-10-28T15:10:43.768104+00:00",
+  "finished_at": "2026-10-28T15:10:53.107239+00:00"
+}
