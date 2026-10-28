@@ -1,3 +1,15 @@
+# Current checkpoint — 2026-10-28
+
+Two targeted fixes are committed on `codex/gemini25-route-20261027`: duration-scope fact-budget overflow now stops at two repairs (source `29c5b5a`, fixture `972ec3e`); Google metadata caller timeout now matches the 120s native upstream bound with a 130s caller limit (source `ed9d0c6`, regression `5aa9124`). Exact candidate image `factory-v3:preflight-timeouts-20261028`, digest `sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd`, built offline from the existing runtime base with no runtime source overlay. All 24 focused tests passed inside this exact image with networking disabled. No external provider calls were made for these fixes.
+
+Not deployed. Live app health still reports `project_ready=false`; production image revision `a873e6...` is not identified as a commit in this candidate branch. Active Factory Next proof selects `gemini-3.5-flash-lite`, with billing disabled and Standard free tier confirmed; Gemini 2.5 route is not selected. Previous read-only Billing metadata request returned HTTP 502 and its stale n8n execution 14290 is canceled. No generation was attempted.
+
+**Next bounded diagnostic plan:** after this checkpoint is committed, permit at most ONE read-only Google Cloud Billing metadata GET through the existing gateway; caller timeout 130s, native upstream timeout 120s; expected quota use is unknown for metadata and no content generation is requested. No Gemini, TTS, search, retries, or new production job. Stop on timeout, non-200, missing/ambiguous response, or any sign of billing being enabled. Record the result and diagnose transport before the saved-source RU45 boundary.
+
+Acceptance remains PL15/EN30 pass, RU45 pending, UK60 incomplete. Project is not complete. Preserve immutable job IDs, media, databases, and free-only policy. Do not deploy or claim readiness based on offline tests.
+
+---
+
 ## Two-revision duration-scope fix — 2026-10-28
 
 Candidate fix is committed on `codex/gemini25-route-20261027`: source `29c5b5aa20537b64d821109655c66e668813dcc0`, test fixture `972ec3e250c95f290e1345cc3f84b6c1c7929c44`, acceptance receipt `44ea66051c516ef6edaf4cce6288bcabde37ae66`. Duration-scope overflow previously had an extra branch that permitted a third repair. It now uses the existing two repair slots; source, semantic, and coverage gates are unchanged. The photo-only test mock now respects the restricted response schema and server-owned fact bindings.
