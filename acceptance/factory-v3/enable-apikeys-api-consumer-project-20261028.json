@@ -1,0 +1,33 @@
+{
+  "diagnostic_id": "v3-enable-apikeys-service-consumer-project-20261028",
+  "credential_id": "8KbFC6GBZOd18bzG",
+  "project_number": "852325278216",
+  "service": "apikeys.googleapis.com",
+  "http_calls_started": 3,
+  "max_http_calls": 5,
+  "enable_posts": 1,
+  "operation_polls": 1,
+  "billing_mutations": 0,
+  "generation_calls": 0,
+  "search_calls": 0,
+  "tts_calls": 0,
+  "calls": [
+    {
+      "kind": "oauth_refresh",
+      "status": 200
+    },
+    {
+      "kind": "enable",
+      "status": 200
+    },
+    {
+      "kind": "operation_poll",
+      "status": 200
+    }
+  ],
+  "operation_done": true,
+  "status": "enabled",
+  "credential_export_removed": true,
+  "started_at": "2026-10-28T15:05:13.955154+00:00",
+  "finished_at": "2026-10-28T15:05:27.080235+00:00"
+}
