@@ -1,0 +1,30 @@
+{
+  "diagnostic_id": "v3-account-boundary-after-oauth-refresh-20261028",
+  "selected_model": "gemini-3.5-flash-lite",
+  "credential_ids": {
+    "gemini": "V3GeminiFreeTier20261005",
+    "google_oauth": "8KbFC6GBZOd18bzG"
+  },
+  "max_http_calls": 4,
+  "http_calls_started": 2,
+  "generation_calls": 0,
+  "search_calls": 0,
+  "tts_calls": 0,
+  "billing_mutations": 0,
+  "calls": [
+    {
+      "kind": "oauth_refresh",
+      "status": 200
+    },
+    {
+      "kind": "key_owner",
+      "status": 403,
+      "error_status": "PERMISSION_DENIED"
+    }
+  ],
+  "started_at": "2026-10-28T14:55:07.044115+00:00",
+  "status": "blocked",
+  "stop_reason": "key_owner_rejected",
+  "credential_exports_removed": true,
+  "finished_at": "2026-10-28T14:55:25.341639+00:00"
+}
