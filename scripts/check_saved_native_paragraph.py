@@ -21,6 +21,11 @@ def save():
   json.dump(report,stream,ensure_ascii=False,indent=2);stream.flush();os.fsync(stream.fileno())
  temp.replace(folder/'receipt.json')
 save()
+def safe_error_receipt(error):
+ receipt=getattr(error,'receipt',None)
+ if not isinstance(receipt,dict): return None
+ return {key:receipt[key] for key in ('status','error_status','error_reason','gateway_execution_id')
+         if isinstance(receipt.get(key),(int,str)) and not isinstance(receipt.get(key),bool)}
 class DiagnosticCalls:
  def run(self,key,kind,request,invoke,**kwargs):
   assert (key,kind) in {('free-tier','metadata'),('material-compose','gemini'),('material-language-edit','gemini'),('script-review','gemini')}
@@ -33,7 +38,7 @@ class DiagnosticCalls:
    claim.update(state='succeeded',response={'status':result['status'],'body':result['body']})
    save();return result
   except BaseException as error:
-   claim.update(state='failed_or_unknown',error=type(error).__name__);save();raise
+   claim.update(state='failed_or_unknown',error=type(error).__name__,error_receipt=safe_error_receipt(error));save();raise
 calls=DiagnosticCalls();ops.gemini.calls=calls
 try:
  proof=runtime.settings['free_tier_proof']
@@ -48,6 +53,6 @@ try:
  assert review.get('native_language_quality') is True
  report.update(state='text_boundary_pass',review=review,human_pass=False,video_created=False)
 except BaseException as error:
- report.update(state='terminal_failure',error=type(error).__name__,error_detail=str(error)[:600],human_pass=False,video_created=False)
+ report.update(state='terminal_failure',error=type(error).__name__,error_detail=str(error)[:600],error_receipt=safe_error_receipt(error),human_pass=False,video_created=False)
 finally:save()
 print(json.dumps({k:report[k] for k in ('diagnostic_id','state','revision','fresh_requests','tts_calls','db_writes')} | {'gemini_calls':sum(row['kind']=='gemini' for row in report['calls']),'words':report.get('words'),'error':report.get('error'),'receipt':str(folder/'receipt.json')},ensure_ascii=False))
