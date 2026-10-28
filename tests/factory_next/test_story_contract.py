@@ -47,3 +47,17 @@ class StoryContractTests(TestCase):
         photos.append({**photos[-1],'id':'different-url-same-image'})
         with self.assertRaisesRegex(ValueError,'photo identities'):
             story_contract(self.source['request'],self.source['evidence'],photos)
+
+    def test_context_associations_cannot_steal_observed_result_anchor(self):
+        # Topic-independent IDs: contextual objects may relate to all facts,
+        # but only the actual observed outcome anchors the outcome claim.
+        request={'required_fact_ids':['f1','f2','f3']}
+        evidence={'facts':[{'id':f'f{i}','text':f'Controlled claim {i}'} for i in (1,2,3)]}
+        photos=[{'id':str(i),'sha256':str(i)*64,
+                 'supported_fact_ids':['f1','f2','f3'],
+                 'direct_fact_ids':['f3'] if i==3 else []} for i in (1,2,3)]
+        beats,_=story_contract(request,evidence,photos)
+        self.assertEqual(beats['beat_3']['material_id'],'3')
+        self.assertEqual(beats['beat_3']['visual_relation'],'direct_fact_visual')
+        self.assertEqual(beats['beat_1']['visual_relation'],'topic_context')
+        self.assertEqual(beats['beat_2']['visual_relation'],'topic_context')

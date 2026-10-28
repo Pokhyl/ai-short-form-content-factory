@@ -1,3 +1,11 @@
+## General visual contract — 2026-10-28
+
+New research checkpoints carry server-owned `subject_focus_policy=primary-subject-v1`. For every image, the existing pixel-inspection call now checks the dominant subject separately from incidental related details. Relevance requires primary composition focus and no dominant unrelated foreground. There is no topic keyword blacklist, replacement image, or manually supplied narration.
+
+Each inspected fact association distinguishes direct observation from topic context. Source text remains the authority for causal and hidden mechanisms. The server derives `direct_fact_ids`, validates them again at material admission, and uses only these observed identities for distinct anchor matching. Script review and Studio receive `topic_context` for related images that do not depict the actual assertion. New corpora must include the requested main subject, rather than only associated parts or scenery. Scientific diagrams remain eligible under existing attribution and source checks.
+
+The contract applies to all supported languages (PL/EN/RU/UK) and durations (15/30/45/60). Older checkpoints retain their original request/receipt contract and are never rewritten. A successful example is regression evidence, not universal acceptance: source quality, native narration, meaningful distinct visuals, measured natural-speed voice, alignment, render, public playback, and independent audit remain required for normal jobs. Provider unavailability must remain explicit and cannot be converted into a fabricated completion.
+
 ## 2026-10-21 — Candidate source-owned narration contract
 
 Current status lives at the top of CODEX_START_HERE/HANDOFF/RELEASE_GATE; the historic success below remains immutable, not acceptance of this candidate.
