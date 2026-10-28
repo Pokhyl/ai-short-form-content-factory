@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-28",
+  "branch": "codex/gemini25-route-20261027",
+  "change": "Stop duration-scoped fact-budget overflow after the existing two repair slots; align photo-only repair test mock with its restricted schema.",
+  "commits": {
+    "source": "29c5b5aa20537b64d821109655c66e668813dcc0",
+    "test": "972ec3e250c95f290e1345cc3f84b6c1c7929c44"
+  },
+  "verification": {
+    "tests": "16 passed: tests.factory_next.test_fact_scope and tests.material_first.test_research_review",
+    "diff_check": "passed",
+    "external_provider_calls": 0
+  },
+  "packaging": {
+    "exact_candidate_image": "pending",
+    "reason": "Docker system inventory timed out; filesystem has 595 MB free. No images or project data removed."
+  },
+  "provider_state": {
+    "selected_factory_next_model": "gemini-3.5-flash-lite",
+    "proof_present": true,
+    "billing_enabled": false,
+    "standard_free_tier": true,
+    "gemini_2_5_route_selected": false,
+    "billing_metadata_probe": "HTTP 502; no positive result",
+    "execution_14290": "canceled stale running marker",
+    "generation_attempt": "not made"
+  },
+  "acceptance": {
+    "PL15": "pass",
+    "EN30": "pass",
+    "RU45": "pending",
+    "UK60": "not completed",
+    "project_complete": false
+  },
+  "next_step": "Package the exact current source on the existing production runtime base with network disabled, run the same tests inside the image, then resume only the preplanned saved-source RU45 boundary if billing metadata failure has been diagnosed."
+}
