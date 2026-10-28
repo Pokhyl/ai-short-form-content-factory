@@ -53,5 +53,11 @@
     "webhook_response_mode": "responseNode",
     "save_success_execution": "none",
     "save_error_execution": "none"
+  },
+  "diagnostic_harness_fix": {
+    "commit": "bb953ba6a3f5016e915062d3cf531025d59f19b1",
+    "path": "scripts/check_saved_native_paragraph.py",
+    "change": "Persist sanitized HTTPFailure receipt fields (status, error_status, error_reason, gateway_execution_id) in call and terminal receipts.",
+    "verification": "Python syntax compilation passed; zero provider calls."
   }
 }
