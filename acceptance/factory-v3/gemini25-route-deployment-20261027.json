@@ -27,6 +27,8 @@
     "image": "sha256:41e098f91a01ffb08b9372d458a8c912880207ef82bb3e5577cceb8c5d6491b5",
     "health": "healthy",
     "endpoint_http": 200,
+    "endpoint_status": "serving",
+    "project_ready": false,
     "model_25_client_loaded": true,
     "proof": {
       "billing_disabled": true,
@@ -37,9 +39,10 @@
     },
     "live_billing_metadata_probe": "HTTP 502; no positive billing metadata result",
     "post_restart_execution_state": {
-      "running": 1,
+      "running": 0,
+      "canceled": 1,
       "execution_id": 14290,
-      "description": "read-only billing metadata probe; no generation call"
+      "description": "stale read-only billing metadata probe marker cleared after n8n restart; no generation call"
     },
     "model_25_generation_probe": "not run; model-specific free-tier proof is missing",
     "paid_fallback": false
