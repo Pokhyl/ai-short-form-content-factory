@@ -34,5 +34,16 @@
     "Make at most one enable POST; poll only its returned operation up to three times.",
     "Persist only HTTP status, constrained error fields, operation completion state, and target."
   ],
-  "status": "planned"
+  "status": "executed",
+  "execution_result": {
+    "receipt": "acceptance/factory-v3/enable-apikeys-api-consumer-project-20261028.json",
+    "receipt_commit": "d21c0628d559c575f0cdf35b8c6dc96673fc0c58",
+    "status": "enabled",
+    "http_calls_started": 3,
+    "enable_posts": 1,
+    "operation_polls": 1,
+    "billing_mutations": 0,
+    "generation_search_tts_calls": 0,
+    "credential_export_removed": true
+  }
 }
