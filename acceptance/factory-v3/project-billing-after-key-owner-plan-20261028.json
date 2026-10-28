@@ -26,5 +26,18 @@
     "Store only project ID, project number, billingEnabled, and sanitized errors.",
     "Remove temporary credential exports."
   ],
-  "status": "planned"
+  "status": "executed-blocked",
+  "execution_result": {
+    "receipt": "acceptance/factory-v3/project-billing-after-key-owner-20261028.json",
+    "receipt_commit": "53be176a584ebe37e7b59f5bb00f9017ad5071ff",
+    "http_calls_started": 2,
+    "project_info_status": 403,
+    "project_info_error_reason": "SERVICE_DISABLED",
+    "disabled_service": "cloudresourcemanager.googleapis.com",
+    "consumer_project_number": "852325278216",
+    "billing_info_called": false,
+    "billing_mutations": 0,
+    "generation_search_tts_calls": 0,
+    "credential_export_removed": true
+  }
 }
