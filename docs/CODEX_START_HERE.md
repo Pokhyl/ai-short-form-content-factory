@@ -1,12 +1,15 @@
-# Current checkpoint — 2026-10-28
+# Current checkpoint — 2026-10-28 (updated)
 
-Two targeted fixes are committed on `codex/gemini25-route-20261027`: duration-scope fact-budget overflow now stops at two repairs (source `29c5b5a`, fixture `972ec3e`); Google metadata caller timeout now matches the 120s native upstream bound with a 130s caller limit (source `ed9d0c6`, regression `5aa9124`). Exact candidate image `factory-v3:preflight-timeouts-20261028`, digest `sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd`, built offline from the existing runtime base with no runtime source overlay. All 24 focused tests passed inside this exact image with networking disabled. No external provider calls were made for these fixes.
+Two targeted fixes are committed on `codex/gemini25-route-20261027`: duration-scope fact-budget overflow now stops at two repairs (source `29c5b5a`, fixture `972ec3e`); Google metadata caller timeout now matches the 120s native upstream bound with a 130s caller limit (source `ed9d0c6`, regression `5aa9124`). Exact candidate image `factory-v3:preflight-timeouts-20261028`, digest `sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd`, built offline from the existing runtime base with no runtime source overlay. All 24 focused tests passed inside this exact image with networking disabled. No external provider calls were made for these code fixes.
 
-Not deployed. Live app health still reports `project_ready=false`; production image revision `a873e6...` is not identified as a commit in this candidate branch. Active Factory Next proof selects `gemini-3.5-flash-lite`, with billing disabled and Standard free tier confirmed; Gemini 2.5 route is not selected. Previous read-only Billing metadata request returned HTTP 502 and its stale n8n execution 14290 is canceled. No generation was attempted.
+Not deployed. Live app health still reports `project_ready=false`; production image revision `a873e6...` is not identified as a commit in this candidate branch. Active Factory Next proof selects `gemini-3.5-flash-lite`, with billing disabled and Standard free tier confirmed; Gemini 2.5 route is not selected.
 
-**Next bounded diagnostic plan:** after this checkpoint is committed, permit at most ONE read-only Google Cloud Billing metadata GET through the existing gateway; caller timeout 130s, native upstream timeout 120s; expected quota use is unknown for metadata and no content generation is requested. No Gemini, TTS, search, retries, or new production job. Stop on timeout, non-200, missing/ambiguous response, or any sign of billing being enabled. Record the result and diagnose transport before the saved-source RU45 boundary.
+One bounded read-only billing metadata request was made from the exact candidate image after the diagnostic plan commit. It returned normalized HTTP 502 in 3.47s; no retries, Gemini/search/TTS calls, or new production jobs. Billing remains unknown. Corresponding n8n execution `14291` is still marked `running` after 453s. Saved workflow configuration shows `Upstream google_metadata` timeout 120000ms with retries disabled; no completed node runData is stored. This does not prove the provider caused the 502. Caller timeout alignment did not resolve the blocker. Receipt: `acceptance/factory-v3/billing-metadata-timeout-diagnostic-20261028.json`.
 
-Acceptance remains PL15/EN30 pass, RU45 pending, UK60 incomplete. Project is not complete. Preserve immutable job IDs, media, databases, and free-only policy. Do not deploy or claim readiness based on offline tests.
+**Next:** diagnose the persistent gateway execution and early 502 from saved execution/workflow data only. No additional provider request until the cause is understood and a new bounded plan is committed. Keep immutable jobs/media, and maintain free-only policy.
+
+Acceptance remains PL15/EN30 pass, RU45 pending, UK60 incomplete. Project is not complete. Do not deploy or claim readiness based on offline tests.
+
 
 ---
 
