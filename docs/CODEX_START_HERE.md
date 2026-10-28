@@ -1,3 +1,11 @@
+## Current implementation checkpoint — 2026-10-28
+
+Goal remains a general topic-to-MP4 factory; individual videos are regression cases, not readiness. Current public Studio image sha256:6a74f869261cdca81509c4e25364bb24299edb06b4d9d5e649b49067c9565fbc has differing image-label/runtime revision metadata. Exact deployed source was captured and hashed in acceptance/factory-next/live-source-baseline-20261028.json before edits; no production changes.
+
+Actual completed EN30 rainbow e577e215 has a visually inspected off-topic dominant foreground (festival dancers, incidental rain). New primary-subject-v1 contract applies to NEW research checkpoints across all four languages/durations. Native image inspection separately states dominant subject, relation, primary relevance and unrelated foreground; server admission and material validation reject missing/contradictory/negative focus even if accepted=true. Related people and scientific diagrams are allowed. Existing jobs/receipts remain immutable. No per-topic blacklist or handmade narration. Focused tests pass; exact image verification and actual model semantic evaluation pending.
+
+Provider remains a separate blocker: latest public RU45 a8470597 failed research with explicit503/UNAVAILABLE. Other branch receipts report repeated503 across free models and a metadata502 with incomplete execution correlation. Do not claim that these external failures are fixed by the image contract. No new provider calls or paid fallback have been made in this continuation. project_ready=false.
+
 # Current checkpoint — 2026-10-28 (updated)
 
 Two targeted fixes are committed on `codex/gemini25-route-20261027`: duration-scope fact-budget overflow now stops at two repairs (source `29c5b5a`, fixture `972ec3e`); Google metadata caller timeout now matches the 120s native upstream bound with a 130s caller limit (source `ed9d0c6`, regression `5aa9124`). Exact candidate image `factory-v3:preflight-timeouts-20261028`, digest `sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd`, built offline from the existing runtime base with no runtime source overlay. All 24 focused tests passed inside this exact image with networking disabled.

@@ -77,7 +77,8 @@ class PreparationStages:
         self.authorize()
         request={**context['request'],'presentation_policy':TOPIC_POLICY,
                  'visual_validation_mode':'gemini',
-                 'fact_scope_policy':'duration-scoped-facts-v1'}
+                 'fact_scope_policy':'duration-scoped-facts-v1',
+                 'subject_focus_policy':'primary-subject-v1'}
         # Published scientific diagrams are legitimate evidence-backed visuals
         # for unphotographable subjects. This opt-in is Factory Next only.
         self.operations.allow_source_illustrations=True
@@ -108,6 +109,7 @@ class PreparationStages:
             operations=copy(self.operations)
             operations.gemini=copy(self.narrative_model)
             operations.gemini.default_thinking_level='medium'
+        operations.require_subject_focus=request.get('subject_focus_policy')=='primary-subject-v1'
         operations.topic=request['topic']
         operations.visual_validation_mode=request['visual_validation_mode']
         operations.allow_source_illustrations=True
@@ -149,6 +151,8 @@ class PreparationStages:
                     raise ValueError('photo fingerprint differs from source bytes')
                 if any(same_photo(fingerprint,previous) for previous in fingerprints):continue
                 identities.add(asset['id']);hashes.add(asset['sha256']);fingerprints.append(fingerprint)
+                if operations.require_subject_focus:
+                    asset['subject_focus_policy']='primary-subject-v1'
                 batch.append(asset)
             if not batch:continue
             receipts=operations.inspect_many(deepcopy(batch),deepcopy(evidence))

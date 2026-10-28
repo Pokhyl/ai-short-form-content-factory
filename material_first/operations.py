@@ -389,6 +389,10 @@ class Operations:
             schema['properties']['illustration_type'] = string(
                 ['scientific_diagram', 'structural_illustration', 'artwork', 'not_applicable'])
             schema['required'].append('illustration_type')
+        if getattr(self,'require_subject_focus',False):
+            from .subject_focus import schema as focus_schema
+            schema['properties']['subject_focus']=focus_schema()
+            schema['required'].append('subject_focus')
         return schema
 
     def _inspection_receipt(self, asset, evidence, result, provenance):
@@ -410,6 +414,10 @@ class Operations:
             and (result['medium'] in {'photograph','observational_image'} or diagram)
             and relation['kind'] in {'direct_subject','direct_part_or_stage'}
             and bool(relation['visible_subject'].strip()) and bool(relation['connection'].strip()))
+        if getattr(self,'require_subject_focus',False):
+            from .subject_focus import accepted, POLICY
+            result['subject_focus_policy']=POLICY
+            result['accepted']=result['accepted'] and accepted(result.get('subject_focus'))
         if asset.get('visual_targets') is not None:
             result['visual_targets_sha256'] = digest(asset['visual_targets'])
             if asset.get('visual_qualification_protocol') == 'qualified-target-v1':
@@ -471,6 +479,9 @@ class Operations:
         instruction=(self.SCIENTIFIC_INSPECTION_INSTRUCTION if
                      getattr(self,'allow_source_illustrations',False)
                      else self.INSPECTION_INSTRUCTION)
+        if getattr(self,'require_subject_focus',False):
+            from .subject_focus import INSTRUCTION
+            instruction+=INSTRUCTION
         result, provenance = self.gemini.generate('material-inspect:' + asset['id'],
             instruction,
             {'topic': getattr(self,'topic',None), 'evidence': compact_evidence(evidence), 'visual_targets': targets,
@@ -518,6 +529,9 @@ class Operations:
             instruction=(self.SCIENTIFIC_INSPECTION_INSTRUCTION if
                          getattr(self,'allow_source_illustrations',False)
                          else self.INSPECTION_INSTRUCTION)
+            if getattr(self,'require_subject_focus',False):
+                from .subject_focus import INSTRUCTION
+                instruction+=INSTRUCTION
             result, provenance = self.gemini.generate('material-inspect-batch:' + digest([a['id'] for a in assets]),
                 instruction, context, schema,
                 photos=photos, max_tokens=8192)

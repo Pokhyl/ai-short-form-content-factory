@@ -86,6 +86,10 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
             or not receipt.get("receipt_id") or not receipt.get("model")
             or receipt.get("accepted") is not True or receipt.get("is_real_material") is not True):
         return None
+    from .subject_focus import accepted as focus_accepted, POLICY as FOCUS_POLICY
+    if asset.get('subject_focus_policy') == FOCUS_POLICY:
+        if receipt.get('subject_focus_policy') != FOCUS_POLICY or not focus_accepted(receipt.get('subject_focus')):
+            return None
     visible = receipt.get("visible_description")
     support = receipt.get("supported_fact_ids")
     if not isinstance(visible, str) or not visible.strip() or not isinstance(support, list) or not support:
