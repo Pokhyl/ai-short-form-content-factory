@@ -1,0 +1,32 @@
+{
+  "diagnostic_id": "v3-oauth-consumer-billing-identity-resolution-20261028",
+  "plan_commit": "a55167f5ee996145bbc214e3045871afa7a28731",
+  "credential_ref": "8KbFC6GBZOd18bzG",
+  "requested_project_number": "852325278216",
+  "resolved_project_id": "n8n-drive-voiceover",
+  "calls": [
+    {
+      "kind": "oauth_refresh",
+      "http_status": 200
+    },
+    {
+      "kind": "project_info",
+      "http_status": 200
+    },
+    {
+      "kind": "billing_info",
+      "http_status": 200
+    }
+  ],
+  "billing_enabled": true,
+  "generation_calls": 0,
+  "research_search_calls": 0,
+  "photo_search_calls": 0,
+  "tts_calls": 0,
+  "billing_mutations": 0,
+  "credential_mutations": 0,
+  "credential_export_removed": true,
+  "result": "blocked_before_any_provider_generation_or_synthesis",
+  "stop_reason": "billing_enabled_on_oauth_tts_project; strict free-only gate requires explicit spend safety before a new TTS call",
+  "recorded_at_local": "2026-10-28 Europe/Warsaw"
+}
