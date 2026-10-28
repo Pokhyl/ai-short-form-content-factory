@@ -35,7 +35,8 @@
       "bound_model_is_25": false,
       "standard_free_tier_proven": false
     },
-    "generation_probe": "not run; model-specific standard-free-tier proof is missing",
+    "live_billing_metadata_probe": "HTTP 502; no positive billing metadata result",
+    "model_25_generation_probe": "not run; model-specific free-tier proof is missing",
     "paid_fallback": false
   },
   "host": {
