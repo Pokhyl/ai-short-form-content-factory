@@ -1,0 +1,37 @@
+{
+  "diagnostic_id": "v3-enable-required-metadata-services-20261028",
+  "credential_id": "8KbFC6GBZOd18bzG",
+  "oauth_consumer_project_number": "852325278216",
+  "gemini_key_owner_project_number": "529636078126",
+  "services": {
+    "cloudresourcemanager.googleapis.com": {
+      "state_before": "DISABLED",
+      "enabled_by_this_run": true,
+      "state_after": "ENABLED",
+      "operation_done": true
+    },
+    "cloudbilling.googleapis.com": {
+      "state_before": "DISABLED",
+      "enabled_by_this_run": true,
+      "state_after": "ENABLED",
+      "operation_done": true
+    }
+  },
+  "http_calls_started": 9,
+  "max_http_calls": 11,
+  "enable_posts": 2,
+  "operation_polls": 2,
+  "project_info_status": 200,
+  "project_id": "gen-lang-client-0532024148",
+  "billing_info_status": 200,
+  "billing_enabled": false,
+  "billing_mutations": 0,
+  "iam_mutations": 0,
+  "generation_calls": 0,
+  "search_calls": 0,
+  "tts_calls": 0,
+  "credential_export_removed": true,
+  "status": "passed_free_billing",
+  "started_at": "2026-10-28T15:09:26.127922+00:00",
+  "finished_at": "2026-10-28T15:09:46.713702+00:00"
+}
