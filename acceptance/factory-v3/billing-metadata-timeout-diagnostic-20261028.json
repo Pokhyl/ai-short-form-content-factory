@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-28",
+  "diagnostic": "billing-metadata-timeout-diagnostic",
+  "checkpoint_commit": "d1de99a82ca01db6b0bf736dc3230ab9d9bf5e72",
+  "candidate_image": "factory-v3:preflight-timeouts-20261028",
+  "candidate_image_digest": "sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd",
+  "request": {
+    "provider": "Google Cloud Billing metadata via existing credential gateway",
+    "operation": "billing",
+    "method": "read-only metadata request",
+    "maximum_calls": 1,
+    "caller_timeout_seconds": 130,
+    "native_upstream_timeout_seconds": 120
+  },
+  "observed": {
+    "calls": 1,
+    "http_status": 502,
+    "elapsed_seconds": 3.47,
+    "retries": 0,
+    "billing_state": "unknown",
+    "billing_positive_confirmation": false,
+    "generation_calls": 0,
+    "search_calls": 0,
+    "tts_calls": 0,
+    "new_production_jobs": 0
+  },
+  "handling": {
+    "terminal": true,
+    "repeat_allowed": false,
+    "reason": "HTTP 502 returned quickly; caller timeout mismatch does not explain this result. The diagnostic wrapper then hit an attribute-name bug while formatting the error, so no provider response details were retained. No retry was made."
+  },
+  "next_step": "Inspect the corresponding n8n gateway execution and sanitized node error from logs/database, without making another provider request. Then update this receipt and checkpoint before any later provider call."
+}
