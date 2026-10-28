@@ -27,7 +27,7 @@
   "handling": {
     "terminal": true,
     "repeat_allowed": false,
-    "reason": "The single request returned normalized HTTP 502 in 3.47s. Execution 14291 remained running for 453s, exceeding both the 120s provider HTTP timeout and 300s workflow timeout. Workflow source says HTTP errors continue to sanitizer, retries are disabled, and terminal execution data is not saved. Later DB reads found no row/data; therefore the terminal provider result and exact failure cause are unknown. No retry was made."
+    "reason": "The single caller request returned normalized HTTP 502 in 3.47s. A sole recent n8n gateway execution (14291, timestamp-correlated but not ID-confirmed) remained running for 453s, exceeding the configured 120s provider HTTP timeout and 300s workflow timeout. Workflow source says HTTP errors continue to sanitizer, retries are disabled, and terminal execution data is not saved. Later DB reads found no row/data; the terminal provider result and exact relation to this request remain unknown. No retry was made."
   },
   "next_step": "Inspect n8n execution/timeout semantics and add durable, sanitized terminal diagnostics for this gateway path. Validate without provider calls. Before a future external call, commit a new one-call plan; do not repeat the lost request.",
   "gateway_execution": {
@@ -43,7 +43,8 @@
       "Authenticated provider request"
     ],
     "later_read": "execution_entity and execution_data rows were absent; final upstream node response could not be recovered",
-    "observation": "Execution 14291 was running 453s, exceeding configured 300s workflow timeout; later no execution rows remained. Workflow config disables saving success/error execution data, so the terminal node result is unavailable."
+    "observation": "Execution 14291 was running 453s, exceeding configured 300s workflow timeout; later no execution rows remained. Workflow config disables saving success/error execution data, so the terminal node result is unavailable.",
+    "correlation": "time-correlated: the caller-side wrapper did not preserve HTTPFailure.receipt.gateway_execution_id, so an exact ID match cannot be claimed"
   },
   "gateway_workflow_config": {
     "workflow_execution_timeout_seconds": 300,
