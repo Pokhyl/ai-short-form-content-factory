@@ -1,0 +1,55 @@
+{
+  "request_id": "c4af9d72-f8fc-41ae-a54a-134540491acd",
+  "diagnostic_id": "uk60-recovery-20261028",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "active_source_revision": "a873e6eea029c3c7ddafab305b073242b69ef13b",
+  "purpose": "One fresh, immutable UK60 product output after the prior qa_pass job's MP4 and MP3 were lost.",
+  "execution": "Trusted internal CLI staged run: create once; prepare once; inspect actual disk; if safe, one voice step, one alignment step, one render step, one QA step. Do not re-run a claimed, failed, unknown, or completed stage.",
+  "maximum_budgets": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini": 54,
+    "download": 51,
+    "metadata": 1,
+    "search_pixabay": 51,
+    "search_pexels": 51,
+    "search_wikimedia": 51,
+    "google_tts_synthesis": 1,
+    "tts_project": "n8n-drive-voiceover",
+    "tts_billing_enabled": true,
+    "user_approved_one_tts_call_with_possible_charge": true,
+    "per_photo_download_limit_bytes": 8388608,
+    "maximum_candidate_photo_bytes": 427819008
+  },
+  "preflight": {
+    "initial_free_disk_mib": 587,
+    "minimum_free_disk_before_tts_mib": 250,
+    "minimum_free_disk_before_render_mib": 150,
+    "no_container_image_build": true,
+    "no_deployment": true,
+    "no_cleanup_or_prune": true
+  },
+  "forbidden": {
+    "retries": 0,
+    "model_fallback": 0,
+    "paid_gemini_fallback": 0,
+    "extra_tts": 0,
+    "billing_changes": 0,
+    "credential_changes": 0,
+    "old_job_mutations": 0,
+    "human_review_mutation": 0
+  },
+  "stop_conditions": [
+    "Any provider call becomes unknown, ambiguous, failed, or exceeds the durable budget",
+    "Preparation failure or stale resource identity",
+    "Less than 250 MiB free before TTS",
+    "Less than 150 MiB free before render",
+    "Any job/stage status already claimed or terminal",
+    "Output missing or hash/QA mismatch"
+  ],
+  "acceptance": "Machine QA and exact MP4 availability are required. HUMAN PASS remains false until the user reviews the exact MP4."
+}
