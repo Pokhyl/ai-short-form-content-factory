@@ -1,0 +1,26 @@
+{
+  "diagnostic_id": "v3-account-boundary-after-owner-access-20261028",
+  "selected_model": "gemini-3.5-flash-lite",
+  "credential_ids": {
+    "gemini": "V3GeminiFreeTier20261005",
+    "google_oauth": "8KbFC6GBZOd18bzG"
+  },
+  "max_http_calls": 4,
+  "http_calls_started": 1,
+  "generation_calls": 0,
+  "search_calls": 0,
+  "tts_calls": 0,
+  "billing_mutations": 0,
+  "calls": [
+    {
+      "kind": "oauth_refresh",
+      "status": 400
+    }
+  ],
+  "status": "blocked",
+  "stop_reason": "oauth_refresh_rejected",
+  "credential_exports_removed": true,
+  "started_at": "2026-10-28T12:09:08.381373+00:00",
+  "finished_at": "2026-10-28T12:09:27.091878+00:00",
+  "error_detail": "OAuth response body was not retained. Exact 400 cause is unknown; no retry made."
+}
