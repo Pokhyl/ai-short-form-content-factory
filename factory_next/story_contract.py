@@ -11,7 +11,7 @@ def distinct_fact_anchors(required, photos):
     """
     owners={}
     eligible={fact:[i for i,p in enumerate(photos)
-                    if fact in p['supported_fact_ids']] for fact in required}
+                    if fact in p.get('direct_fact_ids',p['supported_fact_ids'])] for fact in required}
     def match(fact, seen):
         for index in eligible[fact]:
             if index in seen:continue
@@ -47,7 +47,9 @@ def story_contract(request,evidence,photos):
     for fact in required:
         if fact not in matched:
             if not remaining:raise ValueError('insufficient topical anchors for unobserved facts')
-            matched[fact]=remaining.pop(0)
+            # Prefer context inspected for this exact fact over another topic fact.
+            index=next((i for i,p in enumerate(remaining) if fact in p['supported_fact_ids']),0)
+            matched[fact]=remaining.pop(index)
     beats={f'beat_{i}':{'material_id':matched[fact]['id'],
         'fact_ids':[fact],'required_claim':facts[fact]['text'],
         'visual_relation':'direct_fact_visual' if fact in observed else 'topic_context'}

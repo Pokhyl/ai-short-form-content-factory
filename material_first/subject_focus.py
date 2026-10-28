@@ -14,6 +14,10 @@ INSTRUCTION = (
     'this is not a ban on any subject category. Scientific diagrams must likewise focus '
     'on the documented topic. Hidden mechanisms need not become visible, but their '
     'actual contextual subject must dominate the picture. '
+    'For each visible_fact_detail classify relationship as direct_observation only if '
+    'the actual depicted content shows that claim. Use topic_context for a related '
+    'object that illustrates a hidden mechanism, cause or function without showing it. '
+    'A photograph of droplets alone cannot directly show light splitting or forming an arc. '
 )
 def schema():
     return obj({'dominant_subject': string(), 'topic_connection': string(),
@@ -25,3 +29,8 @@ def accepted(focus):
             and focus.get('unrelated_subject_dominates') is False
             and all(isinstance(focus.get(k),str) and focus[k].strip()
                     for k in ('dominant_subject','topic_connection')))
+
+
+def shows_main_topic(photos):
+    return any(p.get('inspection',{}).get('topic_relation',{}).get('kind') == 'direct_subject'
+               for p in photos)

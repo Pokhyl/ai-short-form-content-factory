@@ -19,6 +19,7 @@ class SubjectFocusTests(TestCase):
 
     def receipt(self,primary=True,unrelated=False,subject='DNA structure',connection='Depicts the topic'):
         result=response()
+        for detail in result['visible_fact_details']:detail['relationship']='direct_observation'
         result['subject_focus']={'dominant_subject':subject,'topic_connection':connection,
              'relevant_content_is_primary':primary,'unrelated_subject_dominates':unrelated}
         return self.ops._inspection_receipt(self.asset,self.evidence,result,{'receipt_id':'controlled'})
@@ -70,3 +71,22 @@ class SubjectFocusTests(TestCase):
                 result=stage.research({'request':{'topic':'DNA','language':language,
                     'seconds':seconds,'subject_focus_policy':'untrusted-override'}})
                 self.assertEqual(result['request']['subject_focus_policy'],POLICY)
+
+    def test_context_does_not_become_observed_physical_process(self):
+        from material_first.engine import validate_story
+        from material_first.presentation import TOPIC_POLICY
+        result=response();result['subject_focus']=self.receipt()['subject_focus']
+        for detail in result['visible_fact_details']:detail['relationship']='topic_context'
+        receipt=self.ops._inspection_receipt(self.asset,self.evidence,result,{'receipt_id':'controlled'})
+        photo=inspected_material(self.asset,receipt,self.evidence,validate_evidence(self.evidence),'gemini_scientific')
+        self.assertEqual(photo['direct_fact_ids'],[])
+        draft={'beats':[{'material_id':photo['id'],'narration':'DNA has paired strands.', 'fact_ids':['f1']}]}
+        scenes=validate_story({'presentation_policy':TOPIC_POLICY,'required_fact_ids':['f1'],'seconds':15,'language':'en'},
+            self.evidence,[photo],draft,allow_topic_context=True)
+        self.assertEqual(scenes[0]['visual_relation'],'topic_context')
+
+    def test_only_parts_cannot_replace_main_topic(self):
+        from material_first.subject_focus import shows_main_topic
+        parts=[{'inspection':{'topic_relation':{'kind':'direct_part_or_stage'}}}]*3
+        self.assertFalse(shows_main_topic(parts))
+        self.assertTrue(shows_main_topic(parts+[{'inspection':{'topic_relation':{'kind':'direct_subject'}}}]))

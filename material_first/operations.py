@@ -393,6 +393,9 @@ class Operations:
             from .subject_focus import schema as focus_schema
             schema['properties']['subject_focus']=focus_schema()
             schema['required'].append('subject_focus')
+            detail=schema['properties']['visible_fact_details']['items']
+            detail['properties']['relationship']=string(['direct_observation','topic_context'])
+            detail['required'].append('relationship')
         return schema
 
     def _inspection_receipt(self, asset, evidence, result, provenance):
@@ -417,7 +420,9 @@ class Operations:
         if getattr(self,'require_subject_focus',False):
             from .subject_focus import accepted, POLICY
             result['subject_focus_policy']=POLICY
-            result['accepted']=result['accepted'] and accepted(result.get('subject_focus'))
+            result['accepted']=(result['accepted'] and accepted(result.get('subject_focus'))
+                and all(d.get('relationship') in ('direct_observation','topic_context') for d in details))
+            result['direct_fact_ids']=[d['fact_id'] for d in details if d.get('relationship')=='direct_observation']
         if asset.get('visual_targets') is not None:
             result['visual_targets_sha256'] = digest(asset['visual_targets'])
             if asset.get('visual_qualification_protocol') == 'qualified-target-v1':

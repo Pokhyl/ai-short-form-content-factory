@@ -123,6 +123,14 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
             "sha256": asset["sha256"], "visible_description": visible.strip(),
             "supported_fact_ids": support, "source_interval": interval,
             "capacity_ms": capacity, "inspection": deepcopy(receipt)}
+    if asset.get('subject_focus_policy') == FOCUS_POLICY:
+        details=receipt.get('visible_fact_details',[])
+        if not details or any(d.get('relationship') not in ('direct_observation','topic_context') for d in details):
+            return None
+        direct=[d['fact_id'] for d in details if d['relationship']=='direct_observation']
+        if receipt.get('direct_fact_ids')!=direct or not set(direct)<=set(support):
+            return None
+        result['direct_fact_ids']=direct
     if validation_mode == 'gemini_scientific':
         result['visual_kind'] = 'scientific_illustration' if source_illustration else 'photograph'
     if target_matches is not None:
@@ -284,6 +292,8 @@ def validate_story(request, evidence, available, draft, *, allow_topic_context=F
         topic_policy=request.get('presentation_policy') == TOPIC_POLICY
         direct_fact_ids=(set(fact_ids) & set(material['supported_fact_ids'])
                          if topic_policy else set())
+        if topic_policy and 'direct_fact_ids' in material:
+            direct_fact_ids=(set(fact_ids) if set(fact_ids)<=set(material['direct_fact_ids']) else set())
         contextual_image=topic_policy and not direct_fact_ids
         if contextual_image:
             if not allow_topic_context:

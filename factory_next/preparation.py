@@ -132,6 +132,7 @@ class PreparationStages:
         # visual facts, additional reviews cannot make inherited information
         # or other invisible mechanisms photographically observable.
         # Save Gemini quota for the independently audited story and voice.
+        from material_first.subject_focus import shows_main_topic
         desired=required_verified_image_target(request['seconds'])
         required_facts=set(request['required_fact_ids'])
         for offset in range(0,len(candidates),4):
@@ -164,6 +165,7 @@ class PreparationStages:
             visual_coverage=required_facts & {
                 fact for photo in photos for fact in photo['supported_fact_ids']}
             if (len(photos)>=desired
+                    and (not operations.require_subject_focus or shows_main_topic(photos))
                     and len(visual_coverage)>=min(2,len(required_facts))
                     and (not getattr(self.narrative_model,'fact_owned_story',False)
                          or sufficient_fact_anchors(request['required_fact_ids'],photos))):
@@ -172,6 +174,8 @@ class PreparationStages:
                 break
         if len(photos)<max(3,minimum_shots(request['seconds'],TOPIC_POLICY)):
             raise ValueError('insufficient distinct source-related verified images')
+        if operations.require_subject_focus and not shows_main_topic(photos):
+            raise ValueError('verified corpus does not show the requested main subject')
         if getattr(self.narrative_model,'fact_owned_story',False):
             story_contract(request,evidence,photos)
         return {'assets':assets,'photos':photos}

@@ -53,11 +53,13 @@ class PhotoRepairFactInvariant(unittest.TestCase):
                         self.calls.append(key)
                         if key=="material-brief-repair:review:1":
                             self_prompt=instruction
-                            assert "Only correct photo_contexts" in self_prompt
+                            assert "Return ONLY photo_contexts" in self_prompt
+                            assert set(required_schema["properties"])=={"photo_contexts"}
                             revision=deepcopy(initial)
                             revision["photo_contexts"]["setting"]["source_mention"]=things[0]
                             revision["facts"][0]["text"]="MODEL-INVENTED HISTORICAL CLAIM"
-                            return revision,{}
+                            return {"photo_contexts":{role:{k:v for k,v in row.items() if k!="fact_ids"}
+                                for role,row in revision["photo_contexts"].items()}},{}
                         if key=="material-brief-review:2":
                             assert context["facts"][0]["text"]==facts[0]["text"]
                             return {"facts":{
@@ -75,7 +77,7 @@ class PhotoRepairFactInvariant(unittest.TestCase):
                 self.assertEqual(model.calls,["material-brief-repair:review:1","material-brief-review:2"])
                 self.assertEqual(initial,original)
 
-    def test_extra_photo_fact_associations_are_discarded(self):
+    def test_extra_photo_fact_associations_are_rejected(self):
         before={
             "facts":[{"id":"f1","text":"Fact one"},{"id":"f2","text":"Fact two"}],
             "required_fact_ids":["f1"],
@@ -86,9 +88,8 @@ class PhotoRepairFactInvariant(unittest.TestCase):
         proposed=deepcopy(before)
         proposed["photo_contexts"]["subject"]["fact_ids"]=["f1","f2"]
         proposed["facts"][0]["text"]="Invented rewrite"
-        result=preserve_facts_after_photo_repair(before,proposed)
-        self.assertEqual(result["facts"],before["facts"])
-        self.assertEqual(result["photo_contexts"]["subject"]["fact_ids"],["f1"])
+        with self.assertRaisesRegex(ValueError,"prohibited fields"):
+            preserve_facts_after_photo_repair(before,proposed)
 
     def test_facts_cannot_be_rebound_to_different_photo_context(self):
         before={"facts":[{"id":"f1","text":"Original"}],
@@ -96,7 +97,7 @@ class PhotoRepairFactInvariant(unittest.TestCase):
                 "photo_contexts":{"setting":{"fact_ids":["f1"]}}}
         changed=deepcopy(before)
         changed["photo_contexts"]["setting"]["fact_ids"]=["f2"]
-        with self.assertRaisesRegex(ValueError,"fact bindings"):
+        with self.assertRaisesRegex(ValueError,"prohibited fields"):
             preserve_facts_after_photo_repair(before,changed)
 
 

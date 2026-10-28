@@ -106,6 +106,9 @@ class ContextTests(unittest.TestCase):
                 self.assertEqual(key,'material-brief')
                 self.assertTrue(any(row['english_photo_object'] == 'RX J185635-3754'
                                     for row in context['source_catalog_references']))
+            if set(schema["properties"])=={"photo_contexts"}:
+                result={"photo_contexts":{role:{k:v for k,v in row.items() if k!="fact_ids"}
+                        for role,row in result["photo_contexts"].items()}}
             validate_json(result,schema)
             return result,{'receipt_id':key}
         ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),
@@ -184,6 +187,9 @@ class ContextTests(unittest.TestCase):
             for row in wire_rows.values():
                 row['english_photo_object']=row.pop('subject');row.pop('query')
                 if mutate_repair and key=='material-brief-repair:initial':result['facts'][0]['text']+=' invented claim'
+            if set(schema["properties"])=={"photo_contexts"}:
+                result={"photo_contexts":{role:{k:v for k,v in row.items() if k!="fact_ids"}
+                        for role,row in result["photo_contexts"].items()}}
             validate_json(result,schema)
             return result,{'receipt_id':key}
         ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),SimpleNamespace(generate=generate),None,None,documented_contexts=True)
