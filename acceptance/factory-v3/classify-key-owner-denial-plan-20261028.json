@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-classify-key-owner-denial-20261028",
+  "purpose": "Classify the Google API Keys 403 after OAuth refresh and scope were confirmed; retain only constrained error reason/domain/permission/service/consumer metadata.",
+  "credentials_to_export": [
+    "V3GeminiFreeTier20261005",
+    "8KbFC6GBZOd18bzG"
+  ],
+  "http_call_budget": {
+    "oauth_refresh": 1,
+    "key_owner_lookup": 1,
+    "total_max": 2
+  },
+  "provider_call_budget": {
+    "generation": 0,
+    "search": 0,
+    "tts": 0,
+    "media_download": 0
+  },
+  "retries": 0,
+  "mutations": 0,
+  "allowed_error_metadata": [
+    "reason",
+    "domain",
+    "permission",
+    "service",
+    "consumer"
+  ],
+  "safeguards": [
+    "No response bodies, keys, tokens, messages, email addresses, or arbitrary metadata are persisted.",
+    "Only values matching a narrow identifier allowlist are saved.",
+    "Export only the two exact credentials to mode-0600 temporary files and remove all exports.",
+    "Stop after this single key-owner request."
+  ],
+  "status": "planned"
+}
