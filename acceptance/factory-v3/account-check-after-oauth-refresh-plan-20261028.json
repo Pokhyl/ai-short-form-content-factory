@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-account-boundary-after-oauth-refresh-20261028",
+  "purpose": "Verify the exact selected Gemini key -> Google project -> billing-disabled chain after Google OAuth credential was reconnected.",
+  "observed_precondition": {
+    "oauth_credential_id": "8KbFC6GBZOd18bzG",
+    "oauth_credential_updated_at_utc": "2026-10-28T14:49:14.597Z",
+    "checked_at_utc": "2026-10-28T14:50:30Z",
+    "gemini_credential_id": "V3GeminiFreeTier20261005",
+    "gemini_credential_updated_at_utc": "2026-10-05T17:41:07.043Z"
+  },
+  "candidate_image": "factory-v3:preflight-timeouts-20261028",
+  "candidate_image_digest": "sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd",
+  "selected_model": "gemini-3.5-flash-lite",
+  "exact_credentials_to_export": [
+    "V3GeminiFreeTier20261005",
+    "8KbFC6GBZOd18bzG"
+  ],
+  "http_call_budget": {
+    "oauth_refresh": 1,
+    "key_owner_lookup": 1,
+    "project_info": 1,
+    "billing_info": 1,
+    "total_max": 4
+  },
+  "provider_call_budget": {
+    "generation": 0,
+    "search": 0,
+    "tts": 0,
+    "media_download": 0
+  },
+  "retries": 0,
+  "mutations": 0,
+  "execution_constraints": [
+    "Use a fresh diagnostic ID, runner, and output receipt; preserve all earlier diagnostic receipts.",
+    "Export only the two named credentials to temporary mode-0600 files; never print or persist credential secrets.",
+    "Capture only a restricted, sanitized provider error code on rejection; never store response bodies, tokens, or key strings.",
+    "Delete temporary credential exports after completion."
+  ],
+  "stop_conditions": [
+    "Stop after any non-200 response, transport error, malformed response, or identity mismatch.",
+    "Stop unless the key-owner lookup identifies exactly one project.",
+    "Stop unless billingInfo.projectId matches and billingEnabled is false.",
+    "Never retry a failed or ambiguous call."
+  ],
+  "status": "planned"
+}
