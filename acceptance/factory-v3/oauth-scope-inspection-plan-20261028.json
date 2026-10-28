@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-oauth-scope-inspection-20261028",
+  "purpose": "Determine whether the reconnected Google OAuth credential contains the read-only Cloud Platform scope required for the API Keys lookup.",
+  "credential_to_export": {
+    "provider": "Google OAuth",
+    "credential_id": "8KbFC6GBZOd18bzG"
+  },
+  "credential_exports": 1,
+  "external_http_calls": 0,
+  "provider_call_budget": {
+    "generation": 0,
+    "search": 0,
+    "tts": 0
+  },
+  "mutations": 0,
+  "output_allowlist": [
+    "credential_id",
+    "credential_name",
+    "updated_at_utc",
+    "oauth_token_data_present",
+    "scope_field_present",
+    "cloud_platform_read_only_scope_present",
+    "cloud_platform_scope_present"
+  ],
+  "safeguards": [
+    "Export only the exact Google OAuth credential to a temporary mode-0600 file.",
+    "Never print or persist access tokens, refresh tokens, client secrets, or any raw credential fields.",
+    "Delete the temporary export after inspection.",
+    "Do not call Google APIs."
+  ],
+  "status": "planned"
+}
