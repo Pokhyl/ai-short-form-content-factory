@@ -100,9 +100,12 @@ def call(kind, method, url, body=None, token=None):
         raise Stop("metadata_response_invalid")
     if status != 200:
         err = value.get("error", {}) if isinstance(value, dict) else {}
-        error_status = err.get("status") if isinstance(err, dict) else None
-        if isinstance(error_status, str) and re.fullmatch(r"[A-Z_]{1,100}", error_status):
-            entry["error_status"] = error_status
+        if isinstance(err, str) and re.fullmatch(r"[a-z][a-z0-9_]{1,63}", err):
+            entry["error_code"] = err
+        elif isinstance(err, dict):
+            error_status = err.get("status")
+            if isinstance(error_status, str) and re.fullmatch(r"[A-Z_]{1,100}", error_status):
+                entry["error_status"] = error_status
         raise Stop(kind + "_rejected")
     return value
 
