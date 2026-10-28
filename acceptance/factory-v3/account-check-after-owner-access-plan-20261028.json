@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-28",
+  "diagnostic_id": "v3-account-boundary-after-owner-access-20261028",
+  "purpose": "After owner grants access, verify the exact selected Gemini key -> Google project -> billingDisabled=false chain.",
+  "candidate_image": "factory-v3:preflight-timeouts-20261028",
+  "candidate_image_digest": "sha256:020fd00867bde83a993d3f035ccf3e1aaf84cd9243fc6b79e1c177118e701abd",
+  "credentials_to_export": 2,
+  "http_call_budget": {
+    "oauth_refresh": 1,
+    "key_owner_lookup": 1,
+    "project_info": 1,
+    "billing_info": 1,
+    "total_max": 4
+  },
+  "provider_call_budget": {
+    "generation": 0,
+    "search": 0,
+    "tts": 0,
+    "media_download": 0
+  },
+  "retries": 0,
+  "mutations": 0,
+  "quota": "Google API metadata limits are unknown; at most 3 GET metadata requests plus one OAuth refresh. No content-generation or billable media operations.",
+  "stop_conditions": [
+    "Stop after any non-200, transport error, malformed response, or identity mismatch.",
+    "Stop unless key owner response identifies one exact project.",
+    "Stop unless billingInfo.projectId exactly matches and billingEnabled is false.",
+    "Never retry any failed/ambiguous call; preserve a sanitized terminal receipt."
+  ],
+  "execution_constraints": [
+    "Use a fresh diagnostic ID and new output receipt; preserve v3-account-boundary-20261005.",
+    "Export only existing Gemini and Google OAuth credential records to mode-0600 temporary files; never print or persist secrets.",
+    "Delete temporary credential exports after completion."
+  ],
+  "status": "plan-only-not-executed"
+}
