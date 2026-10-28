@@ -43,5 +43,18 @@
     "Export only the two exact credential IDs above to mode-0600 temporary files; never print or persist secrets.",
     "Delete temporary credential exports after completion."
   ],
-  "status": "plan-only-not-executed"
+  "status": "executed-blocked",
+  "execution_result": {
+    "receipt": "acceptance/factory-v3/account-check-after-owner-access-20261028.json",
+    "receipt_commit": "ce229608278799aea4875e8fd8753ff36a86b541",
+    "http_calls_started": 1,
+    "terminal_call": "oauth_refresh",
+    "http_status": 400,
+    "key_owner_lookup_called": false,
+    "project_info_called": false,
+    "billing_info_called": false,
+    "generation_search_tts_calls": 0,
+    "retries": 0,
+    "stop_reason": "OAuth token refresh rejected; exact response error body was not retained."
+  }
 }
