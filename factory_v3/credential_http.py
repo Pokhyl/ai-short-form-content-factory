@@ -7,8 +7,12 @@ GATEWAY = "http://ai-short-form-n8n:5678/webhook/factory-v3-internal-provider"
 MODEL = "gemini-3.1-flash-lite"
 NARRATIVE_MODEL = "gemini-3.8-flash"
 NARRATIVE_LITE_MODEL = "gemini-3.5-flash-lite"
-NARRATIVE_MODELS = (NARRATIVE_MODEL, NARRATIVE_LITE_MODEL)
+NARRATIVE_25_MODEL = "gemini-2.5-flash-lite"
+NARRATIVE_MODELS = (NARRATIVE_MODEL, NARRATIVE_LITE_MODEL, NARRATIVE_25_MODEL)
 NARRATIVE_PROOF_MODELS = (MODEL, *NARRATIVE_MODELS)
+# The native metadata upstream node is bounded at 120s; give its caller
+# enough time to receive and normalize that terminal response.
+METADATA_CALLER_TIMEOUT_SECONDS = 130
 
 
 class CredentialHTTP:
@@ -34,10 +38,11 @@ class CredentialHTTP:
 
     def metadata(self, operation, body=None):
         if operation == "model":
-            return self._send("gemini_info", {}, 30)
+            return self._send("gemini_info", {}, METADATA_CALLER_TIMEOUT_SECONDS)
         if operation not in {"key_owner", "project", "billing"}:
             raise ValueError("unsupported read-only metadata operation")
-        return self._send("google_metadata", {"operation": operation, "body": body}, 30)
+        return self._send("google_metadata", {"operation": operation, "body": body},
+                          METADATA_CALLER_TIMEOUT_SECONDS)
 
     def request(self, method, url, body=None, headers=None, timeout=30):
         return self.request_receipt(method, url, body, headers, timeout)["body"]
@@ -64,6 +69,8 @@ class CredentialHTTP:
             provider = "gemini_narrative"
         elif parsed.hostname == "generativelanguage.googleapis.com" and parsed.path == "/v1beta/models/" + NARRATIVE_LITE_MODEL + ":generateContent" and method == "POST" and not query:
             provider = "gemini_narrative_lite"
+        elif parsed.hostname == "generativelanguage.googleapis.com" and parsed.path == "/v1beta/models/" + NARRATIVE_25_MODEL + ":generateContent" and method == "POST" and not query:
+            provider = "gemini_narrative_25"
         elif parsed.hostname == "texttospeech.googleapis.com" and parsed.path == "/v1/text:synthesize" and method == "POST" and not query:
             provider = "google_tts"
         elif parsed.hostname == "commons.wikimedia.org" and parsed.path == "/w/api.php" and method == "GET":

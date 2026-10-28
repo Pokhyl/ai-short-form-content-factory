@@ -36,7 +36,8 @@ class FakeModel:
         self.keys=[]
         self.reviews=[]
         self.prompts=[]
-    def generate(self,key,instruction,context,schema):
+    def generate(self,key,instruction,context,schema, **kwargs):
+        if kwargs: assert kwargs == {'max_tokens':16384,'thinking_level':'medium'}
         self.keys.append(key)
         self.prompts.append(instruction)
         draft=sentences_for(schema)

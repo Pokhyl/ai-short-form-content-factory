@@ -41,7 +41,8 @@ FACTS=[
 class FakeGemini:
     def __init__(self,drafts):
         self.drafts=list(drafts);self.requests=[];self.reviews=[];self.calls=object()
-    def generate(self,key,instruction,context,schema):
+    def generate(self,key,instruction,context,schema, **kwargs):
+        if kwargs: assert kwargs == {'max_tokens':16384,'thinking_level':'medium'}
         self.requests.append((key,instruction,context,schema))
         if not self.drafts:raise AssertionError('unexpected provider request')
         return deepcopy(self.drafts.pop(0)),{'cached':True}

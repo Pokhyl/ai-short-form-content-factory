@@ -22,7 +22,8 @@ class FakeGemini:
     def __init__(self,drafts):
         self.drafts=list(drafts);self.calls=object();self.keys=[];self.reviews=[]
         self.requests=[]
-    def generate(self,key,*args):
+    def generate(self,key,*args, **kwargs):
+        if kwargs: assert kwargs == {'max_tokens':16384,'thinking_level':'medium'}
         self.keys.append(key);self.requests.append(args)
         draft=self.drafts.pop(0)
         if isinstance(draft,Exception):

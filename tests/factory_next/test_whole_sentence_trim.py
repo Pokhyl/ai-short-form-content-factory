@@ -85,7 +85,8 @@ class WholeSentenceCorrectionTests(unittest.TestCase):
                 self.calls=object()
                 self.keys=[]
                 self.review_requests=[]
-            def generate(self,key,instruction,payload,expected):
+            def generate(self,key,instruction,payload,expected, **kwargs):
+                if kwargs: assert kwargs == {'max_tokens':16384,'thinking_level':'medium'}
                 self.keys.append(key)
                 self.assert_key=key
                 return deepcopy(data), {'receipt_id':'offline-test'}

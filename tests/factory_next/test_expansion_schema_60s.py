@@ -103,7 +103,8 @@ class DynamicUnderlengthSchemaTests(unittest.TestCase):
                 self.keys=[]
                 self.schemas=[]
                 self.reviews=0
-            def generate(self,key,instruction,inputs,schema):
+            def generate(self,key,instruction,inputs,schema, **kwargs):
+                if kwargs: assert kwargs == {'max_tokens':16384,'thinking_level':'medium'}
                 self.keys.append(key);self.schemas.append(deepcopy(schema))
                 if len(self.keys)==1:
                     return first_short_reply(schema),{}

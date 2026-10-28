@@ -1,0 +1,13 @@
+{
+  "diagnostic_id": "e0790f6d-9592-4130-aa2b-69a864c13c93",
+  "date": "2026-10-28",
+  "purpose": "General primary-subject contract on saved actual images; no new video acceptance",
+  "max_metadata_calls": 1,
+  "max_gemini_calls": 1,
+  "max_search_calls": 0,
+  "max_tts_calls": 0,
+  "source_job": "e577e215-034c-43b7-8959-2e842f0cf358",
+  "stop_on_any_provider_failure": true,
+  "automatic_retries": 0,
+  "production_deployment": false
+}
