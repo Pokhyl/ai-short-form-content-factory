@@ -25,6 +25,9 @@ class DurableProducer:
             if mode not in {'metadata', 'gemini'}:
                 raise ValueError('unsupported visual validation mode')
             self.operations.visual_validation_mode = mode
+            # Explicit 503 provider rejections during preparation are definitive,
+            # so record them as failed instead of leaving an ambiguous started call.
+            self.operations.gemini.allow_model_unavailable = True
             frozen = Producer(self.root, self.operations).prepare(
                 request['topic'], request['language'], request['seconds'])
             self.ledger.complete(request_id, frozen)
