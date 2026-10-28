@@ -36,6 +36,11 @@
       "standard_free_tier_proven": false
     },
     "live_billing_metadata_probe": "HTTP 502; no positive billing metadata result",
+    "post_restart_execution_state": {
+      "running": 1,
+      "execution_id": 14290,
+      "description": "read-only billing metadata probe; no generation call"
+    },
     "model_25_generation_probe": "not run; model-specific free-tier proof is missing",
     "paid_fallback": false
   },
