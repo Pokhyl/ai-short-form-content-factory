@@ -43,5 +43,33 @@
     "Stop unless billingInfo.projectId matches and billingEnabled is false.",
     "Never retry a failed or ambiguous call."
   ],
-  "status": "planned"
+  "status": "executed-blocked",
+  "execution_result": {
+    "receipt": "acceptance/factory-v3/account-check-after-oauth-refresh-20261028.json",
+    "receipt_commit": "2cb15aebce21f118a18becdd8f98d97511c08217",
+    "http_calls_started": 2,
+    "oauth_refresh_status": 200,
+    "key_owner_lookup_status": 403,
+    "key_owner_lookup_error_status": "PERMISSION_DENIED",
+    "project_info_called": false,
+    "billing_info_called": false,
+    "generation_search_tts_calls": 0,
+    "retries": 0,
+    "billing_mutations": 0,
+    "temporary_credential_exports_removed": true,
+    "stop_reason": "OAuth refreshed successfully; the connected Google identity lacks access for the API key owner lookup, or the token lacks the required Cloud Platform scope. No further calls made."
+  },
+  "next_access_requirement": {
+    "iam_permission": "apikeys.keys.lookup",
+    "accepted_roles": [
+      "roles/serviceusage.apiKeysViewer",
+      "roles/viewer"
+    ],
+    "oauth_scope": "https://www.googleapis.com/auth/cloud-platform.read-only or https://www.googleapis.com/auth/cloud-platform",
+    "note": "Official Google documentation lists these requirements; the 403 alone does not distinguish missing IAM permission from insufficient OAuth scope.",
+    "sources": [
+      "https://docs.cloud.google.com/api-keys/docs/reference/rest/v2/keys/lookupKey",
+      "https://docs.cloud.google.com/api-keys/docs/access-control"
+    ]
+  }
 }
