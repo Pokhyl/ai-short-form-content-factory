@@ -56,7 +56,7 @@ class NextBudgetGate:
 def narrative_model_for(runtime, producer):
     """An opt-in private proof binds the additional fixed free-tier model."""
     from copy import copy
-    from factory_v3.credential_http import NARRATIVE_PROOF_MODELS, NARRATIVE_LITE_MODEL, NARRATIVE_25_MODEL
+    from factory_v3.credential_http import NARRATIVE_PROOF_MODELS, NARRATIVE_LITE_MODEL
     settings=getattr(runtime,'settings',{})
     proof=settings.get('factory_next_narrative_proof')
     if proof is None:
@@ -74,11 +74,10 @@ def narrative_model_for(runtime, producer):
     model.model=proof['model']
     model.require_fact_coverage=True
     model.fact_owned_story=True
-    # Bind the evaluated reasoning mode to the explicitly selected role.
+    # The lite semantic evaluation used high reasoning. Provider defaults did
+    # not exercise that verified mode; bind it to this explicitly selected role.
     if model.model == NARRATIVE_LITE_MODEL:
         model.default_thinking_level='high'
-    elif model.model == NARRATIVE_25_MODEL:
-        model.default_thinking_level='medium'
     return model
 
 def connected_adapters(runtime, job_id, *, preflight_gate=None):
