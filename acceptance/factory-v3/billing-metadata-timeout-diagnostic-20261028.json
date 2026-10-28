@@ -27,17 +27,21 @@
   "handling": {
     "terminal": true,
     "repeat_allowed": false,
-    "reason": "The single caller request produced normalized HTTP 502 in 3.47s. The corresponding n8n execution 14291 remained running for 453s, far beyond the configured 120s node timeout. The caller timeout mismatch is not sufficient to explain the failure; gateway execution/HTTP-node timeout enforcement or response handling is the blocker. A wrapper attribute-name bug prevented retaining normalized gateway error fields. No retry was made."
+    "reason": "The single caller request returned normalized HTTP 502 in 3.47s. The matching n8n execution was observed running for 453s with the gateway's google_metadata node configured for 120000ms and retries disabled. A later read found its execution_entity and execution_data rows absent, so the upstream outcome cannot be recovered. Caller timeout alignment did not resolve the issue. The wrapper also failed while formatting error metadata; no retry was made."
   },
-  "next_step": "Diagnose why the gateway HTTP Request execution remains active past its configured timeout and why the caller receives an early 502. Use saved execution data and workflow code only; do not repeat any provider request until a new bounded plan is committed.",
+  "next_step": "Diagnose why one gateway request returns HTTP 502 while its execution is long-running and later disappears. Use code/config and safe health checks only. Do not make another provider request until new bounded plan is committed.",
   "gateway_execution": {
     "id": "14291",
     "workflow": "VIDEO-V3-Credential-Gateway",
-    "status": "running",
+    "status": "row_and_execution_data_no_longer_present_at_later_read",
     "elapsed_at_last_read_seconds": 453,
     "native_node": "Upstream google_metadata",
     "native_node_timeout_ms": 120000,
     "native_retry_on_fail": false,
-    "execution_data": "no completed node runData recorded; execution remains active"
+    "execution_data": "no completed node runData recorded; execution remains active",
+    "node_execution_stack_at_last_read": [
+      "Authenticated provider request"
+    ],
+    "later_read": "execution_entity and execution_data rows were absent; final upstream node response could not be recovered"
   }
 }
