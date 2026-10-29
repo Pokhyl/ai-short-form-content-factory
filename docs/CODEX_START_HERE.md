@@ -1,3 +1,9 @@
+## Current checkpoint — 2026-10-29
+
+The general topic-to-MP4 factory remains incomplete. Live production has not been changed in this continuation. Candidate c93bff5 passed its three packaged test suites, but actual diagnostic e0790f6d failed its positive controls: the provider answered HTTP 200, rejected the off-topic foreground and accepted the main subject, while incorrectly transferring atmospheric qualifiers to a separate component role. It also labeled a visible outcome as direct evidence for a complete causal claim. This is a semantic failure, not a provider outage; do not deploy c93bff5 or reinterpret this diagnostic as passed.
+
+Candidate cd05a96 clarifies component context, per-target qualification and whole-claim visibility without removing admission gates, increasing call budgets or adding retries. The exact previous receipt is retained in tests/factory_next/fixtures/actual-focus-e079.json. Thirteen focused checks pass. Exact package verification is running in /opt/factory-completion-20261028/package-cd05a96-verified.json. The initial test invocation failed discovery before running tests; the corrected invocation enumerates namespace test modules. One new bounded semantic diagnostic db2687b8-fd0e-466c-b659-2ebaa59e76fb is planned in acceptance/factory-next/context-focus-plan-20261029.json (one metadata, at most one Gemini, zero search/TTS); inspect context-focus-started/result/receipts before any execution. No new public job yet. project_ready=false.
+
 ## Current implementation checkpoint — 2026-10-28
 
 Goal remains a general topic-to-MP4 factory; individual videos are regression cases, not readiness. Current public Studio image sha256:6a74f869261cdca81509c4e25364bb24299edb06b4d9d5e649b49067c9565fbc has differing image-label/runtime revision metadata. Exact deployed source was captured and hashed in acceptance/factory-next/live-source-baseline-20261028.json before edits; no production changes.
