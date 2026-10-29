@@ -1,0 +1,190 @@
+{
+  "status": 200,
+  "gateway_execution_id": "14330",
+  "result": {
+    "photos": [
+      {
+        "accepted": false,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "unrelated",
+          "visible_subject": "Festival dancers in the rain",
+          "connection": "The image depicts a cultural street festival performance and is unrelated to the optical physics of rainbow formation."
+        },
+        "subject_fully_visible": false,
+        "visible_description": "Multiple performers in colorful traditional costumes and masks dancing during a rainy street festival.",
+        "visible_fact_details": [],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v1",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Masskara Festival dancers",
+          "topic_connection": "None",
+          "relevant_content_is_primary": false,
+          "unrelated_subject_dominates": true
+        },
+        "asset_id": "wikimedia:116034921"
+      },
+      {
+        "accepted": false,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "unrelated",
+          "visible_subject": "Water droplets on a glass pane",
+          "connection": "Water droplets on a window glass do not constitute atmospheric water droplets floating in the air forming a rainbow."
+        },
+        "subject_fully_visible": false,
+        "visible_description": "Close-up view of raindrops clinging to a glass surface against a neutral grey background.",
+        "visible_fact_details": [],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v1",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Water droplets on glass",
+          "topic_connection": "None",
+          "relevant_content_is_primary": false,
+          "unrelated_subject_dominates": true
+        },
+        "asset_id": "pexels:9850703"
+      },
+      {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "Rainbow spectrum in the sky",
+          "connection": "Displays the visible rainbow resulting from optical phenomena and sunlight interacting with atmospheric conditions."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A vivid rainbow spectrum appearing across clouds in the sky.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f3",
+            "detail": "A visible rainbow is displayed in the sky.",
+            "relationship": "direct_observation"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v1",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v2",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Rainbow spectrum visible across the clouds",
+            "subject_qualifications_match": true
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Rainbow spectrum",
+          "topic_connection": "Shows the visible outcome of rainbow formation",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "asset_id": "pixabay:7381976"
+      },
+      {
+        "accepted": false,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "unrelated",
+          "visible_subject": "Water droplet on a leaf",
+          "connection": "A water droplet resting on a plant leaf is not part of the atmospheric water droplets responsible for creating a rainbow."
+        },
+        "subject_fully_visible": false,
+        "visible_description": "Close-up of a water droplet resting on the surface of a green leaf.",
+        "visible_fact_details": [],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v1",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Water droplet on a leaf",
+          "topic_connection": "None",
+          "relevant_content_is_primary": false,
+          "unrelated_subject_dominates": true
+        },
+        "asset_id": "wikimedia:32200400"
+      }
+    ]
+  }
+}

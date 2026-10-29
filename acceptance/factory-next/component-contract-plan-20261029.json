@@ -1,0 +1,19 @@
+{
+  "diagnostic_id": "c8db3735-867a-4d97-8694-cf0c69de1d5d",
+  "date": "2026-10-29",
+  "purpose": "Validate structurally distinct documented-component context after previous enum admitted only direct parts; unmatched empty details preserve matching roles; no changes to source/target gates",
+  "max_metadata_calls": 1,
+  "max_gemini_calls": 1,
+  "max_search_calls": 0,
+  "max_tts_calls": 0,
+  "automatic_retries": 0,
+  "source_job": "e577e215-034c-43b7-8959-2e842f0cf358",
+  "previous_diagnostic": "db2687b8-fd0e-466c-b659-2ebaa59e76fb",
+  "acceptance": [
+    "unrelated foreground rejected",
+    "actual main subject accepted",
+    "at least one component accepted as context with a qualified own-target match",
+    "hidden causal claims never classified direct observation"
+  ],
+  "production_deployment": false
+}

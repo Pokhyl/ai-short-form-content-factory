@@ -91,6 +91,26 @@ class SubjectFocusTests(TestCase):
         self.assertFalse(shows_main_topic(parts))
         self.assertTrue(shows_main_topic(parts+[{'inspection':{'topic_relation':{'kind':'direct_subject'}}}]))
 
+    def test_component_context_is_explicit_and_cannot_claim_observation(self):
+        from material_first.subject_focus import COMPONENT_CONTEXT,shows_main_topic
+        result=response();result['medium']='photograph';result['illustration_type']='not_applicable'
+        result['topic_relation']['kind']=COMPONENT_CONTEXT
+        result['subject_focus']=self.receipt()['subject_focus']
+        for d in result['visible_fact_details']:d['relationship']='topic_context'
+        validate_json(result,self.ops._inspection_schema(self.evidence,None))
+        receipt=self.ops._inspection_receipt(self.asset,self.evidence,result,{'receipt_id':'controlled'})
+        photo=inspected_material(self.asset,receipt,self.evidence,validate_evidence(self.evidence),'gemini_scientific')
+        self.assertIsNotNone(photo)
+        self.assertEqual(photo['direct_fact_ids'],[])
+        self.assertFalse(shows_main_topic([photo]))
+        result['visible_fact_details'][0]['relationship']='direct_observation'
+        receipt=self.ops._inspection_receipt(self.asset,self.evidence,result,{'receipt_id':'controlled'})
+        self.assertFalse(receipt['accepted'])
+        receipt['accepted']=True
+        self.assertIsNone(inspected_material(self.asset,receipt,self.evidence,validate_evidence(self.evidence),'gemini_scientific'))
+        self.ops.require_subject_focus=False
+        with self.assertRaises(ValueError):validate_json(result,self.ops._inspection_schema(self.evidence,None))
+
     def test_actual_failed_probe_is_not_semantic_acceptance(self):
         import json
         from pathlib import Path
@@ -108,3 +128,29 @@ class SubjectFocusTests(TestCase):
         receipt['visual_targets_sha256']=digest(targets)
         asset={'visual_targets':targets,'visual_qualification_protocol':'qualified-target-v1'}
         self.assertEqual(matched_targets(asset,receipt),{})
+
+    def test_actual_empty_nonmatches_preserve_valid_target_without_inventing_matches(self):
+        import json
+        from pathlib import Path
+        from material_first.targets import matched_targets
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-focus-db268.json').read_text())
+        targets=[{'id':f'v{i}','fact_ids':[f'f{i+1}'],'must_show':f'Role {i}',
+                  'must_not_show':'Unrelated objects','query':f'Role {i}'} for i in range(3)]
+        evidence={'facts':[{'id':f'f{i}'} for i in (1,2,3)]}
+        schema=self.ops._inspection_schema(evidence,targets,True)
+        receipts={}
+        for original in saved['result']['photos']:
+            row=deepcopy(original);identity=row.pop('asset_id')
+            validate_json(row,schema)
+            asset={**self.asset,'id':identity,'visual_targets':targets,
+                   'visual_qualification_protocol':'qualified-target-v1'}
+            receipt=self.ops._inspection_receipt(asset,evidence,row,{'receipt_id':'saved'})
+            receipts[identity]=(asset,receipt)
+        asset,receipt=receipts['pixabay:7381976']
+        self.assertEqual(set(matched_targets(asset,receipt)),{'v2'})
+        receipt['target_matches'][2]['visible_detail']=''
+        self.assertEqual(matched_targets(asset,receipt),{})
+        for identity in ('wikimedia:116034921','pexels:9850703','wikimedia:32200400'):
+            asset,receipt=receipts[identity]
+            self.assertFalse(receipt['accepted'])
+            self.assertEqual(matched_targets(asset,receipt),{})

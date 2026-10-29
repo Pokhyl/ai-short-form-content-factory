@@ -379,7 +379,10 @@ class Operations:
         if targets is not None:
             schema['properties']['target_matches'] = array(obj({
                 'target_id': string(t['id'] for t in targets), 'matches': BOOL,
-                'detail_prominent': BOOL, 'visible_detail': string()}), len(targets), len(targets))
+                'detail_prominent': BOOL, 'visible_detail': {
+                    'type': 'string',
+                    'description': 'Describe the visible matching detail; may be empty for a non-match. '
+                                   'An admitted match requires a nonempty concrete detail.'}}), len(targets), len(targets))
             schema['required'].append('target_matches')
             if qualified:
                 row = schema['properties']['target_matches']['items']
@@ -390,11 +393,18 @@ class Operations:
                 ['scientific_diagram', 'structural_illustration', 'artwork', 'not_applicable'])
             schema['required'].append('illustration_type')
         if getattr(self,'require_subject_focus',False):
-            from .subject_focus import schema as focus_schema
+            from .subject_focus import schema as focus_schema, COMPONENT_CONTEXT
+            schema['properties']['topic_relation']['properties']['kind']['enum'].append(COMPONENT_CONTEXT)
             schema['properties']['subject_focus']=focus_schema()
             schema['required'].append('subject_focus')
             detail=schema['properties']['visible_fact_details']['items']
             detail['properties']['relationship']=string(['direct_observation','topic_context'])
+            detail['properties']['relationship']['description']=(
+                'Classify visibility of the ENTIRE source fact identified by fact_id, not just '
+                'your detail sentence. Use topic_context if any causal link or hidden process '
+                'in that fact is not visible. A lit lamp shows light, not the complete claim '
+                'that electric current heats a filament to produce it. A direct_subject image '
+                'can still be topic_context for a causal fact. documented_component is always topic_context.')
             detail['required'].append('relationship')
         return schema
 
@@ -413,15 +423,20 @@ class Operations:
                  and result['is_real_material'] is True)
         result['inspection_protocol'] = ('source-illustration-v1' if diagram
                                           else 'topic-specific-v1')
+        from .subject_focus import COMPONENT_CONTEXT
+        component_context=(getattr(self,'require_subject_focus',False)
+                           and relation['kind']==COMPONENT_CONTEXT)
         result['accepted'] = (result['accepted'] and result['subject_fully_visible'] and bool(details)
             and (result['medium'] in {'photograph','observational_image'} or diagram)
-            and relation['kind'] in {'direct_subject','direct_part_or_stage'}
+            and (relation['kind'] in {'direct_subject','direct_part_or_stage'} or component_context)
             and bool(relation['visible_subject'].strip()) and bool(relation['connection'].strip()))
         if getattr(self,'require_subject_focus',False):
             from .subject_focus import accepted, POLICY
             result['subject_focus_policy']=POLICY
             result['accepted']=(result['accepted'] and accepted(result.get('subject_focus'))
                 and all(d.get('relationship') in ('direct_observation','topic_context') for d in details))
+            if component_context and any(d.get('relationship')!='topic_context' for d in details):
+                result['accepted']=False
             result['direct_fact_ids']=[d['fact_id'] for d in details if d.get('relationship')=='direct_observation']
         if asset.get('visual_targets') is not None:
             result['visual_targets_sha256'] = digest(asset['visual_targets'])

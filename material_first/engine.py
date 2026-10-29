@@ -86,7 +86,7 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
             or not receipt.get("receipt_id") or not receipt.get("model")
             or receipt.get("accepted") is not True or receipt.get("is_real_material") is not True):
         return None
-    from .subject_focus import accepted as focus_accepted, POLICY as FOCUS_POLICY
+    from .subject_focus import accepted as focus_accepted, POLICY as FOCUS_POLICY, COMPONENT_CONTEXT
     if asset.get('subject_focus_policy') == FOCUS_POLICY:
         if receipt.get('subject_focus_policy') != FOCUS_POLICY or not focus_accepted(receipt.get('subject_focus')):
             return None
@@ -112,8 +112,10 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
             return None
     if receipt.get('inspection_protocol') in ('topic-specific-v1','source-illustration-v1'):
         relation = receipt.get('topic_relation', {})
+        component_context=(asset.get('subject_focus_policy')==FOCUS_POLICY
+                           and relation.get('kind')==COMPONENT_CONTEXT)
         if (not source_illustration and receipt.get('medium') not in {'photograph','observational_image'}
-            or relation.get('kind') not in {'direct_subject','direct_part_or_stage'}
+            or (relation.get('kind') not in {'direct_subject','direct_part_or_stage'} and not component_context)
             or not str(relation.get('visible_subject','')).strip() or not str(relation.get('connection','')).strip()):
             return None
     target_matches = matched_targets(asset, receipt)
@@ -128,6 +130,8 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
         if not details or any(d.get('relationship') not in ('direct_observation','topic_context') for d in details):
             return None
         direct=[d['fact_id'] for d in details if d['relationship']=='direct_observation']
+        if receipt.get('topic_relation',{}).get('kind')==COMPONENT_CONTEXT and direct:
+            return None
         if receipt.get('direct_fact_ids')!=direct or not set(direct)<=set(support):
             return None
         result['direct_fact_ids']=direct
