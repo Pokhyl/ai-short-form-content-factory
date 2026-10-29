@@ -1,3 +1,9 @@
+## Live checkpoint — authorized bounded retries deployed, 2026-10-29
+
+LIVE0156a42cdb0fbecc48db2f2ac335f577c32a239c / image483d20f6... has the owner-approved explicit-503-two-v1 policy for NEW jobs only: two delayed same-request/model retries total,60/180seconds, within unchanged Gemini budgets. SQL lock enforces job-wide cap; started/unknown/timeout calls cannot resend.616 exact-image tests and isolated SQL assertions passed. All69runtime source hashes match. Publichealth200/gateway403. Database rows, workflows, settings, othercontainers and old jobfiles preserved. Previous container retained. See acceptance/factory-next/bounded-retry-deployed-20261029.json.
+
+ONE public normal RU45 job c66597b7-99cd-48e6-b9fd-dc516fb5f4a6 accepted201, topic «Почему лёд плавает в воде?». Last observed running/research. Follow this exact job; do not duplicate submission. VPS /opt/factory-completion-20261028/retry-normal-submission.json. project_ready=false until real MP4 and audit.
+
 ## Authorized update — 2026-10-29
 
 Owner explicitly approved at most TWO delayed retries per NEW job after proven Gemini503/UNAVAILABLE, same model and exact request, within unchanged call budgets. No timeout/unknown retries or historical job resumes. Candidate implementation in progress; live remains b4922e0 until package/SQL verification and protected rollout. This supersedes older no-retry/pending-approval notes below. project_ready=false.

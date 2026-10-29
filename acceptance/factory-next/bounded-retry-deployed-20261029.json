@@ -1,0 +1,74 @@
+{
+  "package-0156a42.json": {
+    "status": "passed",
+    "source_revision": "0156a42cdb0fbecc48db2f2ac335f577c32a239c",
+    "image_tag": "factory-v3:bounded-retry-0156a42",
+    "image_id": "sha256:483d20f6ff09da26c7840e72c99bb08253d1e469b2e4890ea99f07f2532a2af3",
+    "tests": {
+      "factory_next": 0,
+      "factory_v3": 0,
+      "material_first": 0
+    }
+  },
+  "retry-sql-result.json": {
+    "status": "passed",
+    "source_revision": "0156a42cdb0fbecc48db2f2ac335f577c32a239c",
+    "test_fix": "parenthesized CASE expression only",
+    "exit_code": 0
+  },
+  "retry-rollout-result.json": {
+    "source_revision": "0156a42cdb0fbecc48db2f2ac335f577c32a239c",
+    "image_id": "sha256:483d20f6ff09da26c7840e72c99bb08253d1e469b2e4890ea99f07f2532a2af3",
+    "previous_container": "factory-next-studio-v9-before-bounded-retry-20261029",
+    "db_equal": true,
+    "workflows_equal": true,
+    "other_containers_equal": true,
+    "settings_equal": true,
+    "job_files_equal": true,
+    "readiness_pending": true
+  },
+  "retry-readiness.json": {
+    "revision": "0156a42cdb0fbecc48db2f2ac335f577c32a239c",
+    "gateway": 403,
+    "source_check": {
+      "source_files": 69,
+      "mismatches": []
+    },
+    "public_health_status": 200,
+    "image_id": "sha256:483d20f6ff09da26c7840e72c99bb08253d1e469b2e4890ea99f07f2532a2af3",
+    "ready": true
+  },
+  "retry-normal-submission.json": {
+    "submitted_once": true,
+    "http_status": 201,
+    "body": {
+      "id": "c66597b7-99cd-48e6-b9fd-dc516fb5f4a6",
+      "status": "queued"
+    }
+  },
+  "job": {
+    "id": "c66597b7-99cd-48e6-b9fd-dc516fb5f4a6",
+    "request": {
+      "topic": "Почему лёд плавает в воде?",
+      "language": "ru",
+      "seconds": 45
+    },
+    "status": "running",
+    "eligible_after": null,
+    "next_stage": "research",
+    "completed_stages": [],
+    "error_type": null,
+    "failure_reason": null,
+    "failure_details": null,
+    "retry_at": null,
+    "script": "",
+    "scenes": [],
+    "sources": [],
+    "photo_count": 0,
+    "voice_duration_ms": null,
+    "machine_pass": false,
+    "video_url": null,
+    "video_sha256": null,
+    "source_revision": "0156a42cdb0fbecc48db2f2ac335f577c32a239c"
+  }
+}
