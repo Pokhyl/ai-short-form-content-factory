@@ -82,6 +82,7 @@ class PreparationStages:
                  'fact_scope_policy':'duration-scoped-facts-v1',
                  'subject_focus_policy':'primary-subject-v1',
                  'review_reference_policy':'scene-ids-v1',
+                 'voice_length_policy':'measured-midpoint-v1',
                  'visual_entailment_policy':'independent-visual-entailment-v1'}
         # Published scientific diagrams are legitimate evidence-backed visuals
         # for unphotographable subjects. This opt-in is Factory Next only.
@@ -401,7 +402,8 @@ class PreparationStages:
         photos=context['outputs']['materials']['photos']
         original=context['outputs']['story']
         count=len(original['scenes'])
-        window=revision_length_window(original['script'],measured_ms,request['seconds'])
+        window=revision_length_window(original['script'],measured_ms,request['seconds'],
+            **({'centered':True} if request.get('voice_length_policy')=='measured-midpoint-v1' else {}))
         # Always rephrase whole natural sentences, whether measured audio is
         # too long or too short. Extractive word deletion has produced
         # ungrammatical fragments in real UK60 narration ("Це початком...").
@@ -549,7 +551,8 @@ class PreparationStages:
         photos=context['outputs']['materials']['photos']
         original=context['outputs']['story']
         scenes=allocate_scene_facts(original['scenes'])
-        window=revision_length_window(original['script'],measured_ms,request['seconds'])
+        window=revision_length_window(original['script'],measured_ms,request['seconds'],
+            **({'centered':True} if request.get('voice_length_policy')=='measured-midpoint-v1' else {}))
         model=copy(self.narrative_model or self.operations.gemini)
         model.calls=VoiceRevisionCalls(model.calls,
                          attempt=context.get('_voice_correction_round',2))

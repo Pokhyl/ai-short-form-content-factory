@@ -42,7 +42,7 @@ def require_reviewed_revision(original, replacement):
     return replacement
 
 
-def revision_length_window(script, measured_ms, seconds):
+def revision_length_window(script, measured_ms, seconds, *, centered=False):
     """Bound a draft *before* a metered voice attempt; audio remains authoritative.
 
     Word count alone did not protect the real UK45 run: a 91-word hint
@@ -54,6 +54,24 @@ def revision_length_window(script, measured_ms, seconds):
     characters=round(len(script)*target_ms/measured_ms)
     words_slack=max(4,round(words*0.06))
     chars_slack=max(25,round(characters*0.08))
+    if centered:
+        # The accepted audio interval is [target-2100ms, target]. Aim at its
+        # midpoint, not its upper edge. An 8% character tolerance previously
+        # admitted a LONGER draft after a 45096ms recording exceeded 45s.
+        target_ms=seconds*1000-1050
+        characters=round(len(script)*target_ms/measured_ms)
+        words=max(1,round(len(script.split())*target_ms/measured_ms))
+        words_slack=max(3,round(words*.06))
+        chars_slack=max(1,math.floor(len(script)*450/measured_ms))
+        low=max(1,characters-chars_slack)
+        high=characters+chars_slack
+        if measured_ms>seconds*1000:
+            high=min(high,len(script)-1)
+        elif measured_ms<seconds*1000-2100:
+            low=max(low,len(script)+1)
+        return {'target_words':words,'min_words':max(1,words-words_slack),
+                'max_words':words+words_slack,'target_characters':characters,
+                'min_characters':low,'max_characters':high}
     return {'target_words':words,'min_words':max(1,words-words_slack),
             'max_words':words+words_slack,
             'target_characters':characters,
