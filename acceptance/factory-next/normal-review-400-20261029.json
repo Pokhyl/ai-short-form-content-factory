@@ -1,0 +1,27 @@
+{
+  "job": "279615cb-cfba-4aca-b2a9-9a0dd25a4e11",
+  "status": "needs_attention",
+  "stage": "voice",
+  "completed_stages": [
+    "research",
+    "materials",
+    "story"
+  ],
+  "verified_images": 10,
+  "tts_attempts": 1,
+  "first_tts_duration_ms": 39336,
+  "failed_operation": "next-voice-correction:2:script-review",
+  "provider": "gemini-3.5-flash-lite",
+  "http_status": 400,
+  "error_status": "INVALID_ARGUMENT",
+  "gateway_execution_id": "14358",
+  "request_hash": "a42a76a74e5954158c6c5c78e3deb382aceae1ee949150666b9b903664d85b58",
+  "exact_request_reconstructed": true,
+  "new_provider_calls_for_reconstruction": 0,
+  "schema_bytes_ascii_json": 18609,
+  "enum_characters": 2756,
+  "longest_enum_characters": 241,
+  "suspected_cause": "Long narration text repeated as structured-output enum values; not confirmed by generic provider error",
+  "documentation": "https://ai.google.dev/gemini-api/docs/structured-output",
+  "project_ready": false
+}
