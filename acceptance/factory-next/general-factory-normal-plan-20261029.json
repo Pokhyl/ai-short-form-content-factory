@@ -1,6 +1,6 @@
 {
   "date": "2026-10-29",
-  "candidate_revision": "b49aba84eac0e0edfe3ac81c3dbac84adc38ecc0",
+  "candidate_revision": "bb1b2b5b8243dd0f40190323ee2c1d592a8edf47",
   "request": {
     "topic": "Почему лёд плавает в воде?",
     "language": "ru",
@@ -10,7 +10,7 @@
   "automatic_retries": 0,
   "preconditions": [
     "all packaged suites pass",
-    "independent visual entailment diagnostic 424cf8b0 passes with actual receipts inspected",
+    "visibility-only diagnostic 3949cbf1 passes all declared controls with actual receipts inspected",
     "protected rollout and public readiness verified"
   ],
   "purpose": "Normal public topic-to-MP4 run on a different scientific topic; one case does not establish universal reliability",
