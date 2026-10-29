@@ -79,6 +79,7 @@ class PreparationStages:
                  'visual_validation_mode':'gemini',
                  'fact_scope_policy':'duration-scoped-facts-v1',
                  'subject_focus_policy':'primary-subject-v1',
+                 'review_reference_policy':'scene-ids-v1',
                  'visual_entailment_policy':'independent-visual-entailment-v1'}
         # Published scientific diagrams are legitimate evidence-backed visuals
         # for unphotographable subjects. This opt-in is Factory Next only.

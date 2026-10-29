@@ -1,0 +1,704 @@
+{
+  "request": {
+    "topic": "Почему лёд плавает в воде?",
+    "language": "ru",
+    "seconds": 45,
+    "presentation_policy": "whole-photo-topic-v3",
+    "visual_validation_mode": "gemini",
+    "fact_scope_policy": "duration-scoped-facts-v1",
+    "subject_focus_policy": "primary-subject-v1",
+    "visual_entailment_policy": "independent-visual-entailment-v1",
+    "required_fact_ids": [
+      "f1",
+      "f2",
+      "f3"
+    ],
+    "evidence": {
+      "sources": [
+        {
+          "id": "source-1",
+          "url": "https://physics42.ru/blog/pochemu-lyed-plavaet-v-vode-fizika-plotnosti/",
+          "title": "Почему лёд плавает в воде: физика плотности - physics42",
+          "text": "Почему лёд плавает в воде: физика плотности Почему лёд плавает в воде: физика плотности Если бросить кусок льда в стакан с водой, он не тонет, а остаётся на поверхности. Это кажется странным: ведь лёд — та же вода, только замёрзшая. Почему твёрдое вещество не тонет в своей же жидкости? Что такое плотность Плотность показывает, сколько массы содержится в одном и том же объёме вещества. Проще говоря, насколько «плотно упакованы» молекулы. высокая плотность → вещество тяжелее при одинаковом объёме; низкая плотность → легче при том же объёме. Именно плотность определяет, будет предмет плавать или тонуть. Почему лёд легче воды Когда вода охлаждается и превращается в лёд, её молекулы выстраиваются в жёсткую кристаллическую решётку. В этой решётке между молекулами остаётся больше пустого пространства. Из-за этого: объём увеличивается, масса остаётся той же, а плотность уменьшается. Лёд становится менее плотным, чем жидкая вода, поэтому и всплывает. Редкое свойство воды Большинство веществ ведут себя наоборот: в твёрдом состоянии они плотнее и тонут в своей жидкости. Вода — редкое исключение. Это свойство играет огромную роль в природе: лёд образуется сверху, а не на дне водоёмов; подо льдом остаётся жидкая вода; рыбы и другие организмы могут пережить зиму. Если бы лёд тонул, многие реки и озёра промерзали бы до дна. Архимедова сила в действии Когда лёд плавает, на него действует выталкивающая сила, равная весу вытесненной воды. Пока эта сила уравновешивает вес льда, он остаётся на поверхности. Поэтому плавают: корабли из стали, айсберги, и даже человек в воде. Физика, которая поддерживает жизнь Обычный кусочек льда в стакане — это пример физического закона, от которого зависит жизнь на планете. Физика не всегда заметна, но именно она определяет, каким будет мир вокруг нас. Блог Почему мы не чувствуем, что Земля вращается? Почему лёд плавает в воде: физика плотности Почему мы чувствуем вес: простая физика силы тяжести Туннельный эффект — когда частицы проходят сквозь невозможное Самые необычные факты из мира физики Физика вокруг нас: как работает мир, который мы не замечаем Что такое физика и зачем она нам?",
+          "sha256": "5fd8008aeb36886da59e3be088af1bcafbcb5adeac16b04f82a7231d91379ac3",
+          "fetch_provenance": {
+            "usable": true,
+            "status": 200,
+            "headers": {
+              "date": "Thu, 29 Oct 2026 08:21:23 GMT",
+              "content-type": "text/html; charset=UTF-8",
+              "cache-control": "no-store, no-cache, must-revalidate"
+            },
+            "body_sha256": "15d756782901b53cdb116960908dfe463a3aa1ea7a920d99675c2ae4711ac343",
+            "sha256": "5fd8008aeb36886da59e3be088af1bcafbcb5adeac16b04f82a7231d91379ac3"
+          }
+        },
+        {
+          "id": "source-2",
+          "url": "https://www.techinsider.ru/science/600233-anomaliya-plotnosti-pochemu-led-ne-tonet-v-stakane-s-vodoy/",
+          "title": "Почему лед не тонет в воде? - TechInsider",
+          "text": "Почему лед плавает по поверхности воды vk 373 поиск Новости НаукаОружиеТехнологииАвтомобилиГаджетыРедакцияАдреналинСделай самИскусствоНовости партнёров Блоги Видео Тесты Это интересно Наука ФизикаВеществаАстрономияЗемляБиологияЧеловекГуманитарные наукиМатематикаАрхео и палеоИскусственный интеллект Технологии РоботыКосмосТранспортЭнергетикаПромышленностьСтроительствоИскусственный интеллектIT/Игры Сделай сам Автомобили МотоциклыЛегковыеГрузовыеАвтобусыСпециальная техника Гаджеты Мобильные устройстваКомпьютерыБытовая электроникаНеобычные вещиКухня и ваннаяЧасы Оружие Адреналин СкоростьЭкстремальный спортБоевые искусства Искусство ЭкспонатПромдизайнКиноМузыкаКнигиПрочее История Вопросы и ответы Биографии Лекторий ТехИнсайдера Спецпроекты Контакты Правовая информация Правила сообщества Политика конфиденциальности Теги: Нетленка Физика Вода Химия Gallo images Аккуратно сложенные предметы всегда занимают меньше места — это принцип, который работает и в шкафу с вещами, и в капле вещества. Атомы и молекулы при переходе в твердую фазу выстраиваются в упорядоченные структуры — кристаллические решетки. Вещество становится более плотным и тонет в собственной жидкой фазе. Почему тогда лед плавает по поверхности воды? Почему при замерзании вода расширяется, а ее плотность уменьшается, но при более низких температурах начинает все же возрастать? РЕКЛАМА – ПРОДОЛЖЕНИЕ НИЖЕ В момент перехода из одной фазы в другую вещество находится в состоянии, когда две фазы неразличимы. Это состояние описывается конкретными значениями температуры и давления и называется критической точкой. Свойства вещества в этих условиях могут быть самыми необычными и проявляться даже в тех случаях, когда значение температуры и давления довольно далеки от критической точки. В 1992 году физики предположили, что если охладить воду до температур ниже ее точки замерзания, но не дать ей превратиться в лед, увеличивая давление, можно наблюдать две различные фазы жидкой воды. Ученым частично удалось реализовать свою идею на практике, однако далеко зайти не получилось: вода слишком быстро замерзала, а вычислительные мощности не позволяли провести точное моделирование процесса. Продолжение ниже Видео Смотреть еще Продолжение Спустя 28 лет, на выручку пришли быстрые и мощные исследовательские компьютеры, а также более точные уравнения состояния воды. Исследователи из Принстонского университета, включая тех, кто стоял у истоков формирования гипотезы, провели компьютерное моделирование замерзания воды, чтобы обнаружить критическую точку, в которой одна жидкая фаза превращается в другую. В результате ученые получили довольно простое объяснение странностей воды, которое было опубликовано в журнале Science. При температуре от минус 83 до минус 103 градусов по Цельсию и давлении, в 2000 раз превышающем атмосферное на уровне моря, могут существовать две жидкие фазы воды различной плотности, которые находятся в весьма любопытном равновесии. РЕКЛАМА – ПРОДОЛЖЕНИЕ НИЖЕ В жидкости с более низкой плотностью четыре молекулы группируются вокруг центральной пятой, образуя тетраэдр. В более плотной жидкости «основной мотив узора» состоит из шести молекул воды. Как и предполагалось ранее, общая плотность воды при этом сильно колеблется, будто фазы с различной плотностью спорят, кто тут главный. Когда температура падает, побеждает более плотная фаза, но до тех пор, преимущество за менее плотной. В земных условиях столь низкие температуры встречаются редко, а значит жидкая вода не успевает перейти в более плотную фазу перед замерзанием, и лед получается менее плотным, чем жидкая вода. Вы удивитесь, но лед может даже гореть! В основном это происходит при высоких температурах и в условиях наличия кислорода. Вместо того чтобы плавиться, лед просто превращается в пар. Горение льда является химической реакцией, при которой молекулы воды разлагаются на кислород и водород, а затем водород сгорает, образуя водяной пар. Этот процесс обычно используется для демонстраций на уроках химии или в различных научных экспериментах. Еще 5 любопытных фактов о льде Лед обладает кристаллической структурой, в которой молекулы воды упорядочены в регулярную решётку. Это приводит к образованию характерных шестиугольных кристаллов. Температура плавления льда при нормальных атмосферных условиях составляет 0°C, а температура кристаллизации -0,0098°C. Лед обладает диэлектрическими свойствами и может использоваться в электротехнике для создания изоляционных материалов. В космических условиях лед встречается в различных формах, включая ледяные спутники, кометы и астероиды. Изучение льда в космосе помогает понять процессы формирования солнечной системы. Лед используется в криогенной технике для охлаждения, хранения и транспортировки различных веществ, включая жидкие газы и медицинские препараты. РЕКЛАМА – ПРОДОЛЖЕНИЕ НИЖЕ Вам также может быть интересно: Как лед разрывает землю. Ученые анализируют криосейсмические явления Негативный сценарий: что будет, если растает весь лед на Земле Почему лед иногда приобретает голубоватый оттенок? Загружаем",
+          "sha256": "f8d4f6058e7fa5ff0b59354bc781108f0ca535d8c7341d708c1665caa2147107",
+          "fetch_provenance": {
+            "usable": true,
+            "status": 200,
+            "headers": {
+              "date": "Thu, 29 Oct 2026 08:21:25 GMT",
+              "content-type": "text/html; charset=utf-8",
+              "cache-control": "max-age=86400"
+            },
+            "body_sha256": "bc8adea149a324485d023ce647f8524161841d81038ea673d68ee895d66be3a9",
+            "sha256": "f8d4f6058e7fa5ff0b59354bc781108f0ca535d8c7341d708c1665caa2147107"
+          }
+        },
+        {
+          "id": "source-3",
+          "url": "https://physics.podlevskikh.com/spravochnik/yavleniya/pochemu-led-plavaet.html",
+          "title": "Почему лёд не тонет в воде — простое объяснение (плотность и аномалия воды)",
+          "text": "Почему лёд не тонет в воде — простое объяснение (плотность и аномалия воды) Главная › Справочник › Явления вокруг нас › Почему лёд плавает, а не тонет Почему лёд плавает, а не тонет Явления вокруг нас7 классОГЭлюбопытство КраткоЛёд плавает, потому что он легче воды: при замерзании вода расширяется, и плотность льда (≈ 917 кг/м³) меньше плотности воды (≈ 1000 кг/м³). По закону Архимеда тело плавает, если его плотность меньше плотности жидкости. Лёд примерно на 9 % легче воды — поэтому над поверхностью торчит около 1/10 айсберга, а 9/10 скрыто под водой. 🔬 Интерактивная симуляция: Закон АрхимедаОткрыть на весь экран → Симуляция «Плавание тел»: тело плавает, если его средняя плотность меньше плотности жидкости. У льда так и есть. Аномалия воды Почти все вещества при затвердевании сжимаются и становятся плотнее. Вода — редкое исключение. При замерзании её молекулы выстраиваются в ажурную кристаллическую решётку с «пустотами», и объём растёт примерно на 9 %. Та же масса занимает больший объём — значит, плотность падает. ρльда ≈ 917 кг/м³ < ρводы ≈ 1000 кг/м³ При чём тут закон Архимеда На любое тело в жидкости действует выталкивающая сила, равная весу вытесненной жидкости. Если плотность тела меньше плотности жидкости, выталкивающая сила перевешивает вес — тело всплывает. Лёд легче воды, поэтому плавает, погрузившись ровно настолько, чтобы вытеснить воду, равную его собственному весу. Почему видна только верхушка айсберга Доля над водой равна относительной разнице плотностей: (1000 − 917)/1000 ≈ 0,083. То есть над поверхностью — около 8–10 % объёма, остальное под водой. Отсюда выражение «верхушка айсберга». Почему это важно для жизни Именно из-за этой аномалии водоёмы зимой замерзают сверху, а не со дна. Слой льда защищает воду снизу от промерзания, и рыбы переживают зиму. Если бы лёд тонул, реки и озёра промерзали бы насквозь. Частые вопросыПочему лёд легче воды? При замерзании вода расширяется примерно на 9 %, её молекулы образуют рыхлую решётку, поэтому плотность льда меньше плотности воды. Какая доля айсберга под водой? Около 90 %. Над поверхностью торчит лишь 8–10 % объёма — отсюда «верхушка айсберга». Тонет ли лёд в других жидкостях? В жидкостях легче льда — да. Например, в спирте (плотность ≈ 790 кг/м³) лёд тонет. Почему водоёмы не промерзают до дна? Лёд легче воды и образуется сверху, прикрывая воду снизу как «одеяло» и защищая её от промерзания. Смотрите такжеПочему стальной корабль не тонетЧто такое плотностьПочему горячая вода замерзает быстрее холодной Ещё в разделе «Явления вокруг нас»Почему стальной корабль не тонетПочему самолёт летит и не падаетПочему в космосе нет звукаСколько весит облакоЧто будет, если упасть в туннель сквозь ЗемлюЧто будет, если Земля перестанет вращаться Все статьи раздела → Не получается тема по физике? Разберём именно ваш пробел на индивидуальном занятии. Или начните с бесплатной диагностики уровня. Записаться на занятие Бесплатная диагностика Владимир Подлевских — репетитор по физике и математике, выпускник физического факультета МГУ им. Ломоносова. Готовлю к ЕГЭ, ОГЭ, ДВИ МГУ и международным экзаменам (IB, IGCSE, A-Level, AP).",
+          "sha256": "a828c11eb2877c25bdf22e181ed22a832001144316f0859a827e41239fafa369",
+          "fetch_provenance": {
+            "usable": true,
+            "status": 200,
+            "headers": {
+              "date": "Thu, 29 Oct 2026 08:21:25 GMT",
+              "content-type": "text/html"
+            },
+            "body_sha256": "181fe3e370d0201e32aa65558455479692408851bd6d3c5268957690645bb805",
+            "sha256": "a828c11eb2877c25bdf22e181ed22a832001144316f0859a827e41239fafa369"
+          }
+        }
+      ],
+      "facts": [
+        {
+          "id": "f1",
+          "text": "При замерзании вода расширяется и образует кристаллическую решётку с пустотами, что снижает плотность льда по сравнению с жидкой водой.",
+          "support": [
+            {
+              "source_id": "source-3",
+              "quote": "Почему лёд не тонет в воде — простое объяснение (плотность и аномалия воды) Главная › Справочник › Явления вокруг нас › Почему лёд плавает, а не тонет Почему лёд плавает, а не тонет Явления вокруг нас7 классОГЭлюбопытство КраткоЛёд плавает, потому что он легче воды: при замерзании вода расширяется, и плотность льда (≈ 917 кг/м³) меньше плотности воды (≈ 1000 кг/м³). По закону Архимеда тело плавает, если его плотность меньше плотности жидкости. Лёд примерно на 9 % легче воды — поэтому над поверхностью торчит около 1/10 айсберга, а 9/10 скрыто под водой. 🔬 Интерактивная симуляция: Закон АрхимедаОткрыть на весь экран → Симуляция «Плавание тел»: тело плавает, если его средняя плотность меньше плотности жидкости. У льда так и есть. Аномалия воды Почти все вещества при затвердевании сжимаются и становятся плотнее. Вода — редкое исключение. При замерзании её молекулы выстраиваются в ажурную кристаллическую решётку с «пустотами», и объём растёт примерно на 9 %. Та же масса занимает больший объём — значит, плотность падает. ρльда ≈ 917 кг/м³ < ρводы ≈ 1000 кг/м³ При чём тут закон Архимеда На любое тело в жидкости действует выталкивающая сила, равная весу вытесненной жидкости. "
+            }
+          ]
+        },
+        {
+          "id": "f2",
+          "text": "Согласно закону Архимеда, лёд плавает на поверхности, так как его плотность меньше плотности воды.",
+          "support": [
+            {
+              "source_id": "source-3",
+              "quote": "Почему лёд не тонет в воде — простое объяснение (плотность и аномалия воды) Главная › Справочник › Явления вокруг нас › Почему лёд плавает, а не тонет Почему лёд плавает, а не тонет Явления вокруг нас7 классОГЭлюбопытство КраткоЛёд плавает, потому что он легче воды: при замерзании вода расширяется, и плотность льда (≈ 917 кг/м³) меньше плотности воды (≈ 1000 кг/м³). По закону Архимеда тело плавает, если его плотность меньше плотности жидкости. Лёд примерно на 9 % легче воды — поэтому над поверхностью торчит около 1/10 айсберга, а 9/10 скрыто под водой. 🔬 Интерактивная симуляция: Закон АрхимедаОткрыть на весь экран → Симуляция «Плавание тел»: тело плавает, если его средняя плотность меньше плотности жидкости. У льда так и есть. Аномалия воды Почти все вещества при затвердевании сжимаются и становятся плотнее. Вода — редкое исключение. При замерзании её молекулы выстраиваются в ажурную кристаллическую решётку с «пустотами», и объём растёт примерно на 9 %. Та же масса занимает больший объём — значит, плотность падает. ρльда ≈ 917 кг/м³ < ρводы ≈ 1000 кг/м³ При чём тут закон Архимеда На любое тело в жидкости действует выталкивающая сила, равная весу вытесненной жидкости. "
+            }
+          ]
+        },
+        {
+          "id": "f3",
+          "text": "Благодаря этому лёд образуется сверху водоёмов, защищая воду от промерзания и позволяя организмам пережить зиму.",
+          "support": [
+            {
+              "source_id": "source-3",
+              "quote": "Если плотность тела меньше плотности жидкости, выталкивающая сила перевешивает вес — тело всплывает. Лёд легче воды, поэтому плавает, погрузившись ровно настолько, чтобы вытеснить воду, равную его собственному весу. Почему видна только верхушка айсберга Доля над водой равна относительной разнице плотностей: (1000 − 917)/1000 ≈ 0,083. То есть над поверхностью — около 8–10 % объёма, остальное под водой. Отсюда выражение «верхушка айсберга». Почему это важно для жизни Именно из-за этой аномалии водоёмы зимой замерзают сверху, а не со дна. Слой льда защищает воду снизу от промерзания, и рыбы переживают зиму. Если бы лёд тонул, реки и озёра промерзали бы насквозь. Частые вопросыПочему лёд легче воды? При замерзании вода расширяется примерно на 9 %, её молекулы образуют рыхлую решётку, поэтому плотность льда меньше плотности воды. Какая доля айсберга под водой? Около 90 %. Над поверхностью торчит лишь 8–10 % объёма — отсюда «верхушка айсберга». Тонет ли лёд в других жидкостях? В жидкостях легче льда — да. Например, в спирте (плотность ≈ 790 кг/м³) лёд тонет. Почему водоёмы не промерзают до дна? "
+            }
+          ]
+        }
+      ]
+    },
+    "materials": [
+      {
+        "direct_fact_ids": [],
+        "id": "wikimedia:75211070",
+        "inspection": {
+          "medium": "photograph",
+          "target_matches": [
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v0",
+              "visible_detail": "Frozen lake surface covering the foreground and background."
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v1",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v2",
+              "visible_detail": ""
+            }
+          ],
+          "topic_relation": {
+            "connection": "Depicts a frozen lake surface during winter, illustrating where ice forms and floats on bodies of water.",
+            "kind": "direct_subject",
+            "visible_subject": "Frozen lake Baikal"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "A frozen lake surface is visible, showing how water freezes on top of a water body.",
+              "fact_id": "f3",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v0": "Frozen lake surface covering the foreground and background."
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f3"
+        ],
+        "visible_description": "A wide photograph of a frozen lake with clear ice sheets showing cracks, backed by snow-covered hills under a cloudy sky.",
+        "visual_kind": "photograph"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "pexels:11097019",
+        "inspection": {
+          "medium": "photograph",
+          "target_matches": [
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v0",
+              "visible_detail": "A frozen lake spanning the middle ground of the scene."
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v1",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v2",
+              "visible_detail": ""
+            }
+          ],
+          "topic_relation": {
+            "connection": "Shows a frozen lake surrounded by trees and a bridge, illustrating winter freezing of a body of water.",
+            "kind": "direct_subject",
+            "visible_subject": "Frozen lake in winter"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "A frozen lake is visible, demonstrating that ice forms on the surface of water bodies during winter.",
+              "fact_id": "f3",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v0": "A frozen lake spanning the middle ground of the scene."
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f3"
+        ],
+        "visible_description": "A tranquil frozen lake with a layer of ice under a bright blue sky, trees along the distant bank, and a flock of birds flying overhead.",
+        "visual_kind": "photograph"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "pexels:20294888",
+        "inspection": {
+          "medium": "photograph",
+          "target_matches": [
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v0",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v1",
+              "visible_detail": "An ice lump floating visibly in liquid water."
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v2",
+              "visible_detail": ""
+            }
+          ],
+          "topic_relation": {
+            "connection": "Shows ice floating in liquid water, demonstrating buoyancy and density differences between ice and water.",
+            "kind": "direct_subject",
+            "visible_subject": "Melting ice lump in rippling water"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "Ice floating on the surface of liquid water due to lower density.",
+              "fact_id": "f2",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v1": "An ice lump floating visibly in liquid water."
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f2"
+        ],
+        "visible_description": "A small gray lump of ice floating in the middle of rippling blue water, creating gentle concentric circles.",
+        "visual_kind": "photograph"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "wikimedia:41724357",
+        "inspection": {
+          "medium": "illustration",
+          "target_matches": [
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v0",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v1",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v2",
+              "visible_detail": "Ice Ih crystal lattice and water molecular geometry"
+            }
+          ],
+          "topic_relation": {
+            "connection": "Shows the crystal lattice with voids that causes ice to expand and have lower density.",
+            "kind": "direct_subject",
+            "visible_subject": "Ice Ih crystal lattice structure"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "Crystal lattice structure with empty spaces between molecules.",
+              "fact_id": "f1",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v2": "Ice Ih crystal lattice and water molecular geometry"
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f1"
+        ],
+        "visible_description": "Diagram showing the 3D crystal structure of H2O ice Ih, lattice parameters, and water molecule geometry.",
+        "visual_kind": "scientific_illustration"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "wikimedia:18423361",
+        "inspection": {
+          "medium": "photograph",
+          "target_matches": [
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v0",
+              "visible_detail": "The vast frozen surface of Lake Bled serving as the main subject of the landscape."
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v1",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v2",
+              "visible_detail": ""
+            }
+          ],
+          "topic_relation": {
+            "connection": "Depicts a frozen lake, illustrating the phenomenon where water bodies freeze at the surface due to ice being less dense than water.",
+            "kind": "direct_subject",
+            "visible_subject": "Frozen lake surface with people walking on ice"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "The image shows a frozen lake surface during winter.",
+              "fact_id": "f3",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v0": "The vast frozen surface of Lake Bled serving as the main subject of the landscape."
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f3"
+        ],
+        "visible_description": "A wide shot of Lake Bled completely frozen over with people walking on the ice surface, framed by silhouetted tree branches in the foreground and hazy mountains in the background.",
+        "visual_kind": "photograph"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "pexels:6109226",
+        "inspection": {
+          "medium": "photograph",
+          "target_matches": [
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v0",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v1",
+              "visible_detail": "Multiple clear ice cubes floating visibly on the surface of the liquid."
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v2",
+              "visible_detail": ""
+            }
+          ],
+          "topic_relation": {
+            "connection": "Shows ice cubes floating on water, visually demonstrating that ice is less dense and floats rather than sinking.",
+            "kind": "direct_subject",
+            "visible_subject": "Ice cubes floating in water with flowers"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "The photograph displays ice cubes floating on the surface of water.",
+              "fact_id": "f2",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v1": "Multiple clear ice cubes floating visibly on the surface of the liquid."
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f2"
+        ],
+        "visible_description": "Close-up photograph looking down at square ice cubes floating in clear water, interspersed with pink and white chrysanthemum flowers resting on top.",
+        "visual_kind": "photograph"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "wikimedia:90680794",
+        "inspection": {
+          "medium": "illustration",
+          "target_matches": [
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v0",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v1",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v2",
+              "visible_detail": "A detailed molecular model showing the crystal lattice and polyhedral voids of ice."
+            }
+          ],
+          "topic_relation": {
+            "connection": "Illustrates the open, lattice-like molecular structure with voids formed when water freezes, which causes the expansion and lower density of ice.",
+            "kind": "direct_subject",
+            "visible_subject": "Molecular crystal structure of ice"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "The illustration depicts the open crystal lattice structure with empty spaces formed upon water freezing.",
+              "fact_id": "f1",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v2": "A detailed molecular model showing the crystal lattice and polyhedral voids of ice."
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f1"
+        ],
+        "visible_description": "A scientific structural illustration showing a fragment of an ice crystal lattice with blue oxygen atoms, pink hydrogen atoms, and polyhedral voids against a glowing blue background.",
+        "visual_kind": "scientific_illustration"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "wikimedia:149397817",
+        "inspection": {
+          "medium": "photograph",
+          "target_matches": [
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v0",
+              "visible_detail": "The striking frozen lake in the center of the snow-covered valley."
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v1",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v2",
+              "visible_detail": ""
+            }
+          ],
+          "topic_relation": {
+            "connection": "Depicts a natural frozen lake in a mountain setting, exemplifying winter freezing of water bodies.",
+            "kind": "direct_subject",
+            "visible_subject": "Frozen alpine lake surrounded by snow-covered mountains"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "The image captures a frozen high-altitude lake during winter conditions.",
+              "fact_id": "f3",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v0": "The striking frozen lake in the center of the snow-covered valley."
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f3"
+        ],
+        "visible_description": "A daylight landscape photograph of a partially frozen, light-blue alpine lake nestled amongst vast snow-covered mountain slopes under a clear blue sky.",
+        "visual_kind": "photograph"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "wikimedia:64273473",
+        "inspection": {
+          "medium": "observational_image",
+          "target_matches": [
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v0",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v1",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v2",
+              "visible_detail": "Hexagonal ice crystal structure"
+            }
+          ],
+          "topic_relation": {
+            "connection": "Shows the crystalline structure of ice formed from water vapor or freezing.",
+            "kind": "direct_subject",
+            "visible_subject": "ice crystal on fibers"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "Ice crystal structure with hexagonal symmetry",
+              "fact_id": "f1",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v2": "Hexagonal ice crystal structure"
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f1"
+        ],
+        "visible_description": "A macro photograph capturing a hexagonal rime ice crystal on fine wool fibers.",
+        "visual_kind": "photograph"
+      },
+      {
+        "direct_fact_ids": [],
+        "id": "wikimedia:94906896",
+        "inspection": {
+          "medium": "photograph",
+          "target_matches": [
+            {
+              "detail_prominent": true,
+              "matches": true,
+              "subject_qualifications_match": true,
+              "target_id": "v0",
+              "visible_detail": "Partially frozen lake surface"
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v1",
+              "visible_detail": ""
+            },
+            {
+              "detail_prominent": false,
+              "matches": false,
+              "subject_qualifications_match": false,
+              "target_id": "v2",
+              "visible_detail": ""
+            }
+          ],
+          "topic_relation": {
+            "connection": "Shows a partially frozen lake in winter, illustrating surface freezing of water bodies.",
+            "kind": "direct_subject",
+            "visible_subject": "frozen lake"
+          },
+          "visible_fact_details": [
+            {
+              "detail": "Lake freezing on the surface",
+              "fact_id": "f3",
+              "relationship": "topic_context"
+            }
+          ],
+          "visual_qualification_protocol": "qualified-target-v1"
+        },
+        "matched_visual_targets": {
+          "v0": "Partially frozen lake surface"
+        },
+        "media_type": "photo",
+        "source_interval": null,
+        "supported_fact_ids": [
+          "f3"
+        ],
+        "visible_description": "Landscape view of Lake Tavon partially frozen in winter under a blue sky.",
+        "visual_kind": "photograph"
+      }
+    ],
+    "scenes": [
+      {
+        "capacity_ms": 60000,
+        "contract": {
+          "contextual_not_direct_proof": true,
+          "must_not_show": [],
+          "must_show": [
+            "Diagram showing the 3D crystal structure of H2O ice Ih, lattice parameters, and water molecule geometry."
+          ],
+          "visual_intent": "Diagram showing the 3D crystal structure of H2O ice Ih, lattice parameters, and water molecule geometry."
+        },
+        "evidence_ids": [
+          "f1"
+        ],
+        "id": "beat-1",
+        "material_id": "wikimedia:41724357",
+        "narration": "Почти все вещества при затвердевании сжимаются, но вода — редкое исключение из правил. При замерзании вода расширяется и образует кристаллическую решётку с пустотами. Это снижает плотность льда по сравнению с жидкой водой и делает его легче.",
+        "source_interval": null,
+        "visual_relation": "topic_context"
+      },
+      {
+        "capacity_ms": 60000,
+        "contract": {
+          "contextual_not_direct_proof": true,
+          "must_not_show": [],
+          "must_show": [
+            "A small gray lump of ice floating in the middle of rippling blue water, creating gentle concentric circles."
+          ],
+          "visual_intent": "A small gray lump of ice floating in the middle of rippling blue water, creating gentle concentric circles."
+        },
+        "evidence_ids": [
+          "f2"
+        ],
+        "id": "beat-2",
+        "material_id": "pexels:20294888",
+        "narration": "На любое тело в погруженном состоянии всегда действует особая выталкивающая сила. Согласно закону Архимеда, лёд плавает на самой поверхности водоёма. Он держится там благодаря тому, что его плотность меньше плотности воды.",
+        "source_interval": null,
+        "visual_relation": "topic_context"
+      },
+      {
+        "capacity_ms": 60000,
+        "contract": {
+          "contextual_not_direct_proof": true,
+          "must_not_show": [],
+          "must_show": [
+            "A wide photograph of a frozen lake with clear ice sheets showing cracks, backed by snow-covered hills under a cloudy sky."
+          ],
+          "visual_intent": "A wide photograph of a frozen lake with clear ice sheets showing cracks, backed by snow-covered hills under a cloudy sky."
+        },
+        "evidence_ids": [
+          "f3"
+        ],
+        "id": "beat-3",
+        "material_id": "wikimedia:75211070",
+        "narration": "Эта удивительная физическая аномалия имеет ключевое значение для всей природы. Благодаря этому лёд образуется сверху водоёмов, а не со дна. Такой слой надежно защищает воду от промерзания и помогает организмам пережить зиму.",
+        "source_interval": null,
+        "visual_relation": "topic_context"
+      }
+    ],
+    "script": "Почти все вещества при затвердевании сжимаются, но вода — редкое исключение из правил. При замерзании вода расширяется и образует кристаллическую решётку с пустотами. Это снижает плотность льда по сравнению с жидкой водой и делает его легче. На любое тело в погруженном состоянии всегда действует особая выталкивающая сила. Согласно закону Архимеда, лёд плавает на самой поверхности водоёма. Он держится там благодаря тому, что его плотность меньше плотности воды. Эта удивительная физическая аномалия имеет ключевое значение для всей природы. Благодаря этому лёд образуется сверху водоёмов, а не со дна. Такой слой надежно защищает воду от промерзания и помогает организмам пережить зиму."
+  },
+  "failed_request_hash": "a42a76a74e5954158c6c5c78e3deb382aceae1ee949150666b9b903664d85b58",
+  "model": "gemini-3.5-flash-lite",
+  "thinking_level": "medium",
+  "http_status": 400,
+  "gateway_execution_id": "14358",
+  "measured_first_voice_ms": 39336
+}

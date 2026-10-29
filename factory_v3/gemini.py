@@ -226,6 +226,7 @@ class Gemini:
                 "narration_quote": string(), "supported": BOOL}), 1)})
         from material_first.presentation import TOPIC_POLICY
         native = request.get('presentation_policy') == TOPIC_POLICY
+        compact_references=native and request.get('review_reference_policy')=='scene-ids-v1'
         coverage = native and getattr(self, 'require_fact_coverage', False)
         required_facts = request.get('required_fact_ids', []) if coverage else []
         if coverage:
@@ -255,6 +256,21 @@ class Gemini:
             schema['properties'] = {'factual_checks':schema['properties']['factual_checks'],
                 **{k:v for k,v in schema['properties'].items() if k!='factual_checks'}}
             schema['required'] = list(schema['properties'])
+        if compact_references:
+            # Keep narration in context, not repeated as long grammar enums.
+            # The server binds each returned reference back to exact text.
+            if len({s['id'] for s in scenes})!=len(scenes):
+                raise ValueError('review scene identities must be unique')
+            for key,pair in assertions.items():
+                schema['properties']['factual_checks']['properties'][key]=obj({
+                    'narration_scene_id':string([pair['scene_id']]),
+                    'comparison':string(),'supported':BOOL})
+            if coverage:
+                for fact_id in required_facts:
+                    row=schema['properties']['coverage_checks']['properties'][fact_id]
+                    del row['properties']['narration_quotes']
+                    row['properties']['narration_scene_ids']=array(string(s['id'] for s in scenes),0,len(scenes))
+                    row['required']=list(row['properties'])
         # Keep the reviewer focused on the final narration and its evidence.
         # Passing the full factory payload also included detailed image/provider
         # receipts, which can dwarf the script and distract the model from exact
@@ -282,8 +298,10 @@ class Gemini:
              "cause, condition, timing, outcome, named colors and qualifications against the "
              "whole script. List every omitted detail in missing_details and set covered=false "
              "if any is absent. Mentioning an outcome alone does not cover its required cause. "
-             "A fact may be expressed across multiple scenes: cite their exact full narration "
-             "in narration_quotes. Do not infer omitted claims from images, IDs or sources. "
+             + ("A fact may span scenes: cite their exact IDs in narration_scene_ids. "
+                if compact_references else
+                "A fact may be expressed across multiple scenes: cite their exact full narration in narration_quotes. ") +
+             "Do not infer omitted claims from images, IDs or sources. "
              if coverage else "") +
             "Independently audit every claim in the exact final narration against supplied source-supported facts. "
             "For each factual check, first write comparison: explicitly compare the narrated claim "
@@ -295,12 +313,20 @@ class Gemini:
             "Source quotations may contain speculation: hypotheses and possible benefits MUST NOT "
             "be stated as established effects. Reject such certainty even when the excerpt mentions the idea. "
             "For required_assertions, return every named factual_checks field, including nonessential cited facts. "
-            "Each key identifies one exact scene/fact pair. Quote its actual narrated assertion; if it is absent or unsupported, set supported=false. Never omit a key or check only required_fact_ids. "
+            "Each key identifies one exact scene/fact pair. "
+            + ("Return its narration_scene_id and assess its complete actual_narration; if it is absent or unsupported, set supported=false. Never omit a key or check only required_fact_ids. "
+               if compact_references else "Quote its actual narrated assertion; if it is absent or unsupported, set supported=false. Never omit a key or check only required_fact_ids. ") +
             "Check native vocabulary, spelling, grammar and inflections in the requested language, not merely alphabet or overall language identity. Set native_language_quality=false for mixed-language words or grammatical defects. Check every scene's visual contract and exclusions. For material-first plans, relevant contextual photographs may illustrate a mechanism without depicting its exact action or microscopic anatomy. Facts are verified against sources. Check that the supplied visual roles provide different dominant subjects, scales or contexts; reject a sequence composed entirely of near-identical subject-and-setting views. Do not require perfect literal image-to-phrase correspondence. Reject a generic analogy, laboratory prop or unrelated object sharing only the broad scientific field. Still photographs need not depict motion. "
             "In metadata visual_validation_mode, supplied photograph descriptions and roles are metadata-only, not pixel inspection; audit contextual relevance without claiming pixels were checked. Do not approve a fact merely because its ID is cited. Quote the actual words asserting each cited fact. "
             "Check that the narration actually answers the requested topic and essential mechanism, rather than merely describing pictured objects. "
             "Report false for omitted topic coverage, any unsupported statement, omitted cited fact or contradictory image requirement.",
             review_context, schema)
+        if compact_references:
+            for row in result['factual_checks'].values():
+                row['narration_quote']=scene_text[row.pop('narration_scene_id')]
+            if coverage:
+                for row in result['coverage_checks'].values():
+                    row['narration_quotes']=[scene_text[identity] for identity in row.pop('narration_scene_ids')]
         if native:
             result['factual_checks'] = [{**pair, **result['factual_checks'][key]} for key,pair in assertions.items()]
         if coverage:

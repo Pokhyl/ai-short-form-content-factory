@@ -1,0 +1,18 @@
+{
+  "diagnostic_id": "483150cb-1d8c-4eaa-8bc7-77bf0083b1b8",
+  "date": "2026-10-29",
+  "purpose": "Review the exact saved measured-duration revision using compact scene references; no rewrite and no TTS",
+  "source_job": "279615cb-cfba-4aca-b2a9-9a0dd25a4e11",
+  "failed_request_hash": "a42a76a74e5954158c6c5c78e3deb382aceae1ee949150666b9b903664d85b58",
+  "max_metadata_calls": 1,
+  "max_gemini_calls": 1,
+  "max_search_calls": 0,
+  "max_tts_calls": 0,
+  "automatic_retries": 0,
+  "acceptance": [
+    "provider accepts compact structured schema",
+    "all factual/native/coverage checks pass for exact saved revised script",
+    "short scene references map back to original exact narration"
+  ],
+  "production_deployment": false
+}
