@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-29",
+  "candidate_revision": "b4922e0049c99ea0d67b0f973e8697cf73bad27a",
+  "request": {
+    "topic": "Почему корабль держится на воде?",
+    "language": "ru",
+    "seconds": 45
+  },
+  "max_public_submissions": 1,
+  "automatic_retries": 0,
+  "preconditions": [
+    "exact package tests pass",
+    "compact review diagnostic483150cb passes all factual/native/coverage checks",
+    "protected rollout and readiness verified"
+  ],
+  "purpose": "Normal cross-topic test after substantive request-schema correction; no replay of the failed ice job",
+  "budgets": "Existing per-request budgets unchanged"
+}
