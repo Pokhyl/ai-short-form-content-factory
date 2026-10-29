@@ -91,6 +91,9 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
         if receipt.get('subject_focus_policy') != FOCUS_POLICY or not focus_accepted(receipt.get('subject_focus')):
             return None
     visible = receipt.get("visible_description")
+    from .visual_entailment import POLICY as ENTAILMENT_POLICY, verified
+    if asset.get('visual_entailment_policy')==ENTAILMENT_POLICY and not verified(asset,evidence,receipt):
+        return None
     support = receipt.get("supported_fact_ids")
     if not isinstance(visible, str) or not visible.strip() or not isinstance(support, list) or not support:
         return None

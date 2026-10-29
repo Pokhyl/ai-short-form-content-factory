@@ -507,7 +507,11 @@ class Operations:
             {'topic': getattr(self,'topic',None), 'evidence': compact_evidence(evidence), 'visual_targets': targets,
              'metadata': self._image_metadata(asset)},
             self._inspection_schema(evidence, targets, asset.get('visual_qualification_protocol') == 'qualified-target-v1'), photo=self._photo(asset), max_tokens=2048)
-        return self._inspection_receipt(asset, evidence, result, provenance)
+        receipt=self._inspection_receipt(asset, evidence, result, provenance)
+        if getattr(self,'require_visual_entailment',False):
+            from .visual_entailment import review_batch
+            return review_batch(self,[asset],evidence,[receipt])[0]
+        return receipt
 
     def inspect_many(self, assets, evidence):
         if not 1 <= len(assets) <= 4 or len({a["id"] for a in assets}) != len(assets):
@@ -577,6 +581,9 @@ class Operations:
                     'evidence_sha256': digest(evidence), 'accepted': False,
                     'receipt_id': provenance['receipt_id'], 'model': self.gemini.model,
                     'rejection': 'completed malformed inspection row'})
+        if getattr(self,'require_visual_entailment',False):
+            from .visual_entailment import review_batch
+            return review_batch(self,assets,evidence,receipts)
         return receipts
 
     def compose(self, context):
