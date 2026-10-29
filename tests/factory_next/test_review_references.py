@@ -74,3 +74,12 @@ class ReviewReferencesTests(TestCase):
         first=next(iter(self.response['factual_checks'].values()))
         first['narration_scene_id']='invented-scene'
         with self.assertRaises(ModelSchemaError):self.model.review_script(self.request)
+
+    def test_opted_in_negative_review_retains_feedback_and_never_approves(self):
+        from factory_v3.gemini import ScriptReviewRejected
+        self.response=self.controlled_response()
+        self.request['voice_review_repair_policy']='one-reviewed-repair-v1'
+        with self.assertRaises(ScriptReviewRejected) as caught:
+            self.model.review_script(self.request,review_key='script-review-repaired')
+        self.assertFalse(caught.exception.review['topic_covered'])
+        self.assertTrue(all(not row['covered'] for row in caught.exception.review['coverage_checks'].values()))

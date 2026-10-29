@@ -102,6 +102,13 @@ def invalid_constant(value):
     raise ValueError("non-finite model response number")
 
 
+class ScriptReviewRejected(ValueError):
+    """Completed independent negative review; never a transport retry signal."""
+    def __init__(self, message, review):
+        super().__init__(message)
+        self.review=review
+
+
 class ModelSchemaError(ValueError):
     """A completed JSON response failed local validation, not an unknown call."""
     def __init__(self, result, message):
@@ -228,7 +235,7 @@ class Gemini:
             request, schema)
         return result
 
-    def review_script(self, request):
+    def review_script(self, request, *, review_key='script-review'):
         validate_evidence(request["evidence"])
         scenes = request["scenes"]
         schema = obj({"language": string(["pl", "en", "ru", "uk"]),
@@ -303,7 +310,7 @@ class Gemini:
             review_context['required_fact_coverage'] = {
                 f['id']:f['text'] for f in request['evidence']['facts']
                 if f['id'] in required_facts}
-        result, provenance = self.generate("script-review",
+        result, provenance = self.generate(review_key,
             ("For coverage_checks perform the REVERSE check separately from factual support: "
              "does the WHOLE script express EVERY essential claim in each required fact? "
              "A true partial statement can be supported but NOT covered. Compare each fact's "
@@ -348,9 +355,14 @@ class Gemini:
             "script_sha256": hashlib.sha256(request["script"].encode()).hexdigest(),
             "evidence_sha256": digest(request["evidence"]),
             "topic_sha256": hashlib.sha256(request["topic"].encode()).hexdigest()})
-        if native and result.get('native_language_quality') is not True:
-            raise ValueError('native-language proofreading review failed')
-        validate_script_review(request["evidence"], request["language"], request["script"], scenes, result, topic=request["topic"])
+        try:
+            if native and result.get('native_language_quality') is not True:
+                raise ValueError('native-language proofreading review failed')
+            validate_script_review(request["evidence"], request["language"], request["script"], scenes, result, topic=request["topic"])
+        except ValueError as error:
+            if request.get('voice_review_repair_policy')=='one-reviewed-repair-v1':
+                raise ScriptReviewRejected(str(error),result) from error
+            raise
         return result
 
     def review_photo(self, root, unit, asset, evidence):
