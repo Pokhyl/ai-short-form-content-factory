@@ -1,0 +1,12 @@
+{
+  "diagnostic_id": "c90ef11b-075f-465e-85e9-83b0eaa7ff9c",
+  "source_revision": "3c19f4a",
+  "saved_job": "b89f1415-d4a3-41ad-8694-c69dc22bfcf0",
+  "measured_ms": 30504,
+  "seconds": 45,
+  "max_metadata": 1,
+  "max_gemini": 5,
+  "max_tts": 1,
+  "max_search": 0,
+  "purpose": "Actual correction with mandatory complete fact coverage, then one measured voice; no old job resumes"
+}

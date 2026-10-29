@@ -1,3 +1,9 @@
+## Current boundary — voice review feedback, 2026-10-29
+
+Normal b89f1415 is terminal needs_attention/voice; immutable.9images/story passed. First TTS30504ms; completed expansion omitted volume increase from requiredf1, and independent coverage reviewer correctly rejected it before secondTTS. Offline replay matched exact saved request hashes and reproduced required fact not fully narrated. All15Gemini calls200; no provider outage.
+
+Candidate3c19f4a adds one bounded semantic correction after a completed negative voice review, using its missing-detail feedback. New rewrite and review have separate ledger keys; same length/source/native gates, same original budgets, no timeout retries. Second negative review remains terminal. Package verification and diagnosticc90ef11b-075f-465e-85e9-83b0eaa7ff9c pending; max5Gemini/1metadata/1TTS/0search on exact saved original. See review-repair-result.json before action. LIVE remains347c6d8, project_ready=false.
+
 ## Current live run — midpoint correction verified, 2026-10-29
 
 LIVE347c6d812e960e6cf1306fa5a6206fd965533326 / image61d13f4e... passed235Next+141core+243material tests. Actual saved-overlong diagnostic19da9f9b passed:698->677characters, measured45096->43920ms,2Gemini+1metadata+1TTS, independent factual/native review. Strict duration unchanged. Protected rollout preserved database/workflows/settings/othercontainers/jobfiles;69sourcefiles match,health200,gateway403. Evidence acceptance/factory-next/midpoint-duration-result-20261029.json.
