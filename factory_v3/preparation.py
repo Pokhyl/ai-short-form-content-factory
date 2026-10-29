@@ -97,6 +97,11 @@ class PreparationLedger:
             "SELECT factory_v3.finish_preparation_call(%s::uuid,%s,%s::jsonb)",
             (request_id, key, json.dumps(result, allow_nan=False)))
 
+    def claim_model_retry(self, request_id, key, request_hash, prior_key):
+        return self.postgres._call(
+            'SELECT factory_v3.claim_model_retry(%s::uuid,%s,%s,%s,%s)',
+            (request_id, key, request_hash, self.revision, prior_key))
+
     def fail(self, request_id, key, code, receipt=None):
         self.postgres._call("SELECT factory_v3.fail_preparation_call(%s::uuid,%s,%s,%s::jsonb)",
                             (request_id, key, code, json.dumps(receipt)))
@@ -129,9 +134,13 @@ class BudgetedCalls:
         if result['deferred']:
             raise PreparationDeferred(result['retry_at'])
 
-    def run(self, key, kind, public_request, invoke, *, allow_unavailable=False, allow_model_unavailable=False):
+    def run(self, key, kind, public_request, invoke, *, allow_unavailable=False, allow_model_unavailable=False, retry_of=None):
         # Include all identity-affecting settings, NEVER credentials.
-        claim = self.ledger.claim(self.request_id, key, kind, digest(public_request))
+        if retry_of is not None:
+            if not allow_model_unavailable or kind!='gemini':raise ValueError('retry requires explicit model policy')
+            claim=self.ledger.claim_model_retry(self.request_id,key,digest(public_request),retry_of)
+        else:
+            claim = self.ledger.claim(self.request_id, key, kind, digest(public_request))
         if claim.get("unavailable"):
             if allow_model_unavailable and kind == 'gemini' and model_unavailable_receipt(claim['response']):
                 raise ModelUnavailable(claim['response'])
@@ -139,6 +148,11 @@ class BudgetedCalls:
         if claim["cached"]:
             return claim["response"]
         try:
+            if retry_of is not None:
+                import time
+                delay=claim.get('retry_delay_seconds')
+                if delay not in (60,180):raise ValueError('invalid durable retry delay')
+                time.sleep(delay)
             response = invoke()
             json.dumps(response, allow_nan=False)
             self.ledger.finish(self.request_id, key, response)

@@ -1,3 +1,7 @@
+## Authorized update — 2026-10-29
+
+Owner explicitly approved at most TWO delayed retries per NEW job after proven Gemini503/UNAVAILABLE, same model and exact request, within unchanged call budgets. No timeout/unknown retries or historical job resumes. Candidate implementation in progress; live remains b4922e0 until package/SQL verification and protected rollout. This supersedes older no-retry/pending-approval notes below. project_ready=false.
+
 ## Current result — 2026-10-29, explicit provider503
 
 Normal ship job88972d2b-00fc-4bb9-b36b-7b9a667f215b is immutable needs_attention/materials. Research and its review succeeded, sources/searches and4downloads succeeded, initial image inspection succeeded. Independent material-entailment returned HTTP503/UNAVAILABLE, gatewayexecution14371, explicitly reporting high demand. No TTS or MP4. Zero automatic retries. This is distinct from the earlier400 review-schema bug, whose exact saved input passed after the compact-reference fix.

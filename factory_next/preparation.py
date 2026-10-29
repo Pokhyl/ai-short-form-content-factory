@@ -61,6 +61,8 @@ class VoiceRevisionCalls:
         self.PREFIX=f'next-voice-correction:{attempt}:'
 
     def run(self, key, kind, public_request, invoke, **kwargs):
+        if kwargs.get('retry_of') is not None:
+            kwargs={**kwargs,'retry_of':self.PREFIX+kwargs['retry_of']}
         return self.underlying.run(self.PREFIX+key,kind,public_request,invoke,**kwargs)
 
     def defer_unavailable(self, failed_key, next_key, delay):

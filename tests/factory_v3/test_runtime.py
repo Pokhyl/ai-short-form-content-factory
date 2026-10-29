@@ -32,6 +32,9 @@ class HTTP:
 
 
 class Ledger(FakeLedger):
+    def snapshot(self, request_id):
+        return {"request":{}}
+
     def claim_run(self, request_id):
         return {"cached":False,"request":{"topic":"controlled","language":"pl","seconds":15}}
 
@@ -55,6 +58,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertTrue(ledger.terminal)
 
     def test_current_runtime_requires_documented_photo_contexts_without_gateway_calls(self):
+        self.runtime.preparations=Ledger()
         self.assertTrue(self.runtime.producer(REQUEST_ID).operations.documented_contexts)
         self.assertEqual(self.http.calls, [])
 

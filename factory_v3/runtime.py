@@ -60,6 +60,8 @@ class Runtime:
         if _factory_next:
             from factory_next.budget import PROFILE
             request["factory_next_budget_profile"] = PROFILE
+            if old is None or old['request'].get('model_retry_policy')=='explicit-503-two-v1':
+                request['model_retry_policy']='explicit-503-two-v1'
         if old is not None:
             if old["request"] != request or old["source_revision"] != self.revision:
                 raise ValueError("existing request identity changed")
@@ -94,6 +96,8 @@ class Runtime:
                 raise ValueError("Gemini project is not confirmed unbilled")
         gemini = Gemini(calls, lambda:"gateway-managed", self.gateway, model=MODEL,
                         free_tier_confirmed=True)
+        saved=self.preparations.snapshot(request_id)
+        gemini.retry_model_unavailable=saved['request'].get('model_retry_policy')=='explicit-503-two-v1'
         search = PhotoSearch(calls,ProviderCache(self.ledger),self.gateway,
                              lambda provider:"gateway-managed",self.settings["credential_scope"])
         producer = DurableProducer(self.root, self.preparations,

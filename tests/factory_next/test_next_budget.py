@@ -57,6 +57,7 @@ class BudgetRegistrationTests(unittest.TestCase):
                 gateway.assert_called_once()
                 saved=runtime.preparations.rows[job]
                 self.assertEqual(saved['request']['factory_next_budget_profile'],PROFILE)
+                self.assertEqual(saved['request']['model_retry_policy'],'explicit-503-two-v1')
                 self.assertEqual(saved['request']['visual_validation_mode'],'gemini')
                 self.assertEqual(saved['budgets'],next_preparation_budgets(15))
                 self.assertFalse(register_next(runtime,job,'Pollinating bees','pl',15)['created'])
