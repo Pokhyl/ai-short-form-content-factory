@@ -1,0 +1,199 @@
+{
+  "result": {
+    "id": "483150cb-1d8c-4eaa-8bc7-77bf0083b1b8",
+    "source_revision": "b4922e0049c99ea0d67b0f973e8697cf73bad27a",
+    "metadata_calls": 1,
+    "gemini_calls": 1,
+    "search_calls": 0,
+    "tts_calls": 0,
+    "status": "passed",
+    "factual_checks": 3,
+    "coverage_checks": 3,
+    "elapsed_seconds": 17.955
+  },
+  "review": {
+    "factual_checks": [
+      {
+        "scene_id": "beat-1",
+        "fact_id": "f1",
+        "comparison": "The narration states that when water freezes, it expands and forms a crystal lattice with voids, which decreases the density of ice compared to liquid water. This matches fact f1 exactly.",
+        "supported": true,
+        "narration_quote": "Почти все вещества при затвердевании сжимаются, но вода — редкое исключение из правил. При замерзании вода расширяется и образует кристаллическую решётку с пустотами. Это снижает плотность льда по сравнению с жидкой водой и делает его легче."
+      },
+      {
+        "scene_id": "beat-2",
+        "fact_id": "f2",
+        "comparison": "The narration states that according to Archimedes' principle, ice floats on the surface because its density is less than that of water. This aligns directly with fact f2.",
+        "supported": true,
+        "narration_quote": "На любое тело в погруженном состоянии всегда действует особая выталкивающая сила. Согласно закону Архимеда, лёд плавает на самой поверхности водоёма. Он держится там благодаря тому, что его плотность меньше плотности воды."
+      },
+      {
+        "scene_id": "beat-3",
+        "fact_id": "f3",
+        "comparison": "The narration states that due to this anomaly, ice forms on top of water bodies, protecting water from freezing through and allowing organisms to survive the winter. This matches fact f3.",
+        "supported": true,
+        "narration_quote": "Эта удивительная физическая аномалия имеет ключевое значение для всей природы. Благодаря этому лёд образуется сверху водоёмов, а не со дна. Такой слой надежно защищает воду от промерзания и помогает организмам пережить зиму."
+      }
+    ],
+    "language": "ru",
+    "language_match": true,
+    "visual_contracts_match": true,
+    "no_unsupported_claims": true,
+    "topic_covered": true,
+    "coverage_checks": {
+      "f1": {
+        "comparison": "The script clearly covers water expanding upon freezing, forming a crystal lattice with voids, and the resulting decrease in density compared to liquid water.",
+        "missing_details": [],
+        "covered": true,
+        "narration_quotes": [
+          "Почти все вещества при затвердевании сжимаются, но вода — редкое исключение из правил. При замерзании вода расширяется и образует кристаллическую решётку с пустотами. Это снижает плотность льда по сравнению с жидкой водой и делает его легче."
+        ]
+      },
+      "f2": {
+        "comparison": "The script expresses Archimedes' principle and explains that ice floats on the surface because its density is less than water's.",
+        "missing_details": [],
+        "covered": true,
+        "narration_quotes": [
+          "На любое тело в погруженном состоянии всегда действует особая выталкивающая сила. Согласно закону Архимеда, лёд плавает на самой поверхности водоёма. Он держится там благодаря тому, что его плотность меньше плотности воды."
+        ]
+      },
+      "f3": {
+        "comparison": "The script covers ice forming at the top of water bodies due to this anomaly, protecting the water below from freezing and allowing organisms to survive the winter.",
+        "missing_details": [],
+        "covered": true,
+        "narration_quotes": [
+          "Эта удивительная физическая аномалия имеет ключевое значение для всей природы. Благодаря этому лёд образуется сверху водоёмов, а не со дна. Такой слой надежно защищает воду от промерзания и помогает организмам пережить зиму."
+        ]
+      }
+    },
+    "native_language_quality": true,
+    "coverage_required_fact_ids": [
+      "f1",
+      "f2",
+      "f3"
+    ],
+    "receipt_id": "ec55ec5946270b1d8c9a56aade572b59e8774b44910b71217c7bd3aa82f46eb6",
+    "model": "gemini-3.5-flash-lite",
+    "provider_provenance": {
+      "receipt_id": "ec55ec5946270b1d8c9a56aade572b59e8774b44910b71217c7bd3aa82f46eb6",
+      "model": "gemini-3.5-flash-lite",
+      "thinking_level": "medium",
+      "thinking_budget": null,
+      "model_version": "gemini-3.5-flash-lite",
+      "usage": {
+        "promptTokenCount": 7145,
+        "candidatesTokenCount": 542,
+        "totalTokenCount": 7687,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 7145
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "http": {
+        "status": 200,
+        "headers": {
+          "content-type": "application/json; charset=UTF-8",
+          "date": "Thu, 29 Oct 2026 13:38:50 GMT"
+        },
+        "gateway_execution_id": "14360"
+      }
+    },
+    "script_sha256": "812c99276aed88ea4a23761e927288994e0f4110c3e85c2d868c6185e5c727e2",
+    "evidence_sha256": "99bdb0cdf4b30c9e6c52ce009b8dd35e9b01620879f9838c329ecc0c9382b181",
+    "topic_sha256": "e229ef4a98f706bcdc08e96623f6655d108de6da22f8539ddef3c2387f9d8710"
+  },
+  "raw": {
+    "reply": {
+      "factual_checks": {
+        "assertion_1": {
+          "narration_scene_id": "beat-1",
+          "comparison": "The narration states that when water freezes, it expands and forms a crystal lattice with voids, which decreases the density of ice compared to liquid water. This matches fact f1 exactly.",
+          "supported": true
+        },
+        "assertion_2": {
+          "narration_scene_id": "beat-2",
+          "comparison": "The narration states that according to Archimedes' principle, ice floats on the surface because its density is less than that of water. This aligns directly with fact f2.",
+          "supported": true
+        },
+        "assertion_3": {
+          "narration_scene_id": "beat-3",
+          "comparison": "The narration states that due to this anomaly, ice forms on top of water bodies, protecting water from freezing through and allowing organisms to survive the winter. This matches fact f3.",
+          "supported": true
+        }
+      },
+      "language": "ru",
+      "language_match": true,
+      "visual_contracts_match": true,
+      "no_unsupported_claims": true,
+      "topic_covered": true,
+      "coverage_checks": {
+        "f1": {
+          "comparison": "The script clearly covers water expanding upon freezing, forming a crystal lattice with voids, and the resulting decrease in density compared to liquid water.",
+          "missing_details": [],
+          "covered": true,
+          "narration_scene_ids": [
+            "beat-1"
+          ]
+        },
+        "f2": {
+          "comparison": "The script expresses Archimedes' principle and explains that ice floats on the surface because its density is less than water's.",
+          "missing_details": [],
+          "covered": true,
+          "narration_scene_ids": [
+            "beat-2"
+          ]
+        },
+        "f3": {
+          "comparison": "The script covers ice forming at the top of water bodies due to this anomaly, protecting the water below from freezing and allowing organisms to survive the winter.",
+          "missing_details": [],
+          "covered": true,
+          "narration_scene_ids": [
+            "beat-3"
+          ]
+        }
+      },
+      "native_language_quality": true
+    },
+    "provenance": {
+      "receipt_id": "ec55ec5946270b1d8c9a56aade572b59e8774b44910b71217c7bd3aa82f46eb6",
+      "model": "gemini-3.5-flash-lite",
+      "thinking_level": "medium",
+      "thinking_budget": null,
+      "model_version": "gemini-3.5-flash-lite",
+      "usage": {
+        "promptTokenCount": 7145,
+        "candidatesTokenCount": 542,
+        "totalTokenCount": 7687,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 7145
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "http": {
+        "status": 200,
+        "headers": {
+          "content-type": "application/json; charset=UTF-8",
+          "date": "Thu, 29 Oct 2026 13:38:50 GMT"
+        },
+        "gateway_execution_id": "14360"
+      }
+    }
+  },
+  "package": {
+    "status": "passed",
+    "source_revision": "b4922e0049c99ea0d67b0f973e8697cf73bad27a",
+    "image_tag": "factory-v3:compact-review-b4922e0",
+    "image_id": "sha256:4438dd9ed716209114bc5ad59701c9f8f6c7d7cb286ee77370c88271f9337c69",
+    "tests": {
+      "factory_next": 0,
+      "factory_v3": 0,
+      "material_first": 0
+    }
+  }
+}
