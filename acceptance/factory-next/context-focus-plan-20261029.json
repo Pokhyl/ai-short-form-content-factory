@@ -1,0 +1,19 @@
+{
+  "diagnostic_id": "db2687b8-fd0e-466c-b659-2ebaa59e76fb",
+  "date": "2026-10-29",
+  "purpose": "Validate corrected separation of component context, per-target qualifications and full-claim visibility against immutable prior failure",
+  "max_metadata_calls": 1,
+  "max_gemini_calls": 1,
+  "max_search_calls": 0,
+  "max_tts_calls": 0,
+  "automatic_retries": 0,
+  "source_job": "e577e215-034c-43b7-8959-2e842f0cf358",
+  "previous_diagnostic": "e0790f6d-9592-4130-aa2b-69a864c13c93",
+  "acceptance": [
+    "unrelated foreground rejected",
+    "actual main subject accepted",
+    "at least one component accepted as context with a qualified own-target match",
+    "hidden causal claims never classified direct observation"
+  ],
+  "production_deployment": false
+}

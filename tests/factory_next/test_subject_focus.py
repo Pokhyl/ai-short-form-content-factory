@@ -90,3 +90,21 @@ class SubjectFocusTests(TestCase):
         parts=[{'inspection':{'topic_relation':{'kind':'direct_part_or_stage'}}}]*3
         self.assertFalse(shows_main_topic(parts))
         self.assertTrue(shows_main_topic(parts+[{'inspection':{'topic_relation':{'kind':'direct_subject'}}}]))
+
+    def test_actual_failed_probe_is_not_semantic_acceptance(self):
+        import json
+        from pathlib import Path
+        from material_first.targets import matched_targets
+        from factory_v3.preflight import digest
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-focus-e079.json').read_text())
+        self.assertEqual(saved['result']['status'],'failed')
+        rows={r['asset_id']:r for r in saved['receipts']}
+        self.assertFalse(rows['wikimedia:116034921']['accepted'])
+        self.assertTrue(rows['pixabay:7381976']['accepted'])
+        # A component's broad match cannot bypass its failed qualification.
+        receipt=deepcopy(rows['pexels:9850703'])
+        targets=[{'id':f'v{i}','fact_ids':[f'f{i+1}'],'must_show':f'Role {i}',
+                  'must_not_show':'Unrelated objects','query':f'Role {i}'} for i in range(3)]
+        receipt['visual_targets_sha256']=digest(targets)
+        asset={'visual_targets':targets,'visual_qualification_protocol':'qualified-target-v1'}
+        self.assertEqual(matched_targets(asset,receipt),{})
