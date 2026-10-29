@@ -44,6 +44,14 @@ def story_contract(request,evidence,photos):
     used={p['id'] for p in matched.values()}
     remaining=[p for p in photos if p['id'] not in used
                and set(p['supported_fact_ids']) & set(required)]
+    if request.get('visual_entailment_policy')=='independent-visual-entailment-v1':
+        def main_subject(photo):
+            return photo.get('inspection',{}).get('topic_relation',{}).get('kind')=='direct_subject'
+        if not any(main_subject(p) for p in matched.values()):
+            choice=next(((fact,p) for p in remaining if main_subject(p)
+                         for fact in required if fact not in matched and fact in p['supported_fact_ids']),None)
+            if choice is None:raise ValueError('main subject requires a source-related story anchor')
+            fact,photo=choice;matched[fact]=photo;remaining.remove(photo)
     for fact in required:
         if fact not in matched:
             if not remaining:raise ValueError('insufficient topical anchors for unobserved facts')

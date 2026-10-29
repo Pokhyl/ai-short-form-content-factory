@@ -61,3 +61,17 @@ class StoryContractTests(TestCase):
         self.assertEqual(beats['beat_3']['visual_relation'],'direct_fact_visual')
         self.assertEqual(beats['beat_1']['visual_relation'],'topic_context')
         self.assertEqual(beats['beat_2']['visual_relation'],'topic_context')
+
+    def test_main_subject_context_is_anchored_even_after_three_component_photos(self):
+        request={'required_fact_ids':['f1','f2','f3'],
+                 'visual_entailment_policy':'independent-visual-entailment-v1'}
+        evidence={'facts':[{'id':f'f{i}','text':f'Claim {i}'} for i in (1,2,3)]}
+        photos=[{'id':str(i),'sha256':str(i)*64,'direct_fact_ids':[],
+                 'supported_fact_ids':['f3'] if i==4 else ['f1','f2'],
+                 'inspection':{'topic_relation':{'kind':'direct_subject' if i==4 else 'documented_component'}}}
+                for i in (1,2,3,4)]
+        beats,_=story_contract(request,evidence,photos)
+        self.assertEqual(beats['beat_3']['material_id'],'4')
+        self.assertEqual(beats['beat_3']['visual_relation'],'topic_context')
+        with self.assertRaisesRegex(ValueError,'main subject'):
+            story_contract(request,evidence,photos[:3])
