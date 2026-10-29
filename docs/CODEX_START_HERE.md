@@ -1,3 +1,9 @@
+## Current boundary — natural voice duration, 2026-10-29
+
+Normal c66597b7 is terminal needs_attention/voice; never resume it. Research,9images and independently reviewed story succeeded. All16Gemini calls returned200, no503 retries needed. Three measured TTS attempts were41400,45096,47664ms for45seconds. The previous8percent character tolerance accepted a LONGER third draft after a96ms overshoot. Exact saved responses are regression fixture tests/factory_next/fixtures/actual-duration-c66597b7.json.
+
+Candidate347c6d8 adds measured-midpoint-v1 to NEW research: length targets center the strict audio interval; character tolerance maps to450ms, and too-long audio cannot approve a longer draft. Audio gate unchanged, no extraTTS/model quota. Diagnostic19da9f9b-6094-4a46-83ab-e742d68dea3c uses exact saved second narration, max3Gemini/1TTS/1metadata/0search. Inspect VPS midpoint-result.json before action. Live0156a42 remains; project_ready=false.
+
 ## Live checkpoint — authorized bounded retries deployed, 2026-10-29
 
 LIVE0156a42cdb0fbecc48db2f2ac335f577c32a239c / image483d20f6... has the owner-approved explicit-503-two-v1 policy for NEW jobs only: two delayed same-request/model retries total,60/180seconds, within unchanged Gemini budgets. SQL lock enforces job-wide cap; started/unknown/timeout calls cannot resend.616 exact-image tests and isolated SQL assertions passed. All69runtime source hashes match. Publichealth200/gateway403. Database rows, workflows, settings, othercontainers and old jobfiles preserved. Previous container retained. See acceptance/factory-next/bounded-retry-deployed-20261029.json.
