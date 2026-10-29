@@ -1,3 +1,9 @@
+## Current result — 2026-10-29, explicit provider503
+
+Normal ship job88972d2b-00fc-4bb9-b36b-7b9a667f215b is immutable needs_attention/materials. Research and its review succeeded, sources/searches and4downloads succeeded, initial image inspection succeeded. Independent material-entailment returned HTTP503/UNAVAILABLE, gatewayexecution14371, explicitly reporting high demand. No TTS or MP4. Zero automatic retries. This is distinct from the earlier400 review-schema bug, whose exact saved input passed after the compact-reference fix.
+
+LIVE remains b4922e0/image4438dd9e..., exact package232Next+134core+243material tests passed and deployment/readiness verified. No settings, provider model, quotas or retry policy changed. All historical failed jobs remain untouched. Receipt: acceptance/factory-next/ship-normal-result-20261029.json. User has been asked whether NEW jobs may have at most2delayed retries after explicit503 only, within unchanged budgets and without model switches or retries after timeouts. This policy change is NOT approved or enabled yet; wait for the user's answer before dependent work. project_ready=false; no fresh end-to-end MP4 has been produced in this continuation.
+
 ## Live checkpoint — 2026-10-29, compact review deployed
 
 LIVE source b4922e0049c99ea0d67b0f973e8697cf73bad27a, image sha256:4438dd9ed716209114bc5ad59701c9f8f6c7d7cb286ee77370c88271f9337c69. Exact image passed232Next+134core+243material tests. Compact-review diagnostic483150cb passed HTTP200 with3factual+3coverage checks and native-language approval on the exact saved duration revision, using1metadata/1Gemini/0TTS/search. Actual evidence is acceptance/factory-next/compact-review-result-20261029.json. Scene IDs are mapped by server to exact narration; no factual gates removed. Old request SHA is preserved by the legacy protocol regression.

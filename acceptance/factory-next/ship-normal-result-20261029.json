@@ -1,0 +1,21 @@
+{
+  "job": "88972d2b-00fc-4bb9-b36b-7b9a667f215b",
+  "topic": "Почему корабль держится на воде?",
+  "language": "ru",
+  "seconds": 45,
+  "revision": "b4922e0049c99ea0d67b0f973e8697cf73bad27a",
+  "status": "needs_attention",
+  "stage": "materials",
+  "completed_stages": [
+    "research"
+  ],
+  "failed_operation": "material-entailment:b8521ce2c8f1c822d4a4e2fefced9df0c7da0c510a1a3b25e3bf1976477c8197",
+  "http_status": 503,
+  "error_status": "UNAVAILABLE",
+  "gateway_execution_id": "14371",
+  "provider_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+  "automatic_retries": 0,
+  "tts_calls": 0,
+  "mp4": false,
+  "project_ready": false
+}
