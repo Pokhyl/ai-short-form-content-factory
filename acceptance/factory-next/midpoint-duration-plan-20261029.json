@@ -1,0 +1,14 @@
+{
+  "diagnostic_id": "19da9f9b-6094-4a46-83ab-e742d68dea3c",
+  "source_revision": "347c6d8",
+  "saved_job": "c66597b7-99cd-48e6-b9fd-dc516fb5f4a6",
+  "saved_attempt": 2,
+  "measured_ms": 45096,
+  "seconds": 45,
+  "max_metadata": 1,
+  "max_gemini": 3,
+  "max_tts": 1,
+  "max_search": 0,
+  "purpose": "Verify general centered length calibration on exact saved overlong narration before rollout; old job remains immutable",
+  "project_ready": false
+}
