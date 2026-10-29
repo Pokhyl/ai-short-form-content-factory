@@ -73,3 +73,16 @@ class VisualEntailmentTests(TestCase):
         ops.gemini.generate.reset_mock();ops.gemini.generate.side_effect=TimeoutError()
         with self.assertRaises(TimeoutError):review_batch(ops,self.assets,self.evidence,self.receipts)
         ops.gemini.generate.assert_called_once()
+
+    def test_actual_independent_response_removed_both_false_claims(self):
+        saved=json.loads((Path(__file__).parents[2]/'acceptance/factory-next/independent-visibility-result-20261029.json').read_text())
+        self.assertEqual(saved['result']['status'],'passed')
+        rows={r['asset_id']:r for r in saved['receipts']}
+        self.assertFalse(rows['wikimedia:116034921']['accepted'])
+        for identity in ('pexels:9850703','wikimedia:32200400','pixabay:7381976'):
+            row=rows[identity]
+            self.assertTrue(row['accepted'])
+            self.assertEqual(row['direct_fact_ids'],[])
+            matches={m['target_id'] for m in row['target_matches'] if m['matches']}
+            self.assertEqual(matches,{'v2'} if identity=='pixabay:7381976' else {'v1'})
+            self.assertTrue(all(v['verdict']=='not_visible' for v in row['visual_entailment']['verdict']['facts'].values()))

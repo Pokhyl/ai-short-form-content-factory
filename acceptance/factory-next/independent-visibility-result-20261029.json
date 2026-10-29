@@ -1,0 +1,891 @@
+{
+  "package": {
+    "status": "passed",
+    "source_revision": "bb1b2b5b8243dd0f40190323ee2c1d592a8edf47",
+    "image_tag": "factory-v3:visual-visibility-bb1b2b5",
+    "image_id": "sha256:1c6291cb456fbbf85af11c626b7866e1561181e9eceb3512b7ba0043b47cd9b0",
+    "tests": {
+      "next_focus": 0,
+      "factory_v3": 0,
+      "material_first": 0
+    },
+    "parent_full_suite": {
+      "status": "passed",
+      "source_revision": "b49aba84eac0e0edfe3ac81c3dbac84adc38ecc0",
+      "image_tag": "factory-v3:visual-entailment-b49aba8",
+      "image_id": "sha256:5c3e22029b1b9ec8ea9050def43511f51c909ffeaaf770a21ce871a14a42d06c",
+      "tests": {
+        "factory_next": 0,
+        "factory_v3": 0,
+        "material_first": 0
+      }
+    },
+    "changed_runtime_file": "material_first/visual_entailment.py"
+  },
+  "result": {
+    "id": "3949cbf1-268b-49ed-b945-40dea17abb58",
+    "source_revision": "bb1b2b5b8243dd0f40190323ee2c1d592a8edf47",
+    "gemini_calls": 1,
+    "metadata_calls": 1,
+    "search_calls": 0,
+    "tts_calls": 0,
+    "status": "passed",
+    "negative_rejected": true,
+    "positive_count": 3,
+    "elapsed_seconds": 10.585
+  },
+  "receipts": [
+    {
+      "accepted": false,
+      "is_real_material": true,
+      "medium": "photograph",
+      "topic_relation": {
+        "kind": "unrelated",
+        "visible_subject": "Masskara Festival dancers wearing masks and colorful costumes",
+        "connection": "The image depicts a cultural festival during rain, which is irrelevant to rainbow formation."
+      },
+      "subject_fully_visible": true,
+      "visible_description": "Multiple dancers in ornate, colorful masks and costumes performing in the rain.",
+      "visible_fact_details": [],
+      "target_matches": [
+        {
+          "target_id": "v0",
+          "matches": false,
+          "detail_prominent": false,
+          "visible_detail": "",
+          "subject_qualifications_match": false
+        },
+        {
+          "target_id": "v1",
+          "matches": false,
+          "detail_prominent": false,
+          "visible_detail": "",
+          "subject_qualifications_match": false
+        },
+        {
+          "target_id": "v2",
+          "matches": false,
+          "detail_prominent": false,
+          "visible_detail": "",
+          "subject_qualifications_match": false
+        }
+      ],
+      "illustration_type": "not_applicable",
+      "subject_focus": {
+        "dominant_subject": "Festival dancers",
+        "topic_connection": "None",
+        "relevant_content_is_primary": false,
+        "unrelated_subject_dominates": true
+      },
+      "supported_fact_ids": [],
+      "inspection_protocol": "topic-specific-v1",
+      "subject_focus_policy": "primary-subject-v1",
+      "direct_fact_ids": [],
+      "visual_targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+      "visual_qualification_protocol": "qualified-target-v1",
+      "asset_id": "wikimedia:116034921",
+      "asset_sha256": "3d4a4bb79c211c3ed15cbaf187cc06bc14f6eee34747fd7b7ec19fb0acdddc7b",
+      "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+      "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+      "model": "gemini-3.5-flash-lite",
+      "provider_provenance": {
+        "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "model": "gemini-3.5-flash-lite",
+        "thinking_level": "medium",
+        "thinking_budget": null,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "promptTokenCount": 7078,
+          "candidatesTokenCount": 1777,
+          "totalTokenCount": 8855,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 4347
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 2731
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "http": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json; charset=UTF-8",
+            "date": "Thu, 29 Oct 2026 02:46:42 GMT"
+          },
+          "gateway_execution_id": "14332"
+        }
+      }
+    },
+    {
+      "accepted": true,
+      "is_real_material": true,
+      "medium": "photograph",
+      "topic_relation": {
+        "kind": "documented_component",
+        "visible_subject": "Water droplets on a glass pane",
+        "connection": "Water droplets are a required component for the formation of rainbows."
+      },
+      "subject_fully_visible": true,
+      "visible_description": "Close-up view of water droplets resting on a glass surface against a neutral grey background.",
+      "visible_fact_details": [
+        {
+          "fact_id": "f1",
+          "detail": "Water droplets are visible.",
+          "relationship": "topic_context"
+        }
+      ],
+      "target_matches": [
+        {
+          "target_id": "v0",
+          "matches": false,
+          "detail_prominent": true,
+          "visible_detail": "Water droplets are clearly shown on the glass pane.",
+          "subject_qualifications_match": false
+        },
+        {
+          "target_id": "v1",
+          "matches": true,
+          "detail_prominent": true,
+          "visible_detail": "Individual water droplets are visible.",
+          "subject_qualifications_match": true
+        },
+        {
+          "target_id": "v2",
+          "matches": false,
+          "detail_prominent": false,
+          "visible_detail": "",
+          "subject_qualifications_match": false
+        }
+      ],
+      "illustration_type": "not_applicable",
+      "subject_focus": {
+        "dominant_subject": "Water droplets on glass",
+        "topic_connection": "Water droplets are essential for rainbow formation.",
+        "relevant_content_is_primary": true,
+        "unrelated_subject_dominates": false
+      },
+      "supported_fact_ids": [
+        "f1"
+      ],
+      "inspection_protocol": "topic-specific-v1",
+      "subject_focus_policy": "primary-subject-v1",
+      "direct_fact_ids": [],
+      "visual_targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+      "visual_qualification_protocol": "qualified-target-v1",
+      "asset_id": "pexels:9850703",
+      "asset_sha256": "af3cce59ba4d2b5ccfe41a1a18649425058f920086d25c2353011f7b341d09ca",
+      "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+      "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+      "model": "gemini-3.5-flash-lite",
+      "provider_provenance": {
+        "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "model": "gemini-3.5-flash-lite",
+        "thinking_level": "medium",
+        "thinking_budget": null,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "promptTokenCount": 7078,
+          "candidatesTokenCount": 1777,
+          "totalTokenCount": 8855,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 4347
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 2731
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "http": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json; charset=UTF-8",
+            "date": "Thu, 29 Oct 2026 02:46:42 GMT"
+          },
+          "gateway_execution_id": "14332"
+        }
+      },
+      "initial_inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "documented_component",
+          "visible_subject": "Water droplets on a glass pane",
+          "connection": "Water droplets are a required component for the formation of rainbows."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "Close-up view of water droplets resting on a glass surface against a neutral grey background.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "Water droplets are visible.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Water droplets are clearly shown on the glass pane.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Individual water droplets are visible.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Water droplets on glass",
+          "topic_connection": "Water droplets are essential for rainbow formation.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "pexels:9850703",
+        "asset_sha256": "af3cce59ba4d2b5ccfe41a1a18649425058f920086d25c2353011f7b341d09ca",
+        "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+        "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7078,
+            "candidatesTokenCount": 1777,
+            "totalTokenCount": 8855,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4347
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2731
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Thu, 29 Oct 2026 02:46:42 GMT"
+            },
+            "gateway_execution_id": "14332"
+          }
+        }
+      },
+      "visual_entailment": {
+        "policy": "independent-visual-entailment-v1",
+        "asset_sha256": "af3cce59ba4d2b5ccfe41a1a18649425058f920086d25c2353011f7b341d09ca",
+        "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+        "targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+        "inspection_receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "verdict": {
+          "facts": {
+            "f1": {
+              "verdict": "not_visible",
+              "reason": "The image shows water droplets on a glass pane, not atmospheric water droplets floating in the air with sunlight to form a rainbow."
+            },
+            "f2": {
+              "verdict": "not_visible",
+              "reason": "The image does not show sunlight entering water droplets to bend, reflect, and separate into colors."
+            },
+            "f3": {
+              "verdict": "not_visible",
+              "reason": "No rainbow spectrum or light exiting droplets is visible in this close-up of a glass pane."
+            }
+          },
+          "targets": {
+            "v0": {
+              "verdict": "no_match",
+              "reason": "The water droplets are resting on a glass pane, not floating as atmospheric water droplets."
+            },
+            "v1": {
+              "verdict": "exact_match",
+              "reason": "Clear water droplets are visible on the glass surface."
+            },
+            "v2": {
+              "verdict": "no_match",
+              "reason": "No rainbow spectrum is present in the image."
+            }
+          }
+        },
+        "provenance": {
+          "receipt_id": "439cdb55519bb01bd1e5946e7a3922b7829478a524ef490ba4d95865be3db5e4",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 5362,
+            "candidatesTokenCount": 883,
+            "totalTokenCount": 7897,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 3267
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2095
+              }
+            ],
+            "thoughtsTokenCount": 1652,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Thu, 29 Oct 2026 08:18:19 GMT"
+            },
+            "gateway_execution_id": "14336"
+          }
+        }
+      }
+    },
+    {
+      "accepted": true,
+      "is_real_material": true,
+      "medium": "photograph",
+      "topic_relation": {
+        "kind": "direct_subject",
+        "visible_subject": "Rainbow spectrum in the sky",
+        "connection": "Shows a visible rainbow spectrum resulting from sunlight interacting with atmospheric water droplets."
+      },
+      "subject_fully_visible": true,
+      "visible_description": "A meteorological rainbow spectrum visible in clouds and sky.",
+      "visible_fact_details": [
+        {
+          "fact_id": "f3",
+          "detail": "A visible rainbow spectrum is displayed in the sky.",
+          "relationship": "topic_context"
+        }
+      ],
+      "target_matches": [
+        {
+          "target_id": "v0",
+          "matches": false,
+          "detail_prominent": false,
+          "visible_detail": "",
+          "subject_qualifications_match": false
+        },
+        {
+          "target_id": "v1",
+          "matches": false,
+          "detail_prominent": false,
+          "visible_detail": "",
+          "subject_qualifications_match": false
+        },
+        {
+          "target_id": "v2",
+          "matches": true,
+          "detail_prominent": true,
+          "visible_detail": "Rainbow spectrum visible in the sky.",
+          "subject_qualifications_match": true
+        }
+      ],
+      "illustration_type": "not_applicable",
+      "subject_focus": {
+        "dominant_subject": "Rainbow",
+        "topic_connection": "Directly shows the rainbow phenomenon formed by light and droplets.",
+        "relevant_content_is_primary": true,
+        "unrelated_subject_dominates": false
+      },
+      "supported_fact_ids": [
+        "f3"
+      ],
+      "inspection_protocol": "topic-specific-v1",
+      "subject_focus_policy": "primary-subject-v1",
+      "direct_fact_ids": [],
+      "visual_targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+      "visual_qualification_protocol": "qualified-target-v1",
+      "asset_id": "pixabay:7381976",
+      "asset_sha256": "b54e3a01eb607955e102643fa57031c07226c6e9c99ea15f4762f8b3b282c3df",
+      "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+      "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+      "model": "gemini-3.5-flash-lite",
+      "provider_provenance": {
+        "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "model": "gemini-3.5-flash-lite",
+        "thinking_level": "medium",
+        "thinking_budget": null,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "promptTokenCount": 7078,
+          "candidatesTokenCount": 1777,
+          "totalTokenCount": 8855,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 4347
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 2731
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "http": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json; charset=UTF-8",
+            "date": "Thu, 29 Oct 2026 02:46:42 GMT"
+          },
+          "gateway_execution_id": "14332"
+        }
+      },
+      "initial_inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "Rainbow spectrum in the sky",
+          "connection": "Shows a visible rainbow spectrum resulting from sunlight interacting with atmospheric water droplets."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A meteorological rainbow spectrum visible in clouds and sky.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f3",
+            "detail": "A visible rainbow spectrum is displayed in the sky.",
+            "relationship": "direct_observation"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v1",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v2",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Rainbow spectrum visible in the sky.",
+            "subject_qualifications_match": true
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Rainbow",
+          "topic_connection": "Directly shows the rainbow phenomenon formed by light and droplets.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f3"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [
+          "f3"
+        ],
+        "visual_targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "pixabay:7381976",
+        "asset_sha256": "b54e3a01eb607955e102643fa57031c07226c6e9c99ea15f4762f8b3b282c3df",
+        "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+        "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7078,
+            "candidatesTokenCount": 1777,
+            "totalTokenCount": 8855,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4347
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2731
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Thu, 29 Oct 2026 02:46:42 GMT"
+            },
+            "gateway_execution_id": "14332"
+          }
+        }
+      },
+      "visual_entailment": {
+        "policy": "independent-visual-entailment-v1",
+        "asset_sha256": "b54e3a01eb607955e102643fa57031c07226c6e9c99ea15f4762f8b3b282c3df",
+        "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+        "targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+        "inspection_receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "verdict": {
+          "facts": {
+            "f1": {
+              "verdict": "not_visible",
+              "reason": "While a rainbow is shown, the microscopic and environmental conditions of individual droplets floating in the air and sunlight interaction are not visibly detailed as a full causal process."
+            },
+            "f2": {
+              "verdict": "not_visible",
+              "reason": "The microscopic process of sunlight entering individual water droplets and reflecting internally is not visible."
+            },
+            "f3": {
+              "verdict": "not_visible",
+              "reason": "The image displays the final visible rainbow outcome rather than capturing the active process of light exiting the droplets."
+            }
+          },
+          "targets": {
+            "v0": {
+              "verdict": "component_only",
+              "reason": "Atmospheric moisture and clouds are present, but individual atmospheric water droplets are not distinctly resolved."
+            },
+            "v1": {
+              "verdict": "component_only",
+              "reason": "Water droplets form the mist and clouds, but individual droplets are not isolated as exact match targets."
+            },
+            "v2": {
+              "verdict": "exact_match",
+              "reason": "A clear and prominent rainbow spectrum is visible in the sky."
+            }
+          }
+        },
+        "provenance": {
+          "receipt_id": "439cdb55519bb01bd1e5946e7a3922b7829478a524ef490ba4d95865be3db5e4",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 5362,
+            "candidatesTokenCount": 883,
+            "totalTokenCount": 7897,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 3267
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2095
+              }
+            ],
+            "thoughtsTokenCount": 1652,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Thu, 29 Oct 2026 08:18:19 GMT"
+            },
+            "gateway_execution_id": "14336"
+          }
+        }
+      }
+    },
+    {
+      "accepted": true,
+      "is_real_material": true,
+      "medium": "photograph",
+      "topic_relation": {
+        "kind": "documented_component",
+        "visible_subject": "Water droplets on a leaf",
+        "connection": "Water droplets serve as the physical component relevant to rainbow optics."
+      },
+      "subject_fully_visible": true,
+      "visible_description": "Close-up of a large water droplet resting on a green leaf surface, with other smaller droplets nearby.",
+      "visible_fact_details": [
+        {
+          "fact_id": "f2",
+          "detail": "Water droplets are shown up close.",
+          "relationship": "topic_context"
+        }
+      ],
+      "target_matches": [
+        {
+          "target_id": "v0",
+          "matches": false,
+          "detail_prominent": true,
+          "visible_detail": "Water droplets resting on the leaf surface.",
+          "subject_qualifications_match": false
+        },
+        {
+          "target_id": "v1",
+          "matches": true,
+          "detail_prominent": true,
+          "visible_detail": "A prominent water droplet on the green leaf.",
+          "subject_qualifications_match": true
+        },
+        {
+          "target_id": "v2",
+          "matches": false,
+          "detail_prominent": false,
+          "visible_detail": "",
+          "subject_qualifications_match": false
+        }
+      ],
+      "illustration_type": "not_applicable",
+      "subject_focus": {
+        "dominant_subject": "Water droplet on a leaf",
+        "topic_connection": "Depicts water droplets, which are necessary for rainbow formation.",
+        "relevant_content_is_primary": true,
+        "unrelated_subject_dominates": false
+      },
+      "supported_fact_ids": [
+        "f2"
+      ],
+      "inspection_protocol": "topic-specific-v1",
+      "subject_focus_policy": "primary-subject-v1",
+      "direct_fact_ids": [],
+      "visual_targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+      "visual_qualification_protocol": "qualified-target-v1",
+      "asset_id": "wikimedia:32200400",
+      "asset_sha256": "4c3ec9ad215984834fed085525fbca535c4d116b6a57081441f84f782dbc8f79",
+      "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+      "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+      "model": "gemini-3.5-flash-lite",
+      "provider_provenance": {
+        "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "model": "gemini-3.5-flash-lite",
+        "thinking_level": "medium",
+        "thinking_budget": null,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "promptTokenCount": 7078,
+          "candidatesTokenCount": 1777,
+          "totalTokenCount": 8855,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 4347
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 2731
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "http": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json; charset=UTF-8",
+            "date": "Thu, 29 Oct 2026 02:46:42 GMT"
+          },
+          "gateway_execution_id": "14332"
+        }
+      },
+      "initial_inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "documented_component",
+          "visible_subject": "Water droplets on a leaf",
+          "connection": "Water droplets serve as the physical component relevant to rainbow optics."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "Close-up of a large water droplet resting on a green leaf surface, with other smaller droplets nearby.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f2",
+            "detail": "Water droplets are shown up close.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Water droplets resting on the leaf surface.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "A prominent water droplet on the green leaf.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Water droplet on a leaf",
+          "topic_connection": "Depicts water droplets, which are necessary for rainbow formation.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f2"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:32200400",
+        "asset_sha256": "4c3ec9ad215984834fed085525fbca535c4d116b6a57081441f84f782dbc8f79",
+        "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+        "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7078,
+            "candidatesTokenCount": 1777,
+            "totalTokenCount": 8855,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4347
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2731
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Thu, 29 Oct 2026 02:46:42 GMT"
+            },
+            "gateway_execution_id": "14332"
+          }
+        }
+      },
+      "visual_entailment": {
+        "policy": "independent-visual-entailment-v1",
+        "asset_sha256": "4c3ec9ad215984834fed085525fbca535c4d116b6a57081441f84f782dbc8f79",
+        "evidence_sha256": "bee01fc1aaa0e79a88f6b9c9d689884d421704a90d157ac5de71c932e21ec802",
+        "targets_sha256": "a691a0916b8868c155bff81095f5ac7378a9892d7e68ed4ed5363e454d9f484d",
+        "inspection_receipt_id": "807a82f23965c19758a9d8b3d486686ec8ba32079703ccf16cfbfe2112efaa10",
+        "verdict": {
+          "facts": {
+            "f1": {
+              "verdict": "not_visible",
+              "reason": "The image shows water droplets on a leaf, with no rainbow or atmospheric conditions present."
+            },
+            "f2": {
+              "verdict": "not_visible",
+              "reason": "No sunlight entering and reflecting inside water droplets to separate colors is depicted."
+            },
+            "f3": {
+              "verdict": "not_visible",
+              "reason": "No rainbow spectrum is visible."
+            }
+          },
+          "targets": {
+            "v0": {
+              "verdict": "no_match",
+              "reason": "The water droplets are resting on a leaf surface, not floating as atmospheric droplets."
+            },
+            "v1": {
+              "verdict": "exact_match",
+              "reason": "Water droplets are clearly visible resting on the leaf."
+            },
+            "v2": {
+              "verdict": "no_match",
+              "reason": "No rainbow spectrum is present in the image."
+            }
+          }
+        },
+        "provenance": {
+          "receipt_id": "439cdb55519bb01bd1e5946e7a3922b7829478a524ef490ba4d95865be3db5e4",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 5362,
+            "candidatesTokenCount": 883,
+            "totalTokenCount": 7897,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 3267
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2095
+              }
+            ],
+            "thoughtsTokenCount": 1652,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Thu, 29 Oct 2026 08:18:19 GMT"
+            },
+            "gateway_execution_id": "14336"
+          }
+        }
+      }
+    }
+  ]
+}
