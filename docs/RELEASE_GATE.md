@@ -1,3 +1,11 @@
+## Live checkpoint — 2026-10-29, compact review deployed
+
+LIVE source b4922e0049c99ea0d67b0f973e8697cf73bad27a, image sha256:4438dd9ed716209114bc5ad59701c9f8f6c7d7cb286ee77370c88271f9337c69. Exact image passed232Next+134core+243material tests. Compact-review diagnostic483150cb passed HTTP200 with3factual+3coverage checks and native-language approval on the exact saved duration revision, using1metadata/1Gemini/0TTS/search. Actual evidence is acceptance/factory-next/compact-review-result-20261029.json. Scene IDs are mapped by server to exact narration; no factual gates removed. Old request SHA is preserved by the legacy protocol regression.
+
+Protected rollout retained database/workflows/settings/othercontainers/job-files exactly; all69runtime Python files match Git, label/envrevision match, publichealth200 and unauthenticatedgateway403. Backup factory-next-studio-v9-before-compact-review-20261029 retained. Prior ice job279615cb remains terminal and untouched.
+
+ONE fresh normal RU45 ship request88972d2b-00fc-4bb9-b36b-7b9a667f215b accepted201 through public Studio. Topic: «Почему корабль держится на воде?». Follow this exact ID to final audit/public MP4; never duplicate submission. VPS /opt/factory-completion-20261028/{compact-normal-submission,compact-review-readiness,compact-review-rollout-result}.json. project_ready=false until actual full-run validation.
+
 ## Current normal-run result — 2026-10-29
 
 Normal RU45 ice job 279615cb-cfba-4aca-b2a9-9a0dd25a4e11 is immutable needs_attention/voice. Research, 10 verified images and independent story review passed. The first real TTS succeeded and measured39.336s, so automatic duration expansion ran. Its expanded text was generated successfully, but next-voice-correction:2:script-review returned Gemini HTTP400/INVALID_ARGUMENT (execution14358). This is NOT a TTS provider failure. No second TTS or MP4 exists. Exact failed request was reconstructed offline with matching SHA a42a76...; old ID must not be resumed.
