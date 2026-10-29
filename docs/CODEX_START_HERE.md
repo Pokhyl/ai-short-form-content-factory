@@ -1,3 +1,9 @@
+## Current live run — midpoint correction verified, 2026-10-29
+
+LIVE347c6d812e960e6cf1306fa5a6206fd965533326 / image61d13f4e... passed235Next+141core+243material tests. Actual saved-overlong diagnostic19da9f9b passed:698->677characters, measured45096->43920ms,2Gemini+1metadata+1TTS, independent factual/native review. Strict duration unchanged. Protected rollout preserved database/workflows/settings/othercontainers/jobfiles;69sourcefiles match,health200,gateway403. Evidence acceptance/factory-next/midpoint-duration-result-20261029.json.
+
+ONE new public normal job b89f1415-d4a3-41ad-8694-c69dc22bfcf0 accepted201, RU45 «Почему лёд плавает в воде?». Last seen running/materials after research. Follow exactID through MP4; never duplicate POST. Old c66597b7 remains terminal. VPS /opt/factory-completion-20261028/midpoint-normal-submission.json. project_ready=false pending actual final audit.
+
 ## Current boundary — natural voice duration, 2026-10-29
 
 Normal c66597b7 is terminal needs_attention/voice; never resume it. Research,9images and independently reviewed story succeeded. All16Gemini calls returned200, no503 retries needed. Three measured TTS attempts were41400,45096,47664ms for45seconds. The previous8percent character tolerance accepted a LONGER third draft after a96ms overshoot. Exact saved responses are regression fixture tests/factory_next/fixtures/actual-duration-c66597b7.json.
