@@ -20,7 +20,7 @@ class VisualEntailmentTests(TestCase):
                      'visual_targets':targets,'visual_qualification_protocol':'qualified-target-v1',
                      'visual_entailment_policy':POLICY} for r in self.receipts]
         for r in self.receipts:r['visual_targets_sha256']=digest(targets)
-        self.verdict={'facts':{f'f{i}':{'verdict':'contextual_only','reason':'Mechanism not visible'} for i in (1,2,3)},
+        self.verdict={'facts':{f'f{i}':{'verdict':'not_visible','reason':'Mechanism not visible'} for i in (1,2,3)},
                       'targets':{f'v{i}':{'verdict':'exact_match' if i==1 else 'component_only',
                                          'reason':'Controlled independent comparison'} for i in range(3)}}
         self.provenance={'receipt_id':'independent-review','model':'controlled'}

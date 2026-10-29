@@ -1,0 +1,22 @@
+{
+  "diagnostic_id": "3949cbf1-268b-49ed-b945-40dea17abb58",
+  "date": "2026-10-29",
+  "purpose": "Separate visibility verification from initial context relevance: independent verifier can only remove direct-observation and exact-target claims; no contextual relevance reclassification",
+  "source_job": "e577e215-034c-43b7-8959-2e842f0cf358",
+  "source_inspection": "c8db3735-867a-4d97-8694-cf0c69de1d5d",
+  "max_metadata_calls": 1,
+  "max_gemini_calls": 1,
+  "max_search_calls": 0,
+  "max_tts_calls": 0,
+  "automatic_retries": 0,
+  "acceptance": [
+    "off-topic foreground remains rejected",
+    "three positive images remain admitted",
+    "all three causal facts stay context rather than direct observation",
+    "surface droplets fail atmospheric target v0 while retaining water-droplet target v1",
+    "rainbow retains spectrum target v2",
+    "review bound to exact asset/source/target hashes"
+  ],
+  "production_deployment": false,
+  "previous_diagnostic": "424cf8b0-9ce9-4144-ae5e-18d60bdd866b"
+}

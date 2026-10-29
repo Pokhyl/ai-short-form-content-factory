@@ -9,8 +9,9 @@ INSTRUCTION = (
     'visual target requirements. This is NOT a general topic-relevance decision. '
     'For each fact choose entire_claim_visible only if ALL parts of the original fact '
     'are shown, including cause, conditions and process. A photo of an outcome does '
-    'not show why it happened. Use contextual_only for a relevant subject or component '
-    'whose mechanism is hidden; unrelated if no concrete source-backed relationship exists. '
+    'not show why it happened. Use not_visible whenever any part of the fact is hidden '
+    'or absent. Do not decide whether the image is useful context: source relevance '
+    'and dominant-subject admission are handled by the separate initial inspection. '
     'For each target choose exact_match only if the actual object AND EVERY qualifier '
     'in must_show are established by the pixels and reliable identifying metadata. '
     'A related component in different conditions is component_only, not exact_match. '
@@ -25,7 +26,7 @@ INSTRUCTION = (
 def schema(assets, evidence):
     return obj({a['id']:obj({
         'facts':obj({f['id']:obj({
-            'verdict':string(['entire_claim_visible','contextual_only','unrelated','unknown']),
+            'verdict':string(['entire_claim_visible','not_visible','unknown']),
             'reason':string()}) for f in evidence['facts']}),
         'targets':obj({t['id']:obj({
             'verdict':string(['exact_match','component_only','no_match','unknown']),
@@ -39,8 +40,6 @@ def apply_review(asset, evidence, receipt, verdict, provenance):
     details=[]
     for detail in result.get('visible_fact_details',[]):
         decision=verdict['facts'][detail['fact_id']]['verdict']
-        if decision not in ('entire_claim_visible','contextual_only'):
-            continue
         detail=deepcopy(detail)
         if decision!='entire_claim_visible':detail['relationship']='topic_context'
         details.append(detail)
