@@ -15,7 +15,7 @@ BEGIN
   EXCEPTION WHEN OTHERS THEN blocked:=true; END;
   IF NOT blocked THEN RAISE EXCEPTION 'changed request retried'; END IF;
   claim:=factory_v3.claim_model_retry(id,key||':retry503',repeat('a',64),'revision',key);
-  IF (claim->>'retry_delay_seconds')::int<>CASE WHEN key='research' THEN 60 ELSE 180 END
+  IF (claim->>'retry_delay_seconds')::int<>(CASE WHEN key='research' THEN 60 ELSE 180 END)
   THEN RAISE EXCEPTION 'incorrect delay'; END IF;
   blocked:=false;
   BEGIN PERFORM factory_v3.claim_model_retry(id,key||':retry503',repeat('a',64),'revision',key);
