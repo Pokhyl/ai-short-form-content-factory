@@ -1,0 +1,52 @@
+{
+  "package-347c6d8.json": {
+    "status": "passed",
+    "source_revision": "347c6d812e960e6cf1306fa5a6206fd965533326",
+    "image_tag": "factory-v3:duration-midpoint-347c6d8",
+    "image_id": "sha256:61d13f4e9f7bae28ff44707023e6d44521ce85da40490f00b11afbf3ce673e1b",
+    "tests": {
+      "factory_next": 0,
+      "factory_v3": 0,
+      "material_first": 0
+    }
+  },
+  "midpoint-result.json": {
+    "id": "19da9f9b-6094-4a46-83ab-e742d68dea3c",
+    "source_revision": "347c6d812e960e6cf1306fa5a6206fd965533326",
+    "metadata_calls": 1,
+    "gemini_calls": 2,
+    "search_calls": 0,
+    "tts_calls": 1,
+    "previous_characters": 698,
+    "revised_characters": 677,
+    "window": {
+      "target_words": 93,
+      "min_words": 87,
+      "max_words": 99,
+      "target_characters": 680,
+      "min_characters": 674,
+      "max_characters": 686
+    },
+    "measurement": {
+      "status": "ready",
+      "bytes": 351360,
+      "sha256": "77f364ff65d0d661135a5f3569e3447477d55d61b53c9aeb69317ecdc8e92cb3",
+      "codec": "mp3",
+      "duration_ms": 43920,
+      "sample_rate": 24000,
+      "channels": 1
+    },
+    "sha256": "77f364ff65d0d661135a5f3569e3447477d55d61b53c9aeb69317ecdc8e92cb3",
+    "status": "passed",
+    "elapsed_seconds": 15.547
+  },
+  "normal_plan": {
+    "request": {
+      "topic": "Почему лёд плавает в воде?",
+      "language": "ru",
+      "seconds": 45
+    },
+    "max_public_submissions": 1,
+    "old_job_immutable": "c66597b7-99cd-48e6-b9fd-dc516fb5f4a6"
+  }
+}
