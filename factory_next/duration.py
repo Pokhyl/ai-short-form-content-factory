@@ -62,7 +62,9 @@ def revision_length_window(script, measured_ms, seconds, *, centered=False):
         characters=round(len(script)*target_ms/measured_ms)
         words=max(1,round(len(script.split())*target_ms/measured_ms))
         words_slack=max(3,round(words*.06))
-        chars_slack=max(1,math.floor(len(script)*450/measured_ms))
+        # Leave 300ms inside each strict audio boundary. This is a
+        # drafting estimate, not permission to accept out-of-range audio.
+        chars_slack=max(1,math.floor(len(script)*750/measured_ms))
         low=max(1,characters-chars_slack)
         high=characters+chars_slack
         if measured_ms>seconds*1000:

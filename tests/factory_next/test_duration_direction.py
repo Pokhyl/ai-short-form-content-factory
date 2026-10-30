@@ -36,3 +36,14 @@ class DurationDirectionTests(unittest.TestCase):
         self.assertFalse(duration_fits(41400,45))
         self.assertFalse(duration_fits(47664,45))
         self.assertTrue(duration_fits(43950,45))
+
+    def test_saved_complete_expansion_inside_audio_interval_is_not_overfiltered(self):
+        root=Path(__file__).parent/'fixtures'
+        source=json.loads((root/'actual-coverage-b89f1415.json').read_text())
+        rows=json.loads((root/'actual-length-c90ef11b.json').read_text())
+        text=' '.join(s for row in rows[1]['response'].values() for s in row.values())
+        original=source['original']['script']
+        win=revision_length_window(original,30504,45,centered=True)
+        self.assertEqual(len(text),701)
+        self.assertTrue(revision_length_fits(text,win))
+        self.assertTrue(duration_fits(len(text)/len(original)*30504,45))
