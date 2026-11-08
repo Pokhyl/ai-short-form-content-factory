@@ -178,8 +178,9 @@ def ordered_visuals(payload, timings, source_duration_ms, *, slot_count=None, re
         # the story stage. Keep that explicit relation usable when fact IDs
         # differ across independently generated stages.
         anchor_match = scene.get('material_id') == material.get('id')
-        if policy==TOPIC_POLICY and not overlap and not anchor_match: return 0
-        return 3*(scene.get('visual_target_id') in material.get('matched_visual_targets',{}))+overlap+int(anchor_match)
+        contextual = material.get('id') in payload.get('contextual_alternatives', {}).get(scene['id'], [])
+        if policy==TOPIC_POLICY and not overlap and not anchor_match and not contextual: return 0
+        return 3*(scene.get('visual_target_id') in material.get('matched_visual_targets',{}))+overlap+int(anchor_match)+int(contextual)
     if policy!=TOPIC_POLICY:
         unused=list(payload['visuals']);result=[]
         for cut,scene in slots:

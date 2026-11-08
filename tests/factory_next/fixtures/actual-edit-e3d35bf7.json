@@ -1,0 +1,3358 @@
+{
+  "story": [
+    {
+      "id": "beat-1",
+      "material_id": "wikimedia:48422662",
+      "narration": "Секрет этого удивительного физического феномена кроется в законе Архимеда. Согласно закону Архимеда, на погружённое в жидкость тело действует выталкивающая сила. Эта возникающая выталкивающая сила всегда равна весу вытесненной жидкости.",
+      "evidence_ids": [
+        "f1"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "contract": {
+        "visual_intent": "A large white passenger ferry/ship named Rhapsody moored in a harbor with a blue sky and water surface.",
+        "must_show": [
+          "A large white passenger ferry/ship named Rhapsody moored in a harbor with a blue sky and water surface."
+        ],
+        "must_not_show": [],
+        "contextual_not_direct_proof": true
+      },
+      "visual_relation": "topic_context"
+    },
+    {
+      "id": "beat-2",
+      "material_id": "wikimedia:80949265",
+      "narration": "Инженеры проектируют суда так, чтобы геометрия корпуса работала максимально эффективно. Форма корпуса судна с развитой подводной частью значительно увеличивает объем воды. Такая продуманная конструкция успешно обеспечивает максимальную выталкивающую силу.",
+      "evidence_ids": [
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "contract": {
+        "visual_intent": "Historical page showing ship hull construction drawings and cross-sections.",
+        "must_show": [
+          "Historical page showing ship hull construction drawings and cross-sections."
+        ],
+        "must_not_show": [],
+        "contextual_not_direct_proof": true
+      },
+      "visual_relation": "topic_context"
+    },
+    {
+      "id": "beat-3",
+      "material_id": "wikimedia:73904474",
+      "narration": "Несмотря на тяжелую сталь, внутри корпуса надежно находятся огромные полости с воздухом. Благодаря внутренним полостям средняя плотность корабля меньше плотности воды, позволяя не тонуть.",
+      "evidence_ids": [
+        "f3"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "contract": {
+        "visual_intent": "A passenger and cargo ferry docked in a port at dusk with lights illuminated.",
+        "must_show": [
+          "A passenger and cargo ferry docked in a port at dusk with lights illuminated."
+        ],
+        "must_not_show": [],
+        "contextual_not_direct_proof": true
+      },
+      "visual_relation": "topic_context"
+    }
+  ],
+  "photos": [
+    {
+      "id": "wikimedia:48422662",
+      "media_type": "photo",
+      "sha256": "7c662b4892d153a2fc9165214f8855f9f01c6c986610c1764b510ce864fe83ec",
+      "visible_description": "A large white passenger ferry/ship named Rhapsody moored in a harbor with a blue sky and water surface.",
+      "supported_fact_ids": [
+        "f1"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "passenger ship moored in water",
+          "connection": "Demonstrates a ship successfully staying afloat on water, which relates to buoyancy."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A large white passenger ferry/ship named Rhapsody moored in a harbor with a blue sky and water surface.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "The ship floats on the water surface, supported by buoyancy.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The large passenger ship Rhapsody",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The visible portion of the ship's hull above the waterline",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "A large passenger ship",
+          "topic_connection": "It represents a ship floating on water.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:48422662",
+        "asset_sha256": "7c662b4892d153a2fc9165214f8855f9f01c6c986610c1764b510ce864fe83ec",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7351,
+            "candidatesTokenCount": 1403,
+            "totalTokenCount": 10796,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4386
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2965
+              }
+            ],
+            "thoughtsTokenCount": 2042,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:38:23 GMT"
+            },
+            "gateway_execution_id": "14470"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "passenger ship moored in water",
+            "connection": "Demonstrates a ship successfully staying afloat on water, which relates to buoyancy."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "A large white passenger ferry/ship named Rhapsody moored in a harbor with a blue sky and water surface.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "The ship floats on the water surface, supported by buoyancy.",
+              "relationship": "topic_context"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The large passenger ship Rhapsody",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The visible portion of the ship's hull above the waterline",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": false,
+              "detail_prominent": false,
+              "visible_detail": "",
+              "subject_qualifications_match": false
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "A large passenger ship",
+            "topic_connection": "It represents a ship floating on water.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "wikimedia:48422662",
+          "asset_sha256": "7c662b4892d153a2fc9165214f8855f9f01c6c986610c1764b510ce864fe83ec",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7351,
+              "candidatesTokenCount": 1403,
+              "totalTokenCount": 10796,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4386
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2965
+                }
+              ],
+              "thoughtsTokenCount": 2042,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:38:23 GMT"
+              },
+              "gateway_execution_id": "14470"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "7c662b4892d153a2fc9165214f8855f9f01c6c986610c1764b510ce864fe83ec",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "The photo shows a ship, but does not visually demonstrate the physical law of buoyant force and displaced liquid weight."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "While the ship's hull is visible, the causal process of how its shape increases displaced water volume to provide buoyant force is not depicted as an active explanatory process."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal air compartments and their effect on average density are hidden inside the ship and cannot be observed from this external view."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The image clearly depicts a large passenger ship moored in a harbor."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The hull of the ship is clearly visible above the water line."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Internal air compartments are structural features located inside the vessel and are not visible in this external photograph."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "73188ce417ed12abde6e41be755b6657e850c9d76b3cf7aa0fa68e48c760f6b0",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7014,
+              "candidatesTokenCount": 1213,
+              "totalTokenCount": 9010,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4386
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2628
+                }
+              ],
+              "thoughtsTokenCount": 783,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:38:32 GMT"
+              },
+              "gateway_execution_id": "14471"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "The large passenger ship Rhapsody",
+        "v1": "The visible portion of the ship's hull above the waterline"
+      }
+    },
+    {
+      "id": "pexels:12355319",
+      "media_type": "photo",
+      "sha256": "1115478a995109a27413607633b48b82f677d828bdfe0d7cd923830ce438816b",
+      "visible_description": "A cargo ship loaded with containers sailing across the ocean under bright daylight.",
+      "supported_fact_ids": [
+        "f1"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "cargo ship on the ocean",
+          "connection": "Shows a cargo ship floating on the sea surface."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A cargo ship loaded with containers sailing across the ocean under bright daylight.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "The cargo ship floats on the water.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Cargo ship carrying containers",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The dark hull of the cargo ship",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Cargo ship",
+          "topic_connection": "Illustrates a vessel floating on water.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "pexels:12355319",
+        "asset_sha256": "1115478a995109a27413607633b48b82f677d828bdfe0d7cd923830ce438816b",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7351,
+            "candidatesTokenCount": 1403,
+            "totalTokenCount": 10796,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4386
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2965
+              }
+            ],
+            "thoughtsTokenCount": 2042,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:38:23 GMT"
+            },
+            "gateway_execution_id": "14470"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "cargo ship on the ocean",
+            "connection": "Shows a cargo ship floating on the sea surface."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "A cargo ship loaded with containers sailing across the ocean under bright daylight.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "The cargo ship floats on the water.",
+              "relationship": "topic_context"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "Cargo ship carrying containers",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The dark hull of the cargo ship",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": false,
+              "detail_prominent": false,
+              "visible_detail": "",
+              "subject_qualifications_match": false
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "Cargo ship",
+            "topic_connection": "Illustrates a vessel floating on water.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "pexels:12355319",
+          "asset_sha256": "1115478a995109a27413607633b48b82f677d828bdfe0d7cd923830ce438816b",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7351,
+              "candidatesTokenCount": 1403,
+              "totalTokenCount": 10796,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4386
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2965
+                }
+              ],
+              "thoughtsTokenCount": 2042,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:38:23 GMT"
+              },
+              "gateway_execution_id": "14470"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "1115478a995109a27413607633b48b82f677d828bdfe0d7cd923830ce438816b",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "The photo shows a cargo ship at sea, but does not depict the physical principles of Archimedes' law."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "The hull is visible, but the physical mechanism and process of displaced water volume are not shown."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal air compartments are inside the hull and are completely hidden from view."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The image clearly shows a cargo ship carrying shipping containers on the ocean."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The hull of the cargo ship is visible along the water line."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Internal air compartments are enclosed within the ship's structure and are not visible."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "73188ce417ed12abde6e41be755b6657e850c9d76b3cf7aa0fa68e48c760f6b0",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7014,
+              "candidatesTokenCount": 1213,
+              "totalTokenCount": 9010,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4386
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2628
+                }
+              ],
+              "thoughtsTokenCount": 783,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:38:32 GMT"
+              },
+              "gateway_execution_id": "14471"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "Cargo ship carrying containers",
+        "v1": "The dark hull of the cargo ship"
+      }
+    },
+    {
+      "id": "pixabay:1578528",
+      "media_type": "photo",
+      "sha256": "574a1fc18813689be683d704b29438285efba5709a44ad0479f3a11f901a7b0f",
+      "visible_description": "A white luxury cruise ship sailing on the open sea.",
+      "supported_fact_ids": [
+        "f1"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "cruise ship on the sea",
+          "connection": "Shows a cruise ship floating on water."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A white luxury cruise ship sailing on the open sea.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "The cruise ship stays afloat on the water.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Cruise ship",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The white hull of the cruise ship",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Cruise ship",
+          "topic_connection": "Illustrates a ship staying afloat.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "pixabay:1578528",
+        "asset_sha256": "574a1fc18813689be683d704b29438285efba5709a44ad0479f3a11f901a7b0f",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7351,
+            "candidatesTokenCount": 1403,
+            "totalTokenCount": 10796,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4386
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2965
+              }
+            ],
+            "thoughtsTokenCount": 2042,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:38:23 GMT"
+            },
+            "gateway_execution_id": "14470"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "cruise ship on the sea",
+            "connection": "Shows a cruise ship floating on water."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "A white luxury cruise ship sailing on the open sea.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "The cruise ship stays afloat on the water.",
+              "relationship": "topic_context"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "Cruise ship",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The white hull of the cruise ship",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": false,
+              "detail_prominent": false,
+              "visible_detail": "",
+              "subject_qualifications_match": false
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "Cruise ship",
+            "topic_connection": "Illustrates a ship staying afloat.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "pixabay:1578528",
+          "asset_sha256": "574a1fc18813689be683d704b29438285efba5709a44ad0479f3a11f901a7b0f",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7351,
+              "candidatesTokenCount": 1403,
+              "totalTokenCount": 10796,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4386
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2965
+                }
+              ],
+              "thoughtsTokenCount": 2042,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:38:23 GMT"
+              },
+              "gateway_execution_id": "14470"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "574a1fc18813689be683d704b29438285efba5709a44ad0479f3a11f901a7b0f",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "The photo depicts a cruise ship on the sea, but does not illustrate Archimedes' buoyant force law."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "The ship's hull is visible, but the relationship between hull shape and displaced water volume is not explained or demonstrated in the image."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal cavities containing air are internal and not visible from the outside."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The image displays a large cruise ship sailing on the ocean."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The hull of the cruise ship is clearly visible."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Internal air compartments are not visible in an exterior view of a ship."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "73188ce417ed12abde6e41be755b6657e850c9d76b3cf7aa0fa68e48c760f6b0",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7014,
+              "candidatesTokenCount": 1213,
+              "totalTokenCount": 9010,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4386
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2628
+                }
+              ],
+              "thoughtsTokenCount": 783,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:38:32 GMT"
+              },
+              "gateway_execution_id": "14471"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "Cruise ship",
+        "v1": "The white hull of the cruise ship"
+      }
+    },
+    {
+      "id": "wikimedia:80949265",
+      "media_type": "photo",
+      "sha256": "b98b147200431551f09d740bc550236b719fbd20407e1cc2eab37ae940bf700f",
+      "visible_description": "Historical page showing ship hull construction drawings and cross-sections.",
+      "supported_fact_ids": [
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "illustration",
+        "topic_relation": {
+          "kind": "direct_part_or_stage",
+          "visible_subject": "ship hull construction drawing",
+          "connection": "Depicts the technical design and shape of a ship's hull, relevant to buoyancy and displacement."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "Historical page showing ship hull construction drawings and cross-sections.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f2",
+            "detail": "The drawings show the detailed shape of the ship's hull and its sub-structure.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Drawings of a ship structure",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Ship hull construction lines and cross-section",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": true,
+            "visible_detail": "Internal framing and enclosed spaces inside the hull structure",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "structural_illustration",
+        "subject_focus": {
+          "dominant_subject": "Ship hull construction blueprints",
+          "topic_connection": "Shows the design of the ship's hull and structural compartments.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f2"
+        ],
+        "inspection_protocol": "source-illustration-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:80949265",
+        "asset_sha256": "b98b147200431551f09d740bc550236b719fbd20407e1cc2eab37ae940bf700f",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7351,
+            "candidatesTokenCount": 1403,
+            "totalTokenCount": 10796,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4386
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 2965
+              }
+            ],
+            "thoughtsTokenCount": 2042,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:38:23 GMT"
+            },
+            "gateway_execution_id": "14470"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "illustration",
+          "topic_relation": {
+            "kind": "direct_part_or_stage",
+            "visible_subject": "ship hull construction drawing",
+            "connection": "Depicts the technical design and shape of a ship's hull, relevant to buoyancy and displacement."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "Historical page showing ship hull construction drawings and cross-sections.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f2",
+              "detail": "The drawings show the detailed shape of the ship's hull and its sub-structure.",
+              "relationship": "topic_context"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "Drawings of a ship structure",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "Ship hull construction lines and cross-section",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "Internal framing and enclosed spaces inside the hull structure",
+              "subject_qualifications_match": true
+            }
+          ],
+          "illustration_type": "structural_illustration",
+          "subject_focus": {
+            "dominant_subject": "Ship hull construction blueprints",
+            "topic_connection": "Shows the design of the ship's hull and structural compartments.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f2"
+          ],
+          "inspection_protocol": "source-illustration-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "wikimedia:80949265",
+          "asset_sha256": "b98b147200431551f09d740bc550236b719fbd20407e1cc2eab37ae940bf700f",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7351,
+              "candidatesTokenCount": 1403,
+              "totalTokenCount": 10796,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4386
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2965
+                }
+              ],
+              "thoughtsTokenCount": 2042,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:38:23 GMT"
+              },
+              "gateway_execution_id": "14470"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "b98b147200431551f09d740bc550236b719fbd20407e1cc2eab37ae940bf700f",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "8b9438ff223096bb27fb04e5082bf47678f2dccc75bdad34f5833801767655ba",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "The page of a book contains ship construction drawings, not a visualization of Archimedes' law."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "The drawing shows construction details of a hull, but does not demonstrate the physical process of displaced water volume."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal air compartments as functional density-reducing cavities are not explicitly shown or explained in terms of physics."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The image shows a historical book page containing ship construction drawings."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The page specifically features technical ship hull construction drawings."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Internal air compartments are not explicitly labeled or depicted as functional buoyancy spaces in this construction drawing."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "73188ce417ed12abde6e41be755b6657e850c9d76b3cf7aa0fa68e48c760f6b0",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7014,
+              "candidatesTokenCount": 1213,
+              "totalTokenCount": 9010,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4386
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2628
+                }
+              ],
+              "thoughtsTokenCount": 783,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:38:32 GMT"
+              },
+              "gateway_execution_id": "14471"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "scientific_illustration",
+      "matched_visual_targets": {
+        "v0": "Drawings of a ship structure",
+        "v1": "Ship hull construction lines and cross-section"
+      }
+    },
+    {
+      "id": "wikimedia:73904474",
+      "media_type": "photo",
+      "sha256": "dbbd9446d252d782f3ab1dcaa436a58dd7471c75d94e8cab9db3877a26403ff8",
+      "visible_description": "A passenger and cargo ferry docked in a port at dusk with lights illuminated.",
+      "supported_fact_ids": [
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "Large ship in a harbor",
+          "connection": "Directly illustrates a ship floating on water, fulfilling the topic of why ships stay afloat."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A passenger and cargo ferry docked in a port at dusk with lights illuminated.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "The ship is floating on the water surface.",
+            "relationship": "topic_context"
+          },
+          {
+            "fact_id": "f2",
+            "detail": "The ship features a large hull shape designed to displace water.",
+            "relationship": "topic_context"
+          },
+          {
+            "fact_id": "f3",
+            "detail": "The upper structure and internal spaces contribute to overall buoyancy.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The large ship resting on the water surface.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": false,
+            "detail_prominent": true,
+            "visible_detail": "The hull structure of the ship visible above and at the waterline.",
+            "subject_qualifications_match": false
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "Superstructure volumes representing internal spaces.",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "ship",
+          "topic_connection": "shows a ship floating on water",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1",
+          "f2",
+          "f3"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:73904474",
+        "asset_sha256": "dbbd9446d252d782f3ab1dcaa436a58dd7471c75d94e8cab9db3877a26403ff8",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "08a1de7f57bfd1f58bc45912f44d0d22ba95f14e86f9192d9fad31e20d30ba6d",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "08a1de7f57bfd1f58bc45912f44d0d22ba95f14e86f9192d9fad31e20d30ba6d",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7408,
+            "candidatesTokenCount": 1885,
+            "totalTokenCount": 10702,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4328
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 3080
+              }
+            ],
+            "thoughtsTokenCount": 1409,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:39:27 GMT"
+            },
+            "gateway_execution_id": "14473"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "Large ship in a harbor",
+            "connection": "Directly illustrates a ship floating on water, fulfilling the topic of why ships stay afloat."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "A passenger and cargo ferry docked in a port at dusk with lights illuminated.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "The ship is floating on the water surface.",
+              "relationship": "direct_observation"
+            },
+            {
+              "fact_id": "f2",
+              "detail": "The ship features a large hull shape designed to displace water.",
+              "relationship": "direct_observation"
+            },
+            {
+              "fact_id": "f3",
+              "detail": "The upper structure and internal spaces contribute to overall buoyancy.",
+              "relationship": "topic_context"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The large ship resting on the water surface.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The hull structure of the ship visible above and at the waterline.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": true,
+              "detail_prominent": false,
+              "visible_detail": "Superstructure volumes representing internal spaces.",
+              "subject_qualifications_match": true
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "ship",
+            "topic_connection": "shows a ship floating on water",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1",
+            "f2",
+            "f3"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [
+            "f1",
+            "f2"
+          ],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "wikimedia:73904474",
+          "asset_sha256": "dbbd9446d252d782f3ab1dcaa436a58dd7471c75d94e8cab9db3877a26403ff8",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "08a1de7f57bfd1f58bc45912f44d0d22ba95f14e86f9192d9fad31e20d30ba6d",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "08a1de7f57bfd1f58bc45912f44d0d22ba95f14e86f9192d9fad31e20d30ba6d",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7408,
+              "candidatesTokenCount": 1885,
+              "totalTokenCount": 10702,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4328
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 3080
+                }
+              ],
+              "thoughtsTokenCount": 1409,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:39:27 GMT"
+              },
+              "gateway_execution_id": "14473"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "dbbd9446d252d782f3ab1dcaa436a58dd7471c75d94e8cab9db3877a26403ff8",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "08a1de7f57bfd1f58bc45912f44d0d22ba95f14e86f9192d9fad31e20d30ba6d",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "The image shows a ship in a harbour, but it does not visually demonstrate Archimedes' principle or the buoyant force acting on a submerged body."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "While the ship's hull is visible, the underwater portion and its specific effect on increasing water displacement to provide buoyant force are not visible."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "The internal air compartments and cavities of the ship are hidden inside the hull and cannot be seen in the external photograph."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The image clearly shows a large ship (the ferry Fantastic) docked in a harbour."
+              },
+              "v1": {
+                "verdict": "component_only",
+                "reason": "The upper and side portions of the ship hull are visible, but the key requirement of the underwater part/submerged hull is not fully established or viewable."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "The internal air compartments are internal structural features and are completely hidden from view."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "7895f87bd2772be60d9cf11e4d40be74f423eb7fe72c58f7674e35da2ce10214",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 2759,
+              "candidatesTokenCount": 346,
+              "totalTokenCount": 3105,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 1100
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 1659
+                }
+              ],
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:39:30 GMT"
+              },
+              "gateway_execution_id": "14474"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "The large ship resting on the water surface."
+      }
+    },
+    {
+      "id": "wikimedia:70285085",
+      "media_type": "photo",
+      "sha256": "d4700c3deb93bb8c09e368947926089e210d4695c12352bc413b2e217af9ecfa",
+      "visible_description": "A fishing vessel named Stéphane Cardone supported by blocks on a dry dock with its hull fully exposed.",
+      "supported_fact_ids": [
+        "f1",
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "Fishing ship on dry dock",
+          "connection": "Depicts a complete ship and its hull structure, illustrating the subject of ships and buoyancy."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A fishing vessel named Stéphane Cardone supported by blocks on a dry dock with its hull fully exposed.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "A ship is shown resting out of water.",
+            "relationship": "topic_context"
+          },
+          {
+            "fact_id": "f2",
+            "detail": "The ship's hull with its underwater form is fully visible.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The entire ship is clearly visible as the primary subject.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The ship hull is prominently visible out of the water.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Fishing vessel",
+          "topic_connection": "Directly represents a ship and its hull relevant to buoyancy principles.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1",
+          "f2"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:70285085",
+        "asset_sha256": "d4700c3deb93bb8c09e368947926089e210d4695c12352bc413b2e217af9ecfa",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7366,
+            "candidatesTokenCount": 1906,
+            "totalTokenCount": 11038,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4325
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 3041
+              }
+            ],
+            "thoughtsTokenCount": 1766,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:39:59 GMT"
+            },
+            "gateway_execution_id": "14475"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "Fishing ship on dry dock",
+            "connection": "Depicts a complete ship and its hull structure, illustrating the subject of ships and buoyancy."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "A fishing vessel named Stéphane Cardone supported by blocks on a dry dock with its hull fully exposed.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "A ship is shown resting out of water.",
+              "relationship": "topic_context"
+            },
+            {
+              "fact_id": "f2",
+              "detail": "The ship's hull with its underwater form is fully visible.",
+              "relationship": "topic_context"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The entire ship is clearly visible as the primary subject.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The ship hull is prominently visible out of the water.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": false,
+              "detail_prominent": false,
+              "visible_detail": "",
+              "subject_qualifications_match": false
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "Fishing vessel",
+            "topic_connection": "Directly represents a ship and its hull relevant to buoyancy principles.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1",
+            "f2"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "wikimedia:70285085",
+          "asset_sha256": "d4700c3deb93bb8c09e368947926089e210d4695c12352bc413b2e217af9ecfa",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7366,
+              "candidatesTokenCount": 1906,
+              "totalTokenCount": 11038,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4325
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 3041
+                }
+              ],
+              "thoughtsTokenCount": 1766,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:39:59 GMT"
+              },
+              "gateway_execution_id": "14475"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "d4700c3deb93bb8c09e368947926089e210d4695c12352bc413b2e217af9ecfa",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "The image shows a ship out of water in dry dock, which does not depict the physical process or application of Archimedes' principle."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "Although the hull is visible, the dynamic process of displacing water to provide buoyant force is not active as the ship is resting out of water."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal air compartments are located inside the ship and are not visible from the exterior."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The subject is clearly a ship (Stéphane Cardone)."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The hull of the ship is clearly visible."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Air compartments are internal structures and cannot be seen on the exterior photograph."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "7b3903df5f626dd44298d57fde3676741d792af503ae19143d2098a828f5b691",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 4157,
+              "candidatesTokenCount": 596,
+              "totalTokenCount": 5749,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 1985
+                },
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 2172
+                }
+              ],
+              "thoughtsTokenCount": 996,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:40:06 GMT"
+              },
+              "gateway_execution_id": "14476"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "The entire ship is clearly visible as the primary subject.",
+        "v1": "The ship hull is prominently visible out of the water."
+      }
+    },
+    {
+      "id": "wikimedia:62072903",
+      "media_type": "photo",
+      "sha256": "e3d60ab008a3d1266a6acf8857ce905fc2c1c931fbe7d00a09ea9fa22f31bf89",
+      "visible_description": "A large chemical tanker ship named Chemical Challenger moored in a harbour.",
+      "supported_fact_ids": [
+        "f1",
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "Chemical tanker ship",
+          "connection": "Shows a large ship and its hull structure."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A large chemical tanker ship named Chemical Challenger moored in a harbour.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "A ship is shown.",
+            "relationship": "topic_context"
+          },
+          {
+            "fact_id": "f2",
+            "detail": "The ship's hull is clearly visible.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The ship is the primary subject of the photo.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The ship's red hull is prominently visible.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Chemical tanker ship",
+          "topic_connection": "Directly depicts a ship and its hull.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1",
+          "f2"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:62072903",
+        "asset_sha256": "e3d60ab008a3d1266a6acf8857ce905fc2c1c931fbe7d00a09ea9fa22f31bf89",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7366,
+            "candidatesTokenCount": 1906,
+            "totalTokenCount": 11038,
+            "promptTokensDetails": [
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4325
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 3041
+              }
+            ],
+            "thoughtsTokenCount": 1766,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:39:59 GMT"
+            },
+            "gateway_execution_id": "14475"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "Chemical tanker ship",
+            "connection": "Shows a large ship and its hull structure."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "A large chemical tanker ship named Chemical Challenger moored in a harbour.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "A ship is shown.",
+              "relationship": "topic_context"
+            },
+            {
+              "fact_id": "f2",
+              "detail": "The ship's hull is clearly visible.",
+              "relationship": "topic_context"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The ship is the primary subject of the photo.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The ship's red hull is prominently visible.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": false,
+              "detail_prominent": false,
+              "visible_detail": "",
+              "subject_qualifications_match": false
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "Chemical tanker ship",
+            "topic_connection": "Directly depicts a ship and its hull.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1",
+            "f2"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "wikimedia:62072903",
+          "asset_sha256": "e3d60ab008a3d1266a6acf8857ce905fc2c1c931fbe7d00a09ea9fa22f31bf89",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7366,
+              "candidatesTokenCount": 1906,
+              "totalTokenCount": 11038,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4325
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 3041
+                }
+              ],
+              "thoughtsTokenCount": 1766,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:39:59 GMT"
+              },
+              "gateway_execution_id": "14475"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "e3d60ab008a3d1266a6acf8857ce905fc2c1c931fbe7d00a09ea9fa22f31bf89",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "2eb1551054d941176c484d85a7d810ff192542473af2c129ceba9d79e0758c60",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "A photo of a floating ship is an outcome and does not visually demonstrate the underlying physical law of Archimedes' principle and forces."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "The photo shows the ship in water, but does not display the active physical process of displacement and resulting buoyant force generation."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal air compartments inside the hull are hidden from view."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The subject is clearly a ship (Chemical Challenger)."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The ship hull is clearly visible."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Air compartments are internal and not visible in the exterior shot."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "7b3903df5f626dd44298d57fde3676741d792af503ae19143d2098a828f5b691",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 4157,
+              "candidatesTokenCount": 596,
+              "totalTokenCount": 5749,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 1985
+                },
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 2172
+                }
+              ],
+              "thoughtsTokenCount": 996,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:40:06 GMT"
+              },
+              "gateway_execution_id": "14476"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "The ship is the primary subject of the photo.",
+        "v1": "The ship's red hull is prominently visible."
+      }
+    },
+    {
+      "id": "wikimedia:117966783",
+      "media_type": "photo",
+      "sha256": "f5f4bdda2f23eabc32fde7f90aefee9a3497330f8b3bd47db8aa168f394c19af",
+      "visible_description": "A passenger and cargo ship resting on supports on land, showing its red and black hull clearly.",
+      "supported_fact_ids": [
+        "f1",
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "A large ship displayed on land with its entire hull visible",
+          "connection": "Illustrates the ship structure and hull form discussed in relation to buoyancy."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A passenger and cargo ship resting on supports on land, showing its red and black hull clearly.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "A complete ship is shown, illustrating the vessel that displaces water.",
+            "relationship": "topic_context"
+          },
+          {
+            "fact_id": "f2",
+            "detail": "The ship's hull with its developed underwater shape is fully visible.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The entire ship is clearly visible.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The ship's red and black hull is prominently displayed.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "A ship on land",
+          "topic_connection": "Shows the physical structure of a ship and its hull.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1",
+          "f2"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:117966783",
+        "asset_sha256": "f5f4bdda2f23eabc32fde7f90aefee9a3497330f8b3bd47db8aa168f394c19af",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7292,
+            "candidatesTokenCount": 1450,
+            "totalTokenCount": 11056,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2992
+              },
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4300
+              }
+            ],
+            "thoughtsTokenCount": 2314,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:40:41 GMT"
+            },
+            "gateway_execution_id": "14477"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "A large ship displayed on land with its entire hull visible",
+            "connection": "Illustrates the ship structure and hull form discussed in relation to buoyancy."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "A passenger and cargo ship resting on supports on land, showing its red and black hull clearly.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "A complete ship is shown, illustrating the vessel that displaces water.",
+              "relationship": "topic_context"
+            },
+            {
+              "fact_id": "f2",
+              "detail": "The ship's hull with its developed underwater shape is fully visible.",
+              "relationship": "direct_observation"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The entire ship is clearly visible.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The ship's red and black hull is prominently displayed.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": false,
+              "detail_prominent": false,
+              "visible_detail": "",
+              "subject_qualifications_match": false
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "A ship on land",
+            "topic_connection": "Shows the physical structure of a ship and its hull.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1",
+            "f2"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [
+            "f2"
+          ],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "wikimedia:117966783",
+          "asset_sha256": "f5f4bdda2f23eabc32fde7f90aefee9a3497330f8b3bd47db8aa168f394c19af",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7292,
+              "candidatesTokenCount": 1450,
+              "totalTokenCount": 11056,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2992
+                },
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4300
+                }
+              ],
+              "thoughtsTokenCount": 2314,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:40:41 GMT"
+              },
+              "gateway_execution_id": "14477"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "f5f4bdda2f23eabc32fde7f90aefee9a3497330f8b3bd47db8aa168f394c19af",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "The photograph depicts a static ship on land; physical principles such as Archimedes' law are not visually demonstrated."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "While the hull shape is visible, the active physical process and conditions of water displacement generating buoyant force are not shown."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal air compartments and cavities are located inside the ship and are entirely hidden from external view."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The image clearly shows the ship Finnmarken."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The entire ship's hull is fully visible."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Internal air compartments are hidden inside the hull and cannot be seen."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "0b56125158f1c8ced164b084924cc1cf8b18c5a6d7d53f25c64c6aa0d3e5b775",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 5522,
+              "candidatesTokenCount": 859,
+              "totalTokenCount": 7477,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 3236
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2286
+                }
+              ],
+              "thoughtsTokenCount": 1096,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:40:50 GMT"
+              },
+              "gateway_execution_id": "14478"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "The entire ship is clearly visible.",
+        "v1": "The ship's red and black hull is prominently displayed."
+      }
+    },
+    {
+      "id": "wikimedia:55902071",
+      "media_type": "photo",
+      "sha256": "4c0b54afdb86c36e6929202649e04e4d25fde37bc01d44de2f065ddfe4b08c95",
+      "visible_description": "A cargo ship named Rio Tagus moored at a quay, floating in water.",
+      "supported_fact_ids": [
+        "f1",
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "Cargo ship moored in water",
+          "connection": "Demonstrates a ship floating on water."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "A cargo ship named Rio Tagus moored at a quay, floating in water.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "A ship floating on water, exemplifying buoyancy.",
+            "relationship": "topic_context"
+          },
+          {
+            "fact_id": "f2",
+            "detail": "The ship's hull is visible above and near the waterline.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Cargo ship Rio Tagus floating.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The ship's hull is prominently visible.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "A cargo ship",
+          "topic_connection": "Shows a ship afloat on water.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1",
+          "f2"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:55902071",
+        "asset_sha256": "4c0b54afdb86c36e6929202649e04e4d25fde37bc01d44de2f065ddfe4b08c95",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7292,
+            "candidatesTokenCount": 1450,
+            "totalTokenCount": 11056,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2992
+              },
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4300
+              }
+            ],
+            "thoughtsTokenCount": 2314,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:40:41 GMT"
+            },
+            "gateway_execution_id": "14477"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "Cargo ship moored in water",
+            "connection": "Demonstrates a ship floating on water."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "A cargo ship named Rio Tagus moored at a quay, floating in water.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "A ship floating on water, exemplifying buoyancy.",
+              "relationship": "topic_context"
+            },
+            {
+              "fact_id": "f2",
+              "detail": "The ship's hull is visible above and near the waterline.",
+              "relationship": "direct_observation"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "Cargo ship Rio Tagus floating.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The ship's hull is prominently visible.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": false,
+              "detail_prominent": false,
+              "visible_detail": "",
+              "subject_qualifications_match": false
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "A cargo ship",
+            "topic_connection": "Shows a ship afloat on water.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1",
+            "f2"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [
+            "f2"
+          ],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "wikimedia:55902071",
+          "asset_sha256": "4c0b54afdb86c36e6929202649e04e4d25fde37bc01d44de2f065ddfe4b08c95",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7292,
+              "candidatesTokenCount": 1450,
+              "totalTokenCount": 11056,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2992
+                },
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4300
+                }
+              ],
+              "thoughtsTokenCount": 2314,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:40:41 GMT"
+              },
+              "gateway_execution_id": "14477"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "4c0b54afdb86c36e6929202649e04e4d25fde37bc01d44de2f065ddfe4b08c95",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "Physical laws like Archimedes' principle are theoretical concepts not directly visible in a photograph."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "The dynamic process of hull displacement creating buoyant force is not shown."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal air spaces within the ship are not visible from the outside."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The ship Rio Tagus is clearly depicted moored at the quai."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The ship's hull is prominently visible above and at the waterline."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Air compartments inside the ship are not visible."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "0b56125158f1c8ced164b084924cc1cf8b18c5a6d7d53f25c64c6aa0d3e5b775",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 5522,
+              "candidatesTokenCount": 859,
+              "totalTokenCount": 7477,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 3236
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2286
+                }
+              ],
+              "thoughtsTokenCount": 1096,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:40:50 GMT"
+              },
+              "gateway_execution_id": "14478"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "Cargo ship Rio Tagus floating.",
+        "v1": "The ship's hull is prominently visible."
+      }
+    },
+    {
+      "id": "wikimedia:101295163",
+      "media_type": "photo",
+      "sha256": "3cedc86d27dace7b019b8a0bb27cf8a660521a4fe271d504dd2f0c614b1ddd23",
+      "visible_description": "Cargo ship Wilson Hull moored in a harbour under an overcast sky.",
+      "supported_fact_ids": [
+        "f1",
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "inspection": {
+        "accepted": true,
+        "is_real_material": true,
+        "medium": "photograph",
+        "topic_relation": {
+          "kind": "direct_subject",
+          "visible_subject": "Cargo ship Wilson Hull in a harbour",
+          "connection": "Shows a ship floating in water."
+        },
+        "subject_fully_visible": true,
+        "visible_description": "Cargo ship Wilson Hull moored in a harbour under an overcast sky.",
+        "visible_fact_details": [
+          {
+            "fact_id": "f1",
+            "detail": "A ship floating on water, demonstrating the buoyancy phenomenon.",
+            "relationship": "topic_context"
+          },
+          {
+            "fact_id": "f2",
+            "detail": "The ship's hull is clearly visible.",
+            "relationship": "topic_context"
+          }
+        ],
+        "target_matches": [
+          {
+            "target_id": "v0",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "Cargo ship Wilson Hull.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v1",
+            "matches": true,
+            "detail_prominent": true,
+            "visible_detail": "The hull of the ship Wilson Hull.",
+            "subject_qualifications_match": true
+          },
+          {
+            "target_id": "v2",
+            "matches": false,
+            "detail_prominent": false,
+            "visible_detail": "",
+            "subject_qualifications_match": false
+          }
+        ],
+        "illustration_type": "not_applicable",
+        "subject_focus": {
+          "dominant_subject": "Cargo ship in harbour",
+          "topic_connection": "Depicts a ship floating on water.",
+          "relevant_content_is_primary": true,
+          "unrelated_subject_dominates": false
+        },
+        "supported_fact_ids": [
+          "f1",
+          "f2"
+        ],
+        "inspection_protocol": "topic-specific-v1",
+        "subject_focus_policy": "primary-subject-v1",
+        "direct_fact_ids": [],
+        "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+        "visual_qualification_protocol": "qualified-target-v1",
+        "asset_id": "wikimedia:101295163",
+        "asset_sha256": "3cedc86d27dace7b019b8a0bb27cf8a660521a4fe271d504dd2f0c614b1ddd23",
+        "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+        "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+        "model": "gemini-3.5-flash-lite",
+        "provider_provenance": {
+          "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "model": "gemini-3.5-flash-lite",
+          "thinking_level": "medium",
+          "thinking_budget": null,
+          "model_version": "gemini-3.5-flash-lite",
+          "usage": {
+            "promptTokenCount": 7292,
+            "candidatesTokenCount": 1450,
+            "totalTokenCount": 11056,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2992
+              },
+              {
+                "modality": "IMAGE",
+                "tokenCount": 4300
+              }
+            ],
+            "thoughtsTokenCount": 2314,
+            "serviceTier": "standard"
+          },
+          "http": {
+            "status": 200,
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "date": "Sun, 08 Nov 2026 18:40:41 GMT"
+            },
+            "gateway_execution_id": "14477"
+          }
+        },
+        "initial_inspection": {
+          "accepted": true,
+          "is_real_material": true,
+          "medium": "photograph",
+          "topic_relation": {
+            "kind": "direct_subject",
+            "visible_subject": "Cargo ship Wilson Hull in a harbour",
+            "connection": "Shows a ship floating in water."
+          },
+          "subject_fully_visible": true,
+          "visible_description": "Cargo ship Wilson Hull moored in a harbour under an overcast sky.",
+          "visible_fact_details": [
+            {
+              "fact_id": "f1",
+              "detail": "A ship floating on water, demonstrating the buoyancy phenomenon.",
+              "relationship": "topic_context"
+            },
+            {
+              "fact_id": "f2",
+              "detail": "The ship's hull is clearly visible.",
+              "relationship": "direct_observation"
+            }
+          ],
+          "target_matches": [
+            {
+              "target_id": "v0",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "Cargo ship Wilson Hull.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v1",
+              "matches": true,
+              "detail_prominent": true,
+              "visible_detail": "The hull of the ship Wilson Hull.",
+              "subject_qualifications_match": true
+            },
+            {
+              "target_id": "v2",
+              "matches": false,
+              "detail_prominent": false,
+              "visible_detail": "",
+              "subject_qualifications_match": false
+            }
+          ],
+          "illustration_type": "not_applicable",
+          "subject_focus": {
+            "dominant_subject": "Cargo ship in harbour",
+            "topic_connection": "Depicts a ship floating on water.",
+            "relevant_content_is_primary": true,
+            "unrelated_subject_dominates": false
+          },
+          "supported_fact_ids": [
+            "f1",
+            "f2"
+          ],
+          "inspection_protocol": "topic-specific-v1",
+          "subject_focus_policy": "primary-subject-v1",
+          "direct_fact_ids": [
+            "f2"
+          ],
+          "visual_targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "visual_qualification_protocol": "qualified-target-v1",
+          "asset_id": "wikimedia:101295163",
+          "asset_sha256": "3cedc86d27dace7b019b8a0bb27cf8a660521a4fe271d504dd2f0c614b1ddd23",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "model": "gemini-3.5-flash-lite",
+          "provider_provenance": {
+            "receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 7292,
+              "candidatesTokenCount": 1450,
+              "totalTokenCount": 11056,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2992
+                },
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 4300
+                }
+              ],
+              "thoughtsTokenCount": 2314,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:40:41 GMT"
+              },
+              "gateway_execution_id": "14477"
+            }
+          }
+        },
+        "visual_entailment": {
+          "policy": "independent-visual-entailment-v1",
+          "asset_sha256": "3cedc86d27dace7b019b8a0bb27cf8a660521a4fe271d504dd2f0c614b1ddd23",
+          "evidence_sha256": "e3111be8a57e3d6abd7ef7f2144d9b7c56eed61204022e5a3c08706804c4dd6e",
+          "targets_sha256": "0e4bc13d6a84a5d34fe61df43303fb23920e6c2809629ee0e92c7187ff0b26a4",
+          "inspection_receipt_id": "011ba32c67acc5e9f0c1fe5b21dc66144b2e9a89679c4203374f5cd4bd974c26",
+          "verdict": {
+            "facts": {
+              "f1": {
+                "verdict": "not_visible",
+                "reason": "Archimedes' law is a physical principle and cannot be observed directly as a visual fact in a static photo."
+              },
+              "f2": {
+                "verdict": "not_visible",
+                "reason": "The functional process of water displacement by the hull's shape is not illustrated in action."
+              },
+              "f3": {
+                "verdict": "not_visible",
+                "reason": "Internal air cavities are enclosed within the ship structure and are not visible."
+              }
+            },
+            "targets": {
+              "v0": {
+                "verdict": "exact_match",
+                "reason": "The cargo ship Wilson Hull is clearly visible in the harbour."
+              },
+              "v1": {
+                "verdict": "exact_match",
+                "reason": "The ship's hull is clearly visible."
+              },
+              "v2": {
+                "verdict": "no_match",
+                "reason": "Internal air compartments are not visible externally."
+              }
+            }
+          },
+          "provenance": {
+            "receipt_id": "0b56125158f1c8ced164b084924cc1cf8b18c5a6d7d53f25c64c6aa0d3e5b775",
+            "model": "gemini-3.5-flash-lite",
+            "thinking_level": "medium",
+            "thinking_budget": null,
+            "model_version": "gemini-3.5-flash-lite",
+            "usage": {
+              "promptTokenCount": 5522,
+              "candidatesTokenCount": 859,
+              "totalTokenCount": 7477,
+              "promptTokensDetails": [
+                {
+                  "modality": "IMAGE",
+                  "tokenCount": 3236
+                },
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2286
+                }
+              ],
+              "thoughtsTokenCount": 1096,
+              "serviceTier": "standard"
+            },
+            "http": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8",
+                "date": "Sun, 08 Nov 2026 18:40:50 GMT"
+              },
+              "gateway_execution_id": "14478"
+            }
+          }
+        }
+      },
+      "direct_fact_ids": [],
+      "visual_kind": "photograph",
+      "matched_visual_targets": {
+        "v0": "Cargo ship Wilson Hull.",
+        "v1": "The hull of the ship Wilson Hull."
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "wikimedia:48422662",
+      "sha256": "7c662b4892d153a2fc9165214f8855f9f01c6c986610c1764b510ce864fe83ec",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "pexels:12355319",
+      "sha256": "1115478a995109a27413607633b48b82f677d828bdfe0d7cd923830ce438816b",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "pixabay:1578528",
+      "sha256": "574a1fc18813689be683d704b29438285efba5709a44ad0479f3a11f901a7b0f",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "wikimedia:80949265",
+      "sha256": "b98b147200431551f09d740bc550236b719fbd20407e1cc2eab37ae940bf700f",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "wikimedia:73904474",
+      "sha256": "dbbd9446d252d782f3ab1dcaa436a58dd7471c75d94e8cab9db3877a26403ff8",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "wikimedia:70285085",
+      "sha256": "d4700c3deb93bb8c09e368947926089e210d4695c12352bc413b2e217af9ecfa",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "wikimedia:62072903",
+      "sha256": "e3d60ab008a3d1266a6acf8857ce905fc2c1c931fbe7d00a09ea9fa22f31bf89",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "wikimedia:117966783",
+      "sha256": "f5f4bdda2f23eabc32fde7f90aefee9a3497330f8b3bd47db8aa168f394c19af",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "wikimedia:55902071",
+      "sha256": "4c0b54afdb86c36e6929202649e04e4d25fde37bc01d44de2f065ddfe4b08c95",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    },
+    {
+      "id": "wikimedia:101295163",
+      "sha256": "3cedc86d27dace7b019b8a0bb27cf8a660521a4fe271d504dd2f0c614b1ddd23",
+      "visual_targets": [
+        {
+          "id": "v0",
+          "fact_ids": [
+            "f1"
+          ],
+          "must_show": "ship",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship"
+        },
+        {
+          "id": "v1",
+          "fact_ids": [
+            "f2"
+          ],
+          "must_show": "ship hull",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "ship hull"
+        },
+        {
+          "id": "v2",
+          "fact_ids": [
+            "f3"
+          ],
+          "must_show": "air compartment",
+          "must_not_show": "Unrelated subjects, decorative or speculative art, fabricated observations, inaccurate scientific diagrams, or identical composition in every role",
+          "query": "air compartment"
+        }
+      ],
+      "visual_qualification_protocol": "qualified-target-v1"
+    }
+  ],
+  "evidence": {
+    "sources": [
+      {
+        "id": "source-1",
+        "url": "https://wisewater.ru/articles/pochemu_korabli_ne_tonut",
+        "title": "Почему корабль держится на воде и не тонет - WiseWater",
+        "text": "Почему корабль держится на воде и не тонет WiseWater Статьи Почему корабли не тонут Почему корабль держится на воде и не тонет Почему корабли не тонут Корабли, путешествующие по морям и океанам, представляют собой удивительные конструкции, которые успешно справляются с задачей перемещения по водной поверхности и, несмотря на свои размеры и вес, не тонут. Секрет этого феномена кроется в принципах физики, прежде всего в законе Архимеда, а также в особенностях конструкции самих судов. Во-первых, основополагающим принципом, позволяющим кораблям оставаться на поверхности, является закон Архимеда. Этот закон гласит, что на тело, погружённое в жидкость, действует выталкивающая сила, равная весу объёма жидкости, вытесненной этим телом. Иными словами, если корпус корабля вытесняет достаточный объём воды, возникающая выталкивающая сила уравновешивает вес судна, удерживая его на поверхности. Корабли проектируются так, чтобы их форма обеспечивала максимальную эффективность этой выталкивающей силы. Большинство судов имеют корпус с развитой подводной частью, что увеличивает объём вытесняемой воды. Ключевым условием остойчивости является то, чтобы метацентр судна располагался выше его центра тяжести: именно это соотношение обеспечивает способность корабля возвращаться в вертикальное положение после крена. Тем не менее ключевой фактор, который делает корабли устойчивыми и безопасными, — это их конструкция. Современные технологии позволяют создавать суда, способные выдерживать значительные нагрузки и экстремальные погодные условия. Корабли, как правило, разделены на несколько водонепроницаемых отсеков: это техническое решение предотвращает быстрое затопление и позволяет судну оставаться на плаву даже при локальном повреждении корпуса. Важную роль играют и материалы, из которых строятся суда. Сочетание высокопрочных сталей и современных композитных материалов делает корпуса одновременно лёгкими и прочными, что позволяет им выдерживать длительные рейсы в суровых условиях. Кроме того, правильное распределение груза и соблюдение норм загрузки и размещения пассажиров являются необходимыми условиями безопасности на борту и предотвращают потерю остойчивости. На практике корабли всё же иногда тонут, и причины этого, как правило, представляют собой совокупность факторов: перегруз, экстремальные погодные условия, конструктивные недостатки и навигационные ошибки. Тем не менее современные технологии проектирования и строгие международные стандарты безопасности (в частности, конвенция СОЛАС — Международная конвенция по охране человеческой жизни на море) значительно снижают вероятность подобных инцидентов. Таким образом, ответ на вопрос, почему корабли не тонут, заключается в гармоничном сочетании физических законов, грамотного инженерного проектирования, правильной эксплуатации и соблюдения правил безопасности. Именно это позволяет кораблям уверенно пересекать океаны, выполняя важнейшие транспортные функции по всему миру. Какого цвета снег? Свойства талой воды Ваши данные под надёжной защитой. Мы собираем информацию о файлах cookies для улучшения работы сайта. Принять Отклонить ✕ Обратный звонок Отправить Заявки с сайта принимаем круглосуточно Нажимая на кнопку, вы даете согласие на обработку и защиту данных Заказать услугу Заказать услугу Заявки с сайта принимаем круглосуточно Нажимая на кнопку, вы даете согласие на обработку и защиту данных Спецпредложение Отправить Заявки с сайта принимаем круглосуточно Задать вопрос Отправить Заявки с сайта принимаем круглосуточно Обратный звонок Мы вам перезвоним Мы ценим Ваше время и звоним только по делу! Нажимая на кнопку, вы даете согласие на обработку и защиту данных Выберите свой город Москва Санкт-Петербург Архангельск Астрахань Барнаул Белгород Благовещенск Брянск Великий Новгород Владивосток Владикавказ Владимир Волгоград Вологда Воронеж Грозный Екатеринбург Иваново Ижевск Иркутск Йошкар-Ола Казань Калининград Калуга Кемерово Киров Кострома Краснодар Красноярск Курган Курск Липецк Магадан Майкоп Махачкала Мурманск Нальчик Нижний Новгород Новосибирск Омск Оренбург Орёл Пенза Пермь Петрозаводск Петропавловск-Камчатский Псков Ростов-на-Дону Рязань Самара Саранск Саратов Севастополь Симферополь Смоленск Сочи Ставрополь Сургут Сыктывкар Тамбов Тверь Томск Тула Тюмень Улан-Удэ Ульяновск Уфа Хабаровск Ханты-Мансийск Чебоксары Челябинск Чита Южно-Сахалинск Якутск Ярославль Ваш номер: +7 (000) 111-00-11, верно? Нет, исправить! Да, отправить!",
+        "sha256": "c83e3443ff1d5d89cf82aa9932758b0f7a73aaace5a213328b0c3b8fcf4f6a2c",
+        "fetch_provenance": {
+          "usable": true,
+          "status": 200,
+          "headers": {
+            "cache-control": "no-store, no-cache, must-revalidate",
+            "content-type": "text/html; charset=UTF-8",
+            "date": "Sun, 08 Nov 2026 18:37:37 GMT"
+          },
+          "body_sha256": "09521a30e769926819b1173eb66d14a4f6b6cc4e916cac86cbe530a70af021b0",
+          "sha256": "c83e3443ff1d5d89cf82aa9932758b0f7a73aaace5a213328b0c3b8fcf4f6a2c"
+        }
+      },
+      {
+        "id": "source-2",
+        "url": "https://kakustroeno.ru/stati/ustrojstvo-korablya/",
+        "title": "Устройство корабля — корпус, киль, палубы, винт, руль, ватерлиния",
+        "text": "Устройство корабля — корпус, киль, палубы, винт, руль, ватерлиния К содержанию Содержание⌄ Из чего состоит корабль Как корабль держится на воде Ватерлиния и грузовая марка Почему корабль не опрокидывается Как корабль движется и поворачивает Какими бывают суда по назначению Чем отличается то, что путают Интересные факты Что изнашивается и на что смотрят Стальная громада весом в десятки тысяч тонн держится на воде, как пробка. Если бросить в воду стальной болт, он тут же утонет, но из той же стали, свёрнутой в форму огромной полой чаши, получается судно, которое переносит океанские волны. Секрет в форме и в законе, который открыл Архимед ещё две с лишним тысячи лет назад. Ниже — из чего состоит корабль, почему он держится на плаву, что удерживает его от опрокидывания и как он движется и поворачивает. Заодно разберём, что такое ватерлиния и чем корабль отличается от лодки. Из чего состоит корабль Мысленно пройдём от днища к мачте, а от носа к корме. ЧастьЧто делаетКорпусОболочка судна из стальных листов (или иных материалов); принимает воду и нагрузкиКильПродольная балка вдоль всего днища; «позвоночник», на который опирается корпусШпангоутыПоперечные рёбра каркаса; как рёбра у человека, придают форму и жёсткостьФорштевень и ахтерштевеньНосовая и кормовая оконечности, где сходятся бортаПалубыГоризонтальные настилы, разделяющие корпус по высоте; верхняя палуба закрывает корпус сверхуНадстройка и рубкаСтроения на палубе; в рубке находится управление судномТрюм и отсекиВнутренние помещения для груза, механизмов, топлива и людейВодонепроницаемые переборкиСтенки, делящие корпус на отсеки; при пробоине вода остаётся в ограниченной частиДвойное дно и балластные цистерныПространство между двумя днищами: хранит топливо, воду и балластГлавный двигательДизель или турбина: вращает гребной валГребной винтЛопасти, которые отбрасывают воду назад и толкают судно вперёдРульВертикальная плоскость за винтом: поворачивает и меняет направление потокаЯкорьТяжёлая лапа на цепи: удерживает судно на месте О двигателях, которые стоят на судах, рассказано в статьях об устройстве дизельного двигателя и устройстве турбины. Как корабль держится на воде Корабль опускается в воду. Корпус занимает место, где раньше была вода, и вытесняет её. Вода давит на днище и борта снизу вверх. Давление растёт с глубиной, поэтому снизу оно больше, чем сверху, и в сумме получается сила, направленная вверх. Сила равна весу вытесненной воды. Это закон Архимеда: чем глубже погружён корпус, тем больше воды он вытеснил и тем больше выталкивающая сила. Наступает равновесие. Корабль погружается до тех пор, пока выталкивающая сила не станет равна его весу вместе с грузом. Судно плавает. Если добавить груз, осадка увеличится, пока вытесненный объём воды снова не уравновесит новый вес. Средняя плотность корабля учитывает и сталь, и воздух в помещениях. Пока она меньше плотности воды, судно держится на плаву. Пробоина заливает водой часть пустоты, средняя плотность растёт, и корабль оседает. Масса воды, вытесненной судном, называется водоизмещением. Когда говорят «корабль водоизмещением сто тысяч тонн», имеют в виду именно вес вытесненной воды, который равен весу самого судна с грузом. Ватерлиния и грузовая марка Ватерлиния — линия, по которой вода касается корпуса. Её положение показывает осадку, то есть глубину погружения. На борту у больших судов нарисован знак — грузовая марка, придуманная в XIX веке по настоянию британского политика Сэмюэла Плимсоля. Он показывает, до какого уровня можно погружать судно в разной воде и в разное время года: в пресной, солёной, тропической и зимней. Перегруженный корабль опасен: борт низко, волна легко заливает палубу, а остойчивость падает. Почему корабль не опрокидывается Плавать мало, нужно ещё держать равновесие. Когда судно кренится, форма погружённой части меняется, и сила Архимеда смещается вбок и создаёт момент, который возвращает корабль вертикально. Чем шире корпус и ниже центр тяжести, тем устойчивее судно. Поэтому тяжёлые механизмы, топливо и балласт размещают внизу, а высокие надстройки делают из лёгких материалов. Если груз в трюме сместится или вода начнёт свободно переливаться по палубе, центр тяжести уйдёт, и судно может потерять остойчивость. Отсеки нужны для непотопляемости. Если в борту появилась пробоина, вода заполнит один отсек или несколько (сколько именно, задаёт расчёт), а переборки не пустят её дальше. Судно оседает, но остаётся на плаву. Проблемы начинаются, когда затоплено больше отсеков, чем допускает расчёт, или когда вода переливается через верх переборок: так погиб «Титаник»: его переборки не доходили до верхней палубы, и вода переливалась из отсека в отсек. Как корабль движется и поворачивает Двигатель вращает гребной вал, а винт с изогнутыми лопастями работает как вкрученный в воду шуруп: захватывает воду и выбрасывает её назад. Отбрасывая воду, винт получает толчок вперёд: здесь работает тот же закон сохранения импульса, что и у ракеты. Форма носа тоже важна: острый нос разрезает воду, а у многих больших судов под водой выступает бульб, который смягчает волны и снижает сопротивление. Поворачивает судно руль, вертикальная лопасть за винтом. Когда её отклоняют, поток воды бьёт под углом, и корма смещается вбок, а нос разворачивается. Большому кораблю нужно много времени и места: инерция огромная, и корабль останавливается не за секунды, а за километры. У некоторых судов вместо винта и руля стоят поворотные винто-рулевые колонки или водомёты. Какими бывают суда по назначению Общий принцип у всех один, различаются внутренности. У сухогруза большие трюмы с широкими люками для насыпных и штучных грузов. У контейнеровоза трюмы рассчитаны на стандартные ящики, которые ставят в несколько ярусов и на палубу. Танкер — по сути гигантский резервуар, разделённый на секции для нефти или наливных продуктов. Паром имеет широкую палубу для машин и пассажиров, пассажирский лайнер — множество кают и общественных помещений. Ледокол усилен: корпус толще, а обводы позволяют ему вползать на лёд и ломать его весом. Корпуса небольших лодок делают из дерева, алюминия и пластика, крупные суда — из стали. Чем отличается то, что путают Корабль, судно и лодка. «Судно» — общее слово для всех плавучих средств, по размеру идут лодки, катера, суда и большие корабли. Лодка обычно маленькая и открытая, а у судна есть палубы и надстройки. Водоизмещающее и глиссирующее. Большинство кораблей плывёт, погрузившись в воду и раздвигая её. Скоростные катера на ходу приподнимаются и скользят по поверхности, а некоторые поднимаются на подводные крылья. Парусное и моторное. Парусное судно использует ветер, а киль не даёт ему сносить вбок. Моторное берёт энергию из топлива. Однокорпусное и катамаран. Катамаран имеет два узких корпуса, соединённых мостом: он устойчив и вместителен на палубе. Интересные факты Почему скорость измеряют узлами. Один узел — одна морская миля в час, около 1,85 километра в час. Слово пришло от старого способа измерять скорость верёвкой с узлами, которую вываливали за борт. Почему у больших кораблей нос с шишкой. Бульб, выступающий под водой вперёд, создаёт собственную волну, которая гасит волну от носа, и судно расходует меньше топлива. Почему корабль в реке сидит глубже, чем в море. Пресная вода менее плотная, и для того же веса нужно вытеснить больше её объёма. Почему якорь держится не весом. Тяжёлый якорь лапами зарывается в грунт, а цепь, лежащая на дне, добавляет сопротивление. Одна масса без лап не удержала бы судно. Что изнашивается и на что смотрят Коррозия. Морская вода разъедает сталь, поэтому корпус красят особыми красками, а внутри ставят цинковые «протекторы», которые ржавеют вместо корпуса. Обрастание днища. Ракушки и водоросли увеличивают сопротивление воды, судно расходует больше топлива. Износ винта и вала. Лопасти повреждаются, вибрация растёт. Течи и разгерметизация. Проверяют швы, кингстоны и заглушки отсеков. Перегруз и смещение груза. Опасность потери остойчивости. Судно регулярно проходит осмотр в доке: его поднимают из воды, чистят днище, проверяют обшивку, винт и руль. Как устроены другие транспортные средства, читайте в статьях об устройстве велосипеда и о том, почему самолёт летает. Читай-город · книжный магазин Реклама Как устроен мир: научно-популярные книги ✓ Экспресс-доставка по всей России ✓ Бесплатная доставка в магазины сети ✓ Акции и скидки каждую неделю Смотреть подборку→ Реклама. ООО «Грамота», ИНН 7706293136. erid: MvGzQC98w3Z1gMq1kx5ACoy5 Вопросы Почему стальной корабль не тонет, а стальной гвоздь тонет? Дело в форме и объёме. Корпус корабля полый и внутри заполнен воздухом, поэтому средняя плотность всего судна меньше плотности воды. Гвоздь сплошной, вытесняет мало воды и его вес больше выталкивающей силы. Что такое узел, в котором измеряют скорость корабля? Один узел — одна морская миля в час, около 1,85 километра в час. Слово пришло от старой привычки измерять скорость лагом, верёвкой с узлами. Почему в море корабль сидит в воде выше, чем в реке? Солёная морская вода плотнее пресной. Чтобы вытеснить нужный вес, в неё достаточно погрузиться меньше, поэтому осадка в море меньше, чем в реке. Поэтому на борту нарисовано несколько грузовых марок. Зачем нужен киль? Киль — продольная балка вдоль днища, основа всего корпуса, которая держит корабль от изгиба. У парусных яхт он ещё и не даёт судну сносить боком, а тяжёлая нижняя часть помогает держать равновесие. Поделиться TelegramВКонтактеWhatsApp Скопировать ссылку Ссылка скопирована и выделена. Если вставка не сработала, нажмите Ctrl+C или ⌘C. Была ли страница полезна? Да Нет Спасибо! Автор Редакция «Как устроено» разборы по первоисточникам Пишем по учебникам, исследованиям и клиническим рекомендациям, источники под каждым материалом. Нашли ошибку — напишите на redakciya@kakustroeno.ru, исправим. По теме Как устроеноУстройство паровоза: как устроен паровоз и как пар крутит колёсаКак устроеноУстройство велосипеда: как устроен велосипед и как работают передачиКак устроеноКак устроен лифт: устройство и почему кабина не может упастьКак устроеноУстройство мотоцикла: как устроен мотоцикл и как им управляют",
+        "sha256": "0a056beede1e219bc7ac5c5c17ef9c6c143cec46b8688b62ad2f1f42cfb37adb",
+        "fetch_provenance": {
+          "usable": true,
+          "status": 200,
+          "headers": {
+            "date": "Sun, 08 Nov 2026 18:37:38 GMT",
+            "cache-control": "no-cache, must-revalidate",
+            "content-type": "text/html"
+          },
+          "body_sha256": "5488cbe198cb592c3992f6b36b4a45dddb3ac428ebbf0d670939727c0674a30e",
+          "sha256": "0a056beede1e219bc7ac5c5c17ef9c6c143cec46b8688b62ad2f1f42cfb37adb"
+        }
+      },
+      {
+        "id": "source-3",
+        "url": "https://fb.ru/article/561158/2023-pochemu-korabli-na-vode-ne-tonut-razgadka-taynyi",
+        "title": "Почему корабли на воде не тонут: разгадка тайны",
+        "text": "Почему корабли на воде не тонут: разгадка тайны Минтранс меняет ПДД и предложил запретить курьерам ездить по тротуарам Когда могут обостриться военные конфликты в ноябре: астрологический прогноз Почему в НАТО боятся победы американских демократов В США впервые штат возглавит чернокожая женщина, мусульманин станет сенатором Школа меняет расписание для старшеклассников с сентября 2027 года, о чем речь Российский газ все-таки может пойти в Европу - у Америки появился план Какие факторы определили выход Газпрома в прибыль вместо миллиардных убытков Куда идет развитие нашего транспорта? Перспективы точно есть! Мужчин не хватает: Прибалтика ставит на женские батальоны Пиво со вкусом ледника: в Италии нашли бочку пива, 50 лет пролежавшую в леднике Minecraft в центре Москвы: 95-этажный небоскреб станет самым высоким в Европе Украинские чиновники бегут из-под Харькова Главная Образование Среднее образование и школы Почему корабли на воде не тонут: разгадка тайны Обсудить Редактировать статью На протяжении веков людей волновал вопрос, почему огромные корабли, сделанные из тяжелого металла, не тонут, а плавают по поверхности воды. Казалось бы, если бросить в воду кусок железа, он тут же пойдет ко дну. Однако много палубные гиганты, груженые до отказа, спокойно держатся на воде. Должно быть, здесь задействованы какие-то особые физические законы. История изучения вопроса о плавучести кораблей Еще в древности ученые пытались понять, почему одни предметы тонут в воде, а другие остаются на плаву. Особенно интересовал этот вопрос кораблестроителей и мореплавателей. «Всякий предмет, погруженный в жидкость, теряет в своем весе столько, сколько весит вытесненная им жидкость», — сформулировал основополагающий принцип древнегреческий ученый Архимед в III веке до нашей эры. Этот закон, названный принципом Архимеда, и объясняет, почему корабли на воде не тонут. Рассмотрим его подробнее. Физические законы, объясняющие плавучесть Итак, согласно принципу Архимеда, на любое тело, погруженное в жидкость, действуют две силы: Сила тяжести, стремящаяся потопить тело. Она зависит от массы тела. Выталкивающая сила, стремящаяся вытолкнуть тело из жидкости. Она равна весу вытесненной телом жидкости. Формула для расчета выталкивающей силы: Fв = ρж * g * V где: Fв — выталкивающая сила, Н ρж — плотность жидкости, кг/м3 g — ускорение свободного падения, м/с2 V — объем погруженной части тела, м3 Итак, что произойдет, если поместить в воду деревянный брусок и железный брусок одинакового объема? Материал бруска Дерево Железо Плотность материала, кг/м3 500 7800 Поведение бруска в воде Плавает Тонет Почему так происходит? Дерево менее плотное, чем вода, поэтому деревянный брусок испытывает меньшую силу тяжести. А выталкивающая сила у обоих брусков одинакова, так как объем у них один и тот же. Поэтому деревянный плавает, а железный тонет. Теперь давайте разберемся, как этот принцип работает в случае огромных кораблей. Устройство корпуса корабля Казалось бы, корабли целиком сделаны из стали, значит, они должны тонуть, как железный брусок в нашем примере. Однако дело в том, что внутри корпуса корабля находятся огромные пустоты с воздухом! Воздух намного менее плотный, чем вода. Благодаря этим полостям, заполненным легким воздухом, средняя плотность всего корабля оказывается меньше, чем у воды. Поэтому выталкивающая сила превышает силу тяжести, и корабль держится на поверхности. Если же вода начинает активно заполнять отсеки корабля, воздух вытесняется, средняя плотность растет, и корабль теряет плавучесть. Так случилось с Титаником, когда айсберг пробил несколько небольших пробоин в его корпусе. Океанская вода хлынула в отсеки, быстро вытеснив воздух, и корабль пошел ко дну. Влияние загрузки на осадку корабля Как мы выяснили, корабль держится на воде благодаря тому, что выталкивающая сила превышает его вес. Но что произойдет, если корабль перегрузить? Чем тяжелее груз на борту, тем глубже корабль погружается в воду. Это называется осадкой судна. Если корабль опустится в воду по самую ватерлинию — горизонтальную отметку на борту, обозначающую максимально допустимую загрузку, — то при большом весе он может перевернуться и затонуть. Поэтому капитаны всегда должны следить, чтобы корабль не был перегружен. Иначе даже небольшого шторма будет достаточно, чтобы нарушить равновесие и отправить судно на дно. Суда с динамической осадкой Существуют различные виды судов, которые могут активно управлять своей осадкой и плавучестью. К ним относятся подводные лодки и корабли на воздушной подушке. Подлодки заполняют специальные цистерны водой, увеличивая свой вес и погружаясь под воду. Чтобы всплыть, вода вытесняется обратно в океан сжатым воздухом. Корабли на воздушной подушке используют мощные вентиляторы для создания высокого давления воздуха под днищем. Этот воздух приподнимает корабль над поверхностью моря. Такие суда могут перемещаться не только по воде, но и над сушей. Необычные способы управления плавучестью Инженеры постоянно экспериментируют с различными технологиями, не похожими на традиционные корабли и лодки. Одним из первых изобретений такого рода был водолазный колокол, представлявший собой перевернутый бочонок с отверстием для головы водолаза. Внутри колокола поддерживалось нормальное атмосферное давление, благодаря чему вода не могла проникнуть внутрь, и конструкция обладала положительной плавучестью. Аварийная плавучесть на случай катастрофы Чтобы снизить риски при повреждениях корпуса, инженеры разрабатывают системы аварийной плавучести. К ним относятся надувные спасательные плоты, понтоны, спасательные жилеты. Благодаря таким средствам, даже если корабль теряет остойчивость и начинает тонуть, команда и пассажиры могут спастись. Ведь главное не количество материала, из которого построено судно, а соотношение в нем воздуха и воды, определяющее плавучесть. А оно может быть обеспечено и небольшим надувным плотом, спасающим жизни людей. Ольга Борисова 31 декабря, 2023 Статья закончилась. Вопросы остались? Комментарии 0 Новые Обсуждаемые Популярные Удалить Я хочу получать Новые комментарии в личный кабинет Ответы на мои комментарии Ничего Отправить Читают онлайн — -1 Правила публикации Загрузить аватар Удалить Отмена Ответить Редактирование комментария возможно в течении пяти минут после его создания, либо до момента появления ответа на данный комментарий. Удалить Отмена Сохранить × Причина жалобы Нежелательная реклама или спам Материалы сексуального или порнографического характера Оскорбление Детская порнография Пропаганда наркотиков Насилие, причинение себе вреда Экстремизм Взлом аккаунта Фейковый аккаунт Другое Сообщить Китай завладел самым быстрым суперкомпьютером в мире После почти десятилетнего доминирования США на вершине вычислительного Олимпа произошла рокировка. Новый китайский суперкомпьютер LineShine, установле... 0 0 Журналистика «Пятерочка» и «Перекресток» остановили закупку Raffaello и Kinder Крупнейший ритейлер X5 Group, управляющий сетями «Пятерочка» и «Перекресток», принял решение приостановить закупки продукции знаменитого итальянского ... 0 0 Экономика Как картошку фри: США ищут дешевый способ быстро выпускать ракеты Американский военно-промышленный комплекс оказался перед новой задачей — значительно увеличить темпы выпуска ракетного вооружения и одновременно снизи... 0 0 Политика В элитном полку ВСУ процветают издевательства над мобилизованными Январь 2026 года, город Кропивницкий. Медик местной больницы снимает на телефон синяки, покрывающие тело Александра Семенова, который только что сбежа... 0 0 Политика 11 федераций требуют запретить российским гимнастам выступать с флагом Международный спортивный мир вновь обсуждает вопрос участия российских спортсменов в соревнованиях. На этот раз инициатива исходит от группы из одинна... 0 0 Политика Украина нанесла Казахстану большой урон, ударив по Оренбургскому ГПЗ Ночь на 24 июня 2026 года, когда над промышленной зоной Оренбурга звучали взрывы, запомнилась жителям надолго. Целью был Оренбургский газоперерабатыва... 0 0 Политика × Сайт использует файлы cookie. Они позволяют узнавать вас и получать информацию о вашем пользовательском опыте. Это нужно, чтобы улучшать сайт. Если согласны, продолжайте пользоваться сайтом. Если нет – установите специальные настройки в браузере или обратитесь в техподдержку. ОК",
+        "sha256": "70f092becf4c9725d02c1f2bded6319109bfa0ca8d12974074786b922dce5235",
+        "fetch_provenance": {
+          "usable": true,
+          "status": 200,
+          "headers": {
+            "date": "Sun, 08 Nov 2026 18:37:39 GMT",
+            "content-type": "text/html; charset=UTF-8",
+            "cache-control": "no-store, no-cache, must-revalidate"
+          },
+          "body_sha256": "47392667fa2ddf205496bb338522ca96504d6845beb5e1bf2c3af8793d0399b3",
+          "sha256": "70f092becf4c9725d02c1f2bded6319109bfa0ca8d12974074786b922dce5235"
+        }
+      }
+    ],
+    "facts": [
+      {
+        "id": "f1",
+        "text": "Согласно закону Архимеда, на погружённое в воду тело действует выталкивающая сила, равная весу вытесненной жидкости.",
+        "support": [
+          {
+            "source_id": "source-1",
+            "quote": "Почему корабль держится на воде и не тонет WiseWater Статьи Почему корабли не тонут Почему корабль держится на воде и не тонет Почему корабли не тонут Корабли, путешествующие по морям и океанам, представляют собой удивительные конструкции, которые успешно справляются с задачей перемещения по водной поверхности и, несмотря на свои размеры и вес, не тонут. Секрет этого феномена кроется в принципах физики, прежде всего в законе Архимеда, а также в особенностях конструкции самих судов. Во-первых, основополагающим принципом, позволяющим кораблям оставаться на поверхности, является закон Архимеда. Этот закон гласит, что на тело, погружённое в жидкость, действует выталкивающая сила, равная весу объёма жидкости, вытесненной этим телом. Иными словами, если корпус корабля вытесняет достаточный объём воды, возникающая выталкивающая сила уравновешивает вес судна, удерживая его на поверхности. Корабли проектируются так, чтобы их форма обеспечивала максимальную эффективность этой выталкивающей силы. Большинство судов имеют корпус с развитой подводной частью, что увеличивает объём вытесняемой воды. "
+          }
+        ]
+      },
+      {
+        "id": "f2",
+        "text": "Форма корпуса судна с развитой подводной частью увеличивает объем вытесняемой воды, обеспечивая максимальную выталкивающую силу.",
+        "support": [
+          {
+            "source_id": "source-1",
+            "quote": "Почему корабль держится на воде и не тонет WiseWater Статьи Почему корабли не тонут Почему корабль держится на воде и не тонет Почему корабли не тонут Корабли, путешествующие по морям и океанам, представляют собой удивительные конструкции, которые успешно справляются с задачей перемещения по водной поверхности и, несмотря на свои размеры и вес, не тонут. Секрет этого феномена кроется в принципах физики, прежде всего в законе Архимеда, а также в особенностях конструкции самих судов. Во-первых, основополагающим принципом, позволяющим кораблям оставаться на поверхности, является закон Архимеда. Этот закон гласит, что на тело, погружённое в жидкость, действует выталкивающая сила, равная весу объёма жидкости, вытесненной этим телом. Иными словами, если корпус корабля вытесняет достаточный объём воды, возникающая выталкивающая сила уравновешивает вес судна, удерживая его на поверхности. Корабли проектируются так, чтобы их форма обеспечивала максимальную эффективность этой выталкивающей силы. Большинство судов имеют корпус с развитой подводной частью, что увеличивает объём вытесняемой воды. "
+          }
+        ]
+      },
+      {
+        "id": "f3",
+        "text": "Благодаря внутренним полостям с воздухом средняя плотность корабля оказывается меньше плотности воды, позволяя ему не тонуть.",
+        "support": [
+          {
+            "source_id": "source-3",
+            "quote": "Формула для расчета выталкивающей силы: Fв = ρж * g * V где: Fв — выталкивающая сила, Н ρж — плотность жидкости, кг/м3 g — ускорение свободного падения, м/с2 V — объем погруженной части тела, м3 Итак, что произойдет, если поместить в воду деревянный брусок и железный брусок одинакового объема? Материал бруска Дерево Железо Плотность материала, кг/м3 500 7800 Поведение бруска в воде Плавает Тонет Почему так происходит? Дерево менее плотное, чем вода, поэтому деревянный брусок испытывает меньшую силу тяжести. А выталкивающая сила у обоих брусков одинакова, так как объем у них один и тот же. Поэтому деревянный плавает, а железный тонет. Теперь давайте разберемся, как этот принцип работает в случае огромных кораблей. Устройство корпуса корабля Казалось бы, корабли целиком сделаны из стали, значит, они должны тонуть, как железный брусок в нашем примере. Однако дело в том, что внутри корпуса корабля находятся огромные пустоты с воздухом! Воздух намного менее плотный, чем вода. Благодаря этим полостям, заполненным легким воздухом, средняя плотность всего корабля оказывается меньше, чем у воды. Поэтому выталкивающая сила превышает силу тяжести, и корабль держится на поверхности. "
+          }
+        ]
+      }
+    ]
+  },
+  "timings": [
+    {
+      "scene_uuid": "e55b1805-0940-5fd2-bb5f-818322b1f53b",
+      "scene_key": "beat-1",
+      "start_ms": 120,
+      "end_ms": 15610,
+      "coverage": 0.97549
+    },
+    {
+      "scene_uuid": "d4b5e8b5-2234-5ad3-9c82-52891ee86aeb",
+      "scene_key": "beat-2",
+      "start_ms": 16200,
+      "end_ms": 32090,
+      "coverage": 0.995516
+    },
+    {
+      "scene_uuid": "de3a4508-1e21-51b0-bc29-49d32b0e3bc8",
+      "scene_key": "beat-3",
+      "start_ms": 32590,
+      "end_ms": 44380,
+      "coverage": 1.0
+    }
+  ],
+  "audio_duration_ms": 44952,
+  "seconds": 45
+}

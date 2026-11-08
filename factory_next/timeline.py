@@ -10,7 +10,7 @@ class EditUnavailable(ValueError):
     pass
 
 
-def compile_edit(story, photos, timings, audio_duration_ms, seconds):
+def compile_edit(story, photos, timings, audio_duration_ms, seconds, *, assets=None, evidence=None):
     """No estimated speech lengths, voice changes, or premature pool truncation.
 
     Narration/source review and original-byte validation belong to the input
@@ -46,6 +46,9 @@ def compile_edit(story, photos, timings, audio_duration_ms, seconds):
     payload = {'seconds':seconds,'presentation_policy':TOPIC_POLICY,
                'scenes':deepcopy(story),'observations':deepcopy(photos),
                'visuals':[{'id':'candidate-'+str(i),'material_id':p['id']} for i,p in enumerate(photos)]}
+    if assets is not None and evidence is not None:
+        from .contextual_edit import contextual_alternatives
+        payload['contextual_alternatives'] = contextual_alternatives(story, photos, assets, evidence)
     minimum=max(minimum_shots(seconds, TOPIC_POLICY),len(anchors))
     maximum=min(len(photos),seconds*2//5)
     # Prefer moderate cadence, but search every legal density before refusing.
@@ -57,6 +60,15 @@ def compile_edit(story, photos, timings, audio_duration_ms, seconds):
         except ValueError:
             continue
         shots=[{**v,'id':'photo-'+str(i+1)} for i,v in enumerate(selected)]
+        scenes_by_id = {s['id']: s for s in story}
+        photos_by_id = {p['id']: p for p in photos}
+        for shot in shots:
+            scene = scenes_by_id[shot['narration_scene_id']]
+            photo = photos_by_id[shot['material_id']]
+            if (photo['id'] != scene['material_id']
+                    and not set(scene['evidence_ids']) & set(photo['supported_fact_ids'])):
+                shot['visual_relation'] = 'topic_context'
+                shot['context_anchor_material_id'] = scene['material_id']
         return {'version':'measured-edit-v1','seconds':seconds,'frame_count':seconds*30,
                 'audio_duration_ms':audio_duration_ms,'audio_tempo_factor':1.0,
                 'tail_silence_ms':seconds*1000-audio_duration_ms,'shots':shots}

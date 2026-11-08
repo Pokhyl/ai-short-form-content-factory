@@ -208,7 +208,9 @@ class Pipeline:
                     active_story=outputs['voice'].get('reviewed_story',outputs['story'])
                     output=compile_edit(active_story['scenes'],outputs['materials']['photos'],
                                         outputs['alignment']['timings'],outputs['voice']['duration_ms'],
-                                        context['request']['seconds'])
+                                        context['request']['seconds'],
+                                        assets=outputs['materials'].get('assets'),
+                                        evidence=outputs['research'].get('evidence'))
                 else:
                     output=getattr(self.adapters,stage)(context)
                 if not isinstance(output,dict):raise ValueError('stage must return a receipt object')
