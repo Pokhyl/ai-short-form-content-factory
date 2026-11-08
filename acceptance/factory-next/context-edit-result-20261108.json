@@ -1,0 +1,114 @@
+{
+  "status": "passed",
+  "id": "6dd8a3ce-6d8e-47dc-bd76-a4659a9ccd94",
+  "provider_calls": 0,
+  "edit": {
+    "version": "measured-edit-v1",
+    "seconds": 45,
+    "frame_count": 1350,
+    "audio_duration_ms": 44952,
+    "audio_tempo_factor": 1,
+    "tail_silence_ms": 48,
+    "shots": [
+      {
+        "id": "photo-1",
+        "material_id": "wikimedia:101295163",
+        "start_frame": 0,
+        "end_frame": 135,
+        "narration_scene_id": "beat-1"
+      },
+      {
+        "id": "photo-2",
+        "material_id": "wikimedia:55902071",
+        "start_frame": 135,
+        "end_frame": 270,
+        "narration_scene_id": "beat-1"
+      },
+      {
+        "id": "photo-3",
+        "material_id": "wikimedia:117966783",
+        "start_frame": 270,
+        "end_frame": 405,
+        "narration_scene_id": "beat-1"
+      },
+      {
+        "id": "photo-4",
+        "material_id": "wikimedia:62072903",
+        "start_frame": 405,
+        "end_frame": 540,
+        "narration_scene_id": "beat-1"
+      },
+      {
+        "id": "photo-5",
+        "material_id": "wikimedia:70285085",
+        "start_frame": 540,
+        "end_frame": 675,
+        "narration_scene_id": "beat-2"
+      },
+      {
+        "id": "photo-6",
+        "material_id": "pixabay:1578528",
+        "start_frame": 675,
+        "end_frame": 810,
+        "narration_scene_id": "beat-2"
+      },
+      {
+        "id": "photo-7",
+        "material_id": "pexels:12355319",
+        "start_frame": 810,
+        "end_frame": 964,
+        "narration_scene_id": "beat-2"
+      },
+      {
+        "id": "photo-8",
+        "material_id": "wikimedia:73904474",
+        "start_frame": 964,
+        "end_frame": 1080,
+        "narration_scene_id": "beat-3"
+      },
+      {
+        "id": "photo-9",
+        "material_id": "wikimedia:80949265",
+        "start_frame": 1080,
+        "end_frame": 1215,
+        "narration_scene_id": "beat-3"
+      },
+      {
+        "id": "photo-10",
+        "material_id": "wikimedia:48422662",
+        "start_frame": 1215,
+        "end_frame": 1350,
+        "narration_scene_id": "beat-3"
+      }
+    ]
+  },
+  "audit": {
+    "passed": true,
+    "sha256": "93537f40f8d8f06e367bf8eb3e4723821e7466b474226a9b090cb5c15a4fdda5",
+    "gates": {
+      "exact_duration": true,
+      "video_format": true,
+      "audio_format": true,
+      "frame_count": true,
+      "original_audio_unchanged": true,
+      "fitted_audio_unchanged": true,
+      "video_sha256": true,
+      "distinct_photo_count": true,
+      "reviewed_photo_set": true,
+      "exact_visual_timeline": true,
+      "staged_photo_bytes": true,
+      "whole_photo_policy": true,
+      "natural_voice_speed": true,
+      "full_decode": true,
+      "fitted_narration_preserved": true,
+      "original_narration_preserved": true
+    },
+    "duration_ms": 45000,
+    "scene_count": 10,
+    "audio_correlation": 0.9999808016109605,
+    "original_audio_correlation": 0.9999807829730689
+  },
+  "diagnostic_only": true,
+  "normal_job_id": "e3d35bf7-ac44-414f-b801-adc5b71632a8",
+  "project_ready": false
+}
