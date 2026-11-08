@@ -84,6 +84,7 @@ class PreparationStages:
                  'review_reference_policy':'scene-ids-v1',
                  'voice_length_policy':'measured-midpoint-v1',
                  'voice_review_repair_policy':'one-reviewed-repair-v1',
+                 'voice_tail_policy':'verified-terminal-silence-v1',
                  'visual_entailment_policy':'independent-visual-entailment-v1'}
         # Published scientific diagrams are legitimate evidence-backed visuals
         # for unphotographable subjects. This opt-in is Factory Next only.

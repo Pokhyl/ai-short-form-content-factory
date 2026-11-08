@@ -60,6 +60,7 @@ class VoiceStages:
         if not isinstance(script,str) or not script.strip():
             raise ValueError('empty reviewed narration')
         selected_story=original
+        normalization=None
         for selected_attempt in (1,2,3):
             if selected_attempt>1:
                 if revision_builder is None:
@@ -74,6 +75,26 @@ class VoiceStages:
                 script=selected_story['script']
             encoded,measurement,expected=self._synthesize_once(
                 job,request['language'],script,selected_attempt)
+            if (context['outputs'].get('research',{}).get('request',{}).get('voice_tail_policy')
+                    =='verified-terminal-silence-v1' and
+                    request['seconds']*1000<measurement['duration_ms']<=request['seconds']*1000+750):
+                import tempfile
+                from .voice_tail import trim_terminal_silence
+                folder=self.root/'voiceover-attempts'/job
+                with tempfile.TemporaryDirectory(prefix='.tail-',dir=folder) as work:
+                    candidate=Path(work)/'candidate.mp3'
+                    proof=trim_terminal_silence(folder/f'attempt-{selected_attempt}.mp3',
+                        candidate,measurement['duration_ms'],request['seconds'])
+                    if proof is not None:
+                        candidate_encoded=base64.b64encode(candidate.read_bytes()).decode()
+                        checked=self.worker._post('/voiceover-probe',{'audio_base64':candidate_encoded})
+                        if (checked.get('status')!='ready' or checked.get('sha256')!=proof['sha256']
+                                or checked.get('duration_ms')!=proof['duration_ms']):
+                            raise ValueError('trimmed candidate differs from verified silence edit')
+                        with (folder/f'attempt-{selected_attempt}-tail-trimmed.mp3').open('xb') as archive:
+                            archive.write(candidate.read_bytes());archive.flush();os.fsync(archive.fileno())
+                        encoded,measurement,expected=candidate_encoded,checked,proof['sha256']
+                        normalization=proof
             if duration_fits(measurement['duration_ms'],request['seconds']):
                 break
         else:
@@ -90,7 +111,8 @@ class VoiceStages:
         if result.get('status')!='ready' or result.get('sha256')!=expected or result.get('duration_ms')!=measurement['duration_ms'] or sha(path)!=expected:
             raise ValueError('promoted final voice differs from measured audio')
         return {**result,'storage_path':str(path),'audio_tempo_factor':1.0,
-                'attempt_count':selected_attempt,'reviewed_story':selected_story}
+                'attempt_count':selected_attempt,'reviewed_story':selected_story,
+                **({'terminal_silence_edit':normalization} if normalization else {})}
 
     def alignment(self, context):
         voice=context['outputs']['voice']
