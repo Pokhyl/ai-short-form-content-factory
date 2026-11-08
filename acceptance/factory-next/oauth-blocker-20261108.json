@@ -1,0 +1,17 @@
+{
+  "diagnostic_id": "acdda7b1-1823-4217-b752-daca2ac469af",
+  "candidate_revision": "e096c5fbf18c49307eabab5c5a3f389a7346a9c0",
+  "status": "failed",
+  "stage": "google_metadata_authorization",
+  "http_status": 502,
+  "error_status": "UNKNOWN_PROVIDER_RESULT",
+  "error_reason": "OAUTH_GRANT_REJECTED",
+  "gateway_execution_id": "14452",
+  "metadata_calls": 1,
+  "gemini_calls": 0,
+  "tts_calls": 0,
+  "normal_mp4_produced": false,
+  "project_ready": false,
+  "old_id_immutable": true,
+  "action_required": "Account owner must reauthorize the Google OAuth credential in n8n. No candidate rollout or new normal submission occurred."
+}

@@ -1,3 +1,9 @@
+## Current verified blocker — 2026-11-08
+
+Project is NOT complete. LIVE remains347c6d8/image61d13f4e; latest candidatee096c5f/imageec81dee passed all three exact-image suites but is NOT deployed. Saved expansion diagnosticacdda7b1-1823-4217-b752-daca2ac469af failed at Google metadata authorization BEFORE Gemini/TTS: HTTP502 UNKNOWN_PROVIDER_RESULT, OAUTH_GRANT_REJECTED, execution14452.1metadata/0Gemini/0TTS. Owner Google OAuth reauthorization is required; do not repeat this terminal ID or claim provider availability. No new normal MP4. Receipt acceptance/factory-next/oauth-blocker-20261108.json.
+
+Previous diagnosticc90ef11b failed before TTS because its completed701char expansion missed the draft703char minimum. Candidatee096 calibrates the draft window to the strict audio interval midpoint with300ms interior margin; actual MP3 still must satisfy42899..45000ms (implemented lower bound42900). Saved701char candidate still requires independent review and actual TTS after access recovers. Prepared script /opt/factory-completion-20261028/saved-expansion-diagnostic.py has already consumedacdda7b1 and MUST NOT be relaunched. Any justified later diagnostic needs a new exclusive plan/id. Oldb89/c665 production failures remain immutable.
+
 ## Current boundary — voice review feedback, 2026-10-29
 
 Normal b89f1415 is terminal needs_attention/voice; immutable.9images/story passed. First TTS30504ms; completed expansion omitted volume increase from requiredf1, and independent coverage reviewer correctly rejected it before secondTTS. Offline replay matched exact saved request hashes and reproduced required fact not fully narrated. All15Gemini calls200; no provider outage.
