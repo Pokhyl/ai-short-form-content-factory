@@ -1,0 +1,20 @@
+{
+  "proof": {
+    "policy": "verified-terminal-silence-v1",
+    "original_duration_ms": 45144,
+    "duration_ms": 44952,
+    "removed_ms": 192,
+    "guard_ms": 100,
+    "guard_and_removed_peak_s16": 17,
+    "exact_pcm_prefix": true,
+    "original_sha256": "b7a8a53f2a44d2fe4217a8459cd632de320a456a7f501c1474ce4027f01b6a37",
+    "sha256": "9a0423591058532b3163cca0ac3612aa45ba3973d4f3d4871dfd728118e9a6fb"
+  },
+  "normal_plan": {
+    "topic": "Почему корабль держится на воде?",
+    "language": "ru",
+    "seconds": 45,
+    "max_submissions": 1
+  },
+  "scope": "General terminal silence normalization, all topics; strict measured MP3 gate unchanged; original source preserved"
+}
