@@ -1,3 +1,9 @@
+## Current status — Google restored; Gemini retry cap reached, 2026-11-08
+
+Owner confirmed reconnection. New diagnosticb32fb447-e4f2-4ca5-b19a-f5d34ecdbc7c proved Google metadata and TTS work; exact saved701character expansion passed independent review but measured45144ms, above strict45000ms. No MP4. New bounded final-correction diagnostica1eb40a3-d9be-4a6e-8374-5d4a480259c9 then encountered repeated explicit503. The approved global TWO-retry cap stopped it before TTS; never resume either terminalID. Receipt acceptance/factory-next/reconnected-final-boundary-20261108.json contains actual ledger rows; diagnostic gemini_calls counts attempted claims, not necessarily physical sends.
+
+LIVE remains347c6d8. Candidatee096c5f is packaged but NOT deployed. final-rollout.py is prepared and guarded on passed final-correction-result.json, which is FAILED; do not bypass. Google OAuth no longer requires user action. No new normaljob submitted. project_ready=false; full automatic MP4 acceptance remains unfulfilled. No blind extra diagnostic/retry beyond approved bounds.
+
 ## Current verified blocker — 2026-11-08
 
 Project is NOT complete. LIVE remains347c6d8/image61d13f4e; latest candidatee096c5f/imageec81dee passed all three exact-image suites but is NOT deployed. Saved expansion diagnosticacdda7b1-1823-4217-b752-daca2ac469af failed at Google metadata authorization BEFORE Gemini/TTS: HTTP502 UNKNOWN_PROVIDER_RESULT, OAUTH_GRANT_REJECTED, execution14452.1metadata/0Gemini/0TTS. Owner Google OAuth reauthorization is required; do not repeat this terminal ID or claim provider availability. No new normal MP4. Receipt acceptance/factory-next/oauth-blocker-20261108.json.

@@ -1,0 +1,87 @@
+{
+  "reconnected": {
+    "id": "b32fb447-e4f2-4ca5-b19a-f5d34ecdbc7c",
+    "source_revision": "e096c5fbf18c49307eabab5c5a3f389a7346a9c0",
+    "metadata_calls": 1,
+    "gemini_calls": 1,
+    "search_calls": 0,
+    "tts_calls": 1,
+    "characters": 701,
+    "window": {
+      "target_words": 95,
+      "min_words": 89,
+      "max_words": 101,
+      "target_characters": 710,
+      "min_characters": 698,
+      "max_characters": 722
+    },
+    "measurement": {
+      "status": "ready",
+      "bytes": 361152,
+      "sha256": "b7a8a53f2a44d2fe4217a8459cd632de320a456a7f501c1474ce4027f01b6a37",
+      "codec": "mp3",
+      "duration_ms": 45144,
+      "sample_rate": 24000,
+      "channels": 1
+    },
+    "sha256": "b7a8a53f2a44d2fe4217a8459cd632de320a456a7f501c1474ce4027f01b6a37",
+    "status": "failed",
+    "error_type": "AssertionError",
+    "error_message": "measured correction outside strict duration",
+    "elapsed_seconds": 13.123
+  },
+  "correction": {
+    "id": "a1eb40a3-d9be-4a6e-8374-5d4a480259c9",
+    "source_revision": "e096c5fbf18c49307eabab5c5a3f389a7346a9c0",
+    "metadata_calls": 1,
+    "gemini_calls": 5,
+    "search_calls": 0,
+    "tts_calls": 0,
+    "status": "failed",
+    "error_type": "RaiseException",
+    "error_message": "job model retry limit exhausted\nCONTEXT:  PL/pgSQL function factory_v3.claim_model_retry(uuid,text,text,text,text) line 25 at RAISE",
+    "elapsed_seconds": 260.638
+  },
+  "actual_calls": [
+    [
+      "gemini-billing-check",
+      "succeeded",
+      null,
+      "200",
+      null,
+      "14456"
+    ],
+    [
+      "next-voice-correction:3:next-measured-duration-revision",
+      "failed",
+      "ModelUnavailable",
+      "503",
+      "UNAVAILABLE",
+      "14457"
+    ],
+    [
+      "next-voice-correction:3:next-measured-duration-revision:retry503",
+      "succeeded",
+      null,
+      "200",
+      null,
+      "14458"
+    ],
+    [
+      "next-voice-correction:3:next-measured-duration-structured-repair",
+      "failed",
+      "ModelUnavailable",
+      "503",
+      "UNAVAILABLE",
+      "14459"
+    ],
+    [
+      "next-voice-correction:3:next-measured-duration-structured-repair:retry503",
+      "failed",
+      "ModelUnavailable",
+      "503",
+      "UNAVAILABLE",
+      "14460"
+    ]
+  ]
+}
