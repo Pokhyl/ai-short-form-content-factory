@@ -1,3 +1,9 @@
+## Active normal run — lossless terminal-silence fix deployed, 2026-11-08
+
+LIVE14f8ffe13bb585d60294810abb476499b4b48453/imagebd48eaff passed all3exact-image suites. New research enables verified-terminal-silence-v1: only overruns<=750ms, MP3 frame copy with no Xing rewriting, byte-exact decoded PCM prefix, retained100ms guard plus removed tail peak<=32/32768, final measured strict duration. Actual saved45144ms audio became44952ms with unchanged retained PCM, peak17. No new TTS/API needed for this boundary. Source/archive unchanged. All70runtime files match;health200/gateway403; protected rollout preserved DB/workflows/settings/othercontainers/jobfiles.
+
+ONE normal public RU45 request «Почему корабль держится на воде?» is active: e3d35bf7-ac44-414f-b801-adc5b71632a8. POST caller timed out, but read-only reconciliation confirmed exact new registration/currentrevision/running research. NEVER duplicate POST. Follow exactID through MP4/audit. VPS /opt/factory-completion-20261028/voice-tail-normal-submission.json. Old failedjobs immutable. project_ready=false pending actual end-to-end output.
+
 ## Current status — Google restored; Gemini retry cap reached, 2026-11-08
 
 Owner confirmed reconnection. New diagnosticb32fb447-e4f2-4ca5-b19a-f5d34ecdbc7c proved Google metadata and TTS work; exact saved701character expansion passed independent review but measured45144ms, above strict45000ms. No MP4. New bounded final-correction diagnostica1eb40a3-d9be-4a6e-8374-5d4a480259c9 then encountered repeated explicit503. The approved global TWO-retry cap stopped it before TTS; never resume either terminalID. Receipt acceptance/factory-next/reconnected-final-boundary-20261108.json contains actual ledger rows; diagnostic gemini_calls counts attempted claims, not necessarily physical sends.
