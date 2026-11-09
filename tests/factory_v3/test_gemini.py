@@ -207,6 +207,18 @@ class GeminiTests(unittest.TestCase):
             self.adapter.review_script(request)
         self.assertEqual(len(self.http.requests), 1)
 
+    def test_unsubstantiated_categorical_claim_rejected_after_positive_model_review(self):
+        f=self.fixture
+        scene={"id":"u0","narration":"Корабль целиком сделан из стали.","evidence_ids":["f0"],
+               "contract":f.catalog["units"][0]["contract"]}
+        request={"topic":"controlled","language":"ru","script":scene['narration'],
+                 "scenes":[scene],"evidence":f.evidence}
+        self.http.result={"language":"ru","language_match":True,"visual_contracts_match":True,
+            "no_unsupported_claims":True,"topic_covered":True,
+            "factual_checks":[{"scene_id":"u0","fact_id":"f0","narration_quote":scene['narration'],"supported":True}]}
+        with self.assertRaisesRegex(ValueError,"categorical qualifier"):
+            self.adapter.review_script(request)
+
     def native_review_fixture(self):
         from pathlib import Path
         saved=json.loads((Path(__file__).parent/'fixtures/partial-native-review.json').read_text())

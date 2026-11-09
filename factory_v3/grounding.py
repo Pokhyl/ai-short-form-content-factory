@@ -1,5 +1,30 @@
 """Traceable research evidence: exact fetched text hashes and supporting quotations."""
 import hashlib
+import re
+
+
+_SCOPE_MARKERS = {
+    'en': ('entirely','completely','always','never','solely','exclusively','necessarily','must'),
+    'pl': ('całkowicie','zawsze','nigdy','wyłącznie','koniecznie','zawsze'),
+    'ru': ('целиком','полностью','всегда','никогда','исключительно','обязательно','неизменно','непременно'),
+    'uk': ('цілком','повністю','завжди','ніколи','виключно','обов’язково','обов\'язково','незмінно'),
+}
+
+
+def _tokens(text):
+    return set(re.findall(r"[\w’']+", text.casefold()))
+
+
+def validate_qualifier_scope(evidence, language, scenes):
+    """Do not accept categorical scope stronger than the cited fact text."""
+    facts = {fact['id']: fact['text'] for fact in evidence['facts']}
+    markers = _SCOPE_MARKERS
+    for scene in scenes:
+        cited = [facts[fact_id] for fact_id in scene['evidence_ids'] if fact_id in facts]
+        source_tokens = set().union(*(_tokens(text) for text in cited)) if cited else set()
+        for marker in markers.get(language, ()):
+            if marker in _tokens(scene['narration']) and marker not in source_tokens:
+                raise ValueError('categorical qualifier is stronger than cited source')
 from urllib.parse import urlparse
 
 
@@ -72,6 +97,7 @@ def validate_script_review(evidence, language, script, scenes, review, topic=Non
         observed.add(key)
     if observed!=expected:
         raise ValueError("semantic review omitted narrated facts")
+    validate_qualifier_scope(evidence, language, scenes)
     if 'coverage_required_fact_ids' in review:
         required=review['coverage_required_fact_ids']
         coverage=review.get('coverage_checks')
