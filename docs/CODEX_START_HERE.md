@@ -1,3 +1,9 @@
+## Current result — reduced photo target, repeated Gemini503, 2026-11-09
+
+Candidate d464fa5 lowers required verified images to minimum_shots (3/4/6/8 for15/30/45/60s), preserving the existing maximum7.5-second hold, source/visual review and distinct-photo gates. Focused photo-budget suite passed8 tests; exact-package suites passed250 Next+141 core+243 material=634. Protected deployment d464fa5/image54c895... retained DB/workflows/settings/other containers/job files;71 runtime source files match, health200. Evidence /opt/factory-completion-20261028/min-photos-{rollout-result,readiness}.json.
+
+Normal run dcad2c86-12a1-468a-97fa-c03158543cd7 was accepted and completed research. Photo count reduction reached material inspection with fewer photos. Gemini explicitly returned503 on material brief and material inspection; those two approved retries succeeded. Independent material-entailment then returned another explicit503 after the per-job retry ceiling was consumed. Job is immutable needs_attention/materials, no story/TTS/render. Do not resume. No MP4 and no further call. Evidence in application DB factory_v3.preparation_calls for this exact ID. The outstanding blocker is provider availability across multiple sequential Gemini operations; optimizing photo count alone cannot complete reliably under the present cap. project_ready=false.
+
 ## Current checkpoint — contextual montage and real MP4, 2026-11-08
 
 Normal e3d35bf7-ac44-414f-b801-adc5b71632a8 is terminal needs_attention/edit; NEVER resume it. Its real voice passed at44952ms (verified216ms terminal silence removal, exact retained PCM) and alignment passed. Edit failed because the last contextual scene had only one explicitly fact-tagged photograph for11.8seconds, exceeding the7.5second shot cap.
