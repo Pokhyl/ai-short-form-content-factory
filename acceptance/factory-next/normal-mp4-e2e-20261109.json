@@ -1,0 +1,33 @@
+{
+  "id": "9e176fe4-e40c-4856-987c-3e71efb267fc",
+  "status": "complete",
+  "request": {
+    "topic": "Почему корабль держится на воде?",
+    "language": "ru",
+    "seconds": 45
+  },
+  "source_revision": "d464fa519f0f743c4253af5972fc2419ecdf290c",
+  "completed_stages": [
+    "research",
+    "materials",
+    "story",
+    "voice",
+    "alignment",
+    "edit",
+    "render",
+    "audit"
+  ],
+  "photo_count": 6,
+  "audio_duration_ms": 43512,
+  "render_duration_ms": 45000,
+  "frame_count": 1350,
+  "video_codec": "h264",
+  "audio_codec": "aac",
+  "video_sha256": "8c5c2d16d9397f5ddfa3387bdbdbadeeab90e5ae809b3cc93d751f87fe2b0444",
+  "audit_passed": true,
+  "audit_gates_passed": 16,
+  "audio_correlation": 0.9999817939170669,
+  "public_video_url": "https://studio.hodor.com.pl/factory-next/api/jobs/9e176fe4-e40c-4856-987c-3e71efb267fc/video",
+  "factory_acceptance": "one real normal topic-to-MP4 run completed; not a universal quality guarantee",
+  "editorial_note": "Machine audit passed. Script review accepted narration, but manual text spot-check notes overgeneralized claim that ships are entirely made of steel; factual-completeness review remains a known limitation."
+}
