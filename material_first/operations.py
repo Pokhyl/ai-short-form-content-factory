@@ -138,6 +138,7 @@ class Operations:
             'Do not merge multiple mechanisms into one broad topic statement, or paraphrase the same fact to fill slots. '
             'Mark at least three essential distinct facts for narration. Separately define photo_contexts: '
             'setting, subject, detail. These are three retrieval slots, not a requirement to show an interior or three stages. Each has a concrete physical subject, a short English entity-focused search query, and fact_ids explaining its direct relationship to specific supplied facts. '
+            'Bind each of the three photo_context roles to a different one of the three required facts whenever their source spans permit. The setting role should show the requested subject in context; the subject role should show its main physical form; the detail role must illustrate a different source-named component or structure tied to the least visually represented fact. Do not make setting, subject and detail three phrasings of the same whole-object view. '
             'Every subject must be the actual requested object, its genuine physical component or stage, or a specifically identified associated object. Never substitute a generic parent category, decorative scenery, a laboratory prop or a visual analogy. For hidden, microscopic, '
             'historical or distant subjects seek documented observations and named associated objects. Do not use unrelated scientific equipment, atomic models or generic landscapes merely because they share a broad theme. '
             + visual_policy + ' '
