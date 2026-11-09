@@ -59,10 +59,10 @@ class PhotoBudgetStopTests(unittest.TestCase):
         self.assertEqual(ops.inspect_many.call_count,1)
         self.assertEqual(len(result['photos']),4)
 
-    def test_quota_saving_target_respects_cadence_for_all_durations(self):
+    def test_editorial_target_respects_five_second_cadence_for_all_durations(self):
         self.assertEqual({n:required_verified_image_target(n)
                           for n in (15,30,45,60)},
-                         {15:3,30:4,45:6,60:8})
+                         {15:3,30:6,45:9,60:12})
         for seconds in (15,30,45,60):
             count=required_verified_image_target(seconds)
             self.assertTrue(seconds/7.5<=count<=seconds/2.5)
@@ -71,7 +71,7 @@ class PhotoBudgetStopTests(unittest.TestCase):
         # A 45-second output does not need 13 illustrations; 9-12 sourced,
         # visually distinct images preserve a viable measured edit.
         original=required_verified_image_target(45)
-        self.assertEqual(original,6)
+        self.assertEqual(original,9)
 
     def test_stop_when_preferred_photo_count_and_all_required_facts_verified(self):
         def coverage(i):
@@ -87,9 +87,9 @@ class PhotoBudgetStopTests(unittest.TestCase):
         # cinema can use a separately source-verified DNA diagram as context.
         result,operations=self.run_materials(
             lambda i: ["f1"] if i%2==0 else ["f3"],seconds=45)
-        self.assertEqual(len(result["photos"]),8)
-        self.assertEqual(operations.inspect_many.call_count,2)
-        self.assertEqual(operations.download.call_count,8)
+        self.assertEqual(len(result["photos"]),12)
+        self.assertEqual(operations.inspect_many.call_count,3)
+        self.assertEqual(operations.download.call_count,12)
         self.assertEqual({f for photo in result["photos"]
                           for f in photo["supported_fact_ids"]},{"f1","f3"})
         self.assertTrue(all(set(p["supported_fact_ids"]) & {"f1","f2","f3"}

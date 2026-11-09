@@ -14,7 +14,7 @@ from material_first.engine import (validate_material, inspected_material, valida
                                   MaterialResolutionUnavailable, probe_media)
 from material_first.paragraphs import compact_materials, validate_native_surface, LANGUAGES
 from material_first.photo_identity import pixels, same_photo
-from material_first.presentation import TOPIC_POLICY, minimum_shots
+from material_first.presentation import TOPIC_POLICY, minimum_shots, preferred_shots
 from material_first.visuals import candidate_limit
 from .source_context import SourceContextModel
 from .story_contract import sufficient_fact_anchors, story_contract, assemble_story
@@ -37,12 +37,14 @@ def validated_next_story(request, evidence, photos, draft):
 
 
 def required_verified_image_target(seconds):
-    """Viable ~7.5-second image cadence, reducing paid inspection batches.
+    """Aim for a distinct photograph about every five seconds.
 
-    The exact measured timeline still verifies the real selected images and
-    voice. Never reduce below the topic-policy 7.5-second maximum hold.
+    The edit still enforces the 2.5–7.5 second legal hold and uses only
+    independently approved, distinct source photos. Five seconds is the
+    editorial target; 7.5 seconds remains the hard maximum.
     """
-    return max(3, minimum_shots(seconds, TOPIC_POLICY))
+    return max(3, minimum_shots(seconds, TOPIC_POLICY),
+               min(preferred_shots(seconds, TOPIC_POLICY), (seconds+4)//5))
 
 
 class VoiceRevisionCalls:

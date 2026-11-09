@@ -155,7 +155,9 @@ class Operations:
             'When source_catalog_references are supplied, consider these exact names and span IDs before inventing a generic search hint. '
             'They are source mentions, not proof that photographs exist or that every claim applies to that individual object. '
             'Choose facts and photo subjects together so their relationship can be supported by the cited text. '
-            'The three contexts must differ in dominant subject, scale or setting. '
+            'The three contexts must differ in dominant subject, scale or setting, and each should illustrate its own bound fact. '
+            'Do not fill every role with another generic view of the main object. For a physical mechanism, seek its different source-named visual parts: the whole object in its environment, the relevant structural component or interaction, and a close-up, cutaway or accurately sourced scientific illustration of the hidden part when available. '
+            'Keep at least two contexts anchored in real photographs of the requested subject; a sourced explanatory diagram may fill a role only when it depicts a cited mechanism or component. Never use an unrelated analogy. '
             'For example, a flowering meadow, a bee close-up, and a flower/pollen detail are different roles. '
             'Allow contextually relevant stock photographs; do not demand a rare precise action or anatomy angle. '
             'Facts are proved by source text, not photograph geometry.'),
