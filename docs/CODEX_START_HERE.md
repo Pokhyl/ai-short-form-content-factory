@@ -1,4 +1,12 @@
-## Current result — real normal topic-to-MP4 run completed, 2026-11-09
+## Current status — normal MP4 passed; overclaim guard deployed, 2026-11-09
+
+Production normal job9e176fe4-e40c-4856-987c-3e71efb267fc completed research→materials→story→voice→alignment→edit→render→audit on revisiond464fa5. Six approved photos, measured natural voice43512ms, exact45s H264/AAC/1350-frame MP4. All16 media audit gates passed; SHA256 8c5c2d16d9397f5ddfa3387bdbdbadeeab90e5ae809b3cc93d751f87fe2b0444. Public URL https://studio.hodor.com.pl/factory-next/api/jobs/9e176fe4-e40c-4856-987c-3e71efb267fc/video. Receipt acceptance/factory-next/normal-mp4-e2e-20261109.json.
+
+Post-run manual spot-check found a factual overclaim (“ships entirely made of steel”) which its model reviewer approved. Fixed generically: factual validation now rejects categorical scope words when absent from the exact cited source facts, for en/pl/ru/uk; a source-grounded scene can still use a scope marker present in its cited text. The saved real overclaim is rejected by the deployed code offline. Focused semantic suite32 tests passed, exact-image package suites250 Next+141 core+243 material=634 all pass. Revision72bcd06/imagec82ae43 deployed with protected rollout preserving DB/workflows/settings/other containers/job files.71 runtime Python files exact, health200, gateway403. Readiness receipt /opt/factory-completion-20261028/qualified-claims-readiness.json; deployment /opt/factory-completion-20261028/qualified-claims-rollout-result.json.
+
+Automatic topic-to-MP4 production is demonstrated end-to-end and the known catastrophic qualifier overclaim is now guarded. Older terminal runs are immutable. No new provider generation was needed to verify the saved counterexample. Historical failures below are retained as context only, not current blockers.
+
+
 
 After the minimum-photo change, fresh normal job9e176fe4-e40c-4856-987c-3e71efb267fc completed every stage (research, materials, story, voice, alignment, edit, render, audit) on deployed revisiond464fa5. Six approved photos; natural-speed voice43512ms; final MP445000ms,1350frames,H.264/AAC. All16 independent media audit gates passed; source audio correlation0.99998179. SHA256 8c5c2d16d9397f5ddfa3387bdbdbadeeab90e5ae809b3cc93d751f87fe2b0444. Public artifact: https://studio.hodor.com.pl/factory-next/api/jobs/9e176fe4-e40c-4856-987c-3e71efb267fc/video. Evidence acceptance/factory-next/normal-mp4-e2e-20261109.json. This is one uncustomized normal run through the universal pipeline, not a hand-built video. Previous S503 terminal jobs remain immutable.
 
