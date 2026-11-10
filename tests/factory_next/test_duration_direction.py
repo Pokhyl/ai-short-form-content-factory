@@ -47,3 +47,8 @@ class DurationDirectionTests(unittest.TestCase):
         self.assertEqual(len(text),701)
         self.assertTrue(revision_length_fits(text,win))
         self.assertTrue(duration_fits(len(text)/len(original)*30504,45))
+
+    def test_small_expansion_estimation_margin_does_not_change_final_audio_gate(self):
+        window=revision_length_window('x'*402,26472,45,centered=True)
+        self.assertGreaterEqual(window['max_characters'],685)
+        self.assertFalse(duration_fits(45120,45))
