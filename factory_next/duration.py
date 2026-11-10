@@ -69,8 +69,13 @@ def revision_length_window(script, measured_ms, seconds, *, centered=False):
         high=characters+chars_slack
         if measured_ms>seconds*1000:
             high=min(high,len(script)-1)
-        elif measured_ms<seconds*1000-2100:
+        elif measured_ms<seconds*1000:
             low=max(low,len(script)+1)
+            # The character-to-audio estimate is approximate. Allow a small
+            # expansion margin for a very underlong take before requesting
+            # the next measured TTS; measured audio remains the strict final gate.
+            if measured_ms < seconds*1000*0.75:
+                high += max(8,math.ceil(characters*0.015))
         return {'target_words':words,'min_words':max(1,words-words_slack),
                 'max_words':words+words_slack,'target_characters':characters,
                 'min_characters':low,'max_characters':high}
