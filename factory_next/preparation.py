@@ -307,8 +307,35 @@ class PreparationStages:
         scenes=validated_next_story(request,evidence,photos,draft)
         script=' '.join(s['narration'] for s in scenes)
         validate_native_surface(request['language'],script)
-        review=(self.narrative_model.review_script if self.narrative_model is not None else self.operations.review_script)({**request,'evidence':evidence,'materials':photos,
-                                               'scenes':scenes,'script':script})
+        reviewer=self.narrative_model.review_script if self.narrative_model is not None else self.operations.review_script
+        review_request={**request,'evidence':evidence,'materials':photos,
+                        'scenes':scenes,'script':script}
+        try:
+            review=reviewer(review_request)
+        except ScriptReviewRejected as error:
+            if request.get('voice_review_repair_policy')!='one-reviewed-repair-v1':raise
+            repair_schema=obj({scene['id']:{**string(),'maxLength':2400} for scene in scenes})
+            repaired,_=model.generate(
+                'next-story-review-repair',
+                f"Repair the rejected {LANGUAGES[request['language']]} script. "
+                "Change narration only. Correct every unsupported assertion and "
+                "categorical qualifier identified by the review; do not add facts, "
+                "remove required facts, or change beat order, source identities, "
+                "photo assignments or visual contracts. Use only the supplied "
+                "evidence and preserve the requested topic. The exact result will "
+                "receive one independent review before any voice synthesis. "
+                "Return only one corrected narration string per scene ID.",
+                {**source_context,'rejected_scenes':scenes,
+                 'completed_negative_review':error.review},repair_schema,
+                max_tokens=8192,thinking_level='medium')
+            scenes=[{**scene,'narration':repaired[scene['id']]} for scene in scenes]
+            scenes=validated_next_story(request,evidence,photos,{'beats':[
+                {'material_id':scene['material_id'],'fact_ids':scene['evidence_ids'],
+                 'narration':scene['narration']} for scene in scenes]})
+            script=' '.join(scene['narration'] for scene in scenes)
+            validate_native_surface(request['language'],script)
+            review=reviewer({**request,'evidence':evidence,'materials':photos,
+                'scenes':scenes,'script':script},review_key='script-review-repaired')
         validate_script_review(evidence,request['language'],script,scenes,review,topic=request['topic'])
         if review.get('native_language_quality') is not True:
             raise ValueError('independent native-language review failed')
