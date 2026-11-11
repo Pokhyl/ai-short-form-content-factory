@@ -190,15 +190,37 @@ class PreparationStages:
                     asset['visual_entailment_policy']='independent-visual-entailment-v1'
                 batch.append(asset)
             if not batch:continue
-            # inspect_many normally runs entailment immediately. Temporarily
-            # defer only that second pass; restore the shared Operations flag
-            # even when the provider raises.
-            if entailment_enabled:operations.require_visual_entailment=False
-            try:
-                receipts=operations.inspect_many(deepcopy(batch),deepcopy(evidence))
-            finally:
-                if entailment_enabled:operations.require_visual_entailment=entailment_enabled
-            if len(receipts)!=len(batch):raise ValueError('photo inspection omitted input')
+            # Discovery candidates can carry different visual-target contracts.
+            # inspect_many requires one shared target set and qualification
+            # protocol per provider call, so partition this bounded candidate
+            # window by that exact contract while preserving candidate order.
+            inspection_groups=[]
+            for asset in batch:
+                contract=(json.dumps(asset.get('visual_targets',[]),sort_keys=True,
+                                     ensure_ascii=False),
+                          asset.get('visual_qualification_protocol')=='qualified-target-v1')
+                group=next((g for key,g in inspection_groups if key==contract),None)
+                if group is None:
+                    group=[]
+                    inspection_groups.append((contract,group))
+                group.append(asset)
+            receipts_by_id={}
+            for _,inspection_batch in inspection_groups:
+                # inspect_many normally runs entailment immediately. Temporarily
+                # defer only that second pass; restore the shared Operations flag
+                # even when the provider raises.
+                if entailment_enabled:operations.require_visual_entailment=False
+                try:
+                    inspected=operations.inspect_many(
+                        deepcopy(inspection_batch),deepcopy(evidence))
+                finally:
+                    if entailment_enabled:
+                        operations.require_visual_entailment=entailment_enabled
+                if len(inspected)!=len(inspection_batch):
+                    raise ValueError('photo inspection omitted input')
+                receipts_by_id.update((asset['id'],receipt)
+                    for asset,receipt in zip(inspection_batch,inspected))
+            receipts=[receipts_by_id[asset['id']] for asset in batch]
             if not entailment_enabled:
                 admit_reviewed(list(zip(batch,receipts)))
             else:
