@@ -1,0 +1,35 @@
+{
+  "date_utc": "2026-11-11",
+  "source_commit": "b5b5d697ea1b9a4cfbba10527291441d6727e25e",
+  "source_change": "Partition bounded image-inspection windows by visual_targets and qualification contract, preserving candidate order.",
+  "image": {
+    "tag": "factory-v3:material-contract-groups-b5b5d69",
+    "id": "sha256:6a3a12bbc761f04367b29cf6962b4885db13c6792617bfbb7aa1206fb2a4b47c",
+    "build_status": "passed",
+    "duration_seconds": 4.75,
+    "platform": "linux/amd64"
+  },
+  "focused_verification": {
+    "python_syntax": "passed",
+    "contract_grouping_assertions": "passed for mixed target roles and qualification protocol; stable order",
+    "pytest": "not_run; pytest is not installed on host or image"
+  },
+  "deployment": {
+    "container": "factory-next-studio-v9",
+    "status": "deployed",
+    "rollback_container": "factory-next-studio-v9-before-material-contract-groups-20261111",
+    "rollback_image": "factory-v3:material-review-batch-28d397a",
+    "healthz_http": 200,
+    "public_studio_http": 200,
+    "public_jobs_api_http": 200,
+    "shared_database_workflows_settings_and_job_files": "preserved"
+  },
+  "disk_cleanup": {
+    "scope": "factory project only",
+    "stopped_factory_containers_removed": 99,
+    "unreferenced_factory_v3_image_tags_removed": 94,
+    "obsolete_factory_release_copies_removed": 16,
+    "free_bytes_after_deployment": 2783219712
+  },
+  "fresh_mp4_gate": "pending; new job terminated at research after explicit Gemini 503"
+}
