@@ -12,7 +12,8 @@
   "focused_verification": {
     "python_syntax": "passed",
     "contract_grouping_assertions": "passed for mixed target roles and qualification protocol; stable order",
-    "pytest": "not_run; pytest is not installed on host or image"
+    "pytest": "not_run; pytest is not installed on host or image",
+    "deployed_runtime_assertion": "passed inside factory-next-studio-v9: mixed-role partition, stable candidate order, RU45 photo target=9"
   },
   "deployment": {
     "container": "factory-next-studio-v9",
