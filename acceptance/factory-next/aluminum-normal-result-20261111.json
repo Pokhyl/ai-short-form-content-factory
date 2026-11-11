@@ -21,5 +21,12 @@
   "photo_count": 0,
   "materials_or_media_generated": false,
   "mp4_created": false,
-  "resume_or_duplicate": "Do not resume or duplicate this terminal job."
+  "resume_or_duplicate": "Do not resume or duplicate this terminal job.",
+  "provider_route": {
+    "role": "gemini_narrative_lite",
+    "model": "gemini-3.5-flash-lite",
+    "verification_id": "767b4d5b-4c85-42b4-8be2-98a319ab04eb",
+    "standard_free_tier": true,
+    "billing_enabled": false
+  }
 }
