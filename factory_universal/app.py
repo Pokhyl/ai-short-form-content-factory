@@ -203,7 +203,7 @@ def write_audio(slots,lang,jid,duration):
   out.setparams(params);silence=b'\0'*(params.nchannels*params.sampwidth)
   for i,path in enumerate(wavs):
    with wave.open(str(path),'rb') as f:
-    if f.getparams()[:4]!=params[:4]:raise ValueError('voice sample format changed')
+    if f.getparams()[:3]!=params[:3]:raise ValueError('voice sample format changed')
     frames=f.readframes(f.getnframes())
    sample_frames=len(frames)//(params.nchannels*params.sampwidth);target_frames=round(targets[i]*params.framerate/1000)
    if sample_frames>target_frames:raise ValueError('narration exceeded its visual slot by '+str(round((sample_frames-target_frames)*1000/params.framerate))+' ms')
