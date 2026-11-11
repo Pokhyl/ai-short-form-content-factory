@@ -1,11 +1,3 @@
-## Current continuation — material-call budget fix in progress, 2026-11-11
-
-Fresh normal job `e23b6fc2-295c-4e70-ae2e-91243c0662ad` is terminal at `story`; do not resume or retry it. It reached 9 accepted photos, but materials consumed 15 Gemini calls and research consumed 2. The existing story+voice reserve is 12; only 11 calls remained, so story preflight stopped before any story provider call. The VPS and public Studio are healthy; this was avoidable per-photo review call overhead, not a server outage.
-
-Candidate based on exact `e319c29603db64a425415a6b8bf24dcb355d6675` batches the same independent visual-entailment review across up to 4 already accepted photos and 8 MiB. The initial photo inspection and all independent review gates remain enabled. The regression models 32 candidates with 9 accepted across 8 initial batches and checks 8 initial calls plus entailment groups `[4,4,1]` (11 material calls rather than 15). Focused budget, entailment, and resume tests: 17/17 PASS; `git diff --check` PASS. No new provider calls, job, deployment, or MP4 from this candidate.
-
-Next: inspect and reclaim only safe Docker build-cache space (root filesystem had 59 MiB free), commit/push the candidate, build and run exact-image network-disabled checks, then use the protected rollout procedure and submit one fresh normal request only after the live revision is verified. Keep the failed job immutable, free-only model/budget, retry limits, photos and factual/visual gates unchanged. `project_ready=false` for the current candidate until fresh production MP4 and media audit pass.
-
 ## Latest acceptance blocker — 2026-10-12
 
 Последний gate-аудит выявил две ошибки retry-пути: повторные модельные ремонты делили один durable call key, а цикл обрывался перед второй разрешённой коррекцией. Исправлены уникальные ключи initial/review и лимит ровно в две коррекции; regression воспроизводит fact repair → плохие photo hints → query-only repair. Целевые тесты 23/23 и material-first 198/198 PASS. Точный amd64 package `factory-v3:repair-retry-f45c6ec-amd64` (`sha256:e613eb5f47f8bd480fc97a93531b68ab9636ae4231bf70a11ce93f2eb5b8913e`) прошёл network-disabled suites: material-first 198/198, Factory v3 112/112. Production не менялся.
@@ -317,9 +309,2247 @@ No import/publish/restart/create/run is pending from this checkpoint. Preserve e
 - Full865/865 Node tests and all seven M8 SQL ranking regressions PASS. Only three workflow code nodes changed; topology/settings, parser, collector, SQL, worker, all shot anchors and timing gates unchanged. Fixture retains actual provider responses and image fingerprints. Old snapshot expectations updated only for corrected transport URLs/dimensions.
 - Before deployment: M8 v85 active/version4ddd4f4c-fc25-420a-aa43-8aa33b885640; M5 v225 unchanged; other32 baseline saved; n8n active0. Commit/push, backup and deploy ONLY M8 once, verify exact active source/history/health/other32, then create ONE fresh pl30/Gemini smoke and persist/push its ID before its single launch. Inspect actual final frames/audio after M9; audio input remains unsupported on this model surface, so never claim listening/HUMAN PASS.
 
-## 2026-10-04 — 46912c2a IMMUT
-…[sentinelx: truncated 273211 bytes]…
--2d421b3c3142`, M8 v53 `0953f69f-e982-467e-95e0-35161a613771`.
+## 2026-10-04 — 46912c2a IMMUTABLE M8 12093 failure; inspect ALL blockers before changes
+- Current acceptance `46912c2a-5d75-4482-a1bd-6d4016645f28` is terminal visuals_failed. M4-M7 PASS; M8 execution12093 failed; M9 never started. NEVER relaunch. Full trace `.review/m8-12093/execution.json` (8061093bytes). All81 searches HTTP200.
+- Full9scene Gemini evidence inspected: S1/S2/S3/S4/S5/S8/S9 have distinct PASS assets; ONLY S6/S7 have zero PASS. S6 office stapler + metal staple: selected Commons11334157 (loose staples),26029614 (staple strips),Pixabay487701 (brass paperfasteners); Commons previews failed HTTP429, only wrong brassfasteners reachedGemini. S7 metal staple + paper sheets: selected Commons130306651 (loose staples/boxes),75797646 (Staple_on_paper.png),Pexels8478388 (wire racks/folders); Commons75797646 preview failedHTTP429 on original upload.wikimedia.org unscaled URL; other2 failedconceptchecks. Inspect actual pixels/fullpools before declaring absence or changing contracts. Preserve 3queries/3previews, min55, uniqueness and strictGemini.
+- Provider query3 S6 Commons office stapler staple (11results); S7 Commons staple paper (20results). Pexels/Pixabay S6 office stapler metal staple, S7 metal staple paper sheets. Need generic retrieval/ranking and Commons original-preview429 closure offline before any new smoke.
+- M5v225 production language QA confirmed: firstreview flags filler; repair removes it; retry/finalissuesEMPTY. New M5fix004c051 works on this acceptance. Full853/853 beforedeploy. M8v85 unchanged. No import/publish/restart/create/run pending.
+- Actual M6 MP3 SHA173b54d9e36897edba41102ac394d8cdd48ed8d7c0c5c24ab950bb0404cd394b,30168ms, ASRcoverage.983 (imperfect transcript), peak-.7dB mean-18.6dB. Audio file received through Sentinel but current model surface explicitly does not support audio input; DO NOT claim listening/HUMAN PASS. Need actual final frame/MP4 inspection and user listening when rendered. No finalmediaexists yet.
+
+## 2026-10-04 — 46912c2a acceptance LAUNCHED EXACTLY ONCE
+- Acceptance `46912c2a-5d75-4482-a1bd-6d4016645f28` launched EXACTLY ONCE at 2026-10-04T09:08:16Z, HTTP202 accepted=true. Prelaunch HEAD/origin matched `70b560829538fd4942dbd1bd0f099766c64156cb`, ID persisted in both, DB created, n8n active0. Receipt `.review/m5-12075/new-acceptance-launch.json`.
+- Deployed correction004c051, M5 v225 / `ab663ac4-c283-4d2f-b0e6-e2c7d0770a64`, M8 v85 unchanged. Exact offline provider replay closes all12075 defects; full853/853 PASS. Follow exact new ID through M4-M9 to terminal and inspect actual final frames/audio. Production acceptance still unproven.
+- NEVER relaunch failed IDs. No further create/run/import/publish/restart is authorized by smoke discipline while this job is active.
+
+## 2026-10-04 — 004c051 M5 v225 deployed; 46912c2a CREATED ONLY
+- Fix `004c051` pushed; full853/853 PASS. Exact saved Gemini review/repair replay closes all four observed defects, unchanged native validators and retry/final review PASS with empty issues. This remains offline evidence.
+- M5 v225 active/version `ab663ac4-c283-4d2f-b0e6-e2c7d0770a64`; live nodes/connections/settings and active history exactly match Git. Import, publish and n8n restart completed ONCE each. Other32 workflows including M8 unchanged. M8 remains v85 / `4ddd4f4c-fc25-420a-aa43-8aa33b885640`. Direct/public health200, worker healthy, n8n running/restart0, active0. Deployment evidence `.review/m5-12075/deployment-verified.json`; backup SHA256 `b4892d39111676957c5b4c66348e01cded0e25606cd4ab569bffa8a33540b50d`.
+- NEW acceptance `46912c2a-5d75-4482-a1bd-6d4016645f28` created EXACTLY ONCE HTTP201 at 2026-10-04T09:06:57Z, topic jak działa zszywacz biurowy, pl30/Gemini. DB created. NOT LAUNCHED. Push this checkpoint, verify ID in HEAD/origin + DB created + active0, then launch EXACTLY ONCE and trace exact ID M4-M9 to terminal; inspect actual final frames/audio after M9.
+- All failed IDs including ba7f748b, c323a404 and5909e2b1 remain immutable. No import/publish/restart/create/run operation is pending. Production acceptance still unproven.
+
+## 2026-10-04 — M5 12075 clause-review correction VERIFIED OFFLINE; deployment pending
+- Four narration review builders now receive exact complete sentence contexts spanning visual scene cuts. Three independent review passes cover mandatory clause punctuation, lexical/grammatical errors and filler. Source narration, exact quote enums, semantic reference pairs, visual metadata contracts, validators, timing and connections/settings are unchanged.
+- Exact saved production replay: initial Gemini review identifies S5/S6/S7/S9, native repair and unchanged strict validators correct both missing commas, the sentence boundary and filler. Retry and final review have NO issues or visual repairs. Full native provider request/response evidence is retained in regression fixture `tests/fixtures/m5-12075-clause-review.json`.
+- Focused44/44 before final provider fixture; final full853/853 PASS, including 8 new clause-review regressions. Offline evidence is not production acceptance. Commit/push this correction, deploy ONLY M5 once, verify active source/history and health before creating ONE new smoke.
+- Before-deployment M5 v224 backup `.backups/before-12075-VideoM5Storyboard001.json` SHA256 `b4892d39111676957c5b4c66348e01cded0e25606cd4ab569bffa8a33540b50d`.
+- Failed ba7f748b, c323a404,5909e2b1 and all older failures are immutable; NEVER relaunch. M8 remains v85 unchanged. No new job has been created or launched.
+
+## 2026-10-04 — ba7f748b immutable M5 12075 failure; offline closure in progress
+- Acceptance `ba7f748b-a5ae-4d98-ab94-4ce20db12d48` is terminal script_failed. M4 passed; M5 execution12075 failed; M6-M9 never started. NEVER relaunch this ID. Full trace `.review/m5-12075/execution.json`.
+- First repair fixed a missing sentence boundary and removed filler codziennie. Retry review incorrectly returned no issues. Final unchanged strict gate caught missing mandatory Polish commas before gdy and że in the exact same narration. No timing/canonicalization wording mutation caused these findings.
+- Generic correction being verified offline: supply complete sentence context spanning visual cuts to all four narration review builders and explicitly inspect mandatory subordinate-clause punctuation separately. Acceptance validators, repair contracts, timing, visual gates and workflow topology remain unchanged. Do not launch a new smoke until exact provider replay, regression/full checks, commit/push and deployment verification complete.
+
+## 2026-10-04 — ba7f748b acceptance LAUNCHED ONCE
+- NEW acceptance `ba7f748b-a5ae-4d98-ab94-4ce20db12d48` launched EXACTLY ONCE at 2026-10-04T08:53:18Z, HTTP202 accepted=true. Before launch HEAD/origin matched `3dc562c10ab43fd4a8d866eff08cd9d3fcca9073`, ID was persisted in both, DB created and n8n active0. Receipt `.review/m5-12064/new-acceptance-launch.json`.
+- First trace: M4 passed, M5 running. Continue this exact ID through M4-M9 to terminal; no additional create/run/import/publish/restart. M5 v224 and M8 v85 remain the deployed versions. Full845/845 passed before deployment. Production acceptance is not yet proven; final frames and actual audio must be inspected after M9.
+- All earlier failed IDs remain immutable; NEVER relaunch them.
+
+## 2026-10-04 — 24c85a3 M5 deployed; acceptance ba7f748b CREATED ONLY
+- Correction `24c85a3` pushed. M5 v224 active/version `63f869b7-ea66-4cb8-b038-9a0f3911af9d`; live nodes/connections/settings and active history nodes/connections equal Git. M5 imported/published once; one n8n restart. n8n running/restart0; worker healthy/restart0; direct/public health200. Other32 workflows including M8 unchanged fingerprint `32|f1add12524b216a8936c9b487e27c449`. M8 remains v85 / `4ddd4f4c-fc25-420a-aa43-8aa33b885640`; SQL/worker unchanged. Backup `.backups/before-12064-VideoM5Storyboard001.json` SHA256 `fb6453df90b6319e20d5f85dbffcfe7d846c5a0bb61b5cf1afd771e058ae520b`.
+- Offline closure: focused language65/65; full845/845; exact old failure scope S5/S2 becomes S9 in both repair branches; one isolated exact provider/validator replay repairs ONLY S9 and passes native language review with no issues. Strict language, semantic, timing and visual acceptance gates unchanged.
+- NEW ID `ba7f748b-a5ae-4d98-ab94-4ce20db12d48`, topic `jak działa zszywacz biurowy`, pl30/Gemini, created EXACTLY ONCE HTTP201; DB `created`. NOT LAUNCHED. Push this checkpoint, verify ID in HEAD/origin/main + DB created/n8n active0, then launch this new ID EXACTLY ONCE and trace M4-M9 to terminal.
+- Failed c323a404 and5909e2b1 plus all older failed jobs remain immutable; never relaunch. No import/publish/restart/create/run request is pending. Production acceptance is still unproven.
+
+## 2026-10-04 — M5 12064 localization corrected offline; M5 deployment pending
+- Generic source-grounded issue localization added ONLY to `Build Narration Language Repair` and its Second Pass builder. A unique literal multiword phrase quoted in a finding explanation, or a unique tightly grouped set of at least two literal quoted source words, selects the source defect scene(s), including a phrase crossing a visual cut. Absent replacement text, ambiguous repeats and ungrounded findings do not invent a new scope. Original review verdict and storyboard are never mutated. Correctly grounded findings keep their original issue object.
+- Exact failed 12064 replay: old builders route to S5/S2; both corrected builders route to S9, where the defect actually appears. Minimal repair instructions preserve unflagged words and continuation case. No language, semantic, structural, timing, provider retry or final acceptance validator was changed; topology/settings unchanged; M8 unchanged.
+- Focused language suite65/65 PASS; full JavaScript845/845 PASS. One isolated primary-provider repair/review replay using exact production model, request schemas and validators changed ONLY S9 to `metalowej podkładce, tworząc trwałe i stabilne połączenie.`; strict repair validator accepted; complete narration language review PASS with no issues. Saved fixture includes original inputs/no-op repairs/final failed review and new provider evidence. This diagnostic did NOT mutate any factory job or run record.
+- `c323a404-c83b-4a87-a1fd-8dc08771bbc7` remains immutable script_failed; never relaunch. Current production is still M5 v223 / M8 v85. Commit/push correction; deploy ONLY changed M5 once; verify active source/history/health; then create/persist/push one NEW acceptance ID, verify DB created/active0 and launch once. Production acceptance is still unproven; previous M8 classes are closed offline, not yet exercised by a passing smoke.
+
+## 2026-10-04 — acceptance c323a404 immutable M5 language failure
+- Job `c323a404-c83b-4a87-a1fd-8dc08771bbc7` is terminal `script_failed`; NEVER relaunch. M4 passed; M5 execution `12064` failed at 08:05:58 UTC / 10:05:58 Warsaw; M6-M9 never started. No new smoke is authorized by this checkpoint until this observed failure class is reproduced and fixed offline.
+- Exact blocker: Polish coordinated adjectives `trwałe stabilne` lack conjunction/comma in S9. The reviewer issue quotes instead point to unrelated S5 (first review) or S2 (retry), while explanations literally name the S9 fragment. Quote-only repair routing selects S5 then S2 and never repairs the actual defect. Second repair also capitalizes `Szybkie` mid-sentence. Both repair passes ran; final language gate correctly rejected the unchanged S9 defect.
+- Full decoded evidence: `.review/m5-12064/execution.json`. Inspect all saved initial/repair/review outputs; preserve strict final language/semantic/timing gates. Implement generic source-grounded issue localization and minimal narration repair; no topic-specific word substitution or acceptance weakening.
+- Production remains M5 v223 / M8 v85, code314ab0b. Earlier M8 12040 classes have 835/835 full tests, exact SQL replays and strict Gemini pixel diagnostics score100 for grounded S3/S8/S9, but NEW production smoke did not reach M8 and is not acceptance PASS.
+- Before any next smoke: regression fixtures and focused/full checks; commit/push; deploy only changed workflow/service; verify active source/history/health; then create/persist/push one NEW acceptance ID and launch once. All older failed IDs immutable. No run/create/import/publish/restart request remains pending.
+
+## 2026-10-04 — acceptance c323a404 launched EXACTLY ONCE
+- New ID `c323a404-c83b-4a87-a1fd-8dc08771bbc7` was launched once at 08:05:22 UTC / 10:05:22 Warsaw after `b977601` was pushed and ID verified in HEAD/origin/main, DB created and n8n active0. HTTP202, accepted=true, status=processing. NEVER launch it again.
+- Trace this exact pl30/Gemini job M4-M9 to terminal. Production M5 v223 / M8 v85 matches code `314ab0b`; full835/835, exact SQL replays and strict old-blocker Gemini diagnostics passed before deployment. Do not infer production PASS from those diagnostics.
+- All failed jobs remain immutable. No create/import/publish/restart/run request is pending. Prior CREATED ONLY entries are historical.
+
+## 2026-10-04 — 314ab0b deployed and verified; new acceptance CREATED ONLY
+- Code `314ab0b` is pushed. M5 v223 active/version `a1e79fcf-588e-4848-9752-bf6b50d8c90d`; M8 v85 active/version `4ddd4f4c-fc25-420a-aa43-8aa33b885640`. Live nodes/connections/settings and active history nodes/connections equal Git. Each changed workflow was imported/published once; one n8n restart. Runtime running/restart0; media worker healthy/restart0; direct/public health 200. Other 31 workflows fingerprint unchanged: `31|107663ca12372101be42873330227fae`. Selection function equals Git, SHA256 `c2e75f937f1ae64edbe94cdafb467ae3bcb26a8d3fd985b15d507fa53a497539`; no SQL deployment.
+- Backup `.backups/before-12040-VideoM5Storyboard001.json` SHA256 `4046b85c179c181dca1f07a250a8334f3f38ad18c25138acfcf64465a4247297`; M8 counterpart SHA256 `704ad02e0a2f0c468737878d722e0dd7a1933dcc40aba294b940e7e8b1fc4846`.
+- All three previous M8 12040 failure classes closed offline: full 835/835 JS, three exact SQL replays, strict Gemini pixel diagnostics score100 for final S3/S8/S9 contracts. This is NOT a production acceptance PASS.
+- NEW acceptance ID `c323a404-c83b-4a87-a1fd-8dc08771bbc7`, topic `jak działa zszywacz biurowy`, pl30/Gemini, created EXACTLY ONCE HTTP201; DB `created`. NOT LAUNCHED. Push this checkpoint, verify ID in HEAD/origin/main plus DB created and n8n active0, then launch this new ID EXACTLY ONCE and trace M4-M9 to terminal.
+- Failed `5909e2b1-2b7b-40fc-94bf-9744bf146205` and all earlier failed IDs remain immutable; NEVER relaunch. No other import/publish/restart/create is pending.
+
+## 2026-10-04 — all M8 12040 blockers closed offline; deployment pending
+- Immutable failed job `5909e2b1-2b7b-40fc-94bf-9744bf146205` remains `visuals_failed`; NEVER relaunch it. No new factory job has been created or launched in this correction.
+- S3: final single-subject internal-view Commons fallback may omit only desktop/tabletop/handheld/portable placement qualifiers. Original shot concepts and intent stay mandatory. Existing exposed-owner nomination keeps metadata rejection. Exact SQL replay now includes pixel-confirmed open Delfin `7824198` within three previews.
+- S8: M5 restores the independently required owner of visible bent/curved/folded ends on a surface when named in intent and a detailed query. All four validators preserve the additional anchor. M8 compact owner/surface fallback and one paired category PLUS direct shape/state caption nominate sparse-caption photos; category-only boxes, diagrams and unrelated category mosaics do not gain priority. Full replay of nine original responses changes 18 false trusted-paper candidates to rejected because they lack the required staple. Exact SQL replay includes `12612756` first.
+- S9: M5 grounds explicit fastened-result connectors (stapled/bolted/nailed/screwed/riveted/clipped/pinned/wired) without changing intent, narration or exclusions. M8 final compact state/surface query retrieves the exact result; direct Pexels captions naming connector/tool, fastening state and an authored surface can nominate semantic review. Bounded caption-pair relevance blending retains missing-concept penalties and metadata rejection; no eligibility floor or acceptance threshold changed. Exact live `stapled documents` search returns `6991328`; exact SQL replay includes it first.
+- Validation: full JavaScript suite **835/835 PASS**; all three transaction-local SQL replays PASS with rollback, three unique previews, metadata rejection retained, trusted-order comparison unchanged. Separate bounded Gemini diagnostics using production builder/parser and actual pixels PASS for final S3/S8/S9 contracts, score 100 each, all concept checks, intent and exclusions true. Fixtures include original pools, HTTP responses, baseline code, replays and Gemini evidence.
+- Acceptance gate, three-search/three-preview budgets, SQL, workflow connections/settings unchanged. Production is still M5 v222 / M8 v84. Commit/push this correction, deploy only changed M5/M8 once, verify active source/history and health, then create/persist/push one NEW pl30/Gemini acceptance ID, verify DB created + active0 and launch that new ID exactly once. Do not claim production PASS from offline diagnostics.
+
+## 2026-10-03 — immutable acceptance5909e2b1 M8 12040, all blockers inspected
+- Job5909e2b1-2b7b-40fc-94bf-9744bf146205 is terminal visuals_failed at23:43:48Warsaw; NEVER relaunch. M4-M7passed; M8execution12040failed; M9notstarted. All81providersearchesHTTP200.
+- Inspecting every saved Gemini result identifies THREE zero-pass shots, not just first collector error: S3-A open desktop stapler showing internal parts (reviewed two closed staplers and unrelated open book); S8-A paper sheets showing bent staple ends on back (papers lack visible bent staple ends); S9-A neatly stapled stack of office documents (people dominate all three reviewed photos). Other six shots have vision-passed slots.
+- S3Commons pool has only Swingline135746134. Queries open desktop stapler arm mechanism / stapler movable arm and base / desktop stapler. The sparse final qualified-owner query missed previously known open-owner photos. No new correction is deployed or claimed yet.
+- Exact full decoded evidence .review/m8-12040/execution.json and s3-evidence.json. Current read-only Commons state probes job_4b41cad70938 check stapler / stapled documents / stapled paper; inspect results/pixels before deciding changes. Resolve all three observed blockers offline and relevant tests before next deployment/smoke. Current production remains tested7748e18 M5v222/M8v84; preserve strict Gemini/object/exclusion gates.
+
+- 2026-10-03 exact acceptance5909e2b1-2b7b-40fc-94bf-9744bf146205: M4/M5/M6/M7 PASS, M8 collecting (visual_runb6b1c398-17b7-45b3-ae00-3c7d9758127c). Exact M5/M6 MP3 SHA2561c49916124f054256eaf9b5ad4ca02cc5a430396a2dbb9112573ef5f8d953f20; bytes/duration identical29184ms. M7 globalcoverage0.995, lexical50..28690ms, passed. Pexels/Pixabay54 searches HTTP200; Commons batch pending. Continue this exact job; never relaunch.
+
+- 2026-10-03 smoke5909e2b1-2b7b-40fc-94bf-9744bf146205 launched EXACTLY ONCE after checkpoint45c7414 pushed and ID verified in HEAD/origin/main plus DBcreated/active0. HTTP202 accepted=true/status=processing. Never launch again. Trace this exact job M4-M9 to terminal; earlier created-only instructions are historical.
+
+## 2026-10-03 — 7748e18 production verified; fresh acceptance created
+- M5 v222 version/activeVersionId53dff452-72a4-45e8-a347-d7e6df84b835 and M8 v84 version/activeVersionIdaf1fb8ae-e8bc-4b88-a9fd-f6a890e89be2 active=true. Live nodes/connections/settings and active history nodes/connections equal Git. Selection function body SHA256c2e75f937f1ae64edbe94cdafb467ae3bcb26a8d3fd985b15d507fa53a497539 equals Git.
+- One import/publish for each changed workflow, one required n8n restart; runtime running/restart0, worker healthy/restart0, direct and public curl health200. Other31 workflows unchanged fingerprint31|107663ca12372101be42873330227fae. Full811/811 JS and both exact SQL regressions passed before deployment.
+- Exactly one new smoke5909e2b1-2b7b-40fc-94bf-9744bf146205, jak działa zszywacz biurowy, pl30/gemini, created once HTTP201, DBcreated, NOT LAUNCHED. Push checkpoint, verify ID in HEAD/origin/main and DBcreated/active0, then launch this ID exactly once; trace to terminal. Failed e4ae4ded and all earlier failed IDs remain immutable.
+
+## 2026-10-03 — M8 12015 S7 paired-object blocker, offline candidate
+- Acceptance e4ae4ded-9205-4cf3-a630-6e3e50ced992 is immutable visuals_failed at S7-A; never relaunch. M4-M7 passed, M8 12015 rejected three photos missing one required object. M9 did not start.
+- Exact intent: Metal staple piercing through a stack of paper sheets; anchors metal staples/paper sheets. M5 transient-photo normalization omitted piercing; generic impersonal piercing now uses static co-presence, retaining all anchors/exclusions. Explicit human actions remain authored.
+- Commons final fallback metal staples paper sheets returns a stapleless-paper photo. Compact staple paper returns actual paired-object photos. Generic material/quantity compaction affects only changed independent-object final fallbacks; detailed queries/search count and original shot contract remain unchanged.
+- Direct short captions naming every compact object may nominate metadata-rejected paired-object photographs for Gemini. A relational photograph of objects beside documents is distinguished from a document scan; diagrams/SVG/other non-photo classes stay rejected. All-semantic-rejected SQL pools prioritize nominated paired photos within the existing three-preview budget; trusted metadata ordering is unchanged.
+- Focused22/22 and full811/811 JS PASS. Exact transaction-local S7 SQL replay replaces [pexels29157286,pixabay2850091,pexels8478388] with [wikimedia130306651,wikimedia77734699,wikimedia75797646], all metadata-rejected; three unique slots and trusted order preserved. Prior component-owner SQL regression PASS. Inspected 77734699 is a photograph of staples beside paper documents; no Gemini approval or acceptance is claimed yet.
+- Predeploy active0, M5 v221/M8 v83 live nodes/connections/settings equal HEAD. Backups .backups/before-12015-VideoM5Storyboard001.json, .backups/before-12015-VideoM8Visuals001.json, .backups/m8-selection-before-12015.sql. Other workflows fingerprint31|107663ca12372101be42873330227fae.
+- Next: commit/push, deploy only M5/M8 plus candidate selection function, verify source/history/health, then create/persist/launch one fresh smoke.
+
+- 2026-10-03 current acceptance e4ae4ded-9205-4cf3-a630-6e3e50ced992: M4 12007, M5 12008, M6 12013, M7 12014 PASS; M8 12015 collecting. M5/M6 exact reused MP3 SHA256acb9d7dba165eb0cedb4224837a0f1cab2fb065a8ea8c446e2ea3a0eac4606e9, duration29016ms. M7 global/min scene coverage1.000, lexical90..28680ms. Pexels/Pixabay54 searches HTTP200; Commons batch still in progress at checkpoint. Continue this exact job, never relaunch.
+
+- 2026-10-03 e4ae4ded-9205-4cf3-a630-6e3e50ced992 launched EXACTLY ONCE after da41d4a pushed, ID verified in HEAD/origin/main, DBcreated/active0. HTTP202 accepted=true/status=processing. Never launch again; trace exact M4–M9. Earlier created-only entry is historical.
+
+## 2026-10-03 — 2e61f6e production verified; fresh acceptance created
+- Deployed only M8 and factory.get_gemini_visual_candidate_sets once each. M8 v83 version/activeVersionId9d6b0eca-e6cf-4995-8f58-5917072638a6, active=true; live nodes/connections/settings and active history nodes/connections equal Git. SQL body SHA2567be0288aef9c0ced438594ce4eee7749dc7f79a50792de6753d8ae3ff2e6e10e equals Git. One import/publish and required publisher restart; health200, workerhealthy/restart0, n8nrunning/restart0; other32 workflows unchanged.
+- Exactly one fresh smoke e4ae4ded-9205-4cf3-a630-6e3e50ced992, jak działa zszywacz biurowy, pl30/gemini, created once HTTP201, NOT LAUNCHED. Push checkpoint, verify ID in HEAD/origin/main and DBcreated, then launch once. Failed9c0ad243 and975b493c remain immutable.
+
+## 2026-10-03 — M8 12004 component-owner retrieval/review fix verified offline
+- Exact failure has two coupled generic causes: compound component primary kept Commons fallback at Stapler magazine, and component words absent from owner captions blocked/ranked down real exposed-owner photos. Compact owner query returns pixel-confirmed Delfin2 7824198 with open magazine, staples and installed coil spring; actual failed50-row pool omitted it.
+- Existing final internal-detail fallback now strips a concrete owner's component suffix for retrieval only. Planned query, visual_intent, all required concepts/exclusions and search count remain unchanged. A direct-caption/title-confirmed exposed owner may reach semantic review, keeping rejected=true and missing-component reasons; score blends original component penalties with owner relevance (75 for Delfin, not metadata approval).
+- In all-rejected pools only, SQL prioritizes exposed-owner review photos before generic query/provider diversity, within max3/min55/unique limits. Trusted metadata ordering is unchanged. No topic/asset-ID mapping, no extra provider searches or Gemini calls, no acceptance gate reduction.
+- Exact transaction-local SQL replay with all12 previous reviewed assets reproduces production [pexels7578202,pixabay1015988,pexels7578193]; owner-query-only still misses Delfin; final bounded set [wikimedia8141365,wikimedia7824198,wikimedia8141312] includes it, all metadata-rejected. Prior siphon detailed-query coverage regression and trusted ordering PASS. Full JS801/801 PASS; wrapper timed out but complete log and absent test container verified, suite not repeated. JSON/diff check PASS.
+- Backups: .backups/m8-before-12004-component-owner.json SHA2560064971e0f51b6add33530569359bf44ca7b068c71b3adfcfae70c85853b76ee; .backups/m8-selection-before-12004-component-owner.sql SHA256a96a52fc506198fb2f03ae56612f3c45ada656de27ada30baed86f6c31a27506. Live M8/SQL matched previous Git, active0. Next: commit/push, deploy only M8 plus selection function, verify source/history/health, then one fresh persisted smoke. Failed9c0ad243 remains immutable.
+
+## 2026-10-03 — current immutable acceptance failure M8 12004
+- Smoke 9c0ad243-8e77-4400-aef8-655b96b74ef5 is terminal visuals_failed. M4 11997/M5 11998/M6 12002/M7 12003 PASS, M8 12004 FAIL S5-A; M9 not started. Never rerun. All81 provider searches HTTP200. M7 global/min scene coverage1.000, lexical50..28580ms.
+- Exact S5: Open stapler magazine showing the internal spring feeding staples.; must_show [Stapler magazine,spring mechanism]; must_not_show [closed housing]. Queries stapler magazine spring / stapler spring feed / spring mechanism. Pool50 rows; Commons only patent drawing and historical advertisement. Gemini rejected Pexels7578202/7578193 (closed stapler, score10) and Pixabay1015988 (reporter figurines, score0). Pixel gates correct.
+- Exact evidence saved internally .review/m8-12004/s5-evidence.json. Next: distinguish missing searchable asset from component-owner fallback by read-only compact Commons probe; no code change or next smoke authorized by inference alone. Existing v221 actor fix stays verified; acceptance not achieved.
+
+- 2026-10-03 v221 smoke 9c0ad243-8e77-4400-aef8-655b96b74ef5: M4 11997, M5 11998, M6 12002, M7 12003 PASS; M8 12004 collecting. M5/M6 identical MP3 SHA256 f1e2172a4bf70d31643b911b57c26895e1cab87abfa333ff209daaca785074e1, duration28968ms; nine M7 timings. New storyboard has no invented hand. Exact old-storyboard full final-node replay changes only S5-A and preserves other eight intents. Continue exact job, never relaunch.
+
+- 2026-10-03 acceptance 9c0ad243-8e77-4400-aef8-655b96b74ef5 launched EXACTLY ONCE after checkpoint3677553 pushed and verified in HEAD/origin/main, DBcreated and active0. HTTP202 accepted=true/status=processing. Never launch again; trace exact M4–M9. Earlier created-only wording is historical.
+
+## 2026-10-03 — M5 v221 deployed; acceptance created, not launched
+- Code aaa6abc pushed/deployed only M5. Version/activeVersionId f82903c9-7bc1-43c8-8d31-1dfdd6c7c9d5, counter221, active=true. Live nodes/connections/settings and active history nodes/connections equal Git. One import, one publish, one required publisher restart; health200, runtime running/restart0. No worker/SQL/M7/M8/M9 changes in this deploy.
+- Fresh smoke 9c0ad243-8e77-4400-aef8-655b96b74ef5, jak działa zszywacz biurowy, pl30/gemini, created once HTTP201. NOT LAUNCHED. Push this checkpoint, verify ID in HEAD/origin/main and DBcreated, then launch once. Failed 975b493c-e0be-42e6-8a2b-d5c7c1417d22 remains immutable.
+
+- Verification: focused125/125 and full792/792 JS PASS; exact final-node replay persists object intent without changing narration/anchors/exclusion. JSON/diff check PASS. Predeploy M5 live/history equal previous Git, active0. Backup .backups/m5-before-11994-actor-grounding.json SHA256 da141eee5159a239364d61104568f0325a16c2294d85026e8a5f899f77386fad. Next: push, deploy only M5, verify live/history/health, then one fresh persisted smoke.
+
+## 2026-10-03 — immutable M8 11994: invented pressing hand
+- Smoke 975b493c-e0be-42e6-8a2b-d5c7c1417d22 is terminal visuals_failed; M4–M7 PASS, M8 11994 failed S5-A, M9 not started. Never rerun.
+- Exact narration: Naciśnięcie górnej części sprawia, że pionowa. Intent invented: Hand pressing down the upper cover of an office stapler. Anchors: office stapler. Exclusion: stapler interior. Gemini correctly rejected Pexels 5882697 (paper punch, score20), Wikimedia 75975582 and Pixabay 1859862 (staplers without hand-action, score40). All81 searches HTTP200; full68-row S5 pool has no verified requested hand-action.
+- Candidate M5 fix keeps existing actor preservation by default; only hand-pressing with a nominal impersonal pressure scene, no narrated human and no human anchor becomes an object photo. Prompt prohibits inventing an actor for mechanism explanations. Explicit humans/instructions remain strict. Exact evidence and four-language positive/negative regressions added. First full JS suite 791/791 PASS; exact final-node review exposed missing assignment of normalized visual_intent to shot. Assignment corrected; integration replay/full verification pending; gates unchanged.
+
+- 2026-10-03 SQL coverage acceptance `975b493c-e0be-42e6-8a2b-d5c7c1417d22`: M4 11983, M5 11984, M6 11992 and M7 11993 PASS; M8 11994 running. Accepted audio 28968 ms, SHA256 `ae4456bb7deb424b467e5705e97de591b49ab9af2a0dd88cf04cc938391cf536`. Pexels/Pixabay 54 searches HTTP200; unique pool sizes 64/76, 16 Pexels metadata-approved assets. S6 has only semantic-review candidates, so detailed-query coverage path is relevant in this smoke. Continue the exact job to terminal; do not launch again.
+
+- 2026-10-03 smoke `975b493c-e0be-42e6-8a2b-d5c7c1417d22` launched exactly once after persisted checkpoint `670973b` was pushed and ID verified in HEAD/origin/main. HTTP202, accepted=true/status=processing. Never launch again; trace this exact job M4-M9 to terminal. Earlier created-only entries below are historical.
+
+## 2026-10-03 — M8 SQL 4236731 deployed; fresh acceptance created
+
+- Code `4236731` pushed main and deployed once: only `factory.get_gemini_visual_candidate_sets`; no n8n import/publish/restart, no workflow or worker change. Live function body SHA256 `3fccc7c26e1cfd7c44ca1f8d58311f016c647b7b3b35f444b36399f7e8e171a7` equals Git. Backup `.backups/m8-candidate-selection-before-4236731.sql`, SHA256 `5ecc893e3cde9ede721a7956139ecdc7a92b421ef3cb83fe2a804c703722464a`. M8 active version unchanged `2a237e6b-7f81-4e7a-bd0c-1a0b71ba8dec`; live nodes/connections/settings and active history equal Git. Publisher health 200, worker healthy/restart0.
+- Exactly one fresh independent smoke `975b493c-e0be-42e6-8a2b-d5c7c1417d22`, `jak działa zszywacz biurowy`, pl30/gemini, created once HTTP201; DB status `created`. Not launched. Persist this checkpoint, push, verify ID in HEAD/origin/main, then launch this ID once and trace M4-M9 to terminal.
+- Failed `eac48f84-4812-4821-a807-5c654e118223` and `b3df2402-dc38-4b2e-953f-2c815bfb5eb7` remain immutable. Never rerun them.
+
+## 2026-10-03 — M8 11978 detailed-query preview coverage fix
+
+- Smoke `eac48f84-4812-4821-a807-5c654e118223` is immutable `visuals_failed`; M4/M5/M6/M7 PASS, M8 11978 FAIL at S1-A, M9 not started. Never rerun this ID.
+- Exact S1: intent `A close-up photo showing a basin siphon installed beneath a bathroom sink.`, must_show `[basin siphon,bathroom sink]`, must_not_show `[kitchen appliances]`. All 81 provider searches HTTP200. Gemini saw Pixabay 8372443, Pexels 11701113, Pixabay 8372442; all three lacked visible siphon and correctly scored 40/failed.
+- Full S1 pool contains Pexels 10475444, the first result of detailed query 2; pixels show both sink and installed bottle trap. Metadata caption names sink/bucket but omits the trap, so original provider-only preview ranking selected three query-1 candidates and never showed this asset to Gemini. Root cause is detailed-query preview coverage in all-semantic-rejected pools, not missing asset or a permissive Gemini defect.
+- Generic SQL-only correction in `factory.get_gemini_visual_candidate_sets`: only when no metadata-approved candidate exists and both detailed queries are represented, allocate unchanged three previews across detailed queries and providers. Scores, eligible reasons, min55, max3, cross-shot uniqueness preference, and Gemini per-subject/intent gates are unchanged. Trusted-metadata pools preserve exact baseline ordering.
+- Exact PostgreSQL transaction-local replay: baseline `[pixabay:8372443,pexels:11701113,pixabay:8372442]`, candidate `[pixabay:8372443,pexels:10475444,pixabay:8372442]`; 3 unique slots, metadata rejected status preserved, trusted ordering identical. Full JS 729/729 PASS. Discarded compact Commons query hypothesis was not implemented because inspected Sifon.JPG shows no sink.
+- NEXT: commit/push, back up live selection function, deploy only this SQL function without n8n import/publish/restart, verify live function/source/history/health. Then exactly one fresh persisted pl30/gemini smoke; launch once and audit final media on PASS.
+
+- 2026-10-03 worker acceptance `eac48f84-4812-4821-a807-5c654e118223`: M4 11971, M5 11972, M6 11976 and M7 11977 PASS. Exact M5/M6 audio SHA256 `cc449e48c86e6508cb386fa44aaf1cb6a8dc26570354bc600be2837cbf7d2507`, duration 29856 ms. New worker alignment has global/minimum scene coverage 1.000, scene range 50..29800 ms. M8 11978 running with all 54 Pexels/Pixabay searches HTTP200 and 432 candidates; Wikimedia paced batch pending. Continue exact job to terminal; do not relaunch.
+
+- 2026-10-03: smoke `eac48f84-4812-4821-a807-5c654e118223` launched exactly once after persisted checkpoint `c9da0bc` was pushed and ID verified in HEAD/origin/main; HTTP202, accepted=true/status=processing. Never launch this ID again. Trace this exact job to terminal; prior created-only text below is historical.
+
+## 2026-10-03 — worker 298d15d deployed; fresh acceptance persisted
+
+- Code commit `298d15d` pushed main. Only media-worker rebuilt/recreated once. Live image `sha256:6b309a457c2471994bf792acbd85b7fda854e96b1336935607071b99d32df102`; runtime server SHA256 `37faf271dac3845b5a7a247dd765e6b4c3fc41d45cdb966f976879791f2c7c61` equals Git. Worker direct health 200, Docker healthy, restart 0; publisher health 200. M5/M7 live nodes/connections/settings and active history equal Git; no workflow deploy/restart. Backup `.backups/media-worker-before-298d15d.py`, rollback image `shorts-v2-media-worker:rollback-before-298d15d`.
+- Exact failed-ASR replay on live worker passes 9 scenes, global/minimum scene coverage 1.0, narration end 29480 ms, terminal overrun 0. Failed job `b3df2402-dc38-4b2e-953f-2c815bfb5eb7` remains immutable.
+- Fresh smoke `eac48f84-4812-4821-a807-5c654e118223`, topic `jak działa syfon umywalkowy`, pl30/gemini, created once via intake HTTP201; DB status `created`. NOT launched. After commit/push and checking ID in HEAD and origin/main, launch only this ID once; trace M4-M9 to terminal and audit exact final media on PASS.
+
+## 2026-10-03 — M7 trailing ASR hallucination blocker
+
+- Smoke `b3df2402-dc38-4b2e-953f-2c815bfb5eb7` was launched and is immutable `alignment_failed`; never launch it again. Earlier created-only instructions below are superseded by DB terminal state.
+- Alignment run `7b553cc5-1837-4493-bb52-6606dae98e14` failed when the DTW fallback process aborted with SIGABRT. The actual primary defect is reproduced from saved standard Whisper: unmatched trailing `[muzyka]` ends at 31,540 ms while exact accepted narration audio is 29,976 ms; baseline incorrectly reports terminal overrun 1,564 ms and enters unnecessary DTW.
+- Generic worker correction measures terminal overrun using lexical tokens matched to expected narration. It keeps the transcript, global/scene coverage gates, and actual matched-token overrun limit unchanged; no audio or content modification.
+- Exact fixture `tests/fixtures/m7-trailing-asr-hallucination.json`: candidate replay has nine scenes, all coverage 1.0, narration end 29,480 ms, overrun 0. Baseline HEAD reproduces 1,564-ms failure. Alignment suite 18/18 PASS, including actual narration-overrun rejection. Full JS 729/729 PASS; alignment 18/18 PASS; real FFmpeg render-fit and target-duration PASS; audit-duration contract PASS; all workflow JSON valid and git diff --check clean.
+- Current M5 is v220 / `8d822498-32be-47f7-82a4-8fc4c7e67c31`; M7 active version `91fbac4f-f40d-4d75-9111-3e4ed01bd9ff`. No workflows changed by this worker-only fix. Next: finish regressions, commit/push, back up and deploy only media-worker, verify live file/image/health, then one new persisted smoke.
+
+- 2026-10-03: created exactly one fresh post-v220 acceptance smoke `b3df2402-dc38-4b2e-953f-2c815bfb5eb7` (`jak działa syfon umywalkowy`, pl30/gemini) via production `/webhook/jobs`; HTTP201. Not launched yet. Launch this exact ID once through `/webhook/factory/run`, trace M4-M9 to terminal, and never rerun it if it fails.
+- 2026-10-03: M5 v220 deployed from commit `246c384`; active version `8d822498-32be-47f7-82a4-8fc4c7e67c31`; health 200; restart count 0; live nodes/connections/settings match Git. Backup `.backups/m5-before-246c384-20261003-131255.json`. Next: one fresh persisted pl30/gemini smoke, launch once, trace M4-M9.
+- 2026-10-03: smoke `dd7a124b-4d08-4abd-98ca-49b4a5039773` (`jak działa zawór zwrotny`, pl30/gemini) was launched exactly once and is immutable `visuals_failed`. M4/M5/M6/M7 passed; M8 execution `11917` failed on S4-A. Exact S4-A contract was `visual_intent="An open check valve allowing medium flow through a metal pipe section."`, `must_show=["check valve","metal pipe"]`. Gemini inspected three images; candidate 3 visibly contained both required objects but failed only because medium flow through the pipe was not visibly represented (`match_score=50,intent_match=false`). Root cause: M5 photo canonicalization handled many transient actions but did not collapse hidden `flow ... through/inside/within` inside a closed object when more than one anchor existed. Prepared generic M5-only fix: hidden internal flow through closed pipes/valves/pumps/etc. becomes a static photo contract, while visible external flow and transparent/cutaway flow remain explicit. Regression `m5-11917-hidden-flow-photo-contract.test.cjs`; related suite 64/64 PASS; full JS suite 729/729 PASS. Never rerun this smoke.
+- 2026-10-03: created exactly one fresh post-reconnect acceptance smoke `dd7a124b-4d08-4abd-98ca-49b4a5039773` (`jak działa zawór zwrotny`, pl30/gemini) via production `/webhook/jobs`; HTTP201. DB status must remain `created` until launch. Launch this exact ID once through `/webhook/factory/run`, trace M4→M9 to terminal, and never rerun it if it fails.
+- 2026-10-03 OAuth blocker verification: n8n public OAuth configuration is correct (`N8N_EDITOR_BASE_URL=https://publisher.hodor.com.pl/`, `N8N_HOST=publisher.hodor.com.pl`, `N8N_PROTOCOL=https`); `/rest/oauth2-credential/callback` returns HTTP200 and publisher health returns HTTP200. Therefore no server-side redirect/base-URL defect is currently demonstrated. Production execution 11885 still reports credential `Google account` needs reconnect; restoring that Google OAuth grant requires interactive authorization and must happen before another smoke.
+- 2026-10-03 deployment checkpoint: commit `5a57355` is live as M5 v219, active version `5e4b5ee4-ddf0-4dcf-8d95-4c020bcf701d`; `active=true`, `activeVersionId=versionId`, publisher health=200, container restart count=0, and live `nodes/connections/settings` equal Git. Backup: `.backups/m5-before-5a57355-20261003-114259.json`. The only remaining blocker before a fresh smoke is the Google OAuth credential `Google account`, which execution 11885 reported as needing reconnect.
+- 2026-10-03: smoke `4aa2c959-ed12-4817-8e72-dd90cfd79990` (`jak działa zawór kulowy`, pl30/gemini) was launched exactly once through production `/webhook/factory/run`; HTTP202 accepted. M4 passed. M5 execution `11885` failed at `Prepare Timing Probe Failure` with `Cannot read properties of undefined (reading 'json')`; Gemini helper executions `11886`, `11888`, `11889`, `11890` succeeded. Execution data proves the underlying TTS failure was `The credential "Google account" needs to be reconnected.` The failed smoke is immutable and must never be rerun. M5 error handling was patched so `Release Timing Probe Usage` carries `error_message` forward and `Prepare Timing Probe Failure` consumes `$json`; targeted regression PASS and full JS suite 726/726 PASS. No new smoke until the Google TTS credential is restored.
+- 2026-10-03: created exactly one fresh post-`f1b4416` acceptance smoke `4aa2c959-ed12-4817-8e72-dd90cfd79990` (`jak działa zawór kulowy`, pl30/gemini) via production `/webhook/jobs`; HTTP201; DB status=`created`. Not launched yet. Launch this exact ID once through `/webhook/factory/run`, trace M4→M9 to terminal, and never rerun it if it fails.
+## 2026-10-03 — M5 11877 repair-diagnostics fix ready
+
+- Immutable smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini) is terminal script_failed; never rerun it.
+- Production trace: Self Test 11875 -> M4 11876 PASS -> M5 11877 FAIL; Gemini resilient calls 11878-11880 all succeeded, so this was not a provider failure.
+- Initial storyboard failed S1-A English visual-metadata matching; repair 1 fixed that but left S1-A overlong must_show. Repair 2 shortened S1-A, while S2-A still had visual_intent="A close-up of a saw handle connected to the metal blade." with must_show=["saw handle"]; the strict interaction validator correctly rejected the missing independent "metal blade" target at line 919.
+- Root cause: both storyboard repair builders precomputed overlong/non-photo/language diagnostics but did not precompute the same connected/measurement/transfer interaction-target violations already enforced by the validators. A later hidden violation could therefore survive the final bounded repair.
+- Generic M5-only fix adds validator-aligned missing_interaction_subject diagnostics to both repair builders. The strict validator, M8, Gemini gates, and architecture are unchanged.
+- Exact 11877 regression plus existing interaction/transient suites: 60/60 PASS. Full JS suite: 725/725 PASS. git diff --check clean.
+- Production M5 remains v217 until this change is committed and deployed.
+
+## 2026-10-03 — post-v217 hand-saw smoke launched once
+
+- Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-02 — fresh post-v217 Gemini smoke persisted before launch
+
+- Acceptance smoke: 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 must never be rerun.
+
+## 2026-10-02 — M5 11829 holding transient-action fix deployed
+
+- Commit cca33d2 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v217 / d3013946-4de4-47d0-ae81-022913cbc5f8, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; clean stop/start used for runtime reload.
+- n8n is running with restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9.
+
+## 2026-10-02 — M5 11829 holding transient-action fix ready
+
+- Immutable smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M8 11829 failed at S8-A with no Gemini-approved unique candidate.
+- Exact S8 contract: visual_intent="Close-up of a carpenter's hammer head holding a steel nail with its integrated magnet.", must_show=["carpenter's hammer","steel nail"]. Gemini saw hammer+nail but rejected candidates because none showed the specific holding-by-magnet relation.
+- S8 narration only states that the hammer head has a built-in magnet; S9 carries the start-driving action.
+- Generic M5 fix extends the existing canonicalizeTransientPhotoActionIntent rule with hold/holding/held. With no visible person/hand, the transient holding relation becomes a static searchable co-presence contract. Visible human holding remains explicit.
+- Exact 11829 regression added to the existing transient-action suite. Targeted suite 40/40 PASS; full JS suite 723/723 PASS; workflow JSON valid; git diff --check clean.
+- Production M5 remains v216 until this change is committed and deployed.
+
+## 2026-10-02 — post-v216 hammer smoke launched once
+
+- Smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-02 — fresh post-v216 Gemini smoke persisted before launch
+
+- Acceptance smoke: 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 must never be rerun.
+
+## 2026-10-02 — fresh post-v216 Gemini smoke persisted before launch
+
+- Acceptance smoke: 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 must never be rerun.
+
+## 2026-10-02 — M5 11819 stabilization transient-action fix deployed
+
+- Commit 28a98c4 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v216 / f7108779-ad85-46b6-b042-f6a1fda69d69, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; clean stop/start used for runtime reload.
+- n8n is running with restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9.
+
+## 2026-10-02 — M5 11819 stabilization transient-action fix deployed
+
+- Commit 28a98c4 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v216 / f7108779-ad85-46b6-b042-f6a1fda69d69, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; clean stop/start used for runtime reload.
+- n8n is running with restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9.
+
+## 2026-10-02 — M5 11819 stabilization transient-action fix ready
+
+- Immutable smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M7 11818 PASS; M8 11819 failed at S6-A with no Gemini-approved unique candidate.
+- Exact S6 contract: visual_intent="A photograph of a stable woodworking clamp stabilizing wood pieces during precise workshop tasks.", must_show=["woodworking clamp"]. Gemini correctly saw clamps in candidates but rejected them because none showed the transient stabilizing action.
+- S6 narration only says that the process gains required precision; it does not require a visible clamp actively stabilizing wood in that shot.
+- Generic M5 fix extends the existing canonicalizeTransientPhotoActionIntent rule with stabilize/stabilizing. With no visible person/hand, this converts transient stabilization into a static searchable photo contract. Visible human stabilization remains explicit.
+- Exact 11819 regression added to the existing transient-action suite. Targeted suite 32/32 PASS; full JS suite 715/715 PASS; workflow JSON valid; git diff --check clean.
+- Production M5 remains v215 and does not yet match the local nodes. Deployment pending.
+
+## 2026-10-02 — post-v215 clamp smoke launched once
+
+- Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-02 — fresh post-v215 Gemini smoke persisted before launch
+
+- Acceptance smoke: f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini).
+- DB must remain status=created until this checkpoint is committed and pushed.
+- After persistence verification, launch only this ID exactly once and trace M4→M9.
+
+## 2026-10-02 — M5 11804 static-support interaction fix deployed
+
+- Commit 0fe9298 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v215 / 277c27fc-a14c-4219-966d-02af8ca63a01, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; clean stop/start used for reload.
+- Publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- ai-short-form-n8n is running with restart count 0.
+- Immutable smoke b3230cef-4757-47c9-8481-c5050e115004 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9.
+
+## 2026-10-02 — M5 11804 static-support interaction false positive fix ready
+
+- Immutable smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11803 PASS. M5 11804 failed in Validate Repaired Storyboard 2 with flat wooden workbench at line 915.
+- Root cause: interaction regex treated adjective measuring in A steel measuring tape rests on a flat wooden workbench as an active measurement verb and promoted the workbench to a required second must_show subject.
+- Generic fix keeps real measurement interactions strict, but ignores static support relations rests/lies/sits/placed/positioned on or across before enforcing a second interaction subject.
+- Exact regression added: tape resting or placed on a workbench must not require the workbench as must_show; real multimeter-on-battery measurement still requires the battery.
+- Targeted interaction suite 18/18 PASS; full JS suite 707/707 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v214 until commit/deploy.
+
+## 2026-10-02 — post-v214 tape-measure smoke launched once
+
+- Smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-02 — fresh post-v214 Gemini smoke persisted before launch
+
+- Acceptance smoke: b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini).
+- DB status must remain created until this checkpoint is committed and pushed.
+- After persistence verification, launch only this ID exactly once and trace M4→M9.
+
+## 2026-10-02 — M5 11794 n8n-sandbox clone fix deployed
+
+- Commit a8457ad is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v214 / b42e54a4-9a4d-41c7-a62b-a1f04fe9ad50, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; reload used clean docker stop/start with no stale containerd task and restart count 0.
+- Publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Final visual-language validator now uses JSON-safe cloning supported by the production n8n sandbox; visual-language normalization semantics are unchanged.
+- Immutable smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
+## 2026-10-02 — M5 11794 n8n-sandbox clone fix ready
+
+- Immutable smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11793 PASS. M5 11794 failed at final visual-language validation with `structuredClone is not defined`.
+- Root cause: unit tests run on Node 22 where structuredClone exists, but the production n8n Code sandbox does not expose structuredClone.
+- Generic fix changes only the final visual-language validator clone from structuredClone(ctx.source) to JSON.parse(JSON.stringify(ctx.source)); source is JSON workflow data, so the clone semantics are equivalent here and supported by the n8n sandbox.
+- Exact regression asserts the final validator has no structuredClone dependency. Targeted language suite 25/25 PASS; full JS suite 707/707 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v213 until this change is committed and deployed.
+
+## 2026-10-02 — post-v213 torque-wrench smoke launched once
+
+- Smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-02 — fresh post-v213 Gemini smoke persisted before launch
+
+- Acceptance smoke: 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- n8n is stable: running=true, restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 must never be rerun.
+
+## 2026-10-02 — M5 11790 visual-language normalization fix deployed
+
+- Commit 60aa7d0 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v213 / 9814e4f5-9ff0-4a59-a78f-d4f43e47ff06, active=true and activeVersionId=versionId.
+- Import executed once; DB confirmed v213 source equality before publish. Publish executed once; DB confirmed activeVersionId=versionId.
+- Reload used a clean docker stop/start. Stop exited 0 with no stale containerd task; start completed with restart count 0 and restart policy unless-stopped.
+- Publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Existing final Gemini language-review call now also normalizes non-English visual metadata to English without adding a new provider request. Narration/audio and shot structure remain unchanged.
+- Immutable smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
+## 2026-10-02 — M5 11790 final visual-language normalization fix ready
+
+- Immutable smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M8 11790 failed at S3-A. The committed contract contained visual_intent with the Polish ASCII word `poziomica`, must_show=[`poziomica`], and all three queries_en also contained `poziomica`.
+- Existing deterministic English guard only caught Polish diacritics, so ASCII-only source-language visual words could pass as if they were English. M8 therefore searched the providers with non-English queries and returned unrelated construction imagery.
+- Generic fix adds no new provider call. The existing final Gemini narration-language review now also receives every shot visual record and MUST return `visual_repairs` for any non-English visual metadata, including ASCII-only source-language words.
+- The final validator applies only bounded lexical English normalization: same scene/shot IDs, same must_show count, same must_not_show count, exactly three queries, same narration, same preferred_media_type, and primary must_show still verbatim in visual_intent. Structural drift fails closed.
+- Exact 11790 regression proves `poziomica` -> `spirit level` while narration/audio and shot structure remain unchanged. Targeted language/reuse suite 39/39 PASS; cadence regression 3/3 PASS; full JS suite 706/706 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v212 until this change is committed and deployed.
+
+## 2026-10-01 — post-v212 spirit-level smoke launched once
+
+- Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-01 — post-v212 spirit-level smoke launched once
+
+- Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-01 — fresh post-v212 Gemini smoke persisted before launch
+
+- Acceptance smoke: aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- n8n is stable: running=true, restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke 2714c5e6-603d-4fe6-8c41-79e065669105 must never be rerun.
+
+## 2026-10-01 — M5 11778 transient engagement fix deployed
+
+- Commit e50b2ed is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v212 / c06a6d04-0528-4019-9015-b7998f1a9e14, active=true and activeVersionId=versionId.
+- Import executed once and completed successfully; publish executed once and completed successfully.
+- Reload used a clean docker stop/start instead of docker restart. Stop exited 0 with no stale containerd task; start completed with restart count 0.
+- Publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke 2714c5e6-603d-4fe6-8c41-79e065669105 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
+## 2026-10-01 — M5 11778 transient engagement fix ready
+
+- Immutable smoke 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11763 PASS, M5 11764 PASS, M6 11776 PASS, M7 11777 PASS; M8 11778 failed at S3-A with no Gemini-approved unique visual candidate.
+- Exact S3 contract was visual_intent="An open end wrench engaging a nut in a restricted space.", must_show=["open end wrench","nut"]. Gemini candidate 3 visibly contained both an open-end wrench and hex nuts, but correctly failed intent_match because it showed them lying flat instead of the transient engagement action in restricted space.
+- Root cause: the existing M5 transient-photo canonicalizer already converts joining/opening/inserting/pressing/etc. to a static searchable photo contract, but did not recognize engage/engaging.
+- Generic M5-only fix adds engage/engaging to that existing canonicalizer in Validate Storyboard, both repaired validators, and Canonicalize Final Storyboard. Human-visible actions remain explicit; stable connected relations remain explicit; M8/Gemini gates are unchanged.
+- Exact 11778 regression was added to m5-11601-transient-photo-action.test.cjs. Targeted related suite 76/76 PASS; full JS suite 703/703 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v211 until this change is committed and deployed.
+
+## 2026-10-01 — post-v211 wrench smoke launched once
+
+- Smoke 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-01 — fresh post-v211 Gemini smoke persisted before launch
+
+- Acceptance smoke: 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- n8n is stable: running=true, restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke a85f4825-88a2-4992-855f-a32c05704d81 must never be rerun.
+
+## 2026-10-01 — M5 11760 dependent-component fix deployed and n8n runtime recovered
+
+- Code commit 2b6123b plus docs commit 46b1f73 are pushed to main.
+- Production M5 is v211 / cbac76d2-1190-40af-b833-37e9f81177c0, active=true and activeVersionId=versionId.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- During deployment, ai-short-form-n8n was already in a Docker/containerd restart-loop unrelated to M5: Docker showed Pid=0,status=restarting,exit=137 while containerd still held the same task RUNNING. cgroup showed oom=0 and oom_kill=0.
+- Runtime recovery: temporary restart policy no, graceful stop of the exact stale task, one manual start, health 200, then restart policy restored to unless-stopped.
+- ai-short-form-n8n is now running with restart count 0 and publisher /healthz=200.
+- Immutable smoke a85f4825-88a2-4992-855f-a32c05704d81 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
+## 2026-10-01 — M5 11760 dependent-component `with` fix ready
+
+- Immutable smoke a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11750 PASS, M5 11751 PASS, M6 11758 PASS, M7 11759 PASS; M8 11760 failed at S1-A with no Gemini-approved unique candidate.
+- Exact S1 contract was visual_intent="A screwdriver with a cross-shaped tip resting on a workbench.", must_show=["screwdriver","cross-shaped tip"]. Gemini correctly rejected candidates that showed either the screwdriver without a visible tip or the cross-shaped tip/recess without the whole screwdriver.
+- Root cause: cross-shaped tip is a dependent visible component of the screwdriver, but the existing dependent-secondary normalizer recognized component relations such as `sensor tip on thermometer` and did not recognize the equivalent `primary with component-tip` form.
+- Generic M5 fix extends the same existing normalizer in Validate Storyboard, both repaired validators, and Canonicalize Final Storyboard. `with` collapses the secondary only when its head is an explicit component head (tip/blade/handle/lever/knob/dial/wheel/roller/hinge/latch/clamp/guide/stop/scale/marker). Independent objects such as screw or cable remain hard subjects.
+- Exact 11760 regression was added to the existing dependent-visible-component test. Targeted related suite 73/73 PASS; full JS suite 699/699 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v210 until this change is committed and deployed.
+
+## 2026-10-01 — post-df2f32c screwdriver smoke launched once
+
+- Smoke a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-01 — fresh post-df2f32c Gemini smoke persisted before launch
+
+- Acceptance smoke: a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac must never be rerun.
+
+## 2026-10-01 — M5 11747 continuation-proximity fix deployed
+
+- Commit df2f32c is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v210 / 2c82fd16-e04c-4c3f-95a7-59738c6cc2d3, active=true and activeVersionId=versionId.
+- Import executed once; DB confirmed v210 source equality before publish. Stale import wrappers were removed only after DB side-effect confirmation.
+- Publish executed once; DB side effect was confirmed before removing stale publish wrappers.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine-QA PASS.
+
+## 2026-10-01 — M5 11747 mid-sentence proximity-context fix ready
+
+- Immutable smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11735 PASS, M5 11737 PASS, M6 11745 PASS, M7 11746 PASS; M8 11747 failed at S3-A with no Gemini-approved unique candidate.
+- Exact S3 contract was visual_intent="An L-shaped hex key positioned next to a threaded fastener in a workshop", must_show=["hex key","threaded fastener"]. Gemini received only fastener-only candidates and correctly rejected them because hex key was missing.
+- S3 narration is "L. Jego głównym zadaniem jest obsługa" and S4 begins lowercase continuation "śrub posiadających...". The threaded fastener belongs to the continuation after the visual scene cut; M5 incorrectly promoted that future continuation object into a hard S3 must_show through a pure proximity relation.
+- Generic M5 fix extends the existing dependent-secondary/proximity normalizer in Validate Storyboard, both repaired validators, and Canonicalize Final Storyboard: when the current scene ends mid-sentence and the next scene starts as a lowercase continuation, a near/beside/next-to secondary is retrieval context rather than a second hard visual subject. Complete-sentence proximity and next-scene new-sentence cases remain hard; repeated-owner behavior remains unchanged.
+- Exact 11747 regression is integrated into m5-11704-incidental-owner-context.test.cjs. Targeted proximity suite 24/24 PASS; related legacy suites 80/80 PASS; full JS suite 699/699 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v209 until this change is committed and deployed.
+
+## 2026-10-01 — post-fe5f1a3 hex-key smoke launched once
+
+- Smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9.
+
+## 2026-10-01 — fresh post-fe5f1a3 Gemini smoke persisted before launch
+
+- Acceptance smoke: f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 must never be rerun.
+
+## 2026-10-01 — M5 11729 natural-sentence contract fix deployed
+
+- Commit fe5f1a3 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v209 / b404ccd8-b63a-4814-add9-f892759c63f1, active=true and activeVersionId=versionId.
+- Zero unfinished executions before import. Import executed once; DB confirmed v209 source equality before publish. The stale import wrapper was terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect was confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Sentence-count validator is stricter, not weaker: closure fillers no longer count as content sentences. Timing, M8 and M9 gates are unchanged.
+- Immutable smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
+## 2026-10-01 — M5 11729 natural-sentence contract fix ready
+
+- Immutable smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11728 PASS; M5 11729 failed. Initial storyboard had S9 with 5 words, below the 30s final-scene minimum of 6. The joined narration appeared to have 3 terminal sentences only because the third was standalone filler `Koniec.`.
+- Both bounded storyboard repairs fixed S9 length but returned the same two-sentence narration, so both failed `continuous narration has fewer than three natural complete sentences`.
+- Root cause: generation/repair prompt contract was weaker than the deterministic validator. The validator requires at least 3 complete sentences for all 30+ second outputs, while the main prompt stated that minimum explicitly only for Ukrainian 30s; repair scene diagnostics also reported every scene minimum as 2 instead of the real 30s final-scene minimum of 6.
+- Generic M5-only fix aligns all contracts: every 30+ second language must have at least 3 natural complete content sentences; standalone closure fillers (`Koniec.`, `The end.`, `Конец.`, `Кінець.`) do not count and are forbidden; both repair prompts preserve this invariant even when repairing another error; repair diagnostics now use minimum=6 for the final scene of 30s videos.
+- Deterministic validators now count actual terminal content sentences and exclude standalone closure fillers. No timing, M8, or M9 gates were weakened.
+- Exact 11729 regression added. Targeted suite 18/18 PASS; full JS suite 691/691 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3.
+
+## 2026-09-30 — post-c8b59c3 bottle-opener smoke launched once
+
+- Smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9.
+
+## 2026-09-30 — fresh post-c8b59c3 Gemini smoke persisted before launch
+
+- Acceptance smoke: 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+
+## 2026-09-30 — M5 11722 hidden-photo oscillation fix deployed
+
+- Commit c8b59c3 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v208 / bfe68b1c-130d-4429-8733-102d027b010e, active=true and activeVersionId=versionId.
+- Import executed once; DB confirmed v208 source equality before publish. The stale import wrapper was terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect was confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Existing hidden-internal fail-closed guard remains active for truly concealed components; M8/Gemini gates are unchanged.
+- Immutable smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
+## 2026-09-30 — M5 11722 hidden-photo oscillation fix ready
+
+- Immutable smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11721 PASS; M5 11722 failed after both bounded storyboard repairs.
+- Exact validator progression: initial S6-A requested a wooden pencil being rotated inside a pencil sharpener without visible-access context; repair 1 fixed S6 with an open cutaway but then S3-A failed because `metal blade` remained an internal secondary without visible access; repair 2 changed S3 but reintroduced the original hidden-placement problem on S6. This is repair oscillation, not provider failure.
+- Generic M5 fix adds deterministic `canonicalizeHiddenRequiredPhotoIntent` before must_show normalization in all seven M5 validators/canonicalizers. Hidden placement of an independent required subject is rewritten to a visible owner-with-subject photo contract; hidden secondary components are auto-rewritten only for a conservative visible-surface component set (`blade`, `lever`, `handle`, `dial`, `hinge`, etc.). Truly concealed components such as spring-loaded pins remain fail-closed under the existing hidden-internal guard.
+- Existing explicit open/cutaway/exposed/transparent/disassembled intents are preserved. Ordinary spatial interiors are unchanged. M8/Gemini gates are unchanged.
+- Exact 11722 regression added. Targeted suite 86/86 PASS; full JS suite 685/685 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 56525462-50ea-4cf0-9b53-fcf2fcbb2f47.
+
+## 2026-09-30 — post-8324b82 pencil-sharpener smoke launched once
+
+- Smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9.
+
+## 2026-09-30 — fresh post-8324b82 Gemini smoke persisted before launch
+
+- Acceptance smoke: 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+
+## 2026-09-30 — M5 11718 dependent-detail variant fix deployed
+
+- Commit 8324b82 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v207 / cec0903d-5109-4059-8fd9-4aa0c32b27b4, active=true and activeVersionId=versionId.
+- Import executed once; DB confirmed v207 source equality before publish. The stale import wrapper was terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
+## 2026-09-30 — M5 11718 dependent-detail variant fix ready
+
+- Immutable smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11708 PASS, M5 11709 PASS, M6 11716 PASS, M7 11717 PASS; M8 11718 failed at S4-A.
+- Exact S4-A contract: visual_intent `A close-up of paper alignment guides on a desktop hole punch.`, must_show `[desktop hole punch, paper guide]`.
+- Full S4 pool had no candidate whose metadata contained both hole-punch and guide/alignment evidence. Gemini correctly rejected its three candidates because the paper guide was not visible.
+- Existing M5 dependency logic was supposed to collapse dependent detail phrases of the form `<detail> on/of/inside/within <owner>`, but matched secondary anchors only as an exact contiguous token sequence. Therefore `paper guide` did not match `paper alignment guides`, so the dependent detail stayed a hard must_show.
+- Generic fix keeps the same dependency rule but allows a secondary phrase to match with simple plural normalization and at most one whitelisted neutral detail modifier (`alignment`, `adjustable`, `positioning`, etc.). Unrelated inserted nouns remain non-matches.
+- The same helper change is applied to all seven M5 validators/canonicalizers that implement dependentSecondaryAnchors. M8/Gemini gates are unchanged.
+- Exact 11718 regression added. Targeted suite 50/50 PASS; full JS suite 643/643 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after c7a3d558-54fd-483e-ac2d-217e12b83f4a.
+
+## 2026-09-30 — post-7d54d3e hole-punch smoke launched once
+
+- Smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9.
+
+## 2026-09-30 — fresh post-7d54d3e Gemini smoke persisted before launch
+
+- Acceptance smoke: c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+
+## 2026-09-30 — M5 11704 fix deployed
+
+- Commit 7d54d3e is deployed as M5 v206 / 5375ef85-a91e-45a1-b3fd-ed1c0096f49d; active=true and activeVersionId=versionId.
+- Publisher /healthz=200; current M5 source and active history equal Git.
+- Smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 is immutable visuals_failed; never rerun it.
+- Retired created-only job 30dfb366-7fe0-4720-9456-541131bd810a must never be launched.
+- Next: one fresh pl30/gemini smoke, persisted before launch, then trace M4→M9.
+
+## 2026-09-30 — M5 11704 incidental repeated-owner visual contract fix ready
+
+- Immutable smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11693 PASS, M5 11694 PASS, M6 11702 PASS, M7 11703 PASS. M8 11704 failed at S3-A: no Gemini-approved unique visual candidate.
+- Exact S3-A contract was visual_intent="A metal wire staple placed near a desktop stapler", must_show=["metal wire staple","desktop stapler"], must_not_show=["paper clips"].
+- Gemini candidate 1 showed the desktop stapler but no metal wire staple; candidate 2 showed metal wire staples but no desktop stapler; candidate 3 showed the desktop stapler but no metal wire staple. Gemini correctly rejected all three. M8 gates and Gemini evaluation are correct and remain unchanged.
+- Generic root cause is M5 over-constraining incidental composition: a repeated storyboard owner used only as nearby retrieval context became a second hard must_show subject in the same still.
+- Generic fix extends the existing dependent-secondary sanitizer only for explicit proximity relations near/beside/next to and only when the secondary anchor is independently established as a repeated primary elsewhere in the same storyboard. The repeated owner remains useful in provider queries but is removed from hard must_show; visual_intent is canonicalized to the primary visible subject. Ordinary two-object proximity scenes without repeated-owner evidence remain unchanged; generic "with" remains independent.
+- Exact 11704 regression added across Validate Storyboard, Validate Repaired Storyboard, Validate Repaired Storyboard 2 and Canonicalize Final Storyboard. Related visual suite 68/68 PASS; full JS suite 622/622 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 7037f7ff-b658-48ba-9bc5-bc4ee6f98737.
+
+## 2026-09-30 — post-21c8662 stapler smoke launched once
+
+- Acceptance smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-30 — fresh post-21c8662 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 exactly once and trace M4→M9.
+- Immutable previous smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf must never be rerun.
+
+## 2026-09-30 — M5 11682 directional compliance fix deployed
+
+- Commit 21c8662 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v205 / 1cc8c6b8-bcc1-4ba3-8c7b-ef1e455ed36e, active=true and activeVersionId=versionId.
+- Zero unfinished executions before import. Import executed once; DB confirmed v205 source equality before publish. The stale import wrapper was terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect was confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Existing nearest-hybrid tolerance, timing gates, M8 and M9 gates are unchanged. No retry loop was added.
+- Immutable smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit exact final media only after machine-QA PASS.
+
+## 2026-09-30 — M5 11682 directional compliance fix ready
+
+- Immutable smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11681 PASS. M5 11682 failed with measured timing 27024 ms for target 30000 ms, tolerance 1550 ms.
+- Timing trace: initial 24576 ms / 54 words; repair 27288 ms / 55; fallback 24048 ms / 54; later measured correction targeted 58 words; final measured word-count retry produced 57 words; Probe 5/stability finished at 27504/27264/27024 ms, still too short.
+- Existing validator intentionally permits a bounded nearest semantic hybrid within max(2, 8%) because word count is only a duration heuristic. For this exact run, correction direction was LONGER but the accepted nearest hybrid remained below the target word count (57 < 58), so it spent the final TTS probe moving in the wrong direction.
+- Generic fix does not change the ±8% nearest-hybrid allowance. Build Final Measured Correction now carries its measured duration forward; Validate Final Measured Word Count Retry emits M5_DIRECTIONAL_WORD_MISS only when a nearest hybrid remains on the wrong side of targetWords relative to a confirmed out-of-tolerance measured correction; the existing one-shot compliance retry handles that marker.
+- No new retry loop was added. Timing gates and M8/M9 gates remain unchanged.
+- Exact 11682 regression added. Targeted compliance/timing suite 27/27 PASS; full JS suite 606/606 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 40a3ed0d-7c70-41ad-a4bb-187fac9953cf.
+
+## 2026-09-30 — post-8574aff clothespin smoke launched once
+
+- Acceptance smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-30 — fresh post-8574aff Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 40a3ed0d-7c70-41ad-a4bb-187fac9953cf exactly once and trace M4→M9.
+- Immutable previous smoke b9c20e2a-3723-42d5-ba7e-967efde94364 must never be rerun.
+
+## 2026-09-30 — M5 11676 adjacent phrase dedupe deployed
+
+- Commit 8574aff72867 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v204 / 3dcc3c95-fba7-4ad4-8951-0b517bc4d8d1, active=true and activeVersionId=versionId.
+- Zero unfinished executions before import. Import executed once; DB confirmed v204 source equality before publish. Two stale import wrappers were terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect was confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M7 lexical coverage threshold remains 0.85; timing, M8 and M9 gates remain unchanged.
+- Immutable smoke b9c20e2a-3723-42d5-ba7e-967efde94364 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit exact final media only after machine-QA PASS.
+
+## 2026-09-30 — M5 11676 adjacent phrase dedupe fix ready
+
+- Immutable smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) is terminal alignment_failed; never rerun it.
+- M4 11662 PASS, M5 11663 PASS, M6 11675 PASS; M7 11676 failed with scene S9 lexical coverage 0.7045 (<0.85).
+- Exact final S9 narration in factory DB: "złącznego podczas obrotu podczas obrotu narzędzia." Raw Whisper for the exact final voiceover contains only one "podczas obrotu": "... elementu złącznego podczas obrotu narzędzia."
+- Execution 11663 trace proves the duplicate first appeared at Validate Narration Language Repair Retry (executionIndex 17), before all timing probes. Normalize Timing Probe, both timing repairs, final word-count retry and downstream stages only preserved it.
+- M7 threshold and matcher are correct for this failure and remain unchanged.
+- Generic M5 fix adds deterministic adjacent multiword phrase dedupe only in Validate Narration Language Repair, Validate Narration Language Repair Retry, and Validate Narration Language Repair Second Pass, before timing probes. It removes only exact immediately repeated phrases of 2-5 words with normalized phrase length >=10; single-word repetition and non-adjacent repetition are preserved.
+- Exact 11676 regression added. Targeted related suite 27/27 PASS; full JS suite 603/603 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after b9c20e2a-3723-42d5-ba7e-967efde94364.
+
+## 2026-09-30 — post-4c8cb19 adjustable-wrench smoke launched once
+
+- Acceptance smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-30 — fresh post-4c8cb19 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only b9c20e2a-3723-42d5-ba7e-967efde94364 exactly once and trace M4→M9.
+- Immutable previous smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 must never be rerun. Retired jobs remain unlaunched.
+
+## 2026-09-30 — M5 11659 internal-detail owner fix deployed
+
+- Commit 4c8cb199ecd0 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v203 / d1957e31-e419-4c02-ac26-2dfeae4f0449, active=true and activeVersionId=versionId.
+- Zero unfinished executions before import. Workflow JSON was copied into the running production n8n container and imported exactly once using its production DB/env; DB confirmed v203 source equality before publish.
+- Publish executed exactly once. DB side effect was confirmed before terminating only the stale host-side publish wrapper.
+- ai-short-form-n8n restarted exactly once after publish. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8 gates remain unchanged. Immutable smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine QA PASS.
+
+## 2026-09-30 — M5 11659 internal-detail owner fix ready
+
+- Immutable smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11652 PASS, M5 11653 PASS, M6 11657 PASS, M7 11658 PASS; M8 11659 failed only at S4-A.
+- Exact S4-A contract: visual_intent="A liquid column expanding inside a thermometer capillary tube.", must_show=["liquid column","glass capillary tube"], queries=["liquid column expanding inside capillary","expanding liquid in thermometer","glass capillary tube"].
+- Candidate pool: 70 total / 0 metadata-pass. Search drifted into chromatography/test tubes because an internal detail became the hard primary and the concrete owner "thermometer" was not the fallback subject.
+- Root cause has two M5 parts: (1) dependent internal detail was not promoted to its concrete owner, and (2) transient photo action "expanding/expansion" was not canonicalized to a static photo contract.
+- Generic M5-only fix: when a two-anchor photo intent places a detail inside/within a concrete owner+container and that owner is also grounded by the search queries, promote the owner to the sole hard must_show; ordinary laboratory/test-tube cases remain unchanged. Extend the existing transient-action class with expand/expanding/expansion.
+- Exact 11659 regression added across Validate Storyboard / both repair validators / Canonicalize Final Storyboard. Targeted suites PASS; full JS suite 594/594 PASS; workflow JSON valid; git diff --check clean.
+- M8 gates are unchanged. Deployment pending. No new smoke has been created after 38bb0e6f-752c-4418-ab79-027d9f0e5987.
+
+## 2026-09-29 — retire parallel mechanical-pencil job
+
+- Parallel job `30dfb366-7fe0-4720-9456-541131bd810a` (`jak działa ołówek automatyczny`, pl30/gemini) remains `created` and was never launched.
+- It is retired because `38bb0e6f-752c-4418-ab79-027d9f0e5987` was already persisted and launched as the authoritative post-v202 smoke. Never launch `30dfb366-7fe0-4720-9456-541131bd810a`.
+
+## 2026-09-29 — post-55b987b liquid-thermometer smoke launched once
+
+- Acceptance smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-29 — fresh post-55b987b Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 38bb0e6f-752c-4418-ab79-027d9f0e5987 exactly once and trace M4→M9.
+- Immutable previous smoke 6d429236-c4f9-47fd-8260-1058a659bff3 must never be rerun.
+
+## 2026-09-29 — M5 11642 deterministic timing-novel fallback deployed
+
+- Commit 55b987b70f20 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v202 / 5268e533-fc68-40f6-9c04-02ebf5293ebc, active=true and activeVersionId=versionId.
+- A concurrent intermediate import created inactive v201 from an in-flight working-tree state; it was never published. Stable clean HEAD was imported separately as v202 and is the only published version.
+- Zero unfinished executions before the stable import/publish. Stable import and publish were each executed once; stale CLI wrappers were terminated only after DB side effects were confirmed.
+- ai-short-form-n8n restarted exactly once after v202 publish. Publisher /healthz=200.
+- Current M5 nodes/connections/settings equal clean Git HEAD; active workflow_history nodes/connections equal Git.
+- Semantic coverage, number/negation checks, audio timing thresholds, M8 and M9 gates remain unchanged.
+- Immutable smoke 6d429236-c4f9-47fd-8260-1058a659bff3 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit exact final media only after machine-QA PASS.
+
+## 2026-09-29 — M5 11642 deterministic timing-novel fallback ready
+
+- Immutable smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11640 PASS; M5 11642 failed only in timing repair after the initial validated narration measured 26808 ms / 54 words for the 30 s product window (accepted minimum 28464 ms).
+- Both timing-repair Gemini calls returned HTTP 200. Both local timing validators failed with the exact semantic error "2, allowed 1 [line 603]": the model inserted multiple new descriptive content words per scene despite the lexical-budget prompt.
+- Root cause had two parts: the first timing prompt still contained a conflicting instruction not to return a near-unchanged narration, and provider compliance with the per-scene novel-word budget was not deterministic.
+- Generic M5-only fix removes that prompt conflict and requires the smallest lexical edit. The second bounded retry now explicitly copies ORIGINAL scene narration as its base instead of broad paraphrase.
+- Deterministic fail-safe added to Validate Timing Repair and Validate Timing Repair 2: if and only if a scene fails specifically for "introduced too many new content words", that scene narration is restored to the immutable original timing-probe scene and semantic validation is rerun. Coverage loss, changed numbers, changed negation and other semantic failures remain terminal. Timing thresholds and M8/M9 gates are unchanged.
+- Exact 11642 regression added. Targeted timing/semantic suite 44/44 PASS; full JS suite 582/582 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 6d429236-c4f9-47fd-8260-1058a659bff3.
+
+## 2026-09-29 — post-39384b6 ballpoint-pen smoke launched once
+
+- Acceptance smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-29 — fresh post-39384b6 Gemini smoke persisted before launch
+
+- Created acceptance smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- This is the only acceptance smoke to continue after v200. Retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 remains unlaunched and must never be launched.
+- After this checkpoint is committed and pushed, launch only 6d429236-c4f9-47fd-8260-1058a659bff3 exactly once and trace M4→M9.
+
+## 2026-09-29 — fresh post-39384b6 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 6d429236-c4f9-47fd-8260-1058a659bff3 exactly once and trace M4→M9.
+- Immutable previous smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b must never be rerun.
+
+## 2026-09-29 — M5 11635 rotational-action photo fix deployed
+
+- Commit 39384b64ff53 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v200 / 1d658bbf-c1e5-4550-b2ed-8fbabe18ef2c, active=true and activeVersionId=versionId.
+- Zero active executions before deploy. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- ai-short-form-n8n restart completed; publisher /healthz=200 after startup. No second restart was performed.
+- M8/M9 gates and semantic/timing thresholds remain unchanged.
+- Immutable smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine-QA PASS.
+
+## 2026-09-29 — M5 11635 rotational-action photo fix deployed
+
+- Commit 39384b64ff53 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v200 / 1d658bbf-c1e5-4550-b2ed-8fbabe18ef2c, active=true and activeVersionId=versionId.
+- Import had already completed before this checkpoint; it was not repeated. Zero unfinished n8n executions before publish.
+- Publish was executed once; DB side effect was confirmed before terminating only the stale host-side publish wrapper.
+- ai-short-form-n8n restarted exactly once after publish. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8 gates are unchanged. Immutable smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine QA PASS.
+
+## 2026-09-29 — M5 11635 rotational-action photo fix ready
+
+- Immutable smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11622 PASS, M5 11623 PASS, M6 11633 PASS, M7 11634 PASS; M8 11635 failed only at S3-A.
+- Exact S3-A contract: visual_intent="A photo of a door hinge during rotational movement.", must_show=["door hinge"]. Candidate pool had 70 total / 29 metadata-pass.
+- Gemini evaluated 3 candidates: all three had must_show_visible=true and must_not_show_clear=true, but intent_match=false with scores 50/40/50. Exact reasons: hinge visible, but rotational movement not depicted / not shown / static scene.
+- Root cause: existing M5 transient-photo canonicalizer handled moving/sliding/opening/etc. but not rotate/rotation/rotational forms, so an unprovable motion requirement leaked into the static-photo contract.
+- Generic M5-only fix extends the existing transient action regex with rotate/rotated/rotating/rotation/rotational/rotationally forms. Stable hinge relations remain unchanged. M8 gates are untouched.
+- Exact 11635 regression added. Targeted transient-action suite 28/28 PASS; full JS suite 575/575 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 82ff4918-afd4-4f08-a541-50cf69abfc6b.
+
+## 2026-09-29 — post-68055c8 door-hinge smoke launched once
+
+- Acceptance smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-29 — fresh post-68055c8 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 82ff4918-afd4-4f08-a541-50cf69abfc6b exactly once and trace M4→M9.
+- Immutable previous smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b must never be rerun. Retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 must never be launched.
+
+## 2026-09-29 — M5 11613 timing lexical-budget fix deployed
+
+- Commit 68055c80044f is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v199 / 5736f5e7-a1e7-4095-b35b-9b9b13d913e5, active=true and activeVersionId=versionId.
+- Import source equality verified for nodes/connections/settings before publish. Import and publish were each executed exactly once; stale CLI wrappers were terminated only after DB side effects were confirmed.
+- Zero active executions before publish. ai-short-form-n8n restarted exactly once after publish.
+- Post-restart publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Semantic validator thresholds, audio timing gates, M8 and M9 remain unchanged.
+- Immutable smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b must never be rerun. Retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 must never be launched.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine QA PASS.
+
+## 2026-09-29 — M5 11613 timing lexical-budget fix ready
+
+- Authoritative smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b is terminal script_failed; never rerun it. M4 11612 passed; M5 11613 failed in the timing-repair path.
+- Initial validated narration measured 24576 ms against the 30000 ms target, 5424 ms short. Initial storyboard validation itself passed.
+- Both bounded timing rewrites were rejected by the existing semantic-preservation guard with "2, allowed 1 [line 603]". Exact first offending scene was S4: original "W pompce ręcznej tłok porusza się"; repair 1 added both "prostej" and "dynamicznie", repair 2 added both "klasycznej" and "wewnętrzny".
+- Root cause: repair prompts stated the one-new-content-word limit but did not expose the validator's per-scene content-word vocabulary, so Gemini repeatedly spent the lexical budget on multiple new modifiers.
+- Generic M5-only fix adds validator-aligned ORIGINAL CONTENT WORDS BY SCENE to Build Timing Repair and Build Timing Repair 2, using the same language stopwords/normalization as the semantic guard. Prompts now state a hard content-word budget: reuse listed content words freely, normal inflection allowed, at most one other meaning-bearing word per scene, and prefer function words/grammar over new modifiers.
+- Semantic validator thresholds, audio window, timing gates, M8 and M9 are unchanged.
+- Exact 11613 regression plus existing semantic/timing tests: 39/39 PASS. Full JS suite: 567/567 PASS. Workflow JSON valid; git diff --check clean.
+- Retired unlaunched scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 must never be launched.
+- Deployment pending.
+
+## 2026-09-29 — bicycle-pump smoke is authoritative; scissors job retired unlaunched
+
+- Parallel activity created two fresh jobs after the v198 deployment. This violated the one-fresh-smoke rule, so only one may continue.
+- Authoritative smoke: 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini). Factory DB shows it has already been launched and is in progress; never launch this ID again.
+- Retired job: 03bfb0a3-88a9-4abd-a516-32ded2bceb78 (jak działają nożyczki, pl30/gemini) remains status=created and must never be launched.
+- Current n8n chain for the authoritative smoke: Self Test API 11611 running, M4 Research 11612 running at this checkpoint.
+- Continue tracing only 48a0f9fb-85f8-42cf-990d-1c77d167be8b to terminal. Do not create another smoke until it is terminal and any generic blocker is fixed.
+
+## 2026-09-29 — post-5ba78bc bicycle-pump smoke launched once
+
+- Acceptance smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-29 — fresh post-5ba78bc Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 03bfb0a3-88a9-4abd-a516-32ded2bceb78 (jak działają nożyczki, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 03bfb0a3-88a9-4abd-a516-32ded2bceb78 exactly once and trace M4→M9.
+- Immutable previous smoke feb9823f-a0db-4f54-beec-fc80550c0458 must never be rerun.
+
+## 2026-09-29 — fresh post-5ba78bc Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 48a0f9fb-85f8-42cf-990d-1c77d167be8b exactly once and trace M4→M9.
+- Immutable previous smoke feb9823f-a0db-4f54-beec-fc80550c0458 must never be rerun.
+
+## 2026-09-29 — M5 11605 relation-target semantic-head fix deployed
+
+- Commit 5ba78bcb1830 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v198 / 7446b4e1-cc08-4aa7-bb28-fa017d4f595e, active=true and activeVersionId=versionId.
+- Isolated import completed successfully with production env/network. No duplicate import or publish was performed.
+- Zero active executions before deploy. ai-short-form-n8n restarted exactly once after publish; publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Immutable smoke feb9823f-a0db-4f54-beec-fc80550c0458 must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine QA PASS.
+
+## 2026-09-29 — M5 11605 relation-target semantic-head fix ready
+
+- Immutable smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) is terminal script_failed; never rerun it. M4 11604 passed; M5 11605 failed after both bounded storyboard repairs.
+- Exact validator progression for S3-A: "mortise lock mechanism" -> "metal door lock" -> "metal lock mechanism" while must_show remained ["door handle","lock"].
+- Root cause: assertRequiredInteractionSecondary required every modifier token from the relation target phrase to be present in one must_show anchor, so a valid concise subject anchor "lock" was rejected even though the second independently visible subject was present.
+- Generic M5-only fix keeps the strict matcher first, then allows a relation target to be covered by a must_show anchor only when the anchor's semantic head noun matches the target semantic head and every anchor token is actually present in the target phrase. The independent-second-subject requirement remains unchanged.
+- Exact 11605 regression accepts "lock" for mortise lock mechanism / metal door lock / metal lock mechanism, rejects a generic "mechanism" anchor, and covers car battery -> battery subtype matching.
+- Targeted interaction/transient suite 38/38 PASS; full JS suite 565/565 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after feb9823f-a0db-4f54-beec-fc80550c0458.
+
+## 2026-09-29 — post-2fa80b6 door-handle smoke launched once
+
+- Acceptance smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-29 — fresh post-2fa80b6 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only feb9823f-a0db-4f54-beec-fc80550c0458 exactly once and trace M4→M9.
+- Immutable previous smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 and accidental metadata job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 must never be launched again.
+
+## 2026-09-29 — M5 transient photo-action fix deployed
+
+- Commit 2fa80b6c15bf85d4d203f5f3059d3c4ce1f198bd is on GitHub main and deployed only to VideoM5Storyboard001.
+- Production M5 is v197 / 27ea754b-7799-4f4f-9bce-ef7201e55a20, active=true and activeVersionId=versionId.
+- Import source equality was verified for nodes/connections/settings before publish. No duplicate import or publish was performed; stale CLI wrappers were killed only after their DB side effects were verified.
+- Zero active executions before restart. ai-short-form-n8n was restarted exactly once; publisher health is 200.
+- M8/M9 gates were not changed. Immutable smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine QA PASS.
+
+## 2026-09-29 — M8 11601 transient photo-action fix ready
+
+- Smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 is immutable visuals_failed; never rerun it. M4 11590, M5 11591, M6 11599 and M7 11600 passed; M8 11601 failed S2-A.
+- S2-A required an office stapler and paper sheets while hard visual_intent required the stapler actively joining the sheets. Gemini saw both required subjects in candidate 1, but rejected intent_match because the photo was static.
+- Root cause is M5 retaining a short-lived mechanical action as a hard photo intent despite the existing policy that such actions should stay in narration.
+- M5-only fix adds deterministic transient-action canonicalization in the initial validator, both repair validators and final canonicalizer. Existing must_show subjects stay hard; visible human/hand actions and stable connected relations stay unchanged. M8 is unchanged.
+- Targeted tests 81/81 PASS; full JS suite 556/556 PASS; workflow JSON and git diff checks are clean.
+- Accidental metadata job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 remains unlaunched and must never be launched. Deployment pending.
+
+## 2026-09-29 — post-97f5b16 stapler smoke launched once
+
+- Acceptance smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 (jak działa zszywacz biurowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Accidental metadata job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 remains unlaunched and must never be launched.
+- Trace only 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 M4→M9 to terminal; if it fails, preserve exact evidence and fix only the generic blocker.
+
+## 2026-09-29 — fresh post-97f5b16 Gemini smoke persisted before launch
+
+- Created exactly one acceptance smoke: 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 (jak działa zszywacz biurowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- An earlier accidental job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 was created with visual_validation_mode=metadata because the field was omitted. It is not an acceptance smoke and must never be launched.
+- After this checkpoint is committed and pushed, launch only 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 exactly once and trace M4→M9.
+
+## 2026-09-29 — M5 interaction-target orientation fix deployed and source-verified
+
+- Commit 97f5b164be0481f03e5aa999ecd59b3964651de5 is pushed to main and deployed only to VideoM5Storyboard001.
+- Import had already completed before this checkpoint; no duplicate import was performed. Production M5 version is c748cddd-ece3-42ef-b894-f96f03c5d332 / counter 196.
+- Publish side effect was verified directly in n8n DB: active=true and activeVersionId=versionId=c748cddd-ece3-42ef-b894-f96f03c5d332. Two stale host-side publish wrappers were terminated only after exact cmdline verification; publish itself was not repeated.
+- Zero active executions before restart. ai-short-form-n8n was restarted exactly once; no other service was restarted.
+- Post-restart publisher /healthz=200 through local Caddy. Current M5 nodes/connections/settings all equal Git.
+- Immutable failed smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e must never be rerun.
+- Next gate: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only if machine QA passes.
+
+## 2026-09-29 — M5 11583 interaction-target orientation bug fixed offline
+
+- Immutable smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini) is terminal script_failed; never rerun it. M4 11582 passed; M5 11583 failed after bounded storyboard repairs.
+- Exact validator progression: initial storyboard failed continuous narration with fewer than three natural complete sentences; repair 1 then failed at interaction guard with target "handlebar lever mechanism"; repair 2 failed at the same guard with target "bicycle brake lever".
+- Exact repaired S3-A contract: visual_intent="A steel cable connected to a bicycle brake lever"; must_show=["bicycle brake lever","steel cable"]. Both independently visible subjects are already present.
+- Generic root cause: assertRequiredInteractionSecondary assumed the relation target after "connected to" must always be in secondary must_show. When that target is the primary anchor, it incorrectly rejects a valid reversed-orientation relation even though the other independent subject is already secondary.
+- Generic M5-only fix in Validate Storyboard and both repaired validators: relation target may be covered by any must_show anchor. If the target is primary, a distinct secondary anchor still must exist and must be present in visual_intent; that secondary is returned for detailed-query preservation. Missing second subjects still fail closed.
+- Exact 11583 regression accepts ["bicycle brake lever","steel cable"] for "A steel cable connected to a bicycle brake lever" and rejects the same intent with only ["bicycle brake lever"].
+- Verification: targeted M5 suite 37/37 PASS; full JS suite 536/536 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 3375c549-d3d8-49bf-b51d-f9ebffe0938e.
+
+## 2026-09-29 — post-b7afd97 bicycle-brake smoke launched once
+
+- Smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response was accepted=true,status=processing. Never launch this ID again, regardless of terminal result.
+- Trace this exact job M4→M9 to terminal. If it fails, preserve exact execution/DB/provider evidence and fix only the generic blocker before creating another smoke.
+- If machine QA passes, audit the exact final MP4 with scripts/audit_final_media.py and inspect selected visuals before acceptance.
+
+## 2026-09-29 — M8 fastener-action subject fix deployed and source-verified
+
+- Commit b7afd978492b3863cd5b4c198d768181571a2d7d is pushed to main and deployed only to VideoM8Visuals001.
+- Predeploy execution DB had zero new/running/waiting executions.
+- Import created M8 version 2a237e6b-7f81-4e7a-bd0c-1a0b71ba8dec / counter 82. Imported current nodes/connections/settings matched Git before publish.
+- Publish set active=true and activeVersionId equal to versionId. One restart of ai-short-form-n8n completed successfully; no other service was restarted.
+- Post-restart publisher /healthz returned 200.
+- Post-deploy verification: current nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8 Gemini Vision gates, 70 score floor, must_show checks, intent_match, must_not_show and uniqueness remain unchanged.
+- Next gate: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only if machine QA passes.
+
+## 2026-09-29 — M8 11579 fastener-action subject evidence fixed offline
+
+- Immutable smoke 3a16d463-36fc-42cd-b027-a46841e76860 (jak działa zamek błyskawiczny, pl30/gemini) is terminal visuals_failed; never rerun it. M4 11570, M5 11571, M6 11577, M7 11578 passed; M8 11579 failed S8-A.
+- Exact S8-A contract: visual_intent=A zipper being opened by moving the slider downwards.; must_show=["zipper"]; must_not_show=[]; queries=["zipper opening with slider moving down","zipper unzipping action photo","zipper"].
+- DB contained 66 S8-A candidates: 45 metadata-rejected and 21 metadata-pass. The three candidates sent to Gemini were Pexels 9134799 (leather jacket with zippers), Wikimedia 54511872 (static zipper), and Pixabay 270931 (photo bag). Raw parsed Vision outcome: must_show_visible=true for all, must_not_show_clear=true for all, intent_match=false for all, scores 20/35/10. Vision correctly rejected them as static/non-opening imagery.
+- Crucial counter-evidence to the initial M5 hypothesis: action-specific Pexels q1/q2 candidates already existed, including 2962086 (hand unzipping black leather bag), 6862117 (woman unzipping dress), and 6862115 (woman gently unzipping dress), but metadata rejected them with missing_primary_subject_anchor:zipper because literal token semantics did not infer the depicted fastener noun from zip/unzip action language.
+- Generic M8-only fix prepared in Normalize Pexels/Pixabay/Wikimedia: subjectEvidenceSet promotes zip/unzip action language to subject zipper only when independent garment/bag/fastener context is present. General semanticSet remains literal, so query/intent scoring is unchanged; generic ZIP archive/code text cannot imply a zipper; opposite zipping action still fails an unzipping query. Gemini Vision gates, score floor, must_show checks, intent_match, must_not_show and uniqueness are unchanged.
+- Verification: exact/related M8 suite 36/36 PASS; full JS suite 535/535 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created or launched after 3a16d463-36fc-42cd-b027-a46841e76860.
+
+## 2026-09-29 — post-e55e116 acceptance smoke launched once
+
+- Smoke 3a16d463-36fc-42cd-b027-a46841e76860 (jak działa zamek błyskawiczny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response was accepted=true,status=processing. Never launch this ID again.
+- Trace this exact job M4→M9 to terminal. If it fails, preserve exact execution/DB/provider evidence and fix only the generic blocker before creating another smoke.
+- If machine QA passes, audit the exact final MP4 with scripts/audit_final_media.py and inspect selected visuals before acceptance.
+
+## 2026-09-29 — weak-primary owner promotion deployed and source-verified
+
+- Commit e55e1167ee3f7b27000a2b519fb59bf31c1c5f09 is pushed to main and deployed only to VideoM5Storyboard001.
+- Predeploy n8n execution DB had zero new/running/waiting executions.
+- M5 import produced version 95febf3c-3a04-456f-a027-887b784be9e3 / counter 195; publish set active=true and activeVersionId equal to versionId.
+- During the n8n restart, Docker briefly held stale running metadata after the old n8n PID had already exited and publisher health returned 502. No blind second restart was used. After confirming the process was absent, the stale container state was reconciled and the container was started normally; publisher /healthz returned 200. No other container or architecture was changed.
+- Post-recovery verification: M5 activeVersionId=versionId=95febf3c-3a04-456f-a027-887b784be9e3, counter 195; current nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- The 11564 blocker fix remains unchanged: weak component-only primary labels explicitly written as X of a concrete owner promote to the owner; exact blender regression becomes must_show=[kitchen blender] and query3=kitchen blender. M8 gates remain unchanged.
+- Next gate: exactly one fresh independent pl30/gemini acceptance smoke, ID persisted before launch and launched once only.
+
+## 2026-09-29 — M8 11564 weak-primary retrieval bug fixed and verified offline
+
+- Immutable post-addcba1 smoke 3ebeb8c3-a7d7-4ef6-b00c-45d1e1b9f4eb (jak działa blender kuchenny, pl30/gemini) is terminal visuals_failed; never rerun. M4 11556, M5 11557, M6 11562, M7 11563 passed; M8 11564 failed S3-A with no Gemini-approved unique visual candidate.
+- Exact S3-A contract: visual_intent=The motorized base unit of a kitchen blender on a surface.; must_show=[base unit]; must_not_show=[blender blade]; queries=[motorized base unit of blender, electric blender base on table, base unit].
+- Source-of-truth DB contained 68 S3-A candidates: 65 metadata-rejected, 3 sent to Gemini. q1/q2 returned genuinely blender-related Pexels/Pixabay candidates, but they were rejected because the literal hard anchor base unit was absent from their metadata. q3=base unit produced unrelated base/unit meanings.
+- Actual Gemini candidates were Wikimedia 130573284 (SI base units chart), Pexels 4687362 (dental-device charging base), and Pixabay 3104355 (lightbulb/base). Raw Gemini evaluations were score 0/15/0, must_show_visible=false for all, intent_match=false for all, must_not_show_clear=true for all. M8 correctly failed; its gates are unchanged.
+- Generic root cause: M5 allowed a component-only generic phrase (base unit) to become the hard primary and robust fallback even when visual_intent explicitly identified its concrete owner (kitchen blender).
+- Prepared M5-only fix: in all 7 storyboard validator/canonicalizer branches, a weak primary made only of base/unit/part/component/module/assembly/section/piece/detail is promoted only when visual_intent explicitly has weak-primary of concrete owner. Generic weak terms were also added to the primary reject set so unqualified weak primaries fail closed. Prompt now requires the same owner-subject contract.
+- Exact 11564 regression canonicalizes S3-A to must_show=[kitchen blender], preserves the intent and must_not_show, preserves detailed queries 1-2, and changes query3 to kitchen blender.
+- Verification: targeted exact/visual suite 36/36 PASS; hidden/dependent regression suite 88/88 PASS; full JS 531/531 PASS; workflow JSON valid; git diff --check clean.
+- Deployment is still pending at this checkpoint. No new smoke has been created or launched.
+
+## 2026-09-29 — hidden machine photo-intent canonicalization live
+
+- Immutable smoke `10fb94de-5a4f-432d-a89b-c01e01566968` (`jak działa wentylator domowy`, pl30/gemini) is terminal `visuals_failed`; never rerun it. M5 `11535`, M6 `11541`, M7 `11542` passed; M8 `11546` failed S3-A.
+- Exact S3-A contract was visual_intent=`An electric motor inside a fan providing rotational energy to the rotor`, must_show=`["electric motor"]`, must_not_show=`["heater"]`. Raw Vision correctly rejected the top three candidates because a still photo could not prove the hidden functional action; the best Wikimedia image showed a disassembled fan/motor but not an operating transfer of rotational energy.
+- Root cause: M5 had already reduced the hard must_show to the visible primary, but retained a hidden internal/functional process in visual_intent, causing Gemini intent_match to fail on otherwise useful photos.
+- Commit `addcba1` canonicalizes photo intents to the visible primary when exactly one concealed machine/component anchor remains and the intent requires hidden placement (`inside`/`within` a non-spatial container) or hidden functional transfer, unless the view is explicitly open/exposed/cutaway/transparent/disassembled. Ordinary spatial contexts such as `generator inside a power station hall` and independent second subjects remain unchanged.
+- Verification: targeted hidden-process + scene regressions 75/75 PASS; full JS 527/527 PASS; JSON/diff PASS. Production `VideoM5Storyboard001` active version `d69751bc-0e68-4e78-af3c-2db143836495`; restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini smoke, persist ID before launch, launch once, trace M4→M9, never rerun if it fails.
+
+## 2026-09-29 — hidden machine photo-intent canonicalization live
+
+- Immutable smoke `10fb94de-5a4f-432d-a89b-c01e01566968` (`jak działa wentylator domowy`, pl30/gemini) is terminal `visuals_failed`; never rerun it. M5 `11535`, M6 `11541`, M7 `11542` passed; M8 `11546` failed S3-A.
+- Exact S3-A contract was visual_intent=`An electric motor inside a fan providing rotational energy to the rotor`, must_show=`["electric motor"]`, must_not_show=`["heater"]`. Raw Vision correctly rejected the top three candidates because a still photo could not prove the hidden functional action; the best Wikimedia image showed a disassembled fan/motor but not an operating transfer of rotational energy.
+- Root cause: M5 had already reduced the hard must_show to the visible primary, but retained a hidden internal/functional process in visual_intent, causing Gemini intent_match to fail on otherwise useful photos.
+- Commit `addcba1` canonicalizes photo intents to the visible primary when exactly one concealed machine/component anchor remains and the intent requires hidden placement (`inside`/`within` a non-spatial container) or hidden functional transfer, unless the view is explicitly open/exposed/cutaway/transparent/disassembled. Ordinary spatial contexts such as `generator inside a power station hall` and independent second subjects remain unchanged.
+- Verification: targeted hidden-process + scene regressions 75/75 PASS; full JS 527/527 PASS; JSON/diff PASS. Production `VideoM5Storyboard001` active version `d69751bc-0e68-4e78-af3c-2db143836495`; restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini smoke, persist ID before launch, launch once, trace M4→M9, never rerun if it fails.
+
+## 2026-09-29 — dependent visual component canonicalization live
+
+- Immutable smoke `ece4accd-1d42-4cf1-8032-54e11dd94e28` (`jak działa termometr cyfrowy`, pl30/gemini) is terminal `visuals_failed`; never rerun it. M5 `11504` PASS, M6 `11509` PASS, M7 `11510` PASS, M8 `11511` failed on S3-A.
+- Exact S3-A contract before the fix: visual_intent=`A close-up of a thermistor sensor tip on a digital thermometer.`, must_show=`["digital thermometer","sensor tip"]`, must_not_show=`["analog scale"]`.
+- Raw Vision evidence from execution `11511`: Pexels `5712673` and `3873159` visibly showed a digital thermometer, but Gemini correctly rejected both because the sensor tip was not shown in close-up. The third candidate was unrelated. M8 gates were correct and were not weakened.
+- Root cause was upstream M5 contract generation: `sensor tip` is a dependent visible component of the primary `digital thermometer`, but it became an independent hard must_show subject despite the existing prompt rule forbidding component/detail secondaries.
+- Commit `9385196` adds deterministic dependent-component canonicalization across all 7 M5 storyboard validators/canonicalizers. For relations such as `secondary on/of/inside/within primary`, the dependent detail is removed from must_show; when no independent secondary remains, visual_intent becomes a primary-only clear/close-up photo contract. Detailed queries 1-2 may keep the component as retrieval context; query 3 remains the primary fallback. Independent relations such as `gear shifter connected to control cable` remain hard.
+- Verification: targeted dependent-detail regressions 32/32 PASS; hidden-process/broad-subject regressions 41/41 PASS; exact replay of M5 execution `11504` PASS with S3 normalized to visual_intent=`A close-up photo of digital thermometer.`, must_show=`["digital thermometer"]`, queries=`["digital thermometer sensor tip","thermistor sensor probe digital thermometer","digital thermometer"]`; full JS 511/511 PASS; JSON/diff PASS.
+- Production `VideoM5Storyboard001` active version `0cdb8df3-84c8-448b-8a87-bf97e7f7e291`; restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini smoke, persist ID before launch, launch once, trace M4→M9, never rerun if it fails.
+
+## 2026-09-29 — M5 bounded second timing repair live
+
+- Immutable smoke `0419d145-7901-4904-b5e8-ca334091369e` (`jak działa pompa rowerowa`, pl30/gemini) is terminal `script_failed`; never rerun it. M4 `11496` passed. M5 `11497` failed only on voice timing after successful storyboard/query validation.
+- Exact timing evidence: first real TTS probe 55 words = 27864 ms; first semantic timing repair 56 words = 25488 ms. Both were below the 30s accepted audio floor 28464 ms, and the second stochastic sample got shorter despite one extra word.
+- Root cause: `Route Timing Within Target 2` sent a valid-but-still-short second probe directly to terminal timing failure even though `Build Timing Repair 2` already exists for bounded recovery. Its interpolation also accepted non-monotonic word/character-vs-duration slopes.
+- Commit `2774034` routes the second out-of-window probe into the existing bounded second repair and only uses linear interpolation when duration and word/character deltas move in the same direction; otherwise it falls back to proportional measured targeting. The accepted audio window remains unchanged.
+- Verification: targeted timing suite 30/30 PASS; full JS 509/509 PASS; JSON/diff PASS. Production `VideoM5Storyboard001` active version `46ba0dea-3b2c-4af1-af02-987e23dd98ba`; restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini smoke, persist ID before launch, launch once, trace M4→M9, never rerun if it fails.
+
+## 2026-09-29 — M5 interaction-query canonicalization live
+
+- Commit `4f9731d` is deployed to production `VideoM5Storyboard001` as active version `0fbb213d-4c75-4637-afaa-60f048135c2e`.
+- Exact failed smoke evidence from execution `11489` showed the interaction subject itself was preserved correctly (`gear shifter` + `control cable`), but detailed query 2 omitted the full secondary anchor (`handlebar shifter cable mechanism`). The validator escalated this deterministic query-normalization issue into Gemini repair, which mutated `control cable` to `metal cable` and then `steel cable` while still failing validation.
+- Fix: keep secondary interaction-subject presence fail-closed, but deterministically complete queries 1-2 from the matched secondary `must_show` anchor instead of invoking AI repair for a missing query token. Exact replay of execution `11489` now passes with S5 query 2 normalized to `handlebar shifter cable mechanism control cable`.
+- Verification: targeted M5 regression 5/5 PASS; exact execution 11489 replay PASS; full JS suite 508/508 PASS; JSON/diff PASS.
+- Production verification: publisher restart exit=0; `/healthz`=200; `activeVersionId=versionId`; live M5 nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini acceptance smoke, persist ID before launch, launch once, never rerun if it fails.
+
+## 2026-09-29 — M8 core-intent semantics fix live
+
+- Immutable acceptance smoke `4fb165b9-9e1c-4ba1-a1c4-5f857029c20d` (`jak działa ładowarka indukcyjna`, pl30/gemini) is terminal `visuals_failed`; never rerun it. Visual run `139069fe-6222-4967-8e2f-071b49470af4` failed on S1-A in M8 execution `11484`.
+- Exact S1-A contract: visual_intent=`A wireless charging pad placed on a wooden desk surface.`, must_show=`["wireless charging pad"]`, must_not_show=`["smartwatch"]`.
+- Raw Vision evidence confirms the blocker: Wikimedia `68169881` was an actual wireless charging pad with `must_show_visible=true` and `must_not_show_clear=true`, but Gemini returned `intent_match=false`, score 40, solely because the support surface was not visibly wooden (`Shows a wireless charging pad, but the surface is not a wooden desk.`).
+- Commit `e9ac24b` fixes the semantic mismatch without changing gates: `intent_match` now distinguishes core scene semantics from incidental presentation details such as surface material/color, desk/background style, lighting, framing and exact placement unless explicitly required by `must_show` or necessary for functional-domain identity.
+- Verification: targeted `gemini-visual-validation` 20/20 PASS; full JS 507/507 PASS; workflow JSON PASS; `git diff --check` PASS. The 70 score floor, must_show, must_not_show, intent_match, uniqueness and provider hard-reject gates remain unchanged.
+- Production M8 `VideoM8Visuals001` is active version `5353da37-dc85-4ddb-8afd-eaeae459d9e5`; publisher restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Before deployment, 3 pre-existing M8 CLI orphan processes (~3h old) were removed by exact cmdline/PID checks. Successful import/publish CLI wrappers were also terminated only after DB confirmed the state change, leaving no duplicate M8 CLI operation.
+- Next gate: exactly one fresh independent different-topic pl30/gemini acceptance smoke after docs commit/push; persist ID before launch, launch once, trace M4→M9, and audit the exact final MP4 if machine QA passes.
+
+## 2026-09-28 — M5 interaction-subject fix live
+
+- Commit `2feca53` is deployed as production `VideoM5Storyboard001`, active version `15cba962-ce9d-45d4-932d-f5a353e0982b`.
+- Predeploy active executions were zero. One-off n8n 2.37.10 CLI publish succeeded; publisher n8n restarted once.
+- Post-restart publisher health is 200; M5 is active with `activeVersionId=versionId`, and live nodes/connections/settings exactly match Git.
+- Verification before deployment: targeted interaction regression PASS, full JS 507/507 PASS, n8n SplitInBatches runtime PASS, isolated M5 import PASS, workflow JSON PASS, `git diff --check` PASS.
+- Next gate: create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID before launch, launch it once, trace M4→M9, and audit the exact final MP4 if machine QA passes.
+
+## 2026-09-28 — M5 interaction-subject contract fix verified; deploy pending
+
+- Immutable smoke `9ed1a19c-7ad2-495d-9ca1-98ab71d83aa9` reached M8 after M5/M6/M7 PASS and failed on S6-A because Vision received only generic multimeter imagery; all three reviewed candidates had `must_show_visible=true` but `intent_match=false` because no car battery was visible.
+- Root cause is upstream storyboard under-specification, not M8 thresholding: `visual_intent` required a multimeter measuring a car battery, while `must_show` contained only `multimeter` and detailed query 2 dropped the battery context.
+- Fix: M5 generation contract now requires the second independently visible subject for measurement/connection/transfer relationships as `must_show[1]`, and both detailed queries must preserve that subject. All three M5 validator branches enforce the same rule fail-closed and route violations into repair. Abstract relation targets such as power grid/network/system/infrastructure/mains are excluded to avoid false positives.
+- Validation PASS: targeted 4/4; full JS 507/507; n8n SplitInBatches runtime; isolated n8n 2.37.10 M5 import; workflow JSON; `git diff --check`.
+- `fc42b18e-b186-4042-85f4-f229d2d61701` is separately immutable `script_failed` after exhausting helper-v4 provider recovery on Gemini `high demand`; do not rerun either failed ID.
+- Next gate: commit/push, verify zero active executions, deploy only M5, verify live source + health, then create exactly one fresh acceptance smoke.
+
+## 2026-09-28 — M8 must_not_show context semantics deployed
+
+- Immutable smoke `f584d280-e17f-401e-96fe-a060f89dfdb0` reached M8 and failed on S5-A even though Wikimedia asset 6883586 was a perfect reservoir shot: Gemini scored 100 with must_show=true and intent_match=true, but rejected it only because `engine block` was visible/incidental under the hood.
+- Root cause: M5 contract already states normal/incidental setting must not invalidate a shot, while M8 Vision interpreted must_not_show as absolute pixel absence.
+- Commit `5cf95c5` aligns M8 with that contract: must_not_show fails only for prominent conflicting subjects or mutually exclusive states. No score, must_show, intent, DB, or uniqueness gates were weakened.
+- Validation/deploy: executable prompt-node regression PASS; JSON PASS; diff PASS; production M8 active version `0747741e-1b5e-49cc-80da-c13957aabff5`; health 200; live nodes/connections/settings match Git.
+- Next gate: create one fresh independent pl30/gemini smoke, launch once, trace M4->M9, audit final MP4 if machine QA passes.
+
+## 2026-09-28 — M8 Gemini-review false-negative fix prepared
+
+- Immutable smoke `9237413a-8e6b-43e7-9cdd-7d306586250c` passed M4/M5/M6/M7 and failed M8 on S3-A because every candidate was excluded before Vision. The exact top Pixabay candidate had score 88 but was hard-excluded by `pixabay_photo_content_unverified_tag_only` even though Gemini mode exists specifically to inspect pixels.
+- Prepared DB-only fix: `factory.gemini_visual_review_bucket` treats `pixabay_photo_content_unverified_tag_only` as reviewable in Gemini mode; metadata selection remains fail-closed and AI-generated/non-photographic hard rejects remain bucket 99.
+- Validation: Gemini visual tests 20/20 PASS; full JS 505/505 PASS; transactional PostgreSQL check soft=1, hard_ai=99, accepted=0; exact failed-job candidate-planner replay under ROLLBACK gives 9/9 shots x 3 candidates.
+- Next gate: commit/push, deploy only the review-bucket function with zero active executions, verify live function, then one fresh independent pl30/gemini smoke.
+
+## 2026-09-28 — helper v4 prepared after verified cross-model 503 overload
+
+- Latest immutable smoke `eb879513-fe64-4865-9efa-759fc2863579` passed M4 (execution 11406) and failed M5 (11407) only after helper v3 execution 11408 received the same Gemini 503 high-demand response from 3.5, 3.1, 3.8, 3.6 and 3.7.
+- Helper v4 removes each node's immediate second 5-second retry, keeps transient-only routing, and spaces the six maximum provider calls with 30s, 60s, 120s, 240s and 600s waits; the sixth call is a final 3.8 recovery attempt. This reduces maximum provider calls from 10 to 6 while extending the provider recovery window to about 17.5 minutes.
+- Validation before deploy: targeted provider 8/8 PASS; full JS 505/505 PASS; installed n8n SplitInBatches runtime PASS; isolated n8n 2.37.10 workflow import PASS; duration audit PASS.
+- Next gate: commit/push helper v4 and docs, deploy helper only with zero active executions, verify live source equality and health, then create one fresh different-topic pl30/gemini smoke and launch it exactly once.
+
+## 2026-09-28 — helper v3 deployed
+- Git `e3e6102` is pushed; shared Gemini helper is production v3 / active `eaa358f9-f757-4164-a419-6a0d77c1fba9`, source-equal to Git, n8n health=200, zero active executions after deployment.
+- Bounded transient-only sequence: 3.5 -> 30s -> 3.1 -> 60s -> 3.8 -> 60s -> 3.6 -> 60s -> 3.7. Each provider batch uses 2 attempts, 5s retry spacing, 45s timeout. Non-transient errors and all M5 semantic/language/timing gates remain fail-closed.
+- Independent final-media audit now uses the same 30s natural-audio ceiling as production: 28,464–34,000ms.
+- Next gate: exactly one fresh different-topic pl30/gemini smoke, launch once, trace M3->M9 to terminal; never rerun failed job IDs.
+
+## 2026-09-28 — M4 v8 proven; helper v3 prepared
+- M4 retry-pairing fix `2a5bc20` is deployed as v8 / active `9b77286f-004e-4368-8a47-4fbc585f155e`; live source equals Git and /healthz=200.
+- Fresh sonar smoke `61c5c63d-073b-4f19-b3bc-1b779345ff93` proved M4 v8 in production: M4 execution 11400 passed. The job then failed in M5 execution 11401 because helper v2 execution 11402 exhausted the full 3.5 -> 30s -> 3.1 -> 60s -> 3.8 path with HTTP 503 UNAVAILABLE / high demand. Never rerun this job.
+- Prepared helper v3, transient-only and bounded: after the existing 3.8 batch, wait 60s and try stable free-tier `gemini-3.6-flash`; if still transient, wait 60s and try stable free-tier `gemini-3.7-flash`. Non-transient errors and all M5 validators remain fail-closed.
+- Fixed `scripts/audit_final_media.py` to match the deployed 30s natural-audio ceiling 28,464–34,000ms instead of the stale 32,000ms ceiling.
+- Validation before deploy: targeted M4/provider suite 15/15 PASS, full JS 505/505 PASS, audit duration regression PASS. Helper v3 and audit fix are not yet deployed/committed at this checkpoint.
+
+## 2026-09-28 — helper v2 deployed
+- `VideoGeminiResilient001` v2 active version `4903c705-c77c-45d4-b4b2-b98b6d1e230c`, source-equal to Git commit `b6a32b9`.
+- Provider sequence: 3.5 -> 30s -> 3.1 -> 60s -> 3.8 Flash. n8n health=200; active executions=0.
+- Next acceptance gate: one fresh different-topic 30s Gemini smoke, launch once and trace to terminal.
+
+## 2026-09-28 — helper v1 verified, 3.8 final fallback prepared
+- Smoke `9e62f5f4-4866-4c7d-bc7a-434233128477` failed terminally in M5 after helper execution 11386 exhausted 3.5 -> 30s -> 3.1 -> 60s -> 3.5 with Gemini `high demand`. Do not rerun this job.
+- Shared helper architecture itself executed correctly in production. The remaining issue is model availability, not routing.
+- Working-tree helper change replaces the third batch with stable/free structured-output `gemini-3.8-flash`, giving actual model diversification: 3.5 -> 3.1 -> 3.8. M5 validators remain unchanged.
+- Validation: provider 8/8 PASS; full JS 503/503 PASS; n8n 2.37.10 dry import PASS. Not deployed yet.
+
+## 2026-09-28 — shared Gemini helper deployed
+- Commit `7a796ab` deployed to production.
+- `VideoGeminiResilient001`: v1, active `e78e465d-2c8c-4fd6-bc78-3e6ea0018f16`.
+- M5: v188, active `fb0e0da3-57b6-441b-a831-c2faadb68711`.
+- Live nodes/connections/settings for helper and M5 match Git exactly; n8n /healthz=200; active executions=0.
+- Next acceptance gate: exactly one fresh different-topic 30s Gemini smoke, trace M3->M9 to terminal; never rerun failed job IDs.
+
+## 2026-09-28 — shared Gemini resilience prepared, not yet deployed
+- Production M5 is still v187 / active version `10707d7c-837d-43d0-8eac-f1f77fe57f53`.
+- Smoke `b4a80ba5-7406-4a5a-96a1-1e3d3ab98f69` failed terminally in M5 execution 11381 after all three current storyboard provider batches returned Gemini `high demand`; do not rerun this job.
+- Execution 11375 separately showed the current storyboard-only backoff can recover the storyboard call, then fail later at `Review Narration Language` on the same provider overload. This proves the failure class is shared across M5 Gemini calls.
+- Working-tree fix introduces `VIDEO — Gemini Resilient Call` (`VideoGeminiResilient001`) and routes all 18 M5 Gemini calls through it. Policy is bounded and transient-only: 2x5s primary attempts, Wait 30s + Gemini 3.1 fallback, Wait 60s + final primary batch, 45s per HTTP request. Non-transient provider errors remain fail-closed. Validators/gates are unchanged.
+- Validation: provider regression 8/8 PASS; full JS 503/503 PASS; installed n8n runtime test PASS; isolated n8n 2.37.10 dry import PASS. Not deployed yet.
+
+## 2026-09-28 — current production state after 51c199a rollout
+
+- Latest smoke `33697003-8785-4a03-9894-0215ae7b6b3f` (pl30, `jak działa pompa ciepła`, Gemini) is immutable `script_failed`. M5 execution `11362` failed after timing repair with `coverage 0.500, required >= 0.600 [line 597]`. Never rerun this job. The exact first timing-probe duration was not recovered.
+- Git `51c199a` is now deployed. For nominal 30s output, accepted natural voice duration is 28,464–34,000ms; speech remains uncut and unsped, and render duration is `max(30000,audio_duration_ms)`. The generic change passed focused 29/29, full JS 500/500, and the real FFmpeg render-target regression before rollout.
+- Live M5: v185 / active `0df5f0a2-c8e8-4ede-ae84-1c75726dd726`. Live M6: v12 / active `7cba672b-09a9-4eb0-9f21-f7b5d43ce590`. For both, current `versionId` equals `activeVersionId`, and live nodes/connections/settings compare equal to Git.
+- Live DB functions `complete_voiceover`, `begin_render`, `register_voiceover_candidate`, and `begin_voiceover_v2` contain the 34,000ms ceiling and no old 32,000ms ceiling. Media worker runs image `sha256:57f1e561d0808329389ccd552ed380d986a5c832c53fb615ddd1f1cddffa7f05`, healthz=200. Publisher restarted at `2026-09-28T13:09:01.503821133Z`, internal healthz=200. Active n8n executions after rollout: 0.
+- Remaining acceptance gap: no fresh full M5→M9 production PASS has been produced on this exact deployment. NEXT: one new different-topic 30s Gemini smoke, launched once; trace it to terminal and audit the actual MP4 if machine QA passes. Existing failed jobs remain immutable. Existing `.tmp/` artifacts remain untouched.
+
+## 2026-09-27 — current production status and next acceptance gate
+
+- Git `2541096` is deployed for nominal-versus-actual voice duration: requested 30 seconds accepts measured 28,464–32,000ms; rendered video duration follows the longer of nominal duration and measured audio. This is verified offline and deployed, but there is no passing new production video.
+- One post-deploy smoke `968f9224-be35-42af-bd6f-4990a596482b` is immutable `script_failed`, M5 execution `11116`: 43 words, 21,936ms; Gemini returned 46 words, dropped an essential verb, semantic gate rejected coverage 0.500. It never reached M6/M9.
+- Root cause in M5 timing request: measured cadence implied about 57 words for 29,232ms, but an arbitrary +1 lexical word per scene cap limited the requested target to 52. Generic measured-calibration correction `ee8beb6` passed 467/467 JS and Python FFmpeg regressions; M5-only deployment activeVersionId `53501192-ded6-423e-8146-482267614919` matches Git. Provider compliance and final MP4 remain unverified; do not claim provider compliance or full production PASS until a permitted *new* smoke reaches M9.
+- The one authorized smoke has been used. Do not create or launch a second smoke unless the user explicitly authorizes one. Never rerun failed jobs. Existing `.tmp/` must remain untouched.
+
+## Timing contract production checkpoint — 2026-09-27 (authoritative; supersedes older NEXT items)
+
+- Git `fc9d0f0` deployed the end-to-end timing contract: strict observed M5/M6 audio window; M6 byte-for-byte accepted candidate reuse; separate audio/target durations from `factory.begin_render()` through M9; last visual extends to target; media worker keeps audio unmodified and renders target-duration MP4; QA checks audio and video against their respective durations. DB functions, M5/M6/M9, and worker were deployed; the 30-second real FFmpeg regression passes. This contract has **not** produced a new accepted production MP4 yet.
+- Exactly one subsequent production smoke was created and launched: `49d0a4df-0812-4473-bbe7-f26ccd6833e4` (barometer, uk, 30, Gemini). It failed immutably at M5 execution `10961`, version `85581060-9e5c-4255-bc6b-de01c7e903c2`, with `2, allowed 1 [line 565]`. The original 45-word/4-sentence voice measured 22584 ms; the one repair inserted too many new semantic words in a scene and mixed scripts in `погоdy`. No M6/M9 rendering was reached. Do not rerun this job or launch another production smoke under the current one-smoke instruction.
+- Generic M5 follow-up `b5e6c29` is committed, pushed, and deployed. It calibrates the initial uk30 request to 54 words from observed production voiceovers, requires cited causal detail instead of filler, caps the single measured expansion to at most one extra word per scene, supplies cited source text to that repair, and rejects mixed Cyrillic/Latin words before another TTS probe. The semantic and audio acceptance gates remain strict and unchanged.
+- Verification: focused 20/20 PASS, full n8n Docker JS suite 463/463 PASS, both Python FFmpeg render regressions PASS, `git diff --check` clean. Offline replay of the exact saved M5 execution `10961` (no provider call or new job) passes the new prompt builder: 45 words / 22584 ms requests 54 words, includes 7 cited sources out of 9 total and excludes every uncited source. Active M5 version `9c5e3462-731a-4b66-be05-e1063ce71dfa`; M6 remains `360338cb-24e3-40b6-bcd4-bf1e87914226`; M9 remains `f3f9379d-24bb-464e-8045-e7d5e7eec14e`. Their current/published nodes and connections, plus current settings, match Git. Publisher/Studio HTTP200, worker healthy, zero active executions.
+- Pre-deploy M5 backup: `.backups/m5-before-b5e6c29-20260927-055125.json` (SHA256 `eaeaec069e7210c17dd86909a7f088db85b9ff7149219dcf45c2fd0e9ecc4b9a`). Existing `.tmp/` is untouched.
+- Remaining acceptance gap: full production M5→M9 run and its final MP4/audio QA have not passed; the one permitted production smoke failed before rendering. Offline regressions and live deployment checks do not establish end-to-end success. Any future smoke requires a new instruction overriding the present one-smoke limit, and must use a fresh job ID.
+
+## Fresh uk45 smoke after M8 repeated-context fix — 2026-09-25
+
+- Previous smoke `b75d99cc-7e96-4306-9ea1-b8ab598010b9` reached M8 and failed in execution `10138`: `no Gemini-previewable relevant visual candidate for shot S9-A`.
+- Exact S9-A storyboard: primary `circuit board`, intent `printed circuit board traces and signal lines`. Old M8 planner incorrectly injected global repeated-storyboard terms `components,module,motherboard,ram` into all three provider queries, producing hard `missing_storyboard_domain_context` rejects even for strong circuit-board candidates.
+- Generic fix: cross-shot repeated context is now a hard domain gate only for domain-scoped machinery/closed-infrastructure heads. Generic repeated objects such as `circuit board` no longer inherit unrelated global vocabulary. Existing machinery/infrastructure domain behavior remains intact.
+- Exact replay of execution 10138 with current request builders gives S9-A provider queries unchanged: `circuit board signal lines`, `motherboard traces close up circuit board`, `circuit board`; `domain_context_terms=[]` for Pixabay/Pexels/Wikimedia.
+- Full Node suite: **415/415 PASS**. Git commit: `409bd5741622`.
+- Deployed M8 only after zero-active check. Backup: `.backups/m8-before-409bd57-20260925-214546.json`, SHA256 `c2df53ae1d39e7a2063886bbeaea339fb5351522ce9c4ff66253c8c780529883`.
+- Live M8 activeVersionId: `22c3eb24-646e-4e39-b219-46753a0b9171`. M5 remains `ee5021d6-e989-4837-81e9-796f6731c966`; M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`. Current/published M8 match Git; publisher/studio HTTP200.
+- Created exactly one fresh RAM uk45 Gemini smoke and have not launched it yet: `26e3a898-fe38-47c0-98da-1d8c3c072f5a`.
+- NEXT: launch this exact job once and trace to terminal; do not create another smoke while unresolved.
+
+## Fresh uk45 smoke after primary-intent prompt fix — 2026-09-25
+
+- Previous fresh smoke `4bb1aa3c-c735-4d5b-9ac2-bcf6e720afc1` failed in M5 execution `10108`: `S7-A visual metadata must be English and primary must_show must match English visual_intent`. Exact repaired S7 used `must_show[0]="microchip surface"` while visual_intent said `integrated circuit ...`; both are English, but the local contract requires the primary phrase to be represented in the intent.
+- Generic fix does not weaken the validator: initial and both bounded repair prompts now require `visual_intent` to contain `must_show[0]` verbatim as one contiguous English phrase rather than replacing it with a synonym/alternate technical name.
+- Full Node suite: **412/412 PASS**. Git commit: `450d599cf363`.
+- Deployed M5 only after zero-active check. Backup: `.backups/m5-before-450d599-20260925-212647.json`, SHA256 `e1ffbd1d365967dbbf7cbc7c625a16e82cebdcaaece9f64bca591d8fdd46cef8`.
+- Live M5 activeVersionId: `ee5021d6-e989-4837-81e9-796f6731c966`. M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 remains `ecc2d163-8090-4094-947d-03b84747ba40`. Current/published M5 match Git; publisher/studio HTTP200.
+- Created exactly one fresh RAM uk45 Gemini smoke and have not launched it yet: `b75d99cc-7e96-4306-9ea1-b8ab598010b9`.
+- NEXT: launch this exact job once and trace to terminal; do not create another smoke while unresolved.
+
+## Fresh uk45 smoke after initial word-count rigidity fix — 2026-09-25
+
+- Previous fresh smoke `1737fc7e-74ea-4330-8961-18d658721bcd` failed in M5 execution `10095`: `storyboard word-array count mismatch for S13`. Exact provider output had a natural 6-word S13 while the deterministic allocation demanded 5; all bounded storyboard attempts kept the natural 6-word line. The failure was caused by rigid per-scene count acceptance, not by scene bounds or total narration range.
+- Generic fix: initial/repair `narration_words` arrays remain lexical and bounded (2–14 words, 2–10 for 15s), but exact per-scene allocation is now guidance rather than an acceptance gate. Total narration hard range remains enforced before TTS; measured TTS still owns final duration. No semantic/language/visual gates were weakened.
+- Full Node suite: **412/412 PASS**. Git commit: `a3a31aadec7a`.
+- Deployed M5 only after zero-active check. Backup: `.backups/m5-before-a3a31aa-20260925-212216.json`, SHA256 `4be0621ba95f5bf20b452175ad3ebc93a555f0cdee937205725390394bf34cd5`.
+- Live M5 activeVersionId: `b655d4c5-ed03-4403-a4ae-8b5c6f61a26a`. M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 remains `ecc2d163-8090-4094-947d-03b84747ba40`. Current/published M5 match Git; publisher/studio HTTP200.
+- Created exactly one fresh RAM uk45 Gemini smoke and have not launched it yet: `4bb1aa3c-c735-4d5b-9ac2-bcf6e720afc1`.
+- NEXT: launch this exact job once and trace to terminal; do not create another smoke while unresolved.
+
+## Fresh uk45 smoke after final measured semantic fix — 2026-09-25
+
+- Fixed M5 final measured word-count retry so it returns natural narration strings instead of exact per-scene word slots. The semantic guard remains unchanged/fail-closed; the fix removes pressure to invent filler merely to satisfy slot cardinality.
+- Full Node suite: **412/412 PASS**. Git commit: `47a40cd30b04`.
+- Deployed M5 only after zero-active check. Backup: `.backups/m5-before-47a40cd-20260925-211555.json`, SHA256 `788d33a137716a030812af02cf7f2e0e14b2155037eba648de2472b44c5274bd`.
+- Live M5 activeVersionId: `f2fa600c-a4ef-4d38-a58f-0d079c8295d8`. M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 remains `ecc2d163-8090-4094-947d-03b84747ba40`. Current/published M5 match Git; publisher/studio HTTP200.
+- Created exactly one fresh RAM uk45 Gemini smoke and have not launched it yet: `1737fc7e-74ea-4330-8961-18d658721bcd`.
+- NEXT: launch this exact job once, trace to terminal, do not create another smoke while unresolved.
+
+## Fresh uk45 smoke created after cbf20e9 deploy — 2026-09-25
+
+- Deployed current M5 source from Git `cbf20e9` after zero-active check. Backup: `.backups/m5-before-cbf20e9-20260925-210527.json`, SHA256 `2ede9a1ef858054e6a8f4c1cc677617155da1b686f50d752928725590269c13d`.
+- Live M5 current/published nodes/connections/settings match Git; activeVersionId `8854663c-f007-45b2-9d7f-999186acfbd2`. M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 remains `ecc2d163-8090-4094-947d-03b84747ba40`. Publisher/Studio HTTP200; zero active executions after deploy.
+- Created exactly one new RAM uk45 Gemini smoke and have not launched it yet: `9c4865b2-6642-4230-bc18-ec03eb21c189`.
+- NEXT: launch this exact job once via `/webhook/factory/run`, then trace it to terminal. Do not create or launch another smoke while unresolved.
+
+## Fresh uk45 smoke 89b75578 failed at M5; generic guard fix ready — 2026-09-25
+
+- Fresh job `89b75578-eeb2-4f92-92e0-6632309a6f19` was launched exactly once after M5 deployment and ended `script_failed`.
+- M3 execution 10049 PASS; M4 10051 PASS; M5 execution 10053 failed. Script run `3e14d996-ce6d-4774-8ba8-84e89413076b` failure: `S7-A visual metadata must be English and primary must_show must match English visual_intent [line 217]`.
+- Exact failing S7 metadata was already English and semantically aligned: visual_intent `Macro photo of semiconductor microchips on a circuit board.`, primary must_show `microchip`. Root cause was the validator's exact-token comparison: singular `microchip` did not equal plural `microchips`.
+- Source fix is generic and narrow: primary-vs-intent English token matching now accepts only conservative singular/plural inflections (s/es/y→ies) in all four M5 storyboard validators; unrelated subjects still fail. No RAM/topic mapping was added.
+- Evidence: `acceptance/2026-09-25-m5-10053-singular-plural-guard.json`. Focused visual-language suite 17/17 PASS; full Node suite **412/412 PASS**.
+- This fix is **NOT DEPLOYED YET** at this checkpoint. Failed job 89b75578 is immutable and must not be relaunched.
+- NEXT: commit/push this regression fix, zero-active check, back up + publish M5 only, verify M6/M8 invariance, then create one new uk45 RAM Gemini smoke and launch it exactly once.
+
+## M5 natural-language fix deployed; fresh uk45 smoke created — 2026-09-25
+
+- Deployed current M5 source from Git `db44031` after zero-active check. Pre-deploy backup: `.backups/m5-before-natural-20260925-205421.json`, SHA256 `a8e011137b10953c806d815762fd657050f297b91aa11da24b26d5bb09693d71`.
+- Current and published M5 nodes/connections/settings match Git exactly; M5 now has 145 nodes. New live M5 activeVersionId: `9cc773fd-51b9-425b-8657-6cd352b914d1`.
+- Non-target versions unchanged: M6 `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 `ecc2d163-8090-4094-947d-03b84747ba40`. Publisher and Studio HTTP200; zero active executions after deploy.
+- Created one fresh exact-case smoke and have **not launched it yet**: job `89b75578-eeb2-4f92-92e0-6632309a6f19`, RAM topic, `uk`, 45s, Gemini visual validation.
+- Stale-created job `572344a8-3ba0-485b-8e20-a3dccef9c67b` remains unlaunched and must not be used.
+- NEXT: launch `89b75578-eeb2-4f92-92e0-6632309a6f19` exactly once through `/webhook/factory/run`, then trace this same job M3→M9 to terminal. Do not create or launch another smoke while it is unresolved.
+
+## Provider replay closes current pre-deploy blockers — 2026-09-25
+
+- Strengthened natural language repair was replayed against the exact saved M5 execution 10042 context using the existing production Gemini credential through an isolated temporary n8n diagnostic workflow. HTTP200 response corrected the four flagged scenes to natural Ukrainian, including `комірка`, retained `транзистор` + `конденсатор`, and removed filler. The current full M5 validator accepted the repaired storyboard.
+- A second live language/meaning review of that repaired storyboard returned `issues: []`; the current `Validate Narration Language Review Retry` accepted it. Evidence: `acceptance/2026-09-25-m5-10042-natural-language-repair.json`; replay fixture: `tests/fixtures/m5-10042-natural-language-repair.json`. Temporary diagnostic workflows were deleted after execution.
+- Exact S5 installation-context path is now regression-tested end-to-end through source planners: M5 preserves `internal SSD drive` instead of replacing it with the context-free primary fallback; current M8 Pexels/Pixabay/Wikimedia request builders preserve that query as the third effective provider query. Added `tests/m8-10045-installation-context.test.cjs`. No M8 source change is required for this specific context-loss defect.
+- Full Node suite now **411/411 PASS**. Git diff check passes.
+- Production remains on M5 source `67022f3` (activeVersionId changed earlier to `3974ebc9-e477-48e5-ae61-2c1f33d95bda` by same-source republish), M6v8, M8v72. Current source changes are still not deployed at this checkpoint.
+- NEXT: zero-active check; back up and publish current M5 only; restart publisher as required; verify published source + M6/M8 invariance. Then create one new RAM uk45 Gemini job, persist its ID, launch once, trace M3→M9 to terminal and manually inspect final MP4. Do not run stale-created job `572344a8-3ba0-485b-8e20-a3dccef9c67b`.
+
+## WIP after Codex handoff — 2026-09-25
+
+- Synced to remote main `c7b04ab` before continuing. Production source remains M5 `67022f3` / M6v8 / M8v72; current Git M5 changes below are **NOT DEPLOYED**.
+- A stale-local continuation initially republished the same M5 `67022f3` source before the remote divergence was discovered. Source content did not change, but the live M5 activeVersionId is now `3974ebc9-e477-48e5-ae61-2c1f33d95bda`; M6/M8 activeVersionIds stayed unchanged. Publisher and Studio returned HTTP200 and current/published M5 nodes/connections/settings matched `67022f3`.
+- That stale continuation also created job `572344a8-3ba0-485b-8e20-a3dccef9c67b` (RAM, uk45, Gemini) but **did not launch it**. It remains status `created`; do not run it while the current fixes are unresolved.
+- Language-repair strategy changed based on saved/provider evidence that rigid exact slots caused filler and meaning loss. The WIP repair now returns natural narration strings only for flagged scenes, preserves all unflagged scene metadata in code, allows 2–14 words per repaired scene, and leaves duration correction to the existing measured timing stage. The second language review can now flag `meaning_change` against the original repaired-scene text. Repair prompt independently audits every token for exact requested language and no longer treats reviewer findings as exhaustive; generation temperature is 0.
+- The exact live diagnostic before the stronger prompt returned structurally natural strings but still preserved Ukrainian `ячейка`, confirming why the second fail-closed review/meaning check is necessary. A later attempt to run an isolated temporary n8n diagnostic was blocked by the already-running Task Broker; the temporary workflow was deleted and production was not stopped or changed.
+- S5 context root cause is now covered generically in M5 canonicalization: a concise third query is preserved when it contains both a primary-subject token and an explicit visual-intent context token. Exact RAM fixture therefore preserves `internal SSD drive` instead of overwriting it with `solid state drive`; generic third queries still collapse to the concrete primary fallback. This applies to all six M5 canonicalization validators, without topic mappings.
+- Tests: full Node suite **407/407 PASS**; focused language/context tests 13/13 PASS; JSON/diff checks pass. Added `tests/m5-contextual-fallback-query.test.cjs`. No deployment claim and no E2E claim.
+- NEXT: obtain a bounded provider replay for the strengthened natural-language repair without starting a second n8n process; require repaired 10042 plus second language/meaning review PASS. Then verify S5 contextual query through the saved M8 retrieval planner/evidence. Only then deploy the modified workflow(s) after zero-active check and run one fresh uk45 E2E. Do not launch the unrun stale-created job.
+
+# Current State
+
+## LATEST RESUME POINT — 2026-09-25 (supersedes older resume sections)
+
+**All work is saved; the factory remains unaccepted. Do not deploy current M5 HEAD yet.**
+
+- Production is still M5v136 `6b396630-13f8-4bf2-9435-87af2d052cc4` from source67022f3; M6v8; M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`; worker unchanged. Git HEAD contains an explicitly UNDEPLOYED language-review/repair implementation. Live M5 is therefore intentionally different from HEAD.
+- Latest real smoke `521324af-81b4-4848-b008-8d1b4616804a` is terminal visuals_failed. M3 10039/M4 10041/M5 10042/M6 10043/M7 10044 PASS; M8 10045 FAIL; coordinator10040 error; M9 not run. Original M5 HTTP400 issue is fixed; this does not mean the complete uk45 case is fixed.
+- **M8 10045 S5 evidence now inspected and saved:** `acceptance/2026-09-25-m8-10045-s5.json`. Both admitted previews contain SSDs, but both are isolated/external rather than installed inside a computer. Vision correctly rejects the stated intent (scores50/40, intent_match=false). All three planned queries omit installation context: `solid state drive storage`, `SSD storage drive`, `solid state drive`. Exact candidates Pexels11216304 / Wikimedia140443322. This is a context mismatch, not an SSD absence or uniqueness collision. Actual asset images have not yet been manually inspected. Do not bypass Vision or declare a retrieval fix without checking the contract/search path.
+- Generic language review catches exact bad10042 and passes four clean-language controls; quotes enum prevents fabricated quotations. One repair is bounded, followed by re-review, and a final review guards post-timing narration before audio storage. **404/404 Node tests PASS** including exact-slot adapter rejection of packed words/extra scenes and preservation of untouched scenes.
+- **Language repair is STILL NOT semantically verified.** Implemented narration-only exact slots for flagged scene IDs; metadata and unflagged scenes preserved. Tried full-scene slots, compact prompt, targeted slots, and no-whitespace pattern. Exact request/response evidence: `acceptance/2026-09-25-language-repair-attempts.json`; input contract: `tests/fixtures/m5-10042-language-repair-context.json`. Pattern variant gets HTTP200 and passes structural validator, but produces filler and drops capacitor from S8. Never call that PASS. Earlier compact variant's second language review correctly rejected S8. No additional smoke was created.
+
+**Next work, in order:**
+1. Resolve language-repair representation/meaning preservation before deployment. Do not keep adding topic/word-specific substitutions or accept formal word-count success as language quality. Evidence indicates rigid per-scene exact slots can drive unnatural/meaning-changing output; assess this against actual requirements before changing any count gate. Preserve total timing, factual/visual meaning and quality gates. Replay saved10042, full validator AND second language review, with no production job required.
+2. Resolve the saved S5 intent/query installation-context mismatch generically, after exact-image/contract inspection. Language repair intentionally does not change visual metadata, so it does not solve S5.
+3. Once verified, zero-active check, back up only modified workflows, publish/verify non-target invariance, then one fresh RAM uk45 E2E with persisted ID and manual final QA. Failed jobs immutable; do not rerun521324af or86f9735d. No claimed factory-wide acceptance from lighthouse en15.
+
+There are no missing credentials in repo and no required evidence left only in chat or /tmp. Historical notes below retain old next steps; this section is authoritative.
+
+## RESUME HERE — 2026-09-25, limit checkpoint
+
+**Factory is NOT accepted. No final MP4 for the user's uk45 case. Read this section before historical checkpoints.**
+
+### Production and latest terminal job
+
+- Production M5 **v136**, activeVersionId `6b396630-13f8-4bf2-9435-87af2d052cc4`, source67022f3; M6v8 `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`. Worker unchanged. Deployment evidence `acceptance/2026-09-25-m5-v136-deploy.json`.
+- Exact user case: RAM, Ukrainian45s, Gemini. Fresh job `521324af-81b4-4848-b008-8d1b4616804a` is now terminal **visuals_failed**. M3 10039, M4 10041, M5 10042, M6 10043, M7 10044 success; coordinator10040 error; M8 **10045** error: `no Gemini-approved unique visual candidate for shot S5-A [line23]`. M9 never ran. Searches117, candidates824 at last count. Do not rerun this job.
+- Original job86f9735d/M5 10033 failed with reproducible Gemini400 INVALID_ARGUMENT due to provider admission of nested bounded-array schema. M5v136 compact schema resolves that; real uk45 M5 now passes. Exact counts/local semantic gates unchanged. Provider admission en15/pl30/uk45/ru60 HTTP200; local16 language/duration regressions verified. These are NOT four E2E passes.
+- Separate confirmed narration defect: M5 10042 initial and repaired text contains Russian forms and filler in Ukrainian. Evidence `acceptance/2026-09-25-uk45-10042-language-gap.json`. This run would fail manual acceptance regardless of M8.
+
+### Current Git source: language review implemented, NOT DEPLOYED
+
+- New generic language/grammar/filler review for en/pl/ru/uk before TTS; one bounded repair followed by another review; exact final narration reviewed again after timing before accepted audio storage. Same Gemini model/credential. Quotes constrained to exact source scene excerpts via enum; findings derive pass/fail. Provider/invalid review fails closed. Accepted narration/audio are not rewritten by the review.
+- Existing transient-retry output routing and original-draft fallback preserved. Initial and no-draft repair errors retain real provider reason.
+- **403/403 Node tests PASS**, all Code nodes compile, graph references valid, diff-check PASS. Added tests `tests/m5-language-review.test.cjs`, actual provider replay fixture `tests/fixtures/m5-10042-language-review.json` (bad uk45 rejected, four correct language controls accepted). Existing audio-reuse test updated to require final review before storage.
+- **DO NOT DEPLOY THIS LANGUAGE CHANGE YET:** live bounded language repair returned200 but local validator correctly rejected `storyboard word-array count mismatch for S8`. Full response/schema in `acceptance/2026-09-25-m5-language-repair-replay.json`. No quality gate was weakened to accept it. Previous weaker reviewer fixed spelling but missed filler; current stricter reviewer catches filler/missing conjunction too.
+
+### Exact next steps
+
+1. Finish bounded language repair so it satisfies existing per-scene lexical counts. Consider the already-used final-repair representation: narration_words object keyed by scene ID with exact-length arrays, preserving the base storyboard metadata, then replay the full existing validator. This is a proposed next implementation, not completed work. Replay saved10042 before any deployment; verify second language review passes too.
+2. Inspect **exact M8 execution10045 S5-A** candidates/Vision evidence. Its contract is `internal solid state drive installed inside computer`, must_show `solid state drive`, narration `Накопичувач дає повільний доступ тут.` Determine whether rejection/retrieval/uniqueness is correct; do not guess, bypass the gate or substitute an unrelated asset. Persist evidence.
+3. Only after fixes verified: zero-active check, backup/publish modified workflow(s) only, exact published-source/non-target checks, one fresh same-user-case uk45 smoke. Save ID before one launch, continue to real MP4 plus manual QA. Never treat the lighthouse en15 as overall acceptance.
+
+All durable evidence is in repository. Useful ephemeral VPS/local files are optional diagnostics only; no credentials saved. Failed jobs remain immutable.
+
+## ACTIVE: uk45 narration quality defect confirmed — 2026-09-25
+
+Current job521324af passed M5 10042/M6 10043/M7 10044 and is collecting visuals. Manual text inspection confirms Russian lexical/spelling forms in requested Ukrainian: “Процессор”, “ячейка”, “енергозависимая”, plus filler. Exact Generate Storyboard and Repair Storyboard outputs prove this predates timing. Existing alphabet/common-word heuristic and prompt-only instruction are insufficient. This run is NOT semantically accepted even if it renders.
+
+Evidence: `acceptance/2026-09-25-uk45-10042-language-gap.json`. NEXT: generic language/fluency review with bounded repair before TTS and final exact-narration verification, same provider/model; preserve all timing/visual gates. Do not patch a RAM/Ukrainian word list. Wait for current job terminal before deployment/new smoke. Production M5v136/M8v72 unchanged.
+
+## Current uk45 verification job — 2026-09-25
+
+Created `521324af-81b4-4848-b008-8d1b4616804a` for the user's exact RAM topic, Ukrainian45s, Gemini visual mode. Active M5v136 `6b396630-13f8-4bf2-9435-87af2d052cc4`, M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`, M6v8. Run accepted exactly once. M3 10039 / M4 10041 / M5 10042 / M6 10043 success; coordinator10040 and M7 10044 running at checkpoint. Original uk45 M5 request failure resolved in production. NEXT: trace this same job through M7–M9 and final-media QA; no other smoke while unresolved. Old failed86f9735d is immutable.
+
+## M5 v136 deployed — 2026-09-25
+
+Published source67022f3 to M5 only: v136 activeVersionId `6b396630-13f8-4bf2-9435-87af2d052cc4`. Zero active executions before deploy; current published nodes/connections match Git; all non-M5 workflow fingerprint unchanged `4cafa3fb1f7bc03f09b0d3b20001cd9e`. Backup/hash in `acceptance/2026-09-25-m5-v136-deploy.json`. Publisher restarted as CLI requires; health OK. M6v8/M8v72/worker unchanged.
+
+Live schema replay initial validators: pl30/uk45 PASS; en15/ru60 correctly reject generic/non-photographic visual requests (semantic repair still required). All four provider requests accepted; do not call this four completed videos. NEXT: one new uk45 RAM smoke on v136, persist ID then run once.
+
+## M5 10033 fix verified in source — 2026-09-25
+
+- Exact uk45 request reproducibly returns Gemini400 INVALID_ARGUMENT with the old nested bounded-array schema. Grouping scene alternatives or using one scene shape while retaining nested array bounds still returns400. Same prompt/model/credential with one scene shape and only the outer scene count returns200. This localizes the failure to provider schema admission; Gemini does not expose the internal limit.
+- Changed the provider schema for ALL durations/languages to one scene shape without nested array bounds. Exact scene/word allocations and existing local shot/query/evidence/semantic gates remain authoritative and unchanged. No topic-specific branch, model switch or local gate relaxation.
+- Initial repair now preserves the original provider error. Second repair preserves it when no usable draft exists, while retaining the already-tested original-draft fallback after a transient repair failure. HTTP retry settings unchanged.
+- Live schema admission: en15/pl30/uk45/ru60 all HTTP200. Offline all16 language/duration contracts plus existing regressions:394/394 PASS. Evidence `acceptance/2026-09-25-m5-10033-schema-replay.json`. This is NOT four E2E passes.
+- Production still M5v135/M8v72. NEXT: zero-active check, backup/publish M5 only, compare published source and non-target versions, then one fresh RAM uk45 job. Failed job86f9735d remains immutable.
+
+## ACTIVE BLOCKER — user uk45 RAM job, 2026-09-25
+
+The en15 lighthouse acceptance below is a single-case result, NOT factory completion. User job `86f9735d-08ec-47e7-bb25-00bce7e4070c` (RAM, Ukrainian,45s) failed in M5 execution `10033`. Exact Generate Storyboard error is Gemini HTTP400 INVALID_ARGUMENT: “Request contains an invalid argument.” Repair handling masks it as “first Gemini output is empty [line53]”. Exact invalid request field is not yet diagnosed; do not claim a language or duration root cause without replay evidence. M8 never ran for this job.
+
+NEXT: inspect this exact M5 request/schema, reproduce the request validation failure, fix generically and verify across supported language/duration contracts. Preserve failed job immutable. Do not use another lighthouse success as factory acceptance. Production unchanged M5v135/M8v72. Evidence: `acceptance/2026-09-25-uk45-10033-failure.json`.
+
+## Latest verified result — 2026-09-25: E2E + visual QA PASS
+
+This section supersedes all historical NEXT instructions below. The current smoke is complete; do not relaunch it or start another smoke automatically.
+
+- Job `4b6a5e27-7409-4075-8699-408e0ef5b16f`, “how does a lighthouse work?”, en15, Gemini. All executions success: M3 `9991`, coordinator `9992`, M4 `9993`, M5 `9994`, M6 `9995`, M7 `9996`, M8 `9997`, M9 `10013`.
+- Active production: M5 **v135** / `f33831c7-34f5-42f4-b634-7ba4ea64b4fc`; M6 **v8** / `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 **v72** / `ecc2d163-8090-4094-947d-03b84747ba40`. M5/M8 published nodes/connections verified equal to Git; publisher health OK. Worker unchanged.
+- Real MP4: 1080×1920, H.264/yuv420p, 30fps, AAC; video14.833333s, audio14.808s, delta25ms; SHA256 `dda23d3858b55a62c09d9d20686e0f15b1f205fd59aef8a61e38c42dc2314dfd`. All machine QA gates pass.
+- Manual actual-MP4 visual QA **5/5 PASS**: S1 coastal tower at1.303856s; S2 interior Fresnel lens at3.504114s; S3 lens with mechanical rotating base at7.355424s; S4 visible lighthouse beams at9.349156s; S5 rocky coast/breaking waves at13.201805s. S3 is a still photograph of apparatus, not observed motion.
+- Audio technical/ASR PASS: exact normalized transcript, coverage1.000; decode successful, mean−25.0dB, peak−6.2dB, no silence ≥0.4s at−45dB. **Subjective listening was not performed.** Do not describe it as listened-to approval.
+- Final regression: Node376/376, alignment DTW7/7, live worker render-fit3/3 PASS. Full manifest, exact selected asset URLs/IDs, per-concept Vision evidence, execution correlation, production versions, ffprobe and audio measurements: `acceptance/2026-09-25-v72-e2e-4b6a5e27.json`.
+- Root cause resolved: old aggregate Vision PASS could contradict missing-required-concept evidence. M8v72 requires complete per-concept checks and computes visibility in code; exact old S3 replay rejected, fresh E2E passed. Prior `b372ee5e-a9a5-45ad-9381-e3bff004d9d9` remains machine-PASS/manual-FAIL, immutable.
+- Review: https://publisher.hodor.com.pl/webhook/factory/review?job_id=4b6a5e27-7409-4075-8699-408e0ef5b16f
+- Continuation: no unresolved code defect from this smoke. If subjective audio approval is required, listen to this existing MP4; do not regenerate. This single en15 result does not certify every topic or earlier PL15/EN30 acceptance.
+
+## Historical checkpoints (superseded by the result above)
+
+## Current v72 smoke — 2026-09-25
+
+Created job `4b6a5e27-7409-4075-8699-408e0ef5b16f`: how does a lighthouse work?, en15, gemini. Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v72 ecc2d163-8090-4094-947d-03b84747ba40. Run accepted exactly once. Exact job correlation: M3 9991 PASS; coordinator9992 RUNNING; M4 9993 PASS; M5 9994 PASS; M6 9995 PASS; M7 9996 RUNNING at checkpoint. Other executions9957–9990 belong to different jobs and must not be treated as this smoke. NEXT: trace this exact job; do not relaunch or create another job while unresolved.
+
+
+## M8 v72 deployed — 2026-09-25
+
+- Published per-concept source26fd735 (verified replay/tests acf4c3d) to M8 only: v72 activeVersionId ecc2d163-8090-4094-947d-03b84747ba40. Current/published source matches Git; non-M8 fingerprint unchanged01742d9a61643a402f66f71ffbe47227. Publisher restarted as required; health OK.
+- Zero active executions before deploy. Backup .backups/m8-before-9955-per-concept.json SHA25640db9b8b7dfec626a669a2e249cd31c1e331d9f765d2ba9fb0fc018671b8ac4d. M5v135/M6v8/worker unchanged.
+- Node376 PASS; exact-image S3 Gemini replay rejects missing beam as required. NEXT: one new en15 Gemini smoke, persist ID before launch, inspect every required-concept result and final MP4. Prior b372ee5e remains machine-PASS/manual-FAIL.
+
+
+## Exact S3 Vision replay PASS for rejection — 2026-09-25
+
+- Revised request26fd735 on the exact9955 S3 preview bytes returned HTTP200 in2.862s, responseId Dwy2aubHN7KexN8PgYXnOQ. Both candidates explicitly mark Fresnel lens=true, light beam=false, intent=false, score50. The previously false-positive Wikimedia153722322 is now rejected. No image replacement, scene relaxation or model change.
+- Saved response and preview SHA256 in acceptance/2026-09-25-m8-9955-per-concept-replay.json. Current parser replay rejects both candidates; full Node376/376 PASS; diff-check PASS. This is regression proof, NOT full-job acceptance.
+- Production still M8v71 / M5v135. NEXT: zero-active/backup M8-only deploy, published-source/non-target verification, then one fresh smoke. Existing machine-pass/manual-FAIL job remains immutable.
+
+
+## M8 per-concept Vision fix — source tested, 2026-09-25
+
+- Provider must return indexed visible/evidence checks for EACH must_show concept. M8 derives aggregate visibility from all checks instead of trusting the model's aggregate boolean. Missing/duplicate/out-of-range/nonboolean/empty checks fail closed. Selected and evaluated-candidate evidence preserves each concept check. Score70, intent, exclusions, uniqueness and three-image limit unchanged.
+- Prompt explicitly distinguishes a visible effect from apparatus capability. Output token cap4096 accommodates bounded per-concept evidence; no extra requests/models/providers. Old aggregate-only9955 response now rejected; missing-beam evidence rejects despite aggregate true/score90.
+- Full Node375/375 PASS; diff-check PASS. Production still M8v71, M5v135. NEXT: bounded exact S3 image-request replay with new schema on existing credential; persist result, then safe M8-only deploy if verified. Existing b372ee5e job remains machine-pass/manual-FAIL.
+
+
+## Manual S3 QA FAIL confirmed — 2026-09-25
+
+- Existing machine-passed job b372ee5e-a9a5-45ad-9381-e3bff004d9d9 is NOT semantically accepted. Actual final MP4 inspected in browser at6.96826s: Fresnel lens rings and lamp bulbs visible, no emitted focused beam. Exact asset Wikimedia153722322, segment3 5340–8400ms. The scene explicitly requires both Fresnel lens and light beam.
+- Gemini9955 gave aggregate must_show_visible=true/PASS90 while its own reason says “lacks a clearly visible focused light beam”. This confirms a false-positive aggregate Vision check, not a retrieval timeout or technical render failure. Saved exact scene contracts/evaluations in acceptance/2026-09-25-m8-9955-per-concept-gap.json.
+- NEXT: replace model-generated aggregate must_show visibility with indexed checks for every required concept; derive aggregate/pass in code, reject missing/duplicate/malformed checks. Preserve the scene requirements, score threshold and uniqueness gate. Replay exact S3 with revised schema before targeted M8 deploy/new smoke.
+- M3–M9 machine success and existing MP4 remain valid technical evidence; do not alter/relabel the immutable run. Manual audio listening not claimed. Active M5v135/M8v71 unchanged; Git source d1707a8.
+
+
+## E2E machine PASS; manual QA pending — 2026-09-25
+
+- Job b372ee5e-a9a5-45ad-9381-e3bff004d9d9 completed all stages: M3 9949 / coordinator9950 / M4 9951 / M5 9952 / M6 9953 / M7 9954 / M8 9955 / M9 9956 success. Real final MP4 exists. Do not rerun or create a new job before finishing this review.
+- MP4 manifest saved acceptance/2026-09-25-b372ee5e-render-manifest.json:1080x1920,H.264,yuv420p,30fps,AAC,14976ms,5 photo segments,all machine gates true; SHA2567c9f837f5eadca55e75aaa06fbfee8471465500c09d0868f711e84551b2d164b. Path /data/renders/b372ee5e-a9a5-45ad-9381-e3bff004d9d9/final.mp4.
+- Review https://publisher.hodor.com.pl/webhook/factory/review?job_id=b372ee5e-a9a5-45ad-9381-e3bff004d9d9 opened in in-app browser. Native player seekable range is0..0; playback completed but click-seeking did not change currentTime. Do not claim intermediate frames inspected from a failed seek.
+- Selected assets: S1 Pexels12069451; S2 Wikimedia76004366; S3 Wikimedia153722322; S4 Pexels36345402; S5 Pexels35767035. S3 Gemini score90/PASS but reason explicitly says a clearly visible focused light beam is absent, despite required light beam. Manual exact S3 frame/asset inspection is next; final semantic acceptance NOT yet claimed. S5 observed final frame is a navigation buoy with a distant ship, consistent with its beacon/coastal-water contract.
+- Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v71 8f894dcd-b852-4388-af7e-2dbafac73cbf. Latest371 Node +7DTW PASS. NEXT: inspect exact S3 plus remaining frames and audio evidence, resolve any confirmed defect, save acceptance and final checks. Never claim manual listening from ASR alone.
+
+
+## Current v135/v71 smoke — 2026-09-24
+
+Created job `b372ee5e-a9a5-45ad-9381-e3bff004d9d9`: how does a lighthouse work?, en15, gemini. Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v71 8f894dcd-b852-4388-af7e-2dbafac73cbf. Creation persisted before launch. NEXT: run once then trace; query actual state before resuming. No other job while unresolved.
+
+
+## M5 v135 / M8 v71 deployed — 2026-09-24
+
+- Source d1707a8 deployed only to M5 and M8. M5v135 activeVersionId f33831c7-34f5-42f4-b634-7ba4ea64b4fc; M8v71 activeVersionId8f894dcd-b852-4388-af7e-2dbafac73cbf. Both current/published sources match Git. Other workflow fingerprint unchanged c0d31621cc8a6462fb91459a29090869. Publisher restarted once as required, health OK.
+- Zero active executions before deploy. Backups: .backups/m5-before-9948-contract.json SHA256b1731c67a4dfae19cf4de53440a7fe42c9006e12a29cbc63ab27823fdfabef7b; .backups/m8-before-9948-contract.json SHA256cd71b7691227d1884766668a2d203ab302363bd5f0046b4723fb0d499a28250c. M6v8/worker unchanged.
+- Validation371 Node +7 DTW PASS. NEXT: one fresh en15 Gemini smoke; persist ID before launch. No successful MP4 acceptance yet.
+
+
+## M8 9948 intent-subject / M5 ambient exclusion fix — source verified, 2026-09-24
+
+- All three M8 request builders now preserve a simple explicitly stated leading subject from visual_intent when absent from must_show. It feeds the existing domain/context query and metadata gate. Exact S4 adds ship to all requests; exact S5 adds lighthouse, including the broad fallback. Planned query provenance remains unchanged. No topic/asset mappings; ambiguous action/context is not inferred from the topic.
+- Saved Pexels replay confirms exact rock-only37438538 no longer passes the lighthouse-intent metadata gate. This is not a claim of a new Vision-approved selection. Requests/responses saved in tests/fixtures/m8-9948-*.json; no headers/credentials.
+- M5 extends its existing diffuse-context normalizer to bare darkness/brightness/shadow(s). It preserves concrete unlit lamp, daytime scene, night scene, broken glass constraints. Generation + both repair prompts match. Existing visual_intent and Vision criteria remain unchanged.
+- Node371/371 PASS; DTW7/7 PASS; diff-check PASS. Generic train/platform and already represented subject regressions prevent topic-specific behavior and added decorative requirements.
+- Not deployed yet: M5v134 / M8v70. NEXT: zero-active, backup both changed workflows, deploy only M5+M8, exact-source/non-target verification, then one new smoke. Latest failed job566f4716-888e-46ab-a12d-810c9742fcd2 remains immutable.
+
+
+## M8 9948 terminal semantic evidence — 2026-09-24
+
+- Job566f4716-888e-46ab-a12d-810c9742fcd2 terminal at M8 9948. M3 9942/M4 9944/M5 9945/M6 9946/M7 9947 PASS; no M9. 45 searches,316 candidates,0 committed selections. Do not relaunch.
+- M8 v70 loop parsed all five scenes correctly. S1 approved3; S2 approved0; S3 approved1; S4 approved0; S5 approved0. Thus provider recovery and five-scene loop proven; semantic acceptance still FAIL.
+- Saved exact sets/evaluations in acceptance/2026-09-24-m8-9948-vision-evidence.json. S4 intent requires a ship near a lighthouse, but all planned queries omit ship and must_show only navigational beacon. S5 intent requires a lighthouse near rocks; must_show only coastal rocks; generic rock fallbacks outrank the explicit subject. S2 forbids generic darkness, excluding a lamp against a dark background; two other lamps were correctly rejected as unlit.
+- NEXT: carry explicitly stated intent subject into M8 query/context relevance when absent from must_show, generically without topic mappings; preserve full intent/Vision gates. Extend M5 diffuse-context exclusion rule for bare lighting/background states, preserving explicit conflicting scene states. Replay saved contracts/provider evidence and full regressions before targeted deploy.
+- Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Latest audio14736ms passed; no MP4 acceptance yet.
+
+
+## Current provider-recovery smoke — 2026-09-24
+
+Created job `566f4716-888e-46ab-a12d-810c9742fcd2`: how does a lighthouse work?, en15, gemini. Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Run accepted exactly once. M3 9942 PASS; coordinator9943 RUNNING; M4 9944 PASS; M5 9945 PASS; M6 9946 PASS; M7 9947 PASS; M8 9948 RUNNING. Searches45/candidates316/selections0 at checkpoint. Voiceover0b37edaa-526a-425b-a07c-b7c2a5d7375c,14736ms,SHA256780cdf92a837331f61182cd0a9c5aa29f13827d5c60b30b89b6422d653c1479b. NEXT: trace this exact job; query actual state before resuming. Do not relaunch or create another job while unresolved.
+
+
+## Provider recovery confirmed — 2026-09-24
+
+- One direct diagnostic request with exact saved M8 9940 S1-A payload, same existing Gemini credential/model, returned HTTP200 in1.358s. Payload41569bytes, responseId B4m1aq6CNsXfnsEPmbKQuQk, three evaluations scores90/95/90, all required booleans true. Usage1284tokens. No credentials or image payload persisted to repository; evidence acceptance/2026-09-24-m8-9940-direct-recovery.json.
+- This establishes that the exact payload is valid and provider responds now. It does NOT turn failed job f868467c-6d25-4db1-ad49-9bcd28654d9d into a passing run or prove full pipeline recovery.
+- Source/production unchanged: M5 v134 / M6 v8 / M8 v70. NEXT: one fresh controlled smoke, persist ID before launch. No source change/deploy needed for a recovered transient provider outage.
+
+
+## M8 9940 terminal provider failure — 2026-09-24
+
+- Job f868467c-6d25-4db1-ad49-9bcd28654d9d terminal: M3 9934 / M4 9936 / M5 9937 / M6 9938 / M7 9939 PASS; M8 9940 ERROR; no M9. Failed job remains immutable.
+- New single-scene loop reached Gemini request; first scene exhausted bounded HTTP retry and parsing failed with exact “The connection was aborted, perhaps the server is offline”. Collector did not execute on partial results: previous count-mismatch masking is fixed. HTTP node total time147434ms. No scene Vision PASS claimed.
+- VPS can reach Google API normally: unauthenticated models request returned expected403 in0.10s. This rules out a general DNS/TLS outage, not a model-specific overload. Prior M8 9932 had three explicit high-demand503 failures plus one aborted connection.
+- Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa; unchanged worker. Full Node363/native loop PASS.
+- NEXT: diagnose provider availability with a bounded direct request using the existing credential before another costly full smoke. Do not change model, weaken Vision, or repeatedly launch jobs during the same provider outage. No successful MP4 yet.
+
+
+## Current v70 smoke — 2026-09-24
+
+Created job `f868467c-6d25-4db1-ad49-9bcd28654d9d`: how does a lighthouse work?, en15, gemini. Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Run accepted exactly once. M3 9934 PASS; coordinator 9935 RUNNING; M4 9936 PASS; M5 9937 PASS; M6 9938 PASS; M7 9939 PASS; M8 9940 RUNNING. M5 passed probe1; final word-slot branch not exercised. Script run 15d2da37-9e44-485c-a4ca-d7719272e93c; TTS ledgers1076–1078. Voiceover 9e4391e0-2c75-4a1b-92a3-21a788282f3b, 15288ms, SHA256 37844c7f5f69d2ed23ce404dfb743d7c775577635daec6ec906080d284548109. NEXT: trace this exact job; query actual state before resuming. Do not relaunch or create another job while unresolved.
+
+
+## M8 v70 deployed — 2026-09-24
+
+- Source 7e189fc published only to M8: v70 activeVersionId `abc02f16-0754-49cd-8d32-1adbe439e0aa`. Current/published source matches Git; non-M8 fingerprint unchanged 5d4b9927849111bd94e5f29b09bc75dc. Publisher restarted as CLI required; health OK.
+- Zero active executions before deployment. Backup `.backups/m8-before-9932-scene-retry.json`, SHA256 30bba1b6d5af7bd89fce40618073f072921e0b2a84b0c6306994bdf3b9689b82. M5 v134 / M6 v8 and worker unchanged.
+- Full Node 363 PASS and native n8n loop runtime PASS. NEXT: one fresh en15 Gemini smoke, persist ID before launch and trace it. No successful MP4 acceptance yet.
+
+
+## M8 9932 transient retry — source verified, 2026-09-24
+
+- Gemini Vision HTTP now surfaces non-2xx errors (`neverError=false`) and has bounded 5-attempt retry, 5000ms delay. Same provider/model/credential, <=3 images per scene, unchanged parser and Vision gates.
+- Installed n8n engine checks only first returned item's error for retry, and caps waitBetweenTries at 5000ms. Therefore added native splitInBatches v3, batchSize1: each scene independently requests/retries/parses; success loops to next scene; done collects all parsed results. Exhausted errors go to existing failure branch, avoiding misleading partial-collection count errors. No reset or retry cycle was added around the loop.
+- Full Node 363/363 PASS; DTW 7/7 last PASS; worker unchanged. Installed native loop runtime regression PASS (five single-scene iterations, exact five-result collection), without provider calls or importing test workflows. Regression source tests/n8n-gemini-loop-runtime.cjs.
+- Not deployed yet. M5 v134 / M6 v8 / M8 v69 unchanged. NEXT: zero-active/backup, deploy only M8, verify published source + non-M8 fingerprint, then one fresh smoke. Latest failed job 950862ca-2b65-4a6b-8603-a355980a36fb remains immutable.
+
+
+## v134 smoke terminal at M8 9932 — 2026-09-24
+
+- Job 950862ca-2b65-4a6b-8603-a355980a36fb terminal: M3 9924 PASS, M4 9926 PASS, M5 9928 PASS, M6 9930 PASS, M7 9931 PASS, M8 9932 ERROR; no M9. Do not relaunch.
+- M8 completed 45 searches / 327 candidates / 0 committed selections. Vision S3-A returned two evaluations: candidate1 PASS95; candidate2 FAIL30 because exterior coastline violated its explicit constraint. Other four scenes failed provider calls: three high-demand errors, one connection aborted. Collector reported generic scene-validation-count mismatch; this is not evidence of four semantic rejections.
+- Confirmed configuration gap: Gemini Validate Visuals has no retryOnFail and neverError=true, so transient provider responses reach parsing without retry. M5 already has bounded transient retry. NEXT: implement bounded M8 transient request retries with accurate failure propagation, regression/full tests, targeted M8 deployment, then one fresh job.
+- Audio passed correctly: selected M6 voiceover 60ae4c5f-0ca5-49a5-bff0-56d78685e717 is 14304ms, SHA256 b296bfab5c236c7c44c66297bd6a7998f57654acc4b72e1f86eacbcbb701b31c. M5 diagnostic 13416ms is the median, NOT the selected artifact duration. No duration-gate defect established.
+- Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v69 d073d7d8-3490-468a-bb6a-79771d367059. Worker unchanged. No MP4 acceptance yet.
+
+
+## Current v134 smoke — 2026-09-24
+
+Created job `950862ca-2b65-4a6b-8603-a355980a36fb`: how does a lighthouse work?, en15, gemini. M5 v134 `a03f1e50-e829-49e7-836a-dc59c1dd192d`; M6 v8; M8 v69. Run accepted exactly once. M3 9924 PASS; coordinator 9925 RUNNING; M4 9926 PASS; M5 9928 PASS; M6 9930 PASS; M7 9931 PASS; M8 9932 RUNNING. M5 passed on probe3; new final word-slot branch was not exercised in this job. Script run 1d6765ea-5c03-4d2e-8047-7df70f667292; TTS ledgers 1070–1075 committed. NEXT: trace this exact job through remaining stages; query actual state before resuming. Do not relaunch it or create another job while unresolved.
+
+
+## M5 v134 deployed — 2026-09-24
+
+- Source 7770993 published to M5 only: v134 activeVersionId `a03f1e50-e829-49e7-836a-dc59c1dd192d`. Current nodes/connections/settings and published nodes/connections match Git. Non-M5 fingerprint unchanged c6d5e86eab4558051e8b77d36bbfd7da. Publisher restarted as CLI required; health OK.
+- Zero active executions before deploy; backup `.backups/m5-before-9923-word-slots.json`, SHA256 d64a419f15c7015cf344fb1da2a010ac7373cef1033c0710520d0b6f1a14075e. M6 v8 / M8 v69 and worker unchanged.
+- Full regression 361 Node + 7 DTW PASS; no new MP4 acceptance yet. NEXT: one fresh Gemini en15 smoke, persist ID before run, then trace exact job to terminal.
+
+
+## M5 9923 correction — source verified, 2026-09-24
+
+- The two existing final measured exact-count calls now emit `narration_words` keyed by scene, with schema-enforced per-scene array sizes. Adapters reject missing slots, embedded sentences and punctuation-only padding, then join words before unchanged semantic/hybrid/timing checks. No added calls or retries.
+- Existing single compliance branch also handles malformed word slots. Its diagnostics can read the new representation. Known failing narration comparison now ignores punctuation/case, so a comma-only edit cannot consume another probe.
+- Regression covers exact 9923 41-word comma-only draft and measured 13944ms, structural target [9,9,9,8,8], valid string reconstruction, invalid slots and bounded routing. Full Node 361/361 PASS; DTW 7/7 PASS; diff-check PASS. Worker/render unchanged (last render-fit 3/3 PASS).
+- Not deployed yet: active M5 v133 872d0329-8c5d-4302-aaf1-8b041388c5e8; M6 v8; M8 v69. NEXT: zero-active/backup M5-only deployment, exact published-source/other-workflow verification, one fresh smoke. Failed job a872e916-6143-44c6-b68c-515860415f03 remains immutable.
+
+
+## M5 9923 terminal — 2026-09-24
+
+- Job `a872e916-6143-44c6-b68c-515860415f03` failed: M3 9920 PASS, coordinator 9921 ERROR, M4 9922 PASS, M5 9923 ERROR; no M6–M9. Do not relaunch.
+- M5 v133 `872d0329-8c5d-4302-aaf1-8b041388c5e8`; M6 v8; M8 v69 `d073d7d8-3490-468a-bb6a-79771d367059` unchanged.
+- Initial structural word-array contract worked: 38 words, probe 12048ms. Early timing drafts added unsupported descriptive terms and were rejected by existing semantic guards.
+- Later exact-count repairs still use unconstrained strings: requested 43 words ([9,9,9,8,8]), returned 41. Probe4 stayed 13944ms. Final retry returned original38 and hybrid/no-op guard rejected it; compliance changed only a comma, retained41 and reached probe5 12528/12828/13128ms. Final target 15000±800ms failed.
+- Confirmed defects: late provider representation does not enforce its count contract; punctuation-only changes bypass the no-op guard. Neither duration nor semantic tolerance should change.
+- NEXT: structural count contract for existing late exact-count repairs plus lexical no-op detection; saved-response regressions, full tests, M5-only safe deploy, then exactly one fresh smoke. No successful MP4/visual acceptance yet.
+
+
+## Current v133 smoke — 2026-09-24
+
+Created job a872e916-6143-44c6-b68c-515860415f03 (how does a lighthouse work?, en15, gemini). M5 v133 active 872d0329-8c5d-4302-aaf1-8b041388c5e8; M6 v8; M8 v69. Creation checkpoint precedes run request. NEXT: launch once and trace this exact job; query live state before resuming. No additional jobs while unresolved.
+
+## M5 v133 word-array contract deployed — 2026-09-24
+
+- Source a0f12fa deployed only to M5: v133 activeVersionId 872d0329-8c5d-4302-aaf1-8b041388c5e8. Published/current source matches Git; non-M5 fingerprint unchanged c6d5e86eab4558051e8b77d36bbfd7da. Publisher healthy after required restart.
+- Zero active executions before deployment. VPS backup .backups/m5-before-9919-word-arrays.json SHA256 36ec22b3f0c3c5824db35ac416582057812e46fd921bd721c5763eaf8d9d6c2a.
+- M6 v8 and M8 v69 unchanged. Validation 355 Node + 7 DTW PASS; render-fit 3/3 on unchanged worker. NEXT: one controlled Gemini en15 lighthouse smoke, persist its ID before run and inspect exact generation/QA results. No successful E2E claimed yet.
+
+## M5 word-array output contract — source verified, 2026-09-24
+
+- Changed provider representation rather than adding another count prompt/retry: each scene emits narration_words with exactly its schema-allocated item count (en15 target38 => [8,8,8,7,7]). Each item must be one whitespace-free lexical word with attached punctuation.
+- Provider schema alternatives bind each scene_id to its exact cardinality. Three existing validators deterministically join arrays into the established narration strings, then execute unchanged evidence, language, semantic, word-range, scene and pacing checks. Missing words, embedded sentences, and punctuation-only padding fail closed. INSUFFICIENT_EVIDENCE remains a schema alternative.
+- Only initial storyboard generation/its two existing repairs use this representation. DB contract, timing-repair interfaces, narration semantics, TTS and quality thresholds are unchanged.
+- Regression: all three adapters preserve an existing valid production narration exactly and reject malformed token arrays; schema allocates the calibrated target exactly. Node 355/355 PASS; DTW 7/7 PASS; render-fit 3/3 passed earlier this turn on unchanged worker; diff-check PASS.
+- Current production still M5 v132 active 35e707f8-53e3-41c2-8aeb-cea85730701a / M8 v69. Job 959ccc58-868c-439f-8cb1-5bdc03b37158 terminal M5 9919.
+- NEXT: commit/push, idle/backup M5-only deploy, exact source/non-M5 verification, then one Gemini smoke. Runtime provider-schema acceptance and completed smoke not yet claimed.
+
+## v132 smoke terminal / change of repair strategy — 2026-09-24
+
+- Job 959ccc58-868c-439f-8cb1-5bdc03b37158 terminal script_failed: M3 9916 PASS, M4 9918 PASS, M5 9919 ERROR, script run 61fa6ad7-e6c6-4cdd-8814-45f818df96d7. Exact final 34 words vs required 36-42. No TTS/M6-M9.
+- Schema requests returned HTTP 200; structural fields are now present. Remaining failure is word-count/segmentation compliance: initial long scenes were repaired by shortening the narration; second repair ended at 34 total words despite explicit total diagnostics.
+- Two prompt/string-count attempts did not solve this class. NEXT strategy: schema-constrained per-scene word arrays with exact dynamically allocated cardinalities, converted deterministically to existing narration strings before the unchanged semantic/word/duration validators. No invented padding, relaxed bounds or extra retries.
+- Active production M5 v132 35e707f8-53e3-41c2-8aeb-cea85730701a / M8 v69 d073d7d8-3490-468a-bb6a-79771d367059. No active smoke; do not relaunch the failed job.
+
+## Current v132 smoke — 2026-09-24
+
+Created job 959ccc58-868c-439f-8cb1-5bdc03b37158 (how does a lighthouse work?, en, 15s, gemini). M5 v132 active 35e707f8-53e3-41c2-8aeb-cea85730701a; M6 v8; M8 v69. Creation checkpoint precedes run request. NEXT: launch once and trace this exact job; query actual state before resuming, do not create another job while unresolved.
+
+## M5 v132 deployed — 2026-09-24
+
+- Source 56d6d1d published only to M5 as v132 activeVersionId 35e707f8-53e3-41c2-8aeb-cea85730701a. Published nodes/connections and current nodes/connections/settings match Git. Other workflows unchanged (fingerprint c6d5e86eab4558051e8b77d36bbfd7da); publisher health OK after required restart.
+- Zero active executions before deployment. VPS backup .backups/m5-before-9910-schema.json SHA256 82e663cf17cdcbfd50d6e6c930db17766313311d4a09922418dc4d68a6891cc5.
+- M6 v8 / M8 v69 d073d7d8-3490-468a-bb6a-79771d367059 unchanged. Full validation 348 Node, 7 DTW, 3 render-fit PASS.
+- NEXT: one controlled Gemini en15 lighthouse smoke. Previous job debbf9ba-f15b-471f-8e96-c0b198e70b77 is terminal, not a resumable active job.
+
+## M5 9910 structured-output/repair fix — verified source, 2026-09-24
+
+- Saved output confirms preferred_media_type was MISSING in all five shots in both generation and first repair; only second repair added photo, leaving 34 total words. This consumed the bounded repairs on structural omissions while the total-count violation stayed hidden.
+- M5 initial and both repair HTTP requests now send responseJsonSchema, using the same supported API field already active in M8. Schema requires storyboard fields, exact scene/shot/query counts, photo-only enum and existing array bounds. The alternative INSUFFICIENT_EVIDENCE response remains supported. Semantic, word-count and duration validators are unchanged.
+- Both repair builders additionally report total words, requested min/max, target, delta and validity from ALL scene narrations; 9910 explicitly reports 34 / 36-42, target 38, delta +4, invalid even when the first reported error is missing media type.
+- Saved fixture tests/fixtures/m5-9910-storyboard-repair.json. Regression 3/3 PASS; full Node 348/348 PASS; DTW 7/7 PASS; render-fit 3/3 PASS in existing media-worker (local FFmpeg unavailable); diff-check PASS.
+- Evidence: acceptance/2026-09-24-m5-9910-structured-repair.json. No change to providers, retries, quality gates or current M8.
+- NOT deployed yet: M5 v131 active 0b4ba2f6-708d-4fe6-a194-13b2002fb338; M8 v69 d073d7d8-3490-468a-bb6a-79771d367059. NEXT: idle check/backup, deploy only M5, compare published source and other-workflow fingerprint, then one controlled Gemini smoke.
+
+## Resume 2026-09-24 — M5 9910 terminal confirmed
+
+- Refreshed clean main to 3a9096157b3439752d4c3a5032926f544ed849c3. Actual production confirmed M5 v131 0b4ba2f6-708d-4fe6-a194-13b2002fb338, M6 v8 0bcabe39-ae90-42fe-842b-8a56ad238709, M8 v69 d073d7d8-3490-468a-bb6a-79771d367059.
+- Existing job debbf9ba-f15b-471f-8e96-c0b198e70b77 is terminal script_failed; M5 execution 9910 ERROR, script_run a62a18cb-c496-4533-80e0-af7049597887. Never relaunch this job.
+- Exact final failure: “34, required 36-42 [line 860]”. No M6-M9. Initial scene exceeded 10 words; first repair corrected that but retained invalid preferred_media_type; second repair fixed that while preserving the underfilled 34-word narration.
+- Repair diagnostics currently expose per-scene counts but not total requested-range violations hidden behind first-error validation. M5 HTTP requests enforce JSON MIME only, unlike M8's explicit responseJsonSchema, so invalid photo enum also consumes bounded repairs.
+- NEXT: add complete total-count diagnostics and schema-constrained storyboard structure/photo enum to initial+repair requests, preserve INSUFFICIENT_EVIDENCE branch and all validators, regression-test saved 9910 data, then full suite/targeted M5 deploy/one smoke. No current active job; no new job created during refresh.
+
+## Current M8 v68 smoke — 2026-09-23
+
+Job ec85da0d-3947-4b02-b29d-a666094e2009 created (en15 lighthouse, gemini). M5 v126 / M6 v8 / M8 v68 active 4f9709cb-b819-417f-8991-fc2c3a4eaebc; worker image 4118f3f06c98. Run accepted. M3 9810 PASS; coordinator 9811; M4 9812 PASS; M5 9813 PASS; M6 9814 PASS; M7 9815 PASS; M8 9816 RUNNING at this checkpoint. NEXT: trace M8 9816 to terminal and inspect Gemini evidence; do not launch this job again or create another job while unresolved.
+
+## M8 v68 deployed — 2026-09-23
+
+- Published source be0db87 only to M8: v68 activeVersionId 4f9709cb-b819-417f-8991-fc2c3a4eaebc. Published/current source verified equal Git; non-M8 workflow fingerprint unchanged eab3729c9a1c9f3a5e7bb0a870f96473.
+- Zero active executions before deploy. VPS backup /opt/ai-short-form-content-factory/.backups/m8-before-9809-setting.json SHA256 c26f166c7f883f29e00bcb58cc24a472d41ae36c46c2c2d90e92d9bdc05aef2d. Only publisher restarted; health OK.
+- M5 v126 / M6 v8 and worker image 4118f3f06c98 unchanged. Tests 336 Node + 7 Python PASS. NEXT: one controlled Gemini en15 lighthouse smoke; do not claim new assets validated until its actual Vision result.
+
+## M8 explicit setting fix — source verified, 2026-09-23
+
+- Actual 9809 S2/S3 request contexts had empty domain_context_terms despite explicit lighthouse settings. Request builders now derive explicitly stated locations (inside/within/interior-of/room-of/hall-of) for any subject and corroborate terms against existing planned queries. Original query provenance remains unchanged; provider queries retain the setting.
+- No lighthouse-specific mapping or expanded subject whitelist. Regression also verifies hospital/microscope setting and excludes unsupported decoration terms.
+- Replayed saved Pexels responses: exact household assets 3324439, 18109261, 15664927 now receive metadata rejection rather than accepted ranking. Gemini soft-review policy remains unchanged: metadata rejection alone is not claimed as permanent exclusion from Vision.
+- Seven focused tests PASS; full Node suite 336/336 PASS. Saved public provider fixture tests/fixtures/m8-9809-pexels-context.json contains no headers/credentials. Existing Python DTW 7/7 PASS.
+- NOT deployed yet. Active M8 v67 21599d8f-f0c9-48c8-af86-ba9e297cdd5a, M5 v126, M6 v8. Latest job 360aba8c-ce92-499e-8f01-504726d352dd terminal at M8 9809. NEXT: backup/verify idle, deploy only tested M8, verify exact source and run one controlled Gemini smoke. A valid replacement asset is not yet proven.
+
+## Gemini smoke 9809 — all five scenes visually reviewed, 2026-09-23
+
+- Job 360aba8c-ce92-499e-8f01-504726d352dd terminal visual failure. M4 9805, M5 9806, M6 9807, M7 9808 PASS; M8 9809 FAIL; no M9. Visual run 52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a: 45 searches, 322 candidates, 0 committed selections.
+- Gemini actually reviewed 3 images for EACH of 5 scenes (15 images total). Approved counts S1=1, S2=0, S3=0, S4=3, S5=3. First failure “no Gemini-approved unique visual candidate for shot S2-A”. Exact assets, preview hashes and reasons saved in acceptance/2026-09-23-m8-9809-gemini-evidence.json.
+- S2 top candidates were household pipe lamp, defective unlit bulb, and bulb icon; none showed a glowing lamp inside a lighthouse lantern room. S3 top candidates were household floor/desk lamps and an exterior lamp; none satisfied lighthouse interior machinery. Gemini rejected them; do not weaken that gate.
+- M7 this run used standard alignment (DTW not needed): audio 15336ms, global coverage 1.0, lexical end 15000ms, overrun 0. The DTW-specific proof remains the exact-file replay of 9802.
+- NEXT: fix pre-Vision retrieval/context ranking for explicitly requested settings. M8 currently scopes domain extraction to a head whitelist; bulb/fixture fail to carry lighthouse context into broad searches/metadata gates. Derive explicitly stated setting from scene intent plus planned query evidence, not a lighthouse-specific rule. Replay saved S2/S3 requests/candidates before any new job.
+- Active production remains M5 v126 205d2b88-026c-4597-815a-74eeadcd7a9f / M6 v8 0bcabe39-ae90-42fe-842b-8a56ad238709 / M8 v67 21599d8f-f0c9-48c8-af86-ba9e297cdd5a; media-worker image 4118f3f06c98. No visual acceptance yet.
+
+## Post-DTW smoke in M8 — 2026-09-23
+
+Job 360aba8c-ce92-499e-8f01-504726d352dd: M3 9803 PASS; coordinator 9804; M4 9805 PASS; M5 9806 PASS; M6 9807 PASS; M7 9808 PASS; M8 9809 RUNNING at this checkpoint. Production M5 v126 / M6 v8 / M8 v67; worker image 4118f3f06c98. NEXT: trace existing M8 9809 to terminal and inspect actual Gemini evidence. Do not create another job. M7 success alone does not prove that the new DTW branch was exercised; inspect saved alignment metadata before claiming that.
+
+## Current post-DTW smoke — 2026-09-23
+
+Job 360aba8c-ce92-499e-8f01-504726d352dd created: en15 lighthouse, visual_validation_mode gemini. Media-worker health verified healthy; image 4118f3f06c98; M5 v126 / M6 v8 / M8 v67. Creation persisted before run request. NEXT: run this exact job once and trace it; query actual state before resuming. No additional jobs while unresolved.
+
+## DTW media-worker deployed — 2026-09-23
+
+- Deployed source 1f45ad3 only to shorts-v2 media-worker. Live /worker/server.py equals Git; SHA256 e672e125a10115581acf748bfa8477d9a84d1eac253566f5d8e0191961099da1. New image sha256:4118f3f06c98cb37cf1985bfb97b56d1c1ec7088d8e7c76726d7e209e2393ec2.
+- Zero active n8n executions before deploy. Backup /opt/ai-short-form-content-factory/.backups/media-worker-before-9802-dtw.py SHA256 a3d07f116c32f251bc6191cb7452a74a53c89d052ad7c53bf9812b965ee14714; previous image sha256:64e96a07a1d5438cbe8ffea28c815a36e4be1480ad3ded270c7839e75ab4d0d8 retained for rollback.
+- Container running, restart count 0. M5 v126 / M6 v8 / M8 v67 unchanged. Exact-audio replay already passed; 7 Python + 329 Node regressions passed.
+- NEXT: verify healthy, then create exactly one fresh Gemini en15 lighthouse smoke and trace it. Failed prior job remains immutable. No complete-pipeline acceptance yet.
+
+## M7 9802 exact-audio replay PASS — source fix, 2026-09-23
+
+- Artifact integrity confirmed: voiceover 796f8592-7a94-4de4-bbb6-1d26fc3ba070, 14736ms, SHA256 35a8fa2dd2b3e1f6e2f68dc2038867b7599508857cbc4c15bb829e89aa9f174a. No M5/M6 artifact mismatch. Default Whisper final lexical end is 16350ms (1614ms overrun).
+- Diagnostic word segmentation (-ml 1) did not fix the default offsets. DTW on the same installed model/audio produced in-range token emission points; default offsets remain wrong even with DTW enabled, so simply adding a CLI flag is insufficient.
+- Source fix: one DTW fallback only for the specific terminal-overrun failure. Convert monotonic DTW emission points (10ms units) into contiguous token intervals ending at each point; preserve heuristic offsets and original-pass evidence. Reject missing/nonmonotonic/out-of-audio DTW values and changed recognized transcript. Existing lexical-coverage and scene-timing gates remain mandatory. No timestamp scaling, forced clipping, model/provider switch, or job mutation.
+- Actual candidate-code replay inside the current media-worker container on the exact production MP3 PASS: 5 scenes, global coverage 0.989899, S3 coverage 0.947368, lexical end 14380ms, overrun 0. ASR still recognizes Fresnel as Fresno; this passes existing coverage policy, not exact transcription. Manual audio/visual acceptance remains pending.
+- Evidence: acceptance/2026-09-23-m7-9802-dtw-replay.json and tracked tests/fixtures/m7-9802-alignment.json. Python DTW regression 7/7 PASS; Node 329/329 PASS; py_compile/diff-check PASS.
+- DTW interpretation source: https://github.com/ggml-org/whisper.cpp/blob/master/include/whisper.h (t_dtw token emission point) and src/whisper.cpp (10ms units). Installed CLI supports -dtw small -nfa; same pinned ggml-small model used.
+- NOT deployed yet. Production M5 v126 active 205d2b88-026c-4597-815a-74eeadcd7a9f / M6 v8 / M8 v67 unchanged. Job 7b5ed96e-36f0-4b19-84b9-bebcf5520138 remains failed at M7 9802.
+- NEXT: back up current media-worker source/image, verify no active runs, deploy only media-worker and verify source/health. Then one fresh controlled Gemini smoke; do not mutate/restart the failed job.
+
+## v126 smoke terminal — M5/M6 PASS, M7 FAIL, 2026-09-23
+
+- Job 7b5ed96e-36f0-4b19-84b9-bebcf5520138: M3 9797 PASS; coordinator 9798; M4 9799 PASS; M5 9800 PASS on v126 205d2b88-026c-4597-815a-74eeadcd7a9f; M6 9801 PASS; M7 9802 ERROR. No M8/M9.
+- M5 produced a 35-word repaired narration. Probe 3 measured 15288ms; stability measurements 14976/14736ms. This run passed via timing probe 3; it did not exercise the new final measured compliance branch.
+- M6 run d0169f12-e797-4689-9379-629f259a65c1 reused M5 TTS usage key m5-tts-stability-b:f32ce056-73af-4d53-a856-180c94b99c66:3, ledger 1000. Voiceover ID 796f8592-7a94-4de4-bbb6-1d26fc3ba070.
+- M7 alignment run 13d76b67-193b-4554-8e3f-31bca8a2d1c4 failed: “whisper lexical timing exceeds audio duration beyond tolerance: 1614ms”.
+- NEXT: inspect exact stored voiceover artifact/duration and Whisper timing evidence to distinguish artifact mismatch from aligner overrun. Do not weaken tolerance or launch another full job. Production M5 v126 / M6 v8 / M8 v67 unchanged; 329 tests last PASS.
+
+## Current smoke — M5 v126, 2026-09-23
+
+Created job 7b5ed96e-36f0-4b19-84b9-bebcf5520138 (en15 lighthouse, gemini). Run this exact job once, then trace terminal status. Creation was persisted before /factory/run: check stage/execution state before resuming. M5 active 205d2b88-026c-4597-815a-74eeadcd7a9f; M6 v8; M8 v67. Do not create another job while this one is unresolved.
+
+## M5 v126 deployed — 2026-09-23
+
+- Published c264500 to M5 only: v126 activeVersionId 205d2b88-026c-4597-815a-74eeadcd7a9f. Published nodes/connections and current nodes/connections/settings verified equal Git. Other workflows unchanged; publisher health OK after required restart.
+- Zero active executions before deploy. VPS backup /opt/ai-short-form-content-factory/.backups/m5-before-9796-fix-20260923-192313.json SHA256 709f498f7619389745b98cebdfb9d6087fb072cee0c69d3c7c0ed72dd9f9625f.
+- Full tests 329/329 PASS. M6 v8 / M8 v67 unchanged. NEXT: exactly one controlled Gemini en15 lighthouse smoke; preserve job ID immediately, then trace to terminal. No passing smoke claimed yet.
+
+## Execution 9796 repair diagnostics — source verified, 2026-09-23
+
+- Both storyboard repair prompts now recompute every scene's word count from the candidate JSON and include scene_id, actual count, min/max, valid flag. Explicitly request repair of every invalid count even if the first error concerned metadata. This preserves scene identity when n8n strips the exception prefix and exposes latent violations before the next bounded retry.
+- Regression reproduces S5=11, max=10 from execution 9796 in both repair builders. Full suite 329/329 PASS; git diff --check PASS. No extra retries, model changes, or relaxed gates.
+- Production still M5 v125 / 9d92b100-7739-4eed-9bf4-093395c3db32; latest job 03ca6223-29b4-4782-95b3-e968a5ced556 failed M5 9796 before TTS. NEXT: deploy tested M5 repair-diagnostics change with backup/zero-active/exact-source verification, then one controlled smoke.
+
+## Smoke 03ca6223 — terminal result, 2026-09-23
+
+- Job 03ca6223-29b4-4782-95b3-e968a5ced556 is script_failed. M3 9793 PASS, coordinator 9794 ERROR, M4 9795 PASS, M5 9796 ERROR on active v125 / 9d92b100-7739-4eed-9bf4-093395c3db32. Script run 6ec11461-fd82-4660-869c-680964c320f7.
+- Initial storyboard failed S1-A preferred_media_type; first repair then exposed S5 length 11 words against maximum 10. Both repairs retained identical narrations. n8n reduced the second validator error to “11, maximum 10 [line 499]”, losing scene identity/context.
+- The smoke never reached timing correction, M6, or M8, so it does not validate the v125 timing routing fix end-to-end.
+- NEXT: make both storyboard repair prompts report all per-scene word-count violations from the saved candidate, with exact scene IDs and bounds; reproduce execution 9796. Do not just create another job or weaken the 10-word scene bound. Production remains v125; no further deployment yet.
+
+## Active smoke job — 2026-09-23
+
+- Created job 03ca6223-29b4-4782-95b3-e968a5ced556 via M3: topic how does a lighthouse work?, en, 15s, visual_validation_mode gemini.
+- Target production M5 v125 / 9d92b100-7739-4eed-9bf4-093395c3db32, M6 v8, M8 v67.
+- NEXT: launch/trace this exact job via /factory/run and stored executions. Do not create another job. This creation checkpoint precedes the run request; query job/stage state before resuming to avoid duplicate launch.
+
+## M5 v125 deployed — 2026-09-23
+
+- Source 6c0e7d0 deployed only to VideoM5Storyboard001. Active M5 v125: 9d92b100-7739-4eed-9bf4-093395c3db32. Published nodes/connections and current nodes/connections/settings equal Git.
+- Zero active n8n executions before deployment. Backup on VPS: /opt/ai-short-form-content-factory/.backups/m5-before-9788-fix-20260923-191758.json; SHA256 5fb99fc323a2fec845fe3f4f353464496131ecbdd30af871be5ddc230f427cb7.
+- Non-M5 workflow fingerprint unchanged: fe751e1fbffc4e8a6668b648bdf2af4e. M6 v8 / M8 v67 unchanged. Only publisher n8n restarted, as required by publish CLI.
+- Full regression 327/327 PASS. NEXT: one controlled en15 lighthouse Gemini smoke on v125; trace exact new job to terminal state. No acceptance claim yet.
+
+## Execution 9788 — bounded timing correction fix, 2026-09-23
+
+- Confirmed routing defect: nearest-word fallback could reuse the exact already-measured failing narration, report success, bypass the existing bounded compliance retry, and spend another TTS call without a text correction.
+- Fixed final measured retry/compliance validators: compare joined candidate with saved Probe 4 narration and out-of-window measurement. An unchanged failing draft now raises M5_UNCHANGED_TIMING_DRAFT. The first validator routes that marker to the existing one-shot compliance branch; the compliance validator fails closed if still unchanged. New candidate text still requires actual TTS measurement. No added loop or timing/semantic relaxation.
+- Focused execution-9788 regressions 6/6 PASS; full Node suite 327/327 PASS; git diff --check PASS.
+- Source includes the previous boundary-duplication fix. Production still M5 v124 active 945c1dd0-900c-4aca-9fbb-b1333a56b0fb; M6 v8 and M8 v67 unchanged. Neither M5 fix deployed yet.
+- NEXT: verify zero active publisher executions, back up published M5, deploy only VideoM5Storyboard001 and verify published source; then one controlled Gemini-mode smoke. A passing smoke is not yet claimed.
+
+## Execution 9788 — verified source fix, 2026-09-23
+
+- Confirmed separate narration defect: final measured hybrid combined S4 ending “rotates continuously” from one draft with S5 starting “continuously to guide” from another. Each scene passed its semantic guard, but the joined text repeated “continuously continuously”. This is NOT proof that duplication caused the duration miss.
+- Fixed all three exact-word hybrid validators: exclude newly repeated words across scene boundaries during option assembly and reject them in the final joined result; repetitions present at the same original boundary remain permitted. No topic-specific rule, text padding, speech-rate change, or weaker duration gate.
+- Saved-data regression: all 3 tests fail on pre-fix HEAD with the exact duplicated phrase and pass after the fix. Full regression now 324/324 PASS; git diff --check PASS.
+- Reproducibility defect also fixed: a visual regression depended on ignored .review/pl15-v54/penstock-domain-live.json. Retrieved the existing public Wikimedia query data from VPS, committed it as tests/fixtures/wikimedia-hydroelectric-penstock.json, and pointed the test there. No new provider request or secret copied.
+- Duration investigation: original 29-word probe 13224ms; initial stability 12600/12408ms; later 30-word probes 13344/13704/13344ms. Final correction targets were 33 then 32 words; fallback continued with 30. Both provider exact-count retries returned 29 words. Existing nearest-word fallback permitted another under-target synthesis. No accepted audio for this job.
+- Production is UNCHANGED: M5 v124 active 945c1dd0-900c-4aca-9fbb-b1333a56b0fb; M6 v8 active 0bcabe39-ae90-42fe-842b-8a56ad238709; M8 v67 active 21599d8f-f0c9-48c8-af86-ba9e297cdd5a. This source fix is NOT deployed. No new job was started.
+- NEXT: continue from saved execution 9788; determine why the provider repeats 29 words and why the bounded compliance branch was bypassed by the nearest-word fallback. Reproduce and fix that duration-repair failure without weakening semantic/timing gates or adding blind retry loops. Then deploy tested M5 changes with existing safeguards and run one controlled Gemini smoke. Do not resume old M8 v53 work or repeat the boundary diagnosis.
+
+## Earlier live refresh — production baseline, 2026-09-23
+
+This baseline is superseded by the execution 9788 source-fix checkpoint above.
+Refreshed local main from origin/main at 4ae5c3f335166f6b0609b1e102b24c0b89923f01; verified production read-only on 2026-09-23.
+
+- Active production: M5 v124 / 945c1dd0-900c-4aca-9fbb-b1333a56b0fb; M6 v8 / 0bcabe39-ae90-42fe-842b-8a56ad238709; M8 v67 / 21599d8f-f0c9-48c8-af86-ba9e297cdd5a. These counters/activeVersionIds were read directly from n8n.
+- Latest controlled Gemini smoke: job 8cd3ffb3-1439-4d21-a0fe-9298f043e4c7, topic “how does a lighthouse work?”, en, 15s. It is TERMINAL script_failed, not still running.
+- M3 execution 9785 PASS; M4 9787 PASS; M5 9788 ERROR. Script run 6a4849f6-2548-4ddb-b3f1-f217f22b58cf completed 2026-09-23T20:27:33.165278+02:00.
+- Exact failure: “M5 script workflow failed: M5 timing repair still outside target: got 13344ms, target 15000ms, tolerance 800ms”. Execution reached timing probe 5 and Prepare Final Timing Failure 5, then Raise Script Failure. Final audio is 1656ms short (856ms beyond tolerance). The measured duration gate rejected it; the underlying repair/convergence cause is NOT yet diagnosed. No runtime fix made in this checkpoint.
+- This job never reached M6–M9; it provides no Gemini pixel-validation or final-media acceptance evidence. The previous precision-count mismatch fix must not be called the cause without inspecting execution 9788.
+- NEXT: inspect saved M5 execution 9788 timing/repair outputs, compare accepted narration and measurements across probes, and reproduce the specific failure before changing the duration-repair logic. Use stored evidence first; do not launch another smoke job merely to replace this failed result. After a verified fix, follow targeted deployment safeguards and run one controlled Gemini smoke through M8. Acceptance sequence remains pending.
+- Existing implementation includes metadata/gemini visual modes, per-candidate preview failure handling, and exact accepted M5 audio reuse in M6. Preserve these changes. Last recorded full regression: 321/321 PASS before this smoke; not rerun for this documentation-only refresh.
+- Old local pre-refresh M8 v53 work was preserved in local stash 103e61a5cf870b25c43f4c51d21b09fb17ff8d31 (“preserve obsolete local M8 v53 WIP before 2026-09-23 main refresh”). It is obsolete, not applied/deployed, and is NOT required to resume from GitHub. Do not apply it over current main.
+- Evidence: [live resume checkpoint](acceptance/2026-09-23-resume-smoke-9788.json). No new job, workflow deployment, or production mutation in this checkpoint.
+
+Updated: 2026-09-23
+
+## Repository
+Repo: Pokhyl/ai-short-form-content-factory
+Branch: main
+Runtime path: /opt/ai-short-form-content-factory
+Architecture source: PLAN.md
+
+Mandatory operating references:
+- docs/OPERATOR_EXECUTION_RULES.md
+- docs/CURRENT_STATE.md
+- docs/LESSONS_LEARNED.md
+
+## Supporting runtime
+Compose project: `shorts-v2`.
+
+Production n8n is NOT part of this supporting runtime. Production orchestration runs in `publisher.hodor.com.pl`.
+
+Supporting services:
+- `shorts-v2-postgres-1`
+- `shorts-v2-media-worker-1`
+- `shorts-v2-searxng-1`
+
+Current status:
+- PostgreSQL healthy;
+- media-worker healthy;
+- SearXNG healthy;
+- compose uses only project-local `.env`;
+- accidental recovery `env_file` hack removed.
+
+Bootstrap n8n cleanup completed 2026-09-19:
+- temporary M2 workflows removed from shorts-v2;
+- temporary shorts-v2 credentials removed;
+- `shorts-v2-n8n-1` removed;
+- `shorts-v2_n8n_data` volume removed;
+- unused `n8n` PostgreSQL schema removed from shorts_factory after backup;
+- supporting Compose stack now contains only PostgreSQL, media-worker and SearXNG.
+
+## Publisher and MCP protection
+publisher.hodor.com.pl uses restored DB n8n-publisher-restore-pg.
+
+Legacy video workflow cleanup completed on 2026-09-19.
+Deleted:
+- Test Voice - Google All Available Voices v3
+- WF00 - Sheet Intake Adapter
+- WF01 - Topic Intake
+- WF02 - Script and Scene Plan
+- WF03 - Scene Voiceover
+- WF04 - Visual Asset Sourcing
+- WF05 - FFmpeg Render
+- WF06 - Buffer TikTok Publish
+
+Remaining workflow count: 22.
+Remaining workflows are MCP/ADMIN business workflows only. Do not delete or repurpose them.
+
+Rollback backup before cleanup:
+.backups/publisher-before-video-cleanup-20260919.dump
+
+Recovered credential count in restored publisher DB: 9.
+Current publisher credential count: 11 after adding `Gemini Text` and `Video Factory Postgres` on 2026-09-19.
+
+Owner/auth state verified live on 2026-09-19:
+- user-management:reset had previously been run;
+- workflows and credentials remained;
+- owner setup is complete;
+- sole owner email is pokhylvitalii.it@gmail.com;
+- role is global:owner and the account is enabled;
+- publisher root HTML returns HTTP 200;
+- a referenced n8n JavaScript asset returns HTTP 200;
+- all 9 restored credentials can be decrypted/exported by the running publisher n8n with its current encryption key;
+- `Gemini Text` credential ID `zsRz2tvE57EKe8zy` exists as `googlePalmApi` and passed a live Gemini text call;
+- credential secret values were not printed or stored in project files.
+
+n8n.hodor.com.pl is unrelated and must not be touched.
+
+
+## Free-only provider budget infrastructure
+Implemented and verified on 2026-09-19:
+- db/02-provider-budget.sql;
+- db/03-provider-budget-policy.sql;
+- monthly provider free-limit configuration;
+- atomic/idempotent usage reservations;
+- commit/release lifecycle;
+- fail-closed behavior when a budget is not explicitly enabled;
+- production internal ceilings enabled at 90% of the documented free limits:
+  - Chirp 3 HD: 900,000 characters/month vs 1,000,000 provider free limit;
+  - WaveNet: 3,600,000 characters/month vs 4,000,000 provider free limit;
+- 90% is a project engineering safety setting, not a Google recommendation;
+- live DB smoke test accepts an in-limit reservation, rejects an over-limit reservation, and persists no test rows after rollback.
+
+A rollback copy of the budget rows exists at .backups/provider-budget-before-enable-20260919.sql.
+
+## M1
+PASS.
+
+## M2
+PASS on 2026-09-19. M3 is unblocked.
+
+Passed:
+- SearXNG broad web search;
+- direct public source fetch;
+- Wikimedia Commons API;
+- Pixabay image search + video search + metadata + rate-limit headers + real image download;
+- Pexels photo search + video search + metadata + rate-limit headers + real image download;
+- visual-source gate with three independent sources;
+- local FFmpeg 1080x1920 H.264/AAC render;
+- fail-closed Google Cloud TTS monthly budget guard;
+- `Gemini Text` live structured-JSON call with `gemini-3.5-flash-lite`;
+- existing `Google account` OAuth reconnected and verified by real Cloud TTS calls;
+- all four locked TTS voices returned real MP3 audio;
+- local whisper.cpp `ggml-small.bin` alignment passed on exact EN/PL/RU/UK TTS audio;
+- all four transcripts matched their input text after normalization;
+- lexical token timestamps stayed inside the measured MP3 duration.
+
+M2 TTS evidence:
+- EN `en-US-Chirp3-HD-Algenib`: 9,696 bytes, 2.424 s, SHA256 `121d1a7ae38c7ee5797d1c5b1f659443172d4380dccc1b1c4124ba71ff63c3cf`;
+- PL `pl-PL-Chirp3-HD-Enceladus`: 13,536 bytes, 3.384 s, SHA256 `aef1cf5874e15f54d1fc20e6ee913968d53af0c443c86945e337aaa5a34a0499`;
+- RU `ru-RU-Wavenet-D`: 20,352 bytes, 2.544 s, SHA256 `b226835db6798969519418c6daa80cf888199bed2903b39808c847c80c866dde`;
+- UK `uk-UA-Chirp3-HD-Enceladus`: 11,712 bytes, 2.928 s, SHA256 `57a503f03b41c36ec9c8c9c589fe24104168c07002836bd1717170e4fb16b2a6`.
+
+Cleanup/accounting:
+- successful M2 TTS usage is committed in the provider ledger using exact character counts;
+- the earlier failed-auth reservations remain released;
+- temporary M2 workflows were removed;
+- publisher workflow count returned to 22 with 6 active protected workflows;
+- Openverse remains disabled but is not required for the visual-source gate.
+
+## M3
+PASS on 2026-09-19.
+
+Verified:
+- `db/04-jobs.sql` created and applied to `shorts-v2` PostgreSQL;
+- `factory.jobs` exists with DB-level constraints for topic, language and duration;
+- `factory.create_job(text,text,integer)` inserts one job atomically and rejects invalid input;
+- production `publisher` container is connected to `shorts-v2_default`;
+- real TCP connectivity from publisher to PostgreSQL 5432, media-worker 3001 and SearXNG 8080 is verified;
+- legacy `Postgres - TikTok Pipeline v2` was not reused because it points to the old `tiktok_pipeline_v2` database;
+- dedicated `Video Factory Postgres` credential ID `gQ3TDSsTe7Tn2X8B` exists and its connection test succeeds;
+- `VIDEO — M3 Intake` ID `VideoM3Intake001` is published and active;
+- production endpoint is `POST /webhook/jobs`;
+- validation suite: 10/10 local cases PASS;
+- live valid request returned HTTP 201 and job ID `685031de-e7c8-48c1-a456-62b4ad66ae7e`;
+- that valid request created exactly one durable `factory.jobs` row with topic `Why is the sky blue?`, language `en`, duration 15 and status `created`;
+- four live invalid requests returned HTTP 400 for invalid language, invalid duration, string duration and unexpected field;
+- invalid requests created zero additional job rows;
+- provider usage ledger remained unchanged during intake testing;
+- workflow node set contains only webhook, validation, routing, PostgreSQL and response nodes; no Gemini or TTS nodes are present;
+- historical snapshot after that milestone: publisher contained 23 workflows / 7 active: the original 22 protected MCP/ADMIN workflows plus the new M3 video workflow.
+
+Test note:
+- direct VPS-to-public-domain self-call is blocked by Cloudflare with HTTP 403 / error code 1010;
+- live webhook tests therefore used local Caddy with `publisher.hodor.com.pl` Host/SNI via 127.0.0.1, without changing production routing.
+
+## M4
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M4 Research` ID `VideoM4Research001` is published and active;
+- M4 is an internal sub-workflow with input `job_id`; no permanent public research webhook exists;
+- SearXNG returned broad results from multiple engines;
+- M4 selected up to 10 fetch candidates while maximizing independent domains and rejecting social/binary/private-address candidates;
+- page fetch uses direct HTTP with bounded timeout and a project User-Agent;
+- HTML extraction uses n8n's built-in HTML/Cheerio node, not regex page scraping;
+- evidence is capped to 12,000 characters per source;
+- `factory.research_runs`, `factory.evidence`, `begin_research()`, `store_evidence()`, `finalize_research()`, and `fail_research()` are deployed;
+- `pgcrypto` is enabled for SHA-256 content hashes;
+- URL and content-hash deduplication are enforced per job;
+- PASS gate requires at least 3 evidence rows from 3 independent domains;
+- live fresh-job test `198bb721-6c33-4b00-9268-930f5c34afcf` returned `passed` with 7 evidence rows / 7 domains;
+- all 7 stored canonical URLs and all 7 content hashes are distinct;
+- stored source text lengths ranged from 3,142 to 12,000 characters;
+- successful sources included NOAA/NESDIS, SUNY ESF, Woodland Trust, Pacific Science Center, UNC, Wikipedia and Almanac;
+- job state became `evidence_ready`;
+- M4 execution `7750` succeeded;
+- provider usage ledger remained unchanged; M4 did not invoke Gemini or TTS;
+- temporary public test caller was backed up, deleted, and its random webhook now returns 404;
+- historical snapshot after that milestone: publisher post-state was 24 workflows / 8 active: 22 protected MCP/ADMIN + M3 + M4.
+
+Failed test jobs are preserved terminal and were not reused:
+- `c189c00b-f055-44c5-b564-cc29e690afbf` → `research_failed`;
+- `dd0946fb-046c-4480-9368-ca1fd94c17c6` → `research_failed`.
+
+## M5
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M5 Script + Storyboard` ID `VideoM5Storyboard001` is published and active;
+- M5 is an internal sub-workflow with input `job_id`;
+- only `evidence_ready` jobs can start M5;
+- `factory.script_runs`, `factory.script_versions`, `factory.scenes`, `factory.scene_evidence`, and `factory.shots` are deployed;
+- `begin_script()`, `commit_storyboard()`, and `fail_script()` are deployed;
+- each job gets only one immutable M5 attempt;
+- Gemini model is `gemini-3.5-flash-lite` through credential `Gemini Text`;
+- the request body contains no tools, Google Search, URL Context, code execution or TTS;
+- Gemini receives only persisted M4 evidence, capped to 6,000 characters per evidence row for prompt construction;
+- structured JSON is validated before DB commit;
+- every scene requires 1–4 valid evidence IDs and those IDs are mapped to same-job evidence UUIDs before persistence;
+- scene narrations are authoritative; the persisted continuous narration is canonicalized as those scene narrations joined in order;
+- narration word range is validated against that canonical narration;
+- current deterministic visual density is 5/9/13/17 scenes and shots for 15/30/45/60 seconds respectively;
+- if the first Gemini JSON is structurally valid but fails deterministic storyboard validation, M5 allows exactly one repair-call inside the same immutable script run; the repair receives the same evidence plus the failed output and must return a complete replacement JSON object;
+- every scene contains exactly one shot;
+- every shot requires concrete visual intent, at least one must-show concept, 2–4 distinct English factual queries and an allowed media type;
+- provider names, URLs and manual asset preselection are rejected;
+- first live M5 test on job `198bb721-6c33-4b00-9268-930f5c34afcf` failed closed because Gemini produced only 5 shots against the required 7–10; the job is preserved terminal as `script_failed`;
+- historical note: this earlier test required 7 scenes / 7 shots; the current production contract was later increased to 9 scenes / 9 shots for 30 seconds;
+- fresh end-to-end M3→M4→M5 test job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7` passed;
+- successful M5 output: 64 narration words, 7 scenes, 7 shots, 7 scenes with evidence links, 0 invalid cross-job evidence links, 0 provider/URL preselection findings;
+- Gemini usage stored for the successful run: 10,390 prompt tokens, 1,374 output tokens, 11,764 total tokens;
+- M4 execution `7757` and M5 execution `7758` succeeded for the fresh job;
+- successful job state is `storyboard_ready`;
+- provider TTS ledger remained unchanged; M5 made no TTS call;
+- later production hardening proved two recurring model-format failures without weakening the gate: one output returned 5 scenes instead of 7, and a repaired output returned a redundant root narration that differed from the scene narration join;
+- M5 now repairs the first deterministic validation failure once, then canonicalizes the persisted narration from validated scene narrations rather than trusting the redundant root narration field;
+- final successful M5 on job `6974c0e6-9261-495d-b885-0db5a2ae4cd6` produced 70 words / 7 scenes / 7 shots and execution `7820` succeeded;
+- temporary M5 public test caller was backed up, deleted, and its random endpoint now returns 404;
+- publisher M5 remains the same production workflow ID; no duplicate M5 workflow was created.
+
+## M6
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M6 One Final Voiceover` ID `VideoM6Voiceover001` is published and active;
+- M6 is an internal sub-workflow with input `job_id`;
+- `factory.voiceover_runs` and `factory.voiceovers` are deployed;
+- `begin_voiceover()`, `mark_tts_consumed()`, `complete_voiceover()`, and `fail_voiceover()` are deployed;
+- only `storyboard_ready` jobs can start M6;
+- each job and script version can have only one immutable voiceover run;
+- locked voices are enforced by language in PostgreSQL:
+  - EN `en-US-Chirp3-HD-Algenib`;
+  - PL `pl-PL-Chirp3-HD-Enceladus`;
+  - RU `ru-RU-Wavenet-D`;
+  - UK `uk-UA-Chirp3-HD-Enceladus`;
+- free-only provider usage is reserved before TTS using idempotency key `m6-tts:<job_id>`;
+- a successful provider response commits the usage ledger before storage;
+- pre-provider failures release the reservation; post-provider failures keep usage committed;
+- media-worker atomically stores exactly one `final.mp3` and rejects a second create;
+- current M6 may synthesize up to four independent TTS candidates inside the one immutable voiceover run; only a candidate that passes the measured-duration gate is persisted;
+- successful M6 test used job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7`;
+- exact TTS input was the 418-character final M5 narration;
+- one Google Cloud TTS request used `en-US-Chirp3-HD-Algenib`;
+- M6 execution `7760` succeeded;
+- output voiceover ID is `b0390ff7-2ec8-498f-8910-37fcdcf4c689`;
+- exact stored file is `/data/voiceovers/e4bc4b8b-dcf5-4c81-9193-5db297c528d7/final.mp3`;
+- stored file is 106,272 bytes, mono 24 kHz MP3;
+- measured duration is 26,568 ms;
+- exact SHA-256 is `5b9d89a80c1765a3bebd8b192fac267156a703ab298d40df4bfa549d4521e180`;
+- independent container-side SHA-256 and ffprobe output match the persisted DB values;
+- M6 usage ledger row is committed for exactly 418 Chirp3 HD characters;
+- Chirp3 HD monthly internal allocation after M6 is 526 characters with 899,474 remaining under the 900,000 internal ceiling;
+- job state is `voiceover_ready`;
+- temporary M6 public test caller was backed up, deleted, and its random endpoint returns 404;
+- historical snapshot after that milestone: publisher post-state was 26 workflows / 10 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6.
+
+## M7
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M7 Local Alignment` ID `VideoM7Alignment001` is published and active;
+- M7 is an internal sub-workflow with input `job_id`;
+- `factory.alignment_runs`, `factory.alignments`, and `factory.scene_timings` are deployed;
+- `begin_alignment()`, `complete_alignment()`, and `fail_alignment()` are deployed;
+- only `voiceover_ready` jobs can start alignment;
+- the media-worker contains the pinned `whisper.cpp` binary copied from image digest `sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11`;
+- the exact multilingual model is mounted read-only and verified at startup with SHA-256 `1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b`;
+- alignment input is only the immutable M6 file `/data/voiceovers/<job_id>/final.mp3`;
+- media-worker verifies the exact audio SHA-256 and duration before alignment;
+- MP3 is decoded only to temporary 16 kHz mono PCM for local Whisper analysis; the original MP3 is never modified;
+- lexical Whisper tokens must reconstruct the Whisper transcript exactly;
+- scene narrations must reconstruct the final M5 narration exactly;
+- alignment uses `whisper_token_sequence_match`: global normalized character coverage must be at least 0.95 and every scene coverage at least 0.85;
+- per-scene boundaries are derived only from real matching Whisper lexical token timestamps; no proportional timing fallback exists;
+- successful product test used job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7`;
+- M7 execution `7762` succeeded;
+- alignment ID is `6f34156f-216d-4abb-8937-9355745cd186`;
+- global coverage is 1.000 and all 7 scene coverage values are 1.000;
+- 72 lexical tokens were retained;
+- lexical speech span is 40–26,260 ms within the immutable 26,568 ms audio;
+- scene timings are:
+  - S1 40–4,850 ms;
+  - S2 5,000–8,480 ms;
+  - S3 8,840–10,270 ms;
+  - S4 10,500–13,330 ms;
+  - S5 14,100–18,680 ms;
+  - S6 19,230–22,220 ms;
+  - S7 22,350–26,260 ms;
+- immutable alignment artifacts exist at `/data/alignments/<job_id>/final.json` and `whisper.json`;
+- stored audio/model/image hashes match the expected pinned values;
+- TTS ledger remained unchanged and no new M6/TTS execution occurred;
+- a later real TTS sample exposed a normal Whisper ASR substitution (`abscission` → `obsidian`): global coverage was 0.981675 and the lowest scene coverage was 0.883721;
+- the original exact-string gate was therefore replaced by bounded lexical coverage without introducing proportional timing; the same failed terminal job was not reused;
+- final successful product job `6974c0e6-9261-495d-b885-0db5a2ae4cd6` passed M7 with normalized_match=true, global coverage 1.000, 7/7 scene timings and execution `7822` success;
+- job state is `alignment_ready` before M8;
+- temporary M7 public test caller was backed up, deleted, and its random endpoint returns 404;
+- publisher M7 remains the same production workflow ID; no duplicate M7 workflow was created.
+
+## M8
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M8 Multi-Source Visuals` ID `VideoM8Visuals001` is published and active;
+- M8 is an internal sub-workflow with input `job_id`;
+- `factory.visual_runs`, `factory.visual_searches`, `factory.visual_candidates`, `factory.visual_selections`, `factory.visual_assets`, and the visual query cache are deployed;
+- only `alignment_ready` jobs can start M8;
+- every storyboard search query is executed against all three enabled providers: Pixabay, Pexels and Wikimedia Commons;
+- candidates are normalized with provider/source/license metadata before deterministic ranking;
+- Pixabay and Pexels license names are enforced exactly; Wikimedia accepts only the configured CC0 / CC BY / CC BY-SA / public-domain families;
+- `must_not_show`, media-type compatibility, minimum relevance and per-run provider-asset reuse are fail-closed gates;
+- Wikimedia Commons rate limiting was reproduced as HTTP 429 with `Retry-After` values around 23–27 seconds after ten requests;
+- current M8 paces Wikimedia requests at 8 seconds per item and retries affected items through explicit 60-second wait nodes; successful runs may still complete from remaining providers when Wikimedia degrades;
+- Wikimedia photos from Commons use the official `thumb.wikimedia.org` host while videos commonly use `upload.wikimedia.org`; media-worker allowlists both exact official hosts and still rejects arbitrary hosts;
+- selected assets are downloaded atomically into `/data/visuals/<job_id>/<shot_id>/selected.<ext>` and persisted with SHA-256, bytes, dimensions, codec and video duration where applicable;
+- successful product test job is `6974c0e6-9261-495d-b885-0db5a2ae4cd6`;
+- M8 execution `7823` succeeded and the job state is `visuals_ready`;
+- this 30-second storyboard contained 7 shots with 3 queries each, therefore expected provider-search coverage was 63 searches total;
+- verified coverage was 21/21 Pixabay, 21/21 Pexels and 21/21 Wikimedia;
+- provider result totals were 168 Pixabay, 168 Pexels and 71 Wikimedia candidate rows before normalization/ranking filters;
+- exactly 7 selections were persisted and all 7 provider+asset identities were unique;
+- exactly 7 local assets were persisted and all 7 SHA-256 hashes were distinct;
+- total persisted visual bytes were 65,286,389;
+- the selected set contained 3 videos and 4 photos from Pixabay/Pexels; no duplicate file hash was accepted;
+- all persisted candidates passed the configured license policy;
+- media-worker file-side SHA-256 and ffprobe checks independently confirmed all 7 files;
+- failed product jobs from earlier M8/M7/M5 diagnostics remain terminal and were not reused;
+- temporary M8 caller was backed up, deleted, and its random endpoint returns 404;
+- historical snapshot after that milestone: publisher post-state was 28 workflows / 12 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8.
+
+## M9 render + machine QA — PASS
+
+Verified live:
+- production workflow `VIDEO — M9 Render + Machine QA` ID `VideoM9RenderQa001` is published and active;
+- `factory.render_runs`, `factory.renders`, `factory.render_segments` and `factory.machine_qa` are deployed;
+- only `visuals_ready` jobs can begin M9;
+- render inputs are the exact immutable M6 voiceover, M7 scene timings and M8 selected local assets;
+- render segments are contiguous from 0 ms through the immutable voiceover duration;
+- source-video audio is always excluded; the only final audio stream is the M6 narration;
+- photos and non-9:16 media preserve the full foreground and use a blurred fill background rather than a hard crop;
+- machine QA requires exactly one H.264 video stream and one AAC audio stream, 1080×1920, yuv420p, 30 fps, <=100 ms duration delta, complete scene coverage and exact asset SHA-256 provenance;
+- dedicated M9 integration fixture passed with 7/7 render segments and all machine gates true;
+- normal product job `6974c0e6-9261-495d-b885-0db5a2ae4cd6` reached `machine_qa_passed`;
+- product M9 execution `7837` succeeded;
+- exact product render path is `/data/renders/6974c0e6-9261-495d-b885-0db5a2ae4cd6/final.mp4`;
+- exact product render SHA-256 is `262941d27a00ac4fe5e8a754d3a459c29e3b75298928fc76322b149bd9e9b178`;
+- exact product render size is 10,347,458 bytes;
+- ffprobe independently confirms 1080×1920 H.264/yuv420p video at 30 fps plus AAC audio;
+- rendered duration is 30.533333 s against immutable voiceover 30.528 s, delta 5 ms;
+- exactly 7 render segments and one passed machine-QA row are persisted;
+- temporary M9 caller was backed up, deleted, and its random endpoint returns 404;
+- historical snapshot after that milestone: publisher post-state was 29 workflows / 13 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8 + M9;
+- `ai-short-form-n8n` restart-manager corruption was recovered by recreating only the stateless n8n container from the same image/env/networks; publisher DB, workflows and credentials remained intact; final restart count is 0.
+
+## M10 delivery — HISTORICAL SINGLE-PRODUCT REVIEW
+
+The earlier single-product review artifact is preserved as historical verification, not as the current acceptance target:
+- external review bytes: 10,347,458;
+- external review SHA-256: `262941d27a00ac4fe5e8a754d3a459c29e3b75298928fc76322b149bd9e9b178`;
+- external ffprobe confirmed 1080×1920 H.264/yuv420p at 30 fps plus AAC audio, duration 30.533333 s;
+- workflow `M10 TMP — Exact MP4 Review` ID `M10TempReview001` still exists in production.
+
+Current acceptance is defined by the 2026-09-20 production update and docs/CODEX_HANDOFF.md: fresh sequential 4-case regression on M5 v81 / M8 v41, followed by inspection of the exact four resulting MP4s.
+
+## Production orchestration lock — 2026-09-19
+- Production video workflows run in `publisher.hodor.com.pl`.
+- `publisher.hodor.com.pl` is the single production n8n for both MCP/ADMIN and the video project.
+- 22 existing MCP/ADMIN workflows are protected.
+- the original 9 restored credentials remain in `publisher.hodor.com.pl`; video-specific credentials added afterward are `Gemini Text` and `Video Factory Postgres`.
+- No new public n8n domain.
+- No second production n8n.
+- `tiktok-n8n.hodor.com.pl` is not part of this project.
+- `n8n.hodor.com.pl` is unrelated and must not be touched.
+- Supporting PostgreSQL/media-worker/SearXNG remain separate.
+- The bootstrap `shorts-v2` n8n container has been removed; no second n8n remains in the supporting stack.
+
+
+## Production update — 2026-09-20
+
+The production implementation advanced substantially beyond the older M10 section above.
+
+Current deployed core:
+- M3 VideoM3Intake001: versionCounter 2;
+- M4 VideoM4Research001: versionCounter 5;
+- M5 VideoM5Storyboard001: versionCounter 81, versionId b548aee4-660f-4997-a17c-1d8fa24c38b3;
+- M6 VideoM6Voiceover001: versionCounter 7;
+- M7 VideoM7Alignment001: versionCounter 4;
+- M8 VideoM8Visuals001: versionCounter 41, versionId d889cb1d-c808-4e19-889e-35b06648da19;
+- M9 VideoM9RenderQa001: versionCounter 1;
+- Self-Test VideoSelfTestApi001: versionCounter 3;
+- media-worker image sha256:5cf02e01d9cfb693d266bedc2f77b866fcee5960bb0a0654923b79be144e1874;
+- publisher and Studio HTTP 200 at the last production check;
+- media-worker healthy with restart count 0.
+- Current M5 density is 5/9/13/17 scenes+shots for 15/30/45/60 seconds.
+- Current M6 may synthesize up to four candidates but persists exactly one final MP3.
+
+On M5 v81 / M8 v40, the sequential acceptance matrix produced machine-QA PASS for PL15, EN30 and RU45. UK60 passed M4-M7 and failed only M8 shot S7-A because compound primary-subject matching was too literal. That scorer defect was fixed systemically, positive/negative regression-smoked, and deployed as M8 v41.
+
+A fresh full 4/4 sequential acceptance matrix on M5 v81 / M8 v41 is still required before declaring final acceptance.
+
+See docs/CODEX_HANDOFF.md for exact current job IDs, constraints and remaining steps.
+
+## Acceptance continuation — 2026-09-20
+
+Fresh PL15 passed machine QA and exact-file visual inspection. Fresh EN30 passed technical QA but failed visual inspection: Pixabay returned a text poster as `photo` and tag-only relevance admitted a honey jar for a bee scene. No final acceptance is claimed. Investigation and exact IDs are in `CODEX_HANDOFF.md`; a fresh four-case matrix must follow the systemic fix.
+
+## Timing continuation — 2026-09-21
+
+M8 v42 is published (`c6309bfc-4aa7-42c6-b5a9-49b187c134c1`), with other 31 workflow rows unchanged. The fresh PL15 failed before M8 in M5 v81 because repair interpolation reused a first TTS sample after a materially different median had been confirmed. The targeted fix passes 12 regression tests; deployment and a fresh full acceptance matrix remain next. See `CODEX_HANDOFF.md` for exact IDs and measurements.
+
+## Subject-evidence continuation — 2026-09-21
+
+PL15 on M5 v82/M8 v42 passed exact-file review. EN30 on the same versions reached machine PASS but was rejected after frame inspection (bee fly, wasp, dew substituted for the narrated subjects). The stronger subject-grounding correction and whole-subject storyboard prompt pass 18 tests plus a replay of 236 persisted candidates. They are not yet deployed at this checkpoint; no final four-case acceptance is claimed.
+
+### Complete Commons query coverage — tested, not yet deployed
+
+- Confirmed live public Commons probes: `hydroelectric penstock pipe` and `penstock pipe` each return 8 candidates including penstock photographs. The original long query returned a turbine and hydraulic-compressor diagram, both correctly rejected. This confirms a retrieval gap; it does not yet prove the complete storyboard passes.
+- M8 now enumerates every storyboard query for Wikimedia, retaining query index, provenance, 8-second pacing and existing retry/quality gates. `factory.begin_visuals` expected count becomes 3 × total storyboard queries. Existing immutable run counts are untouched.
+- Checks: 22/22 Node tests PASS; replacement SQL compiled and function definition asserted in a rolled-back production transaction; git diff check PASS. Production remains M5 v83 / M8 v43 until the following deployment checkpoint.
+- Next: back up and replace only begin_visuals(uuid), publish M8, verify protected workflow rows and deployed count contract, then create a fresh PL15.
+
+### M5 semantic-space repair tested — NOT DEPLOYED
+
+- Execution 9039 trace proves original narration was complete and correct. First timing repair shortened it; robust measurement triggered another repair. `Build Timing Repair 2` imposed equalized counts `[5,5,4,4,4]`; its 24-word response failed the 22-word constraint. `Build Timing Precision Retry` then returned the damaged 22-word text and passed mechanical validation. The retry lacked original narration as its meaning reference.
+- Repository correction distributes the unchanged total target proportionally to original scene lengths within unchanged 2–10/14 bounds, and supplies original scene narration to both precision builders. The retry explicitly treats its previous draft as unaccepted and preserves subjects, required objects and causal direction. Exact total/per-scene checks, duration gates, attempt counts and provider budgets remain unchanged.
+- Validation: 24/24 Node tests PASS, including median propagation, bounded proportional allocation and preservation of original meaning context when the failed draft lost an object. These tests prove data/prompt contracts, not semantic quality of future model output. Production remains M5 v83 / M8 v44.
+- Next: scoped M5 deployment with backups/protected-row comparison; resolve render crop and provider-label ambiguity before fresh acceptance. No new job is running. Do not claim semantic acceptance until actual new narration and all final frames are reviewed.
+
+Render fit correction tested locally/in the existing worker via an isolated function, not deployed: preserve full source geometry with aspect-fit and black padding. Three real FFmpeg edge-landmark regressions pass. See CODEX_HANDOFF.md for active vs pending versions and latest rejected output.
+
+Latest acceptance failed in M5: job `ccc91e49-8e19-404d-bf05-3ec4cab5d469`, execution 9047, 14,064 ms vs 15,000 ± 750 ms. v84 prompts did not prevent semantic drift; exact evidence and next repair scope are in CODEX_HANDOFF.md. Active: M5 v84, M8 v44, full-fit worker `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`. No current-version accepted matrix.
+
+
+## Authoritative production update — 2026-09-21 after three-sample M5 gate deploy
+
+This section supersedes older version snapshots above where they conflict.
+
+- Git main: `786bf008593ae8c42e9ef6d580033eb035297206`.
+- M5 `VideoM5Storyboard001`: active, versionCounter 97, activeVersionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9`. The published graph forces every accepted timing-stability path through the third independent TTS synthesis and the existing 2-of-3 gate.
+- M8 `VideoM8Visuals001`: active, versionCounter 50, activeVersionId `310816fc-fbf3-46e9-983b-b6f612ea009a`.
+- Exact pre-deploy M5 backup: `.backups/m5-before-three-sample-gate-20260921-190126.json`.
+- Other 31 workflow rows unchanged by the M5 publication; aggregate hash `99baea155409822fc83fa57cb2896c05`; workflow inventory 32 total / 15 active.
+- Publisher HTTP 200; Studio HTTP 200; n8n restart count 0.
+- media-worker healthy, restart count 0, image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
+- Last fresh PL15 `dfd72856-9480-44d4-9e07-f8decae7ae9f` is immutable `voiceover_failed`: M4 9179 PASS, M5 9180 PASS on the pre-fix v97 versionId `3ce4729e-1f30-4b32-ae99-88aa91109308`, M6 9181 FAIL after four out-of-window TTS candidates. M7-M9 did not run.
+- Runtime proof for the newly published M5 version is still pending. Do not claim PL15 acceptance or start EN30 until a new fresh PL15 reaches machine PASS and passes exact-file manual review.
+
+
+## Authoritative production update — 2026-09-21 after M8 v51 spatial-domain fix
+
+This section supersedes older M8 snapshots above where they conflict.
+
+- Git main before runtime verification: `ec6c2acc0335a9494040050fc54fd08f0a72a76d`.
+- M5 `VideoM5Storyboard001`: active, versionCounter 97, activeVersionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9`.
+- M8 `VideoM8Visuals001`: active, versionCounter 51, activeVersionId `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+- M8 v51 excludes `outdoor/outdoors/indoor/indoors` only from singleton-machinery local operating-domain inference. Repeated-subject context and scorer thresholds are unchanged.
+- Exact pre-deploy M8 backup: `.backups/m8-before-spatial-domain-fix-20260921-192246.json`.
+- Other 31 workflow rows unchanged by publication; aggregate hash `8fbf6b2399f8dd92c1c391dcee4308cf`.
+- Publisher HTTP 200; Studio HTTP 200; n8n restart count 0; media-worker healthy restart count 0.
+- Last fresh PL15 `67a1e838-038e-45d6-aa95-16c4638bbebd` remains immutable `visuals_failed`; its exact S4 defect and v51 fix evidence are in `docs/acceptance/2026-09-21-pl15-v50-s4-spatial-domain-fix.json`.
+- Runtime proof for M8 v51 is pending. Do not claim PL15 acceptance or start EN30 until a new fresh PL15 reaches machine PASS and passes exact-file manual review.
+
+
+## Authoritative production update — 2026-09-21 after M5 v98 deploy
+
+- Git main fix commit: `1ac2c948e6a44c11f11a51c59ccab41a7226a447`.
+- M5: versionCounter 98, activeVersionId `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
+- M8: versionCounter 51, activeVersionId `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+- Exact M5 backup: `.backups/m5-before-late-semantic-retry-20260921-193037.json`.
+- Other 31 workflow rows unchanged; aggregate hash `efd8e340d7b44dc59429062d4b1bda5f`.
+- Publisher/Studio 200; n8n restart 0; media-worker healthy restart 0.
+- Runtime verification of M5 v98 is pending.
+
+
+## Runtime incident update — 2026-09-21 task-runner transient
+
+- Job `64511f0b-16a1-40ba-9930-9499cf92d7f1` is terminal `script_failed` after reconciliation.
+- M4 `9195` passed. M5 `9196` loaded active v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` but n8n task execution failed before normal workflow failure handling because task-runner offers expired.
+- Project DB stale `scripting/running` state was reconciled through deployed `factory.fail_script()`; no manual row update was used.
+- Production versions remain M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` and M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+
+
+## Authoritative continuation — 2026-09-21 after PL15 M8 v51 S3 failure
+
+- Git/production before the WIP checkpoint: M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`; M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+- Fresh PL15 `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` passed M4-M7 and failed only M8 S3-A after all 45 provider searches completed. M9 did not run.
+- The earlier n8n task-runner offer-expiry incident did not recur; M5 v98 executed successfully and the three-sample stability-B path was exercised.
+- Exact M8 defect is now retrieval/semantic-context related: broad Commons fallback `hydroelectric electric generator` returned mostly station/building results while S3 requires a depicted generator inside hydroelectric power-station context.
+- Repository contains a **WIP, not deployed** M8 scorer refinement:
+  - `powerhouse` supplies `power station` semantic evidence in the specific-to-generic direction only;
+  - secondary compound must-show context now uses full profile threshold rather than any single token.
+- Existing suite remains 92/92 PASS and JSON/diff checks pass.
+- Missing next implementation: generic bare-machinery fallback enrichment to add `equipment` only to effective `provider_query` while preserving original `query_text`.
+- Do not treat this WIP commit as production parity: production M8 remains v51 until the completed fix is regression-tested and deployed.
+
+### M8 S3 retrieval completion — tested, not deployed
+
+- Continued exactly from main `566457e`, job `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe`, M8 execution `9203`; no old job rerun.
+- All three planners now append generic `equipment` only when a machinery query equals the primary must-show phrase. Original query/query_text stays immutable; exact S3 provider query becomes `hydroelectric electric generator equipment`. Qualified queries and non-machinery queries remain unchanged.
+- New regression exposed a defect in the prior WIP: domain-scoped primary form modifiers also removed `power` from secondary `power station`, leaving only `station`. Secondary profiles now use the original generic-anchor set, so railway station cannot pass via one shared word. Powerhouse expansion remains directional.
+- Validation: 102/102 Node tests PASS, workflow Code syntax/JSON and diff checks PASS. Includes all three providers, unchanged query provenance, compound negative control and exact Commons 78928898 fixture.
+- Replayed the three persisted S3 initial Commons responses from execution 9203. Separate exact live page lookup confirms asset 78928898 now passes (score 95); production-parameter equipment search returns it at score 92. It is a historical 1903 image: this metadata eligibility does NOT establish suitability for narration saying modern or replace exact-frame review.
+- Evidence: `docs/acceptance/2026-09-21-pl15-v51-s3-retrieval-completed.json`; sanitized raw responses on VPS `.review/pl15-v51/`. Three public Commons calls (one initial probe omitted MIME/bitmap parameters and was corrected; one exact production search, one exact page lookup). No new full pipeline job yet.
+- Production remains M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde` pending scoped deployment.
+- Next: backup and deploy only M8, verify protected rows/live source, then one fresh PL15 through M9 and manual visual/audio review. EN30 remains blocked; no HUMAN PASS.
+
+### M8 v52 deployed — generic machinery fallback and compound context
+
+- Fix commit: `65bec7e0b0692145d4989fc7c2066058725b56ab`.
+- Published only M8: counter **52**, activeVersionId `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba`.
+- Exact backup: `.backups/m8-before-machinery-fallback-20260921-201442.json`.
+- Other 31 workflow rows unchanged: aggregate hash `a900b43516222593dbe68d2c237aa6f1` before/after. No active project runs before publication; live nodes/connections/settings match repository.
+- M5 stays v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`; no service restart or credential change.
+- Next: one fresh PL15; verify runtime versions, then exact final MP4 visual/audio QA before EN30.
+
+### Fresh PL15 on M5 v98 / M8 v52 — running
+
+- New immutable job `f6088d2f-f2eb-4a49-9379-f71c20852cbf` created through the Studio webhook path; intake 9204 PASS, parent 9205 running, M4 9206 PASS, M5 9207 running on exact v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
+- Production M8 v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba`; runtime M8 proof pending. Publisher/Studio HTTP 200; n8n/worker restart 0; worker healthy with unchanged full-fit image.
+- Next: monitor THIS job (do not create a duplicate). If M9 succeeds, audit exact MP4/selected assets and visual/audio QA. If terminal failure, diagnose exact failed execution. EN30 remains unstarted.
+
+### PL15 v52 terminal S4 failure; generic context correction tested, not deployed
+
+- Job `f6088d2f-f2eb-4a49-9379-f71c20852cbf`: M4 9206, M5 9207, M6 9209, M7 9210 PASS; M8 9212 ERROR on confirmed v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba`. M9 did not run; no final MP4. Job stays immutable.
+- All 45 searches completed: Pexels 15/120 results, Pixabay 15/120, Commons 15/66. Failure is S4-A, not S3. Zero committed selections (selection transaction rolled back on S4 failure).
+- Exact cause: S4 intent `Industrial electric generator unit inside a power plant` plus first query `electric generator unit power plant` inferred generic `unit` as a local operating domain. Combined with the established repeated-subject hydroelectric domain it produced `hydroelectric unit generator equipment`, yielded no Commons candidates for S4, and required literal unit in other metadata. This is not an asset-uniqueness failure.
+- Fix: exclude generic unit/apparatus/instrument/receiver/room from domain inference in all three planners, consistent with existing scorer generic-object terms. Real hydroelectric/marine domain gates remain intact; no topic hack/threshold change.
+- Separate exact candidate defect: Commons 28807269 `Generator Nameplate PF Percent.JPG` scored 100 and passed for S3 machinery. Extended existing signage/surface rejection to nameplates; actual requested nameplates still pass. No visual acceptance claim is made from metadata alone.
+- Zero-provider-call replay: corrected S4 fallback equals the already executed S3 effective query `hydroelectric generator equipment`; scoring its exact saved response against S4 produces six eligible distinct hydro-generator candidates. Exact nameplate now rejected. Evidence `docs/acceptance/2026-09-21-pl15-v52-unit-context-replay.json`; all 45 sanitized responses on VPS `.review/pl15-v51/v52-replay.json`.
+- 106/106 tests PASS; JSON/113 Code syntax/diff checks PASS. Production remains M5 v98 / M8 v52 until the scoped deployment.
+- Next: publish only M8 after backup/protected-row verification, then one fresh PL15 and exact visual/audio review before EN30. Do not rerun failed job.
+
+### M8 v53 deployed; new PL15 running
+
+- Fix commit `0f1a709c9f49d3320dfee50b8d9129fece3a3a4d`; only M8 published as v53 `0953f69f-e982-467e-95e0-35161a613771`.
+- Backup `.backups/m8-before-unit-context-20260921-202231.json`; other 31 workflow rows unchanged (before/after hash `a900b43516222593dbe68d2c237aa6f1`). No project runs active before publication; live nodes/connections/settings equal repository. No service restart or credential changes; M5 remains v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
+- Fresh immutable PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` created and accepted through the Studio webhook path.
+- Next: monitor this exact job, prove v53 runtime, then M9/exact visual and audio review. EN30 not started. Failed v52 job remains unchanged.
+
+### First PL15 after v53 deploy rejected by M5 timing; v53 not yet exercised
+
+- `b3d1f5e3-f368-493b-bde9-f5343783d41d`: intake 9213 PASS, parent 9214 ERROR, M4 9215 PASS, M5 9216 ERROR on v98. M6–M9 never ran; no audio/render acceptance artifacts.
+- Exact bounded trace: 30 words/19224 ms → early semantic rejects (coverage .571/.429 below unchanged .600) → 27 words/17304 ms → 26 words/16176 ms → final exact-target 25 words/17448 ms. M5 failed at unchanged 15000 ±750 ms.
+- Final rewrite met its requested word target but real duration increased; count monotonicity cannot guarantee TTS timing. No new deterministic workflow defect is demonstrated; do not loosen semantics/timing or add retries. Sanitized trace `.review/pl15-v51/v53-m5-timing.json`.
+- Production unchanged M5 v98 / M8 v53; M8 v53 runtime proof still pending. Next: one fresh PL15 on unchanged code; if this timing failure repeats, do not continue blind jobs—investigate narration/calibration feasibility first.
+
+### Second PL15 on unchanged v98/v53 — running
+
+- Job `12f1ac4f-b8dc-4f17-a191-06888fb7e8a4` accepted via Studio webhook path. Versions unchanged: M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`, M8 v53 `0953f69f-e982-467e-95e0-35161a613771`.
 - Monitor this exact job. If M5 timing rejection repeats, no further blind attempts; investigate feasibility/calibration. Otherwise continue through M9 and exact visual/audio review before EN30.
 
 ### M5 execution 9221 diagnosed; strict measured-draft reuse tested, not deployed — 2026-09-22 local
