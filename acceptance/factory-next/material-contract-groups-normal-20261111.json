@@ -1,0 +1,24 @@
+{
+  "date_utc": "2026-11-11",
+  "job_id": "eeeda852-9d99-4852-9c05-621bf895a9c9",
+  "topic": "Как производят стеклянные бутылки: от расплава до готовой тары",
+  "language": "ru",
+  "target_duration_seconds": 45,
+  "submitted_once": true,
+  "http_submission_status": 201,
+  "source_revision": "b5b5d697ea1b9a4cfbba10527291441d6727e25e",
+  "terminal_status": "needs_attention",
+  "terminal_stage": "research",
+  "completed_stages": [],
+  "failure": {
+    "error_type": "ModelUnavailable",
+    "http_status": 503,
+    "error_status": "UNAVAILABLE",
+    "gateway_execution_id": "14668",
+    "authorized_delayed_retries": 2,
+    "terminal_reason": "Gemini remained unavailable after the authorized delayed retries"
+  },
+  "materials_or_media_generated": false,
+  "mp4_created": false,
+  "resume_or_duplicate": "Do not resume or duplicate this terminal job."
+}
