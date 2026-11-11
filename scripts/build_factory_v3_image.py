@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-MINIMUM_FREE_BYTES = 3 * 1024 ** 3
+MINIMUM_FREE_BYTES = 5 * 1024 ** 3 // 2
 ROOT = Path(__file__).resolve().parents[1]
 
 
