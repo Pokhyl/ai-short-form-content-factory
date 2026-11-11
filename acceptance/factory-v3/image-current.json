@@ -1,7 +1,9 @@
 {
-  "tag": "factory-v3:material-review-batch-28d397a",
-  "image_id": "sha256:000594246ac66e15f9d203bbe6dca17a19fdade5a4df6be9f70dd088612da372",
+  "tag": "factory-v3:material-contract-groups-b5b5d69",
+  "image_id": "sha256:6a3a12bbc761f04367b29cf6962b4885db13c6792617bfbb7aa1206fb2a4b47c",
   "platform": "linux/amd64",
-  "source_commit": "28d397a723d52b961958a764ae16b7bc8e07fbe5",
-  "deployed": true
+  "source_commit": "b5b5d697ea1b9a4cfbba10527291441d6727e25e",
+  "deployed": true,
+  "rollback_container": "factory-next-studio-v9-before-material-contract-groups-20261111",
+  "fresh_mp4_gate": "pending_gemini_503"
 }
