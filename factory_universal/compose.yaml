@@ -1,0 +1,30 @@
+name: factory-universal
+services:
+  app:
+    build: .
+    image: factory-universal:clean-20261111
+    container_name: factory-universal
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      FACTORY_SETTINGS: /run/secrets/settings.json
+      VISUAL_CREDENTIALS: /run/secrets/visual-providers.json
+      PROJECT_SETTINGS: /run/secrets/n8n-project-settings.json
+      MEDIA_WORKER_URL: http://shorts-v2-media-worker-1:3001
+    volumes:
+      - shorts-v2_media_data:/data
+      - /var/lib/factory-rebuild/secrets/settings.json:/run/secrets/settings.json:ro
+      - /var/lib/factory-rebuild/secrets/visual-providers.json:/run/secrets/visual-providers.json:ro
+      - /var/lib/factory-rebuild/secrets/n8n-project-settings.json:/run/secrets/n8n-project-settings.json:ro
+    networks: [shorts-v2, n8n]
+volumes:
+  shorts-v2_media_data:
+    external: true
+networks:
+  shorts-v2:
+    external: true
+    name: shorts-v2_default
+  n8n:
+    external: true
+    name: n8n_default
