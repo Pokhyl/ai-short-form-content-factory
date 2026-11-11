@@ -1,7 +1,7 @@
 {
-  "tag": "factory-v3:studio-variant-length-3a5310c",
-  "image_id": "sha256:61af675579ef9ee2949f6aed4d6437a35c1a2d1fcdf6e02bf60e77317b7764f0",
+  "tag": "factory-v3:material-review-batch-28d397a",
+  "image_id": "sha256:000594246ac66e15f9d203bbe6dca17a19fdade5a4df6be9f70dd088612da372",
   "platform": "linux/amd64",
-  "source_commit": "3a5310c69d43de3799bc7b4ea9f3fac838ce1c87",
+  "source_commit": "28d397a723d52b961958a764ae16b7bc8e07fbe5",
   "deployed": true
 }

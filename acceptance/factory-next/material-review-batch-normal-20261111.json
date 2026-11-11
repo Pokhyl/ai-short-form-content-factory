@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-11",
+  "status": "needs_attention",
+  "job_id": "eed49c7f-e8c2-4ae6-a631-0d5672186157",
+  "topic": "Как кофейные зёрна превращаются в обжаренный кофе: этапы обжарки от зелёного зерна до чашки",
+  "language": "ru",
+  "seconds": 45,
+  "source_revision": "28d397a723d52b961958a764ae16b7bc8e07fbe5",
+  "completed_before_failure": [
+    "metadata",
+    "research_search",
+    "source_fetch"
+  ],
+  "failed_stage": "research",
+  "failure": {
+    "provider": "Gemini",
+    "http_status": 503,
+    "status": "UNAVAILABLE",
+    "calls_total": 3,
+    "additional_retries": 2,
+    "retry_ceiling_reached": true
+  },
+  "story": false,
+  "voice": false,
+  "render": false,
+  "media_audit": false,
+  "mp4_url": null,
+  "project_ready": false,
+  "notes": "Both explicitly authorized same-model retry attempts returned 503. No further provider calls were made. Do not resume or duplicate this job."
+}

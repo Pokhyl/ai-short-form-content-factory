@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-11",
+  "status": "passed",
+  "source_revision": "28d397a723d52b961958a764ae16b7bc8e07fbe5",
+  "image_tag": "factory-v3:material-review-batch-28d397a",
+  "image_id": "sha256:000594246ac66e15f9d203bbe6dca17a19fdade5a4df6be9f70dd088612da372",
+  "candidate_container": "factory-next-studio-v9",
+  "rollback_container": "factory-next-studio-v9-before-material-review-batch-20261111",
+  "public_checks": {
+    "studio_http": 200,
+    "health_http": 200,
+    "jobs_api_http": 200,
+    "existing_jobs": 77
+  },
+  "preservation": {
+    "database_equal": true,
+    "workflows_equal": true,
+    "other_containers_equal": true,
+    "settings_equal": true,
+    "job_files_equal": true
+  },
+  "project_ready": false,
+  "readiness_reason": "A fresh end-to-end production MP4 and media audit are still required."
+}

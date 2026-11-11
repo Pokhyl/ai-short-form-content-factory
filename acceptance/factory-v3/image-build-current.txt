@@ -1,7 +1,4 @@
-Docker image factory-v3:studio-variant-length-3a5310c built successfully.
-Image manifest: sha256:61af675579ef9ee2949f6aed4d6437a35c1a2d1fcdf6e02bf60e77317b7764f0
-Source commit: 3a5310c69d43de3799bc7b4ea9f3fac838ce1c87
-Deployed as factory-next-studio-v9; public /factory-next/healthz returned HTTP 200.
-Production run 716a7db5-7133-4818-9e72-7124b2460cd1: research and materials passed (9 photos), Google returned HTTP 503 UNAVAILABLE at story generation.
-Production run f057d252-4f98-43e5-a29d-a6d69c8f120e: material preparation failed with DiskFull; Docker build cache pruning later freed 1.6 GB.
-Production run e0d8d6f1-56c7-43ab-8280-a482c354b7bd: material brief passed; review call failed with HTTPFailure.
+Built and loaded exact candidate image factory-v3:material-review-batch-28d397a.
+Image ID: sha256:000594246ac66e15f9d203bbe6dca17a19fdade5a4df6be9f70dd088612da372
+OCI revision label: 28d397a723d52b961958a764ae16b7bc8e07fbe5
+The outer build wrapper reached its 110-second limit after Docker had completed the build and loaded the image. Verified the image by revision label, CLI smoke, and exact-image focused suites (17/17); disk build-guard tests passed 2/2.
