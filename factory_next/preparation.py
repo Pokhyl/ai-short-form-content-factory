@@ -211,7 +211,7 @@ class PreparationStages:
             # window by that exact contract while preserving candidate order.
             inspection_groups=_inspection_contract_batches(batch)
             receipts_by_id={}
-            for _,inspection_batch in inspection_groups:
+            for inspection_batch in inspection_groups:
                 # inspect_many normally runs entailment immediately. Temporarily
                 # defer only that second pass; restore the shared Operations flag
                 # even when the provider raises.
