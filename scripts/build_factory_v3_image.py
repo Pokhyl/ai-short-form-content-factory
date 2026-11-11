@@ -57,7 +57,7 @@ def main(argv=None):
              "--label", "org.opencontainers.image.revision=" + head,
              "-f", str(context / "factory_v3" / "Dockerfile"),
              "-t", args.tag, str(context)],
-            capture_output=True, text=True, timeout=110,
+            capture_output=True, text=True, timeout=300,
         )
         log = result.stdout + result.stderr
         (ROOT / "acceptance/factory-v3/image-build-current.txt").write_text(log)
