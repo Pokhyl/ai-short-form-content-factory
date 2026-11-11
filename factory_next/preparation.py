@@ -47,6 +47,21 @@ def required_verified_image_target(seconds):
                min(preferred_shots(seconds, TOPIC_POLICY), (seconds+4)//5))
 
 
+def _inspection_contract_batches(assets):
+    """Partition a small candidate window by the contract inspect_many requires."""
+    groups=[]
+    indexes={}
+    for asset in assets:
+        contract=(json.dumps(asset.get('visual_targets',[]),sort_keys=True,
+                             ensure_ascii=False),
+                  asset.get('visual_qualification_protocol')=='qualified-target-v1')
+        if contract not in indexes:
+            indexes[contract]=len(groups)
+            groups.append([])
+        groups[indexes[contract]].append(asset)
+    return groups
+
+
 class VoiceRevisionCalls:
     """Use unique durable keys for all calls in reviewed voice correction.
 
@@ -194,16 +209,7 @@ class PreparationStages:
             # inspect_many requires one shared target set and qualification
             # protocol per provider call, so partition this bounded candidate
             # window by that exact contract while preserving candidate order.
-            inspection_groups=[]
-            for asset in batch:
-                contract=(json.dumps(asset.get('visual_targets',[]),sort_keys=True,
-                                     ensure_ascii=False),
-                          asset.get('visual_qualification_protocol')=='qualified-target-v1')
-                group=next((g for key,g in inspection_groups if key==contract),None)
-                if group is None:
-                    group=[]
-                    inspection_groups.append((contract,group))
-                group.append(asset)
+            inspection_groups=_inspection_contract_batches(batch)
             receipts_by_id={}
             for _,inspection_batch in inspection_groups:
                 # inspect_many normally runs entailment immediately. Temporarily
