@@ -144,6 +144,29 @@ class PreparationStages:
         from material_first.subject_focus import shows_main_topic
         desired=required_verified_image_target(request['seconds'])
         required_facts=set(request['required_fact_ids'])
+        # The initial inspection remains per bounded image batch. Accepted
+        # images then receive the same independent entailment review, queued
+        # across batches to reduce redundant model calls without weakening it.
+        pending=[];pending_bytes=0
+        entailment_enabled=operations.require_visual_entailment
+
+        def admit_reviewed(rows):
+            for asset,receipt in rows:
+                photo=inspected_material(asset,receipt,evidence,facts,'gemini_scientific')
+                if photo is not None and required_facts.intersection(photo['supported_fact_ids']):
+                    assets.append(asset);photos.append(photo)
+
+        def flush_entailment():
+            nonlocal pending_bytes
+            if not pending:return
+            from material_first.visual_entailment import review_batch
+            reviewed=review_batch(operations,[row[0] for row in pending],evidence,
+                                  [row[1] for row in pending])
+            if len(reviewed)!=len(pending):
+                raise ValueError('independent photo review omitted input')
+            admit_reviewed(list(zip([row[0] for row in pending],reviewed)))
+            pending.clear();pending_bytes=0
+
         for offset in range(0,len(candidates),4):
             batch=[]
             for candidate in candidates[offset:offset+4]:
@@ -163,16 +186,34 @@ class PreparationStages:
                 identities.add(asset['id']);hashes.add(asset['sha256']);fingerprints.append(fingerprint)
                 if operations.require_subject_focus:
                     asset['subject_focus_policy']='primary-subject-v1'
-                if operations.require_visual_entailment:
+                if entailment_enabled:
                     asset['visual_entailment_policy']='independent-visual-entailment-v1'
                 batch.append(asset)
             if not batch:continue
-            receipts=operations.inspect_many(deepcopy(batch),deepcopy(evidence))
+            # inspect_many normally runs entailment immediately. Temporarily
+            # defer only that second pass; restore the shared Operations flag
+            # even when the provider raises.
+            if entailment_enabled:operations.require_visual_entailment=False
+            try:
+                receipts=operations.inspect_many(deepcopy(batch),deepcopy(evidence))
+            finally:
+                if entailment_enabled:operations.require_visual_entailment=entailment_enabled
             if len(receipts)!=len(batch):raise ValueError('photo inspection omitted input')
-            for asset,receipt in zip(batch,receipts):
-                photo=inspected_material(asset,receipt,evidence,facts,'gemini_scientific')
-                if photo is not None and required_facts.intersection(photo['supported_fact_ids']):
-                    assets.append(asset);photos.append(photo)
+            if not entailment_enabled:
+                admit_reviewed(list(zip(batch,receipts)))
+            else:
+                for asset,receipt in zip(batch,receipts):
+                    if receipt.get('accepted') is not True:
+                        admit_reviewed([(asset,receipt)])
+                        continue
+                    photo_bytes=operations._photo(asset)['bytes']
+                    if not 0<len(photo_bytes)<=8*1024*1024:
+                        raise ValueError('photo input exceeds byte budget')
+                    if pending and (len(pending)>=4 or pending_bytes+len(photo_bytes)>8*1024*1024):
+                        flush_entailment()
+                    pending.append((asset,receipt));pending_bytes+=len(photo_bytes)
+                    if len(pending)>=4 or len(photos)+len(pending)>=desired:
+                        flush_entailment()
             visual_coverage=required_facts & {
                 fact for photo in photos for fact in photo['supported_fact_ids']}
             if (len(photos)>=desired
@@ -183,6 +224,7 @@ class PreparationStages:
                 # Invisible claims are supported by source citations and
                 # the independent script reviewer, not invented photographs.
                 break
+        flush_entailment()
         if len(photos)<max(3,minimum_shots(request['seconds'],TOPIC_POLICY)):
             raise ValueError('insufficient distinct source-related verified images')
         if operations.require_subject_focus and not shows_main_topic(photos):

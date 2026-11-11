@@ -1,3 +1,11 @@
+## Current continuation — material-call budget fix in progress, 2026-11-11
+
+Fresh normal job `e23b6fc2-295c-4e70-ae2e-91243c0662ad` is terminal at `story`; do not resume or retry it. It reached 9 accepted photos, but materials consumed 15 Gemini calls and research consumed 2. The existing story+voice reserve is 12; only 11 calls remained, so story preflight stopped before any story provider call. The VPS and public Studio are healthy; this was avoidable per-photo review call overhead, not a server outage.
+
+Candidate based on exact `e319c29603db64a425415a6b8bf24dcb355d6675` batches the same independent visual-entailment review across up to 4 already accepted photos and 8 MiB. The initial photo inspection and all independent review gates remain enabled. The regression models 32 candidates with 9 accepted across 8 initial batches and checks 8 initial calls plus entailment groups `[4,4,1]` (11 material calls rather than 15). Focused budget, entailment, and resume tests: 17/17 PASS; `git diff --check` PASS. No new provider calls, job, deployment, or MP4 from this candidate.
+
+Next: inspect and reclaim only safe Docker build-cache space (root filesystem had 59 MiB free), commit/push the candidate, build and run exact-image network-disabled checks, then use the protected rollout procedure and submit one fresh normal request only after the live revision is verified. Keep the failed job immutable, free-only model/budget, retry limits, photos and factual/visual gates unchanged. `project_ready=false` for the current candidate until fresh production MP4 and media audit pass.
+
 ## Current status — normal MP4 passed; overclaim guard deployed, 2026-11-09
 
 Production normal job9e176fe4-e40c-4856-987c-3e71efb267fc completed research→materials→story→voice→alignment→edit→render→audit on revisiond464fa5. Six approved photos, measured natural voice43512ms, exact45s H264/AAC/1350-frame MP4. All16 media audit gates passed; SHA256 8c5c2d16d9397f5ddfa3387bdbdbadeeab90e5ae809b3cc93d751f87fe2b0444. Public URL https://studio.hodor.com.pl/factory-next/api/jobs/9e176fe4-e40c-4856-987c-3e71efb267fc/video. Receipt acceptance/factory-next/normal-mp4-e2e-20261109.json.

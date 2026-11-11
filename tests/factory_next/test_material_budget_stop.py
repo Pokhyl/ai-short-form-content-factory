@@ -7,7 +7,7 @@ from factory_next.preparation import PreparationStages, required_verified_image_
 
 
 class PhotoBudgetStopTests(unittest.TestCase):
-    def run_materials(self, coverage, seconds=15, owned=False):
+    def run_materials(self, coverage, seconds=15, owned=False, candidate_count=20, entailment=False, accepted_count=None):
         source_text = "A test source documenting three facts for grounded photographs."
         evidence = {
             "sources": [{"id": "source-1", "url": "https://example.org/source",
@@ -19,8 +19,10 @@ class PhotoBudgetStopTests(unittest.TestCase):
         request = {"topic": "Arbitrary independent subject", "language": "en",
                    "seconds": seconds, "visual_validation_mode": "gemini",
                    "required_fact_ids": ["f1", "f2", "f3"]}
+        if entailment:
+            request.update(visual_entailment_policy="independent-visual-entailment-v1")
         source = {"request": request, "evidence": evidence, "queries": ["any"]}
-        candidate_ids = ["asset-" + str(i) for i in range(20)]
+        candidate_ids = ["asset-" + str(i) for i in range(candidate_count)]
         ops = Mock()
         ops.discover.return_value = [{"id": identity} for identity in candidate_ids]
 
@@ -31,22 +33,39 @@ class PhotoBudgetStopTests(unittest.TestCase):
                     "visual_fingerprint": {"source_sha256": signature}}
 
         def inspect(batch, unused_evidence):
-            return [{"asset_id": asset["id"]} for asset in batch]
+            return [{"asset_id": asset["id"], "accepted":
+                     (accepted_count is None
+                      or (candidate_ids.index(asset["id"]) < accepted_count
+                          if isinstance(accepted_count, int)
+                          else candidate_ids.index(asset["id"]) in accepted_count)),
+                     "receipt_id": "initial-" + asset["id"]} for asset in batch]
 
         def accepted(asset, receipt, unused_evidence, unused_facts, unused_mode):
+            if receipt.get('accepted') is False:
+                return None
             index = candidate_ids.index(asset["id"])
-            return {"id": asset["id"], "sha256":asset['sha256'], "supported_fact_ids": coverage(index)}
+            return {"id": asset["id"], "sha256":asset['sha256'], "supported_fact_ids": coverage(index),
+                    **({"visual_entailment": receipt["visual_entailment"]}
+                       if "visual_entailment" in receipt else {})}
 
         ops.download.side_effect = download
         ops.inspect_many.side_effect = inspect
+        ops._photo.side_effect = lambda asset: {"bytes": b"x" * 100}
+        def independent_review(unused_ops, assets, unused_evidence, receipts):
+            return [{**receipt, "visual_entailment": {"policy": "independent-visual-entailment-v1",
+                    "receipt_id": "independent-" + asset["id"]}}
+                    for asset, receipt in zip(assets, receipts)]
         with patch("factory_next.preparation.validate_material"), \
              patch("factory_next.preparation.pixels"), \
              patch("factory_next.preparation.same_photo", return_value=False), \
-             patch("factory_next.preparation.inspected_material", side_effect=accepted):
+             patch("factory_next.preparation.inspected_material", side_effect=accepted), \
+             patch("material_first.visual_entailment.review_batch", side_effect=independent_review) as entailment_review:
             from types import SimpleNamespace
             model=SimpleNamespace(fact_owned_story=True) if owned else None
             output = PreparationStages("/unused", ops, lambda: None,narrative_model=model).materials(
                 {"outputs": {"research": source}})
+            ops.review_batch_call_sizes = [len(call.args[1])
+                                           for call in entailment_review.call_args_list]
         return output, ops
 
     def test_distinct_source_anchors_prevent_premature_stop_on_actual_coverage_shape(self):
@@ -58,6 +77,16 @@ class PhotoBudgetStopTests(unittest.TestCase):
         result,ops=self.run_materials(lambda i:['f1'] if i%2 else ['f3'],owned=True)
         self.assertEqual(ops.inspect_many.call_count,1)
         self.assertEqual(len(result['photos']),4)
+
+    def test_independent_entailment_batches_accepted_photos_across_candidate_batches(self):
+        result, operations = self.run_materials(
+            lambda i: ["f1"] if i % 2 == 0 else ["f2"], seconds=45,
+            candidate_count=32, entailment=True,
+            accepted_count=[0, 4, 8, 12, 16, 20, 24, 28, 29])
+        self.assertEqual(operations.inspect_many.call_count, 8)
+        self.assertEqual(operations.review_batch_call_sizes, [4, 4, 1])
+        self.assertEqual(len(result["photos"]), 9)
+        self.assertTrue(all("visual_entailment" in photo for photo in result["photos"]))
 
     def test_editorial_target_respects_five_second_cadence_for_all_durations(self):
         self.assertEqual({n:required_verified_image_target(n)
