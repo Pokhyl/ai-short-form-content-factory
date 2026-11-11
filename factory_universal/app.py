@@ -190,7 +190,7 @@ def write_audio(slots,lang,jid,duration):
   path=tmp/('line-%02d.wav'%i);words=max(1,len(slot['text'].split()))
   speed=max(105,min(220,round(60*words/((targets[i]-35)/1000))))
   used=None
-  for _ in range(4):
+  for _ in range(12):
    subprocess.run(['espeak-ng','-v',voice,'-s',str(speed),'-w',str(path),'--',slot['text']],check=True,capture_output=True,timeout=20)
    with wave.open(str(path),'rb') as f:used=round(f.getnframes()*1000/f.getframerate())
    if used<=targets[i]-15:break
@@ -205,9 +205,9 @@ def write_audio(slots,lang,jid,duration):
    with wave.open(str(path),'rb') as f:
     if f.getparams()[:4]!=params[:4]:raise ValueError('voice sample format changed')
     frames=f.readframes(f.getnframes())
-   out.writeframes(frames);need=targets[i]-len(frames)//(params.nchannels*params.sampwidth)
-   if need<0:raise ValueError('narration exceeded its visual slot')
-   out.writeframes(silence*need)
+   sample_frames=len(frames)//(params.nchannels*params.sampwidth);target_frames=round(targets[i]*params.framerate/1000)
+   if sample_frames>target_frames:raise ValueError('narration exceeded its visual slot by '+str(round((sample_frames-target_frames)*1000/params.framerate))+' ms')
+   out.writeframes(frames);out.writeframes(silence*(target_frames-sample_frames))
  mp3=VOICE/jid/'final.mp3';mp3.parent.mkdir(parents=True,exist_ok=True)
  subprocess.run(['ffmpeg','-nostdin','-hide_banner','-loglevel','error','-y','-i',str(joined),'-codec:a','libmp3lame','-q:a','3',str(mp3)],check=True,capture_output=True,timeout=45)
  p=subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',str(mp3)],check=True,capture_output=True,text=True,timeout=10)
