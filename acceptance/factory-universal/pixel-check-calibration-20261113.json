@@ -1,0 +1,137 @@
+[
+  {
+    "passed": true,
+    "positive_score": 0.315285,
+    "negative_score": 0.265803,
+    "margin": 0.049482,
+    "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+    "descriptions": [
+      "Industrial heating and melting of glass bottle.",
+      "A furnace melting glass bottle material during manufacturing.",
+      "An image illustrating: Types of furnaces used in container glass making include \"end-port\" (end-fired), \"side-port\", and \"oxy-fuel\".",
+      "A photograph of an unrelated landscape or animal.",
+      "A still life of finished glass bottle displayed on a table.",
+      "Metalworking, steel bars being heated and forged by a blacksmith."
+    ],
+    "scores": [
+      0.297768,
+      0.315285,
+      0.243616,
+      0.212658,
+      0.265803,
+      0.262029
+    ],
+    "scene": 2,
+    "expected": true
+  },
+  {
+    "passed": false,
+    "positive_score": 0.296832,
+    "negative_score": 0.304511,
+    "margin": -0.007679,
+    "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+    "descriptions": [
+      "Industrial machinery forming and molding molten glass bottle.",
+      "A worker shaping glass bottle during its manufacturing process.",
+      "An image illustrating: Then compressed air is blown through the glass, which results in a hollow and partly formed container.",
+      "A photograph of an unrelated landscape or animal.",
+      "A still life of finished glass bottle displayed on a table.",
+      "A person attaching a cap or fitting to an already finished glass bottle.",
+      "Metalworking, steel bars being heated and forged by a blacksmith."
+    ],
+    "scores": [
+      0.296832,
+      0.290159,
+      0.234565,
+      0.197242,
+      0.235265,
+      0.242034,
+      0.304511
+    ],
+    "scene": 3,
+    "expected": false
+  },
+  {
+    "passed": false,
+    "positive_score": 0.299635,
+    "negative_score": 0.285371,
+    "margin": 0.014265,
+    "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+    "descriptions": [
+      "Industrial machinery forming and molding molten glass bottle.",
+      "A worker shaping glass bottle during its manufacturing process.",
+      "An image illustrating: \"Final blow\", applied through the \"blowhead\", blows the glass out, expanding into the mould, to make the final container shape.",
+      "A photograph of an unrelated landscape or animal.",
+      "A still life of finished glass bottle displayed on a table.",
+      "A person attaching a cap or fitting to an already finished glass bottle.",
+      "Metalworking, steel bars being heated and forged by a blacksmith."
+    ],
+    "scores": [
+      0.273243,
+      0.299635,
+      0.235082,
+      0.206859,
+      0.282476,
+      0.285371,
+      0.234694
+    ],
+    "scene": 6,
+    "expected": false
+  },
+  {
+    "passed": true,
+    "positive_score": 0.270712,
+    "negative_score": 0.220503,
+    "margin": 0.050209,
+    "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+    "descriptions": [
+      "An annealing oven cooling glass bottle after manufacturing.",
+      "Technical illustration of an annealing furnace for glass bottle.",
+      "Industrial heating and melting of glass bottle.",
+      "A furnace melting glass bottle material during manufacturing.",
+      "An image illustrating: An annealing oven, or 'lehr', is used to cool glass containers slowly to prevent stress and make the bottle stronger.",
+      "A photograph of an unrelated landscape or animal.",
+      "A still life of finished glass bottle displayed on a table.",
+      "Metalworking, steel bars being heated and forged by a blacksmith."
+    ],
+    "scores": [
+      0.241057,
+      0.270712,
+      0.253844,
+      0.236975,
+      0.25289,
+      0.2086,
+      0.159124,
+      0.220503
+    ],
+    "scene": 9,
+    "expected": true
+  },
+  {
+    "passed": true,
+    "positive_score": 0.24969,
+    "negative_score": 0.227942,
+    "margin": 0.021748,
+    "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+    "descriptions": [
+      "A worker inspecting glass bottle quality during manufacturing.",
+      "Quality control equipment inspecting glass bottle.",
+      "Factory production machinery manufacturing glass bottle.",
+      "An image illustrating: Glass containers are 100% inspected; automatic machines, or sometimes persons, inspect every container for a variety of faults.",
+      "A photograph of an unrelated landscape or animal.",
+      "A still life of finished glass bottle displayed on a table.",
+      "Metalworking, steel bars being heated and forged by a blacksmith."
+    ],
+    "scores": [
+      0.24969,
+      0.236272,
+      0.220796,
+      0.244436,
+      0.2259,
+      0.227942,
+      0.192635
+    ],
+    "scene": 11,
+    "expected": true
+  }
+]

@@ -14,6 +14,7 @@ services:
       MEDIA_WORKER_URL: http://shorts-v2-media-worker-1:3001
     volumes:
       - shorts-v2_media_data:/data
+      - /var/lib/factory-rebuild/models/clip:/models/clip:ro
       - /var/lib/factory-rebuild/secrets/settings.json:/run/secrets/settings.json:ro
       - /var/lib/factory-rebuild/secrets/visual-providers.json:/run/secrets/visual-providers.json:ro
       - /var/lib/factory-rebuild/secrets/n8n-project-settings.json:/run/secrets/n8n-project-settings.json:ro
