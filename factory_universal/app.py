@@ -96,7 +96,7 @@ def http_json(url,headers=None,timeout=20):
   pause=1.1-(time.monotonic()-WIKI_LAST_REQUEST)
   if pause>0:time.sleep(pause)
   WIKI_LAST_REQUEST=time.monotonic()
- h={'User-Agent':'UniversalShortFactory/1.0','Accept':'application/json'};h.update(headers or {})
+ h={'User-Agent':'UniversalShortFactory/1.0 (https://studio.hodor.com.pl/; educational video research)','Accept':'application/json'};h.update(headers or {})
  with urllib.request.urlopen(urllib.request.Request(url,headers=h),timeout=timeout) as r:return json.loads(r.read(8_000_000).decode('utf-8'))
 class WikiHTML(HTMLParser):
  VOID={'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}
@@ -229,7 +229,7 @@ def wikipedia(topic,lang):
    if len(out)>=6:break
   return out
 def sentences(paragraph):
- abbreviations=r'\b(?:e\.g|i\.e|U\.S|U\.K|Mr|Mrs|Dr|Prof|np|m\.in|itp|itd|tj|tzn|por|rys|św|т\.е|т\.д|т\.п|гг|рис|ім|ст)\.'
+ abbreviations=r'\b(?:e\.g|i\.e|U\.S|U\.K|Mr|Mrs|Dr|Prof|np|m\.in|itp|itd|tj|tzn|tzw|ok|godz|proc|por|rys|św|т\.е|т\.д|т\.п|гг|рис|ім|ст)\.'
  protected=re.sub(abbreviations,lambda match:match.group(0).replace('.',chr(0x2024)),paragraph,re.I)
  return [part.replace(chr(0x2024),'.') for part in re.split(r'(?<=[.!?])\s+',protected.strip())]
 
@@ -244,12 +244,13 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    title_terms=set(topic_terms(src['title'],lang))
    for paragraph_index,paragraph in enumerate(src['text'].splitlines()):
     for sentence in sentences(paragraph):
-     sentence=re.sub(r'\[[^\]]{1,24}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
-     if not sentence.endswith(('.', '!', '?')) or not 5<=len(words)<=24:continue
-     if sentence.count('(')!=sentence.count(')'):continue
+     sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
+     if not sentence.endswith(('.', '!', '?')) or not (5 if process_intent else 8)<=len(words)<=(24 if process_intent else 36):continue
+     if sentence.count('(')!=sentence.count(')') or re.search(r'\bIPA\s*:|U\+[0-9A-F]{4}|Unicode',sentence):continue
+     if re.match(r'^(?:examples? include|another example|for example|such)\b',sentence,re.I):continue
      if lang=='uk' and re.search(r'\bяк\b',sentence,re.I) and not re.search(r'\b(?:є|має|може|можуть|було|були|була|був|\w+(?:ється|ються|ають|ують|ить|ає|ує|али|ала|ила|или))\b',sentence,re.I):continue
-     if re.search(r'\b(?:этой|этого|этих|цього|цієї|tych|tej|tego|this|these|those)\b',sentence,re.I):continue
-     if re.match(r'^(?:he|she|it|they|these|those|this|он|она|оно|они|він|вона|воно|вони|one|ona|ono|oni|jej|jego)\b',sentence,re.I):continue
+     if re.search(r'\b(?:этой|этого|этих|цього|цієї|tych|tej|tego|this|these|those|such|their)\b',sentence,re.I):continue
+     if re.search(r'\b(?:it|they)\b',sentence,re.I) or re.match(r'^(?:he|she|он|она|оно|они|він|вона|воно|вони|one|ona|ono|oni|jej|jego|w ten sposób)\b',sentence,re.I):continue
      history_requested=bool(re.search(r'histor|ancient|истори|істор|dziej',topic,re.I))
      if process_intent and not history_requested and re.search(r'\b(?:invention|invented|ancient|century|centuries|were|was)\b|древн|стародав|wynalezion|starożytn',sentence,re.I):continue
      sentence_terms=set(topic_terms(sentence,lang));combined=sentence_terms|title_terms
@@ -257,9 +258,9 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if object_terms&bottle_words and combined&container_words:topic_hits=max(topic_hits,min(2,len(object_terms)))
      direct_topic=bool(sentence_terms&object_terms);process_overlap=process_signal(sentence,lang) if process_intent else 0
      if needed and topic_hits<needed:continue
-     if not process_intent and object_terms and not direct_topic:continue
-     if process_intent and (not process_overlap or not direct_topic):continue
-     score=topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)
+     if not process_intent and object_terms and (not direct_topic or not set(topic_terms(' '.join(words[:6]),lang))&object_terms):continue
+     if process_intent and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
+     score=topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
      rows.append((score,si,sentence,words))
   rows.sort(key=lambda x:(-x[0],x[1],abs(len(x[3])-13)))
   all_rows=list(rows)
@@ -294,8 +295,26 @@ def load_sources(topic,lang):
     return sources
   raise ValueError('Wikipedia temporarily rate-limited (HTTP 429); no saved sources for this topic') from error
 
+def relevant_sources(sources,topic,lang):
+ terms=topic_terms(topic,lang)
+ def stem(word):return word[:4] if not word.isascii() else word
+ def title_rank(source):
+  title=topic_terms(source['title'],lang)
+  matched=sum(any(stem(a)==stem(b) for b in title) for a in terms)
+  return (matched,-len(title))
+ ranked=sorted(sources,key=title_rank,reverse=True)
+ if not ranked:return []
+ anchor=ranked[0]
+ topic_words={stem(word) for word in terms}
+ def vocabulary(source):return {stem(word) for word in topic_terms(source['text'][:1800],lang) if len(word)>3}-topic_words
+ basis=vocabulary(anchor)
+ def same_name_other_sense(source):
+  base=lambda title:re.sub(r'\s*\([^)]*\)\s*','',title).strip().casefold()
+  return base(source['title'])==base(anchor['title']) and source['title'].casefold()!=anchor['title'].casefold()
+ return [anchor]+[source for source in ranked[1:] if not same_name_other_sense(source) and len(basis&vocabulary(source))>=3]
 def plan_script(sources,topic,lang,duration):
- for count in range(duration//5,max(2,duration//10)-1,-1):
+ process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
+ for count in range(max(2,duration//(5 if process_intent else 7)),max(2,duration//10)-1,-1):
   slots=source_slots(sources,topic,count,lang,duration_s=duration)
   if len(slots)==count:return slots
  return []
@@ -427,7 +446,8 @@ def get_pixel_verifier():
  if PIXEL_VERIFIER is None:PIXEL_VERIFIER=VisualVerifier()
  return PIXEL_VERIFIER
 def pixel_check(raw,topic,slot):
- subject=' '.join(dict.fromkeys(topic_terms(topic,'en')))
+ visual_subject=(slot.get('visual_title') or topic) if not slot.get('process_intent',True) else topic
+ subject=' '.join(dict.fromkeys(topic_terms(visual_subject,'en')))
  return get_pixel_verifier().check(raw,subject or topic,visual_actions(slot['text']) if slot.get('process_intent',True) else set(),slot['text'] if slot.get('language','en')=='en' else '')
 
 def allocate_photos(candidates,slots,topic,shot_count=None):
@@ -497,7 +517,7 @@ def make_card(raw,caption,dest,credit=None):
 def download_photo(c,dest):
  host=(urllib.parse.urlparse(c['url']).hostname or '').lower()
  if urllib.parse.urlparse(c['url']).scheme!='https' or not(host=='images.pexels.com' or host.endswith('.pixabay.com') or host in {'upload.wikimedia.org','thumb.wikimedia.org'}):raise ValueError('photo host not allowed')
- with urllib.request.urlopen(urllib.request.Request(c['url'],headers={'User-Agent':'UniversalShortFactory/1.0'}),timeout=25) as r:
+ with urllib.request.urlopen(urllib.request.Request(c['url'],headers={'User-Agent':'UniversalShortFactory/1.0 (https://studio.hodor.com.pl/; educational video research)'}),timeout=25) as r:
   data=r.read(20_000_001);ct=r.headers.get('Content-Type','').split(';')[0].lower()
  if len(data)>20_000_000 or ct not in {'image/jpeg','image/png','image/webp'}:raise ValueError('photo payload invalid')
  Path(dest).write_bytes(data)
@@ -570,8 +590,8 @@ def run_job(jid):
  j=get_job(jid);topic=j['topic'];lang=j['language'];duration=j['duration_s'];visual_count=duration*2//5;beat_count=duration//5
  try:
   update(jid,status='running',stage='research',progress=5,message='Finding cited facts in the selected language')
-  sources=load_sources(topic,lang)
-  if len(sources)<2:raise ValueError('fewer than two usable source articles; try a more specific topic or another language')
+  sources=relevant_sources(load_sources(topic,lang),topic,lang)
+  if not sources:raise ValueError('no usable source article; try a more specific topic or another language')
   slots=plan_script(sources,topic,lang,duration)
   if not slots:raise ValueError('not enough complete, topic-grounded source sentences fitting the requested duration')
   beat_count=len(slots)
@@ -619,7 +639,7 @@ def run_job(jid):
   mp3,audio_ms,speech_ms,slot_targets=write_audio(slots,lang,jid,duration)
   lo={15:14208,30:28464,45:42864,60:58176}[duration];hi={15:15768,30:34000,45:46128,60:61656}[duration]
   if not lo<=audio_ms<=hi:raise ValueError('measured voice is outside the accepted '+str(duration)+' second window')
-  audio_sha=hashlib.sha256(mp3.read_bytes()).hexdigest();target=max(duration*1000,audio_ms);beat_starts=[sum(slot_targets[:i]) for i in range(beat_count)];cursor=0;scenes=[]
+  audio_sha=hashlib.sha256(mp3.read_bytes()).hexdigest();target=duration*1000;beat_starts=[sum(slot_targets[:i]) for i in range(beat_count)];cursor=0;scenes=[]
   for i,item in enumerate(selected):
    beat=beat_for_shot[i];beat_start=beat_starts[beat];end=target if i==visual_count-1 else beat_start+slot_targets[beat]*(i-first_shot[beat]+1)//shots_per_beat[beat];spoken_end=min(target,beat_start+speech_ms[beat]);speech_start=max(cursor,beat_start);speech_end=min(end,spoken_end,audio_ms)
    if speech_end<=speech_start:speech_start=cursor;speech_end=min(end,cursor+1)
