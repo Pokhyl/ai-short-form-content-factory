@@ -5,11 +5,12 @@ A topic-in, reviewable MP4 factory, built as a small self-contained Python servi
 ## What it does
 
 - Accepts a topic, one of EN/PL/RU/UK, and a duration of 15, 30, 45, or 60 seconds.
-- Retrieves up to six source articles from Wikipedia in the requested language. The narration uses short, source-spanned extracts and the review manifest links each beat to its article.
+- Retrieves up to six source articles from Wikipedia in the requested language, anchors the selected meaning and removes unrelated homonyms. The narration uses complete, source-spanned extracts and the review manifest links each beat to its article.
 - Generates speech locally with eSpeak NG. It makes no Gemini, OpenAI, or other text-generation API calls.
 - Searches Pexels and Pixabay with at most seven distinct topic/action queries per job, including landscape photographs, caches provider responses for 24 hours, and selects 6/12/18/24 distinct still images for 15/30/45/60-second videos. Provider IDs, creator, provider page, article source, captions, and file hashes are saved in the manifest.
 - Supplements stock images with at most three cached Wikimedia Commons searches per job. Commons media must have explicit Public domain, CC0, or CC BY 2.0/2.5/3.0/4.0 metadata; the card displays the author, source, license and adaptation notice, and the manifest retains the rights fields. Other licenses are excluded.
 - Verifies downloaded image pixels locally using a quantized CLIP model on CPU. The runtime makes no model API calls; its model files are mounted read-only. Each accepted image has similarity scores in the manifest. This automated screen supplements browser review.
+- Preserves each whole photograph on a solid matte, with complete captions. Voice planning reserves MP3 encoder delay so the renderer can produce the exact requested duration at 30 fps.
 - Renders through the existing media-worker, verifies the render QA result, and fully decodes the MP4 with FFmpeg before marking the job ready.
 - Provides a browser review screen with video preview, manifest, approval, and change-request status.
 - Deletes temporary downloads and audio after completion or failure. Before starting new work, it expires MP4s after 30 days, caps this factory’s output directories at 2 GB, caps its cache at 512 MB, and removes abandoned failed-job files older than a day. It refuses new jobs if less than 2 GB is free.
@@ -53,3 +54,12 @@ The service listens on port 3000 inside Docker. Route the Studio hostname to fac
 - POST /api/jobs/{uuid}/review accepts approved or changes_requested, with an optional note.
 
 Every endpoint except /healthz requires Basic Auth.
+## Verification
+
+Run focused offline checks in the deployed runtime:
+
+    docker exec -i factory-universal python3 - < factory_universal/checks.py
+
+`review_outputs.py` collects the explicitly recorded acceptance jobs, checks frame count/duration and creates midpoint contact sheets. It never submits or retries generation jobs. Its dated plan is diagnostic evidence, not a production dependency.
+
+Wikipedia HTTP 429 stops fresh retrieval. A saved source for the same topic/language may be reused for up to 24 hours, with a retrieval note in the manifest; without one the job fails visibly. Local pixel screening can reject a good photograph or miss a contextual mismatch, so the product keeps review and change-request controls.

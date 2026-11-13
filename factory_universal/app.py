@@ -525,7 +525,8 @@ def download_photo(c,dest):
 def write_audio(slots,lang,jid,duration):
  voice={'en':'en-us','pl':'pl','ru':'ru','uk':'uk'}[lang];tmp=ROOT/'tmp'/jid;tmp.mkdir(parents=True,exist_ok=True)
  if not slots:raise ValueError('narration has no sentences')
- budget_ms=duration*1000
+ # Reserve encoder delay without removing any speech; the last scene holds the remainder.
+ budget_ms=duration*1000-100
  speed=175
  for attempt in range(6):
   wavs=[];speech=[]
@@ -555,10 +556,18 @@ def write_audio(slots,lang,jid,duration):
  mp3=VOICE/jid/'final.mp3';mp3.parent.mkdir(parents=True,exist_ok=True)
  subprocess.run(['ffmpeg','-nostdin','-hide_banner','-loglevel','error','-y','-i',str(joined),'-codec:a','libmp3lame','-q:a','3',str(mp3)],check=True,capture_output=True,timeout=45)
  p=subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',str(mp3)],check=True,capture_output=True,text=True,timeout=10)
- return mp3,round(float(p.stdout.strip())*1000),speech,targets
+ audio_ms=round(float(p.stdout.strip())*1000)
+ if not duration*1000-100<=audio_ms<=duration*1000:raise ValueError('encoded narration exceeds its exact video duration budget')
+ targets[-1]+=100
+ return mp3,audio_ms,speech,targets
 def post_render(jid,payload):
  req=urllib.request.Request(WORKER+'/renders/'+jid,data=json.dumps(payload).encode(),headers={'Content-Type':'application/json'},method='POST')
- with urllib.request.urlopen(req,timeout=240) as r:return json.loads(r.read().decode())
+ try:
+  with urllib.request.urlopen(req,timeout=240) as r:return json.loads(r.read().decode())
+ except urllib.error.HTTPError as error:
+  try:detail=json.loads(error.read(2000)).get('message') or 'HTTP '+str(error.code)
+  except (ValueError,AttributeError):detail='HTTP '+str(error.code)
+  raise ValueError('Renderer rejected the job: '+str(detail)[:400]) from error
 def scrub_error(e):
  if hasattr(e,'code'):return 'provider returned HTTP '+str(e.code)
  s=str(e)
