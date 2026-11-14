@@ -1,6 +1,12 @@
+# Regression correction and browser verification — 2026-11-14
+
+The owner’s Russian-input/Ukrainian-output failure has been reproduced and corrected through canonical native article grounding. New normal browser job `fcd09078-9c12-4f1b-ba24-3a161e0b0b83` produced 45 seconds, 1350 frames and 18 distinct image assets. All actual scene midpoints and captions were inspected. Chrome verified continuous playback across a list refresh; no page JavaScript errors occurred. Original failed jobs retain their recorded errors. Operator tests are separated into Examples and Test history.
+
+The following historical matrix verifies its recorded cases; it does not guarantee adequate articles and imagery for every arbitrary input. The broad readiness claim remains withdrawn.
+
 # Universal MP4 factory — active entry point
 
-`project_ready=true` for the source-grounded topic-to-reviewable-MP4 workflow, verified 2026-11-14.
+`project_ready=false` for the source-grounded topic-to-reviewable-MP4 workflow, verified 2026-11-14.
 
 Open https://studio.hodor.com.pl/ with the retained Studio login. Enter a topic, EN/PL/RU/UK and 15/30/45/60 seconds. The service researches sources, selects distinct images, creates local speech and captions, assembles MP4 and presents the review screen automatically.
 

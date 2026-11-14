@@ -1,0 +1,15 @@
+{
+  "job_id": "fcd09078-9c12-4f1b-ba24-3a161e0b0b83",
+  "actual_mp4_browser_playback": true,
+  "before": {
+    "time": 5.990628,
+    "width": 1080,
+    "height": 1920,
+    "error": null
+  },
+  "after_refresh": {
+    "same": true,
+    "time": 7.537995
+  },
+  "page_errors": []
+}

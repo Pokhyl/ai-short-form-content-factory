@@ -1,0 +1,20 @@
+{
+  "page_errors": [],
+  "default_user_only": true,
+  "ready_examples": 6,
+  "continuous_playback": {
+    "before": {
+      "time": 5.06284,
+      "width": 1080,
+      "error": null
+    },
+    "after_refresh": {
+      "same": true,
+      "time": 6.316847,
+      "width": 1080
+    }
+  },
+  "diagnostics_accessible": true,
+  "submitted_job": "fcd09078-9c12-4f1b-ba24-3a161e0b0b83",
+  "form_keeps_language_duration": true
+}

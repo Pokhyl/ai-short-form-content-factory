@@ -1,0 +1,38 @@
+[
+  {
+    "id": "89ba9b95-7ae9-4316-95ad-d06f7121ad2a",
+    "beats": 2,
+    "language": "pl",
+    "passed": true
+  },
+  {
+    "id": "bb024c75-eb1c-4c92-92ed-171e2a8c28bd",
+    "beats": 8,
+    "language": "en",
+    "passed": true
+  },
+  {
+    "id": "d379cf75-db33-4c9e-ac5d-516e07473ec0",
+    "beats": 5,
+    "language": "en",
+    "passed": true
+  },
+  {
+    "id": "3153d204-ca03-4295-a513-02ead76bc103",
+    "beats": 6,
+    "language": "en",
+    "passed": true
+  },
+  {
+    "id": "3abed575-1a61-4a35-91d6-b71c349d1417",
+    "beats": 2,
+    "language": "ru",
+    "passed": true
+  },
+  {
+    "id": "f8a85823-497f-4bd5-b49a-f2191dfad4a9",
+    "beats": 2,
+    "language": "uk",
+    "passed": true
+  }
+]

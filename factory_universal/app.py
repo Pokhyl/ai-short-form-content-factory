@@ -28,6 +28,7 @@ def connect():
 def init_db():
  with connect() as c:
   c.execute("""CREATE TABLE IF NOT EXISTS jobs(\n   id TEXT PRIMARY KEY, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,\n   topic TEXT NOT NULL, language TEXT NOT NULL, duration_s INTEGER NOT NULL,\n   status TEXT NOT NULL, stage TEXT NOT NULL, progress INTEGER NOT NULL,\n   message TEXT NOT NULL, error TEXT, manifest TEXT,\n   review_status TEXT NOT NULL DEFAULT 'pending', review_note TEXT)""")
+  if 'origin' not in {row['name'] for row in c.execute('PRAGMA table_info(jobs)')}:c.execute("ALTER TABLE jobs ADD COLUMN origin TEXT NOT NULL DEFAULT 'user'")
   c.execute("UPDATE jobs SET status='failed',stage='interrupted',message='Process restarted before completion',error='interrupted' WHERE status IN ('queued','running')")
 def update(jid,**fields):
  fields['updated_at']=now()
@@ -38,7 +39,7 @@ def get_job(jid):
  d=dict(r);d['manifest']=json.loads(d['manifest']) if d['manifest'] else None;return d
 def public_job(j):
  if not j:return None
- return {k:j[k] for k in ('id','created_at','updated_at','topic','language','duration_s','status','stage','progress','message','error','review_status','review_note')}|{'manifest':j['manifest']}
+ return {k:j[k] for k in ('id','created_at','updated_at','topic','language','duration_s','status','stage','progress','message','error','review_status','review_note')}|{'manifest':j['manifest'],'origin':j.get('origin','user')}
 def safe_id(x):
  try:return str(uuid.UUID(x))
  except Exception:return None
@@ -215,6 +216,22 @@ def wikipedia(topic,lang):
   if made and len(core_set)>1:
    hits=[title for title in hits if core_set<=set(topic_terms(title,lang)) or bool((set(topic_terms(title,lang))-core_set)&method_terms) or (bool(set(topic_terms(title,lang))&core_set) and bool(re.search(r'manufactur|produc|fabricat|process|produk|wytwarz|proces|производ|изготов|процесс|виробниц|виготов|процес',title,re.I)))]
   hits=sorted(hits,key=lambda title:(-len(set(topic_terms(title,lang))&core_set),hits.index(title)))
+  if not hits:
+   hints=['uk','ru','en','pl'] if re.search('[іїєґІЇЄҐ]',topic) else ['ru','uk','en','pl'] if re.search('[А-Яа-яЁё]',topic) else ['pl','en','ru','uk'] if re.search('[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]',topic) else ['en','pl','ru','uk']
+   for query_lang in hints:
+    if query_lang==lang:continue
+    q=urllib.parse.urlencode({'action':'query','list':'search','srsearch':topic,'srlimit':'6','srnamespace':'0','format':'json','formatversion':'2'})
+    foreign=(http_json('https://'+query_lang+'.wikipedia.org/w/api.php?'+q,timeout=22).get('query') or {}).get('search') or []
+    if not foreign:continue
+    query_terms=grounding_terms(topic,query_lang)
+    def foreign_rank(hit):
+     title_terms=grounding_terms(hit['title'],query_lang)
+     return (bool(query_terms&title_terms) and (len(title_terms)>1 or len(query_terms)==1),len(query_terms&title_terms)/max(1,len(title_terms)),-len(title_terms))
+    foreign.sort(key=foreign_rank,reverse=True)
+    q=urllib.parse.urlencode({'action':'parse','page':foreign[0]['title'],'prop':'langlinks','format':'json'})
+    links=(http_json('https://'+query_lang+'.wikipedia.org/w/api.php?'+q,timeout=22).get('parse') or {}).get('langlinks') or []
+    translated=next((link.get('*') or link.get('title') for link in links if link.get('lang')==lang),'')
+    if translated:hits=[translated];break
   out=[]
   for title in hits[:10]:
    try:
@@ -244,15 +261,17 @@ def unsupported_qualifier(sentence,topic,sources):
   if len(qualifier)<3 or not qualifier.isalpha() or qualifier in grammar or qualifier in core:continue
   if not set(tokens(qualifier))<=represented:return True
  return False
+def grounding_terms(text,lang):
+ return {term[:4] if lang!='en' else term for term in topic_terms(text,lang)}
 def source_slots(sources,topic,count,lang='en',duration_s=None):
   target_ms=(duration_s if duration_s is not None else count*5)*1000
-  object_terms=set(topic_terms(topic,lang))
+  object_terms=grounding_terms(topic,lang)
   process_intent=bool(re.search(r'\b(make|made|manufactur\w*|produc\w*|fabricat\w*|build|create|zrobi\w*|produk\w*|wytwarz\w*|изготов\w*|производ\w*|виробля\w*|виготов\w*)\b',topic,re.I))
-  bottle_words=set(topic_terms('bottle bottles бутылка пляшка пляшки butelka butelki',lang))
-  container_words=set(topic_terms('container containers packaging jar pojemnik pojemniki opakowanie тара контейнер контейнери',lang))
+  bottle_words=grounding_terms('bottle bottles бутылка пляшка пляшки butelka butelki',lang)
+  container_words=grounding_terms('container containers packaging jar pojemnik pojemniki opakowanie тара контейнер контейнери',lang)
   rows=[]
   for si,src in enumerate(sources):
-   title_terms=set(topic_terms(src['title'],lang))
+   title_terms=grounding_terms(src['title'],lang)
    for paragraph_index,paragraph in enumerate(src['text'].splitlines()):
     for sentence in sentences(paragraph):
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
@@ -264,12 +283,12 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if re.search(r'\b(?:it|they)\b',sentence,re.I) or re.match(r'^(?:he|she|он|она|оно|они|він|вона|воно|вони|one|ona|ono|oni|jej|jego|w ten sposób)\b',sentence,re.I):continue
      history_requested=bool(re.search(r'histor|ancient|истори|істор|dziej',topic,re.I))
      if process_intent and not history_requested and re.search(r'\b(?:invention|invented|ancient|century|centuries|were|was)\b|древн|стародав|wynalezion|starożytn',sentence,re.I):continue
-     sentence_terms=set(topic_terms(sentence,lang));combined=sentence_terms|title_terms
+     sentence_terms=grounding_terms(sentence,lang);combined=sentence_terms|title_terms
      topic_hits=len(combined&object_terms);needed=min(2,len(object_terms))
      if object_terms&bottle_words and combined&container_words:topic_hits=max(topic_hits,min(2,len(object_terms)))
      direct_topic=bool(sentence_terms&object_terms);process_overlap=process_signal(sentence,lang) if process_intent else 0
      if needed and topic_hits<needed:continue
-     if not process_intent and object_terms and (not direct_topic or not set(topic_terms(' '.join(words[:6]),lang))&object_terms):continue
+     if not process_intent and object_terms and (not direct_topic or (lang=='en' and not grounding_terms(' '.join(words[:6]),lang)&object_terms)):continue
      if lang=='en' and not process_intent and unsupported_qualifier(sentence,topic,sources):continue
      if process_intent and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
      score=topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
@@ -293,12 +312,17 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    stage_order={'heat':0,'shape':1,'cool':2,'inspect':3}
    return sorted(chosen,key=lambda x:(max((stage_order[action] for action in visual_actions(x['text']) if action in stage_order),default=0),x['source_index'],sources[x['source_index']]['text'].find(x['source_sentence'])))
   return sorted(chosen,key=lambda x:(x['source_index'],sources[x['source_index']]['text'].find(x['source_sentence'])))
-def source_cache_key(topic,lang):return 'wikipedia-v5|'+lang+'|'+topic
+def source_cache_key(topic,lang):return 'wikipedia-v8|'+lang+'|'+topic
 def load_sources(topic,lang):
+ current=ROOT/'cache'/(hashlib.sha256(source_cache_key(topic,lang).encode()).hexdigest()+'.json')
+ previous=ROOT/'cache'/(hashlib.sha256(('wikipedia-v6|'+lang+'|'+topic).encode()).hexdigest()+'.json')
+ if not current.exists() and previous.exists() and time.time()-previous.stat().st_mtime<86400:
+  old=json.loads(previous.read_text())
+  if isinstance(old,list) and any(grounding_terms(topic,lang)&grounding_terms(source.get('title',''),lang) for source in old if isinstance(source,dict)):shutil.copy2(previous,current)
  try:return cache_fetch(source_cache_key(topic,lang),lambda:wikipedia(topic,lang))
  except urllib.error.HTTPError as error:
   if error.code!=429:raise
-  for version in (4,3):
+  for version in (5,4,3):
    path=ROOT/'cache'/(hashlib.sha256(('wikipedia-v'+str(version)+'|'+lang+'|'+topic).encode()).hexdigest()+'.json')
    if not path.exists() or time.time()-path.stat().st_mtime>86400:continue
    sources=json.loads(path.read_text())
@@ -329,7 +353,14 @@ def plan_script(sources,topic,lang,duration):
  for count in range(max(2,duration//(5 if process_intent else 7)),max(2,duration//10)-1,-1):
   slots=source_slots(sources,topic,count,lang,duration_s=duration)
   if len(slots)==count:return slots
+ if sources and not process_intent:
+  canonical=sources[0]['title']
+  if canonical.casefold()!=topic.casefold():
+   slots=plan_script(sources,canonical,lang,duration)
+   for slot in slots:slot['resolved_topic']=canonical
+   return slots
  return []
+
 def shot_beats(shot_count,beat_count):
  if beat_count<1 or shot_count<2*beat_count:raise ValueError('storyboard requires at least two images per narration beat')
  return [index*beat_count//shot_count for index in range(shot_count)]
@@ -390,7 +421,9 @@ def visual_context_title(slot,sources,lang):
  scores=[sum(weights.get(term,0)**2 for term in query&doc)/max(1,sum(weights[term]**2 for term in doc))**.5 for doc in corpus]
  return mapped[max(range(len(mapped)),key=lambda index:scores[index])]['visual_title']
 def media_search_topic(topic,lang,sources):
- if lang=='en':return topic
+ if lang=='en':
+  if sources and not set(topic_terms(topic,'en'))&set(topic_terms(sources[0]['title'],'en')):return sources[0].get('visual_title') or sources[0]['title']
+  return topic
  terms=topic_terms(topic,lang)
  def relevance(source):
   title_terms=topic_terms(source['title'],lang)
@@ -416,9 +449,24 @@ def visual_queries(topic,lang,slots):
   if title and title.casefold() not in {query.casefold() for query in queries}:queries.append(title)
  return queries[:7]
 
+def media_aliases(topic):
+ def retrieve():
+  q=urllib.parse.urlencode({'action':'query','titles':topic,'prop':'redirects','rdlimit':'20','format':'json','formatversion':'2'})
+  data=http_json('https://en.wikipedia.org/w/api.php?'+q,timeout=22)
+  pages=(data.get('query') or {}).get('pages') or []
+  names=[redirect['title'] for page in pages for redirect in page.get('redirects',[]) if redirect.get('ns',0)==0]
+  result=[topic];seen={frozenset(tokens(topic))}
+  for name in sorted(names,key=lambda text:(len(tokens(text)),text)):
+   key=frozenset(tokens(name))
+   if key and key not in seen and 1<=len(key)<=4 and '(' not in name:result.append(name);seen.add(key)
+   if len(result)>=3:break
+  return result
+ try:return cache_fetch('visual-aliases-v1|'+topic,retrieve)
+ except Exception:return [topic]
 def discover_photos(topic,lang,slots):
  pool={};errors=[]
- for query in visual_queries(topic,lang,slots):
+ aliases=list(dict.fromkeys(alias for slot in slots for alias in slot.get('topic_aliases',[])))
+ for query in list(dict.fromkeys(visual_queries(topic,lang,slots)+aliases))[:7]:
   try:
    for candidate in photo_search(query,lang):pool.setdefault((candidate['provider'],candidate['id']),candidate)
   except Exception as e:errors.append(str(e))
@@ -428,7 +476,7 @@ def discover_photos(topic,lang,slots):
  actions=set().union(*(visual_actions(slot['text']) if slot.get('process_intent',True) else set() for slot in slots))
  labels={'heat':'furnace','shape':'forming','cool':'annealing','inspect':'inspection','production':'manufacturing'}
  queries=[((' '.join(core_terms) if action=='inspect' else core)+' '+labels[action]).strip() for action in ('cool','inspect','heat','shape','production') if action in actions][:3]
- if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]))[:3]
+ if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  for query in queries:
   try:
    for candidate in commons_search(query):pool.setdefault((candidate['provider'],candidate['id']),candidate)
@@ -453,7 +501,7 @@ def visual_actions(text):
 def visual_competitors(topic,candidates):
  core=topic_terms(topic,'en');generic={'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
  anchors=[term for term in core if term not in generic]
- if len(anchors)<2:return []
+ if len(anchors)<2 or any(word.endswith(('ing','ed')) for word in anchors[:-1]):return []
  head=anchors[-1];counts={};grammar=STOP|set('partial total full complete great large small closeup stunning dramatic beautiful captivating breathtaking detailed mesmerizing amazing during before after'.split())
  for candidate in candidates:
   words=re.findall(r'[a-z]+',(candidate.get('depiction') or candidate['alt']).lower());found=set()
@@ -468,9 +516,12 @@ def photo_score(p,slot,topic):
  terms=set(tokens(topic+' '+slot['text']+' '+slot.get('visual_title','')));meta=set(tokens(depiction))
  process_topic=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  anchors=set(topic_terms(topic,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
- if anchors and not anchors&meta:return -1
- if not process_topic and anchors and not anchors<=meta:return -1
- if not process_topic and p.get('provider')=='pixabay' and len(anchors)>1 and not any(anchors<=set(tokens(tag)) for tag in depiction.split(',')):return -1
+ if process_topic and anchors and not anchors&meta:return -1
+ if not process_topic and anchors:
+  names=[topic]+slot.get('topic_aliases',[])
+  groups=[set(topic_terms(name,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'} for name in names]
+  if not any(group and group<=meta for group in groups):return -1
+ if not process_topic and p.get('provider')=='pixabay' and len(anchors)>1 and not any(group and group<=set(tokens(tag)) for group in groups for tag in depiction.split(',')):return -1
  if p.get('provider') in {'pixabay','pexels'} and re.search(r'\b(?:fantasy|sci[ -]?fi|digital art|3d render|ai[ -]generated)\b',depiction,re.I):return -1
  work_context=r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
  if process_topic and not re.search(work_context,depiction,re.I):return -1
@@ -497,7 +548,7 @@ def allocate_photos(candidates,slots,topic,shot_count=None):
  subject=set(tokens(topic));edges=[]
  for beat in shot_beats(shot_count if shot_count is not None else len(slots)*2,len(slots)):
   slot=slots[beat]
-  eligible=[index for index,p in enumerate(candidates) if photo_score(p,slot,topic)>=0 and (not subject or subject&set(tokens(p['alt'])))]
+  eligible=[index for index,p in enumerate(candidates) if photo_score(p,slot,topic)>=0]
   eligible.sort(key=lambda index:photo_score(candidates[index],slot,topic),reverse=True)
   edges.append(eligible)
  owner={}
@@ -654,6 +705,8 @@ def run_job(jid):
    if not slot.get('process_intent'):slot['visual_title']=visual_context_title(slot,sources,lang)
   media_topic=media_search_topic(topic,lang,sources)
   update(jid,stage='visuals',progress=20,message='Searching a bounded photo pool; requiring unique relevant assets')
+  aliases=[media_topic] if slots[0].get('process_intent') else media_aliases(media_topic)
+  for slot in slots:slot['topic_aliases']=aliases
   candidates=discover_photos(media_topic,'en',slots)
   if len(candidates)<visual_count:raise ValueError('photo search found '+str(len(candidates))+' distinct candidates; '+str(visual_count)+' are required')
   competitors=[] if slots[0].get('process_intent') else visual_competitors(media_topic,candidates)
@@ -670,7 +723,7 @@ def run_job(jid):
     key=(p['provider'],p['id'])
     if key in used_ids or photo_score(p,slot,media_topic)<0:continue
     meta=set(tokens(p['alt']))
-    if not meta or (topic_terms and not topic_terms&meta):continue
+    if not meta:continue
     if attempts>=24:break
     attempts+=1
     shot=str(uuid.uuid4());folder=VISUAL/jid/shot;folder.mkdir(parents=True,exist_ok=False)
@@ -705,7 +758,7 @@ def run_job(jid):
   full=subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(video),'-f','null','-'],capture_output=True,text=True,timeout=150)
   if full.returncode:raise ValueError('full MP4 decode failed')
   if not rendered.get('qa_passed'):raise ValueError('media-worker render QA failed')
-  manifest={'version':'universal-1','job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'script_mode':'source-grounded extractive','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification']} for i,x in enumerate(visual_rows)],'narration':{'engine':'eSpeak NG local','voice':{'en':'en-us','pl':'pl','ru':'ru','uk':'uk'}[lang],'audio_duration_ms':audio_ms,'speech_duration_ms':speech_ms,'beat_duration_ms':slot_targets,'sha256':audio_sha},'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
+  manifest={'version':'universal-1','job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'script_mode':'source-grounded extractive','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification']} for i,x in enumerate(visual_rows)],'narration':{'engine':'eSpeak NG local','voice':{'en':'en-us','pl':'pl','ru':'ru','uk':'uk'}[lang],'audio_duration_ms':audio_ms,'speech_duration_ms':speech_ms,'beat_duration_ms':slot_targets,'sha256':audio_sha},'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
   (RENDER/jid/'universal-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
   shutil.rmtree(VISUAL/jid,ignore_errors=True);shutil.rmtree(VOICE/jid,ignore_errors=True);shutil.rmtree(ROOT/'tmp'/jid,ignore_errors=True)
   update(jid,status='ready',stage='review',progress=100,message='MP4 ready for review',manifest=json.dumps(manifest,ensure_ascii=False),error=None)
@@ -764,9 +817,7 @@ def cleanup():
    if total<=CACHE_MAX_BYTES:break
    try:total-=path.stat().st_size;path.unlink()
    except OSError:pass
-HTML=r'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Universal Video Factory</title><style>:root{color-scheme:dark;font:16px system-ui;background:#0b1020;color:#edf2ff}body{margin:0 auto;max-width:1100px;padding:32px 20px}h1{font-size:32px;margin:0}p{color:#aab6d3}form,.job{background:#141c31;border:1px solid #2b3858;border-radius:16px;padding:20px;margin:22px 0}form{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end}label{display:grid;gap:6px;color:#bdc9e5}input,select,button{font:inherit;border-radius:9px;padding:12px;border:1px solid #3b4b70;background:#0b1020;color:#fff}button{cursor:pointer;background:#4b72ea;border:0;font-weight:700}button.secondary{background:#26344f}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.job h2{font-size:19px}.job video{width:100%;max-height:680px;background:#05070c}.bar{height:8px;background:#283653;border-radius:5px;overflow:hidden}.bar span{display:block;height:8px;background:#79a6ff}.sources a{color:#90b5ff}.error{color:#ff9e9e}.pill{display:inline-block;border-radius:99px;background:#283653;padding:4px 9px;font-size:12px}@media(max-width:760px){form,.grid{grid-template-columns:1fr}}</style><body><h1>Universal Video Factory</h1><p>Create a vertical video from a topic, with narration, unique images, captions and cited sources.</p><form id="new"><label>Topic<input name="topic" minlength="3" maxlength="180" required placeholder="How glass bottles are made"></label><label>Language<select name="language"><option value="en">English</option><option value="pl">Polski</option><option value="ru">Русский</option><option value="uk">Українська</option></select></label><label>Length<select name="duration_s"><option>15</option><option>30</option><option>45</option><option>60</option></select></label><button>Create MP4</button></form><div id="status"></div><div id="jobs" class="grid"></div><script>
-var base=location.pathname.replace(/\/$/,'');if(base==='/')base='';function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}function api(p,o){return fetch(base+p,o||{}).then(function(r){return r.json().then(function(x){if(!r.ok)throw Error(x.error||r.status);return x})})}function draw(){api('/api/jobs').then(function(d){document.getElementById('jobs').innerHTML=(d.jobs||[]).map(function(j){var m=j.manifest||{};var video=j.status==='ready'?'<video controls preload="metadata" src="'+base+'/api/jobs/'+j.id+'/video"></video><p><a href="'+base+'/api/jobs/'+j.id+'/manifest">Manifest and media audit</a></p>':'';var script=m.script?'<details><summary>Script and cited sources</summary><p>'+esc(m.script)+'</p><div class="sources">'+(m.sources||[]).map(function(s){return '<p><a target="_blank" rel="noreferrer" href="'+esc(s.url)+'">'+esc(s.title)+'</a></p>'}).join('')+'</div></details>':'';var err=j.error?'<p class="error">'+esc(j.error)+'</p>':'';var review=j.status==='ready'?'<p><span class="pill">Review: '+esc(j.review_status)+'</span> <button class="secondary" onclick="reviewJob(\''+j.id+'\',\'approved\')">Approve</button> <button class="secondary" onclick="reviewJob(\''+j.id+'\',\'changes_requested\')">Request changes</button></p>':'';return '<article class="job"><h2>'+esc(j.topic)+' · '+j.duration_s+'s · '+esc(j.language)+'</h2><p>'+esc(j.stage)+' — '+esc(j.message)+'</p><div class="bar"><span style="width:'+j.progress+'%"></span></div>'+err+video+script+review+'</article>'}).join('')||'<p>No videos yet.</p>'}).catch(function(e){document.getElementById('status').textContent=e.message})}function reviewJob(id,state){api('/api/jobs/'+id+'/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:state})}).then(draw).catch(function(e){alert(e.message)})}document.getElementById('new').addEventListener('submit',function(e){e.preventDefault();var f=new FormData(e.target);api('/api/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:f.get('topic'),language:f.get('language'),duration_s:Number(f.get('duration_s'))})}).then(function(){e.target.reset();draw()}).catch(function(x){document.getElementById('status').textContent=x.message})});draw();setInterval(draw,4000);
-</script></body></html>'''
+HTML='<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Universal Video Factory</title><style>:root{color-scheme:dark;font:16px system-ui;background:#0b1020;color:#edf2ff}body{margin:0 auto;max-width:1100px;padding:32px 20px}h1{font-size:32px;margin:0}p{color:#aab6d3}form,.job{background:#141c31;border:1px solid #2b3858;border-radius:16px;padding:20px;margin:22px 0}form{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end}label{display:grid;gap:6px;color:#bdc9e5}input,select,button{font:inherit;border-radius:9px;padding:12px;border:1px solid #3b4b70;background:#0b1020;color:#fff}button{cursor:pointer;background:#4b72ea;border:0;font-weight:700}button.secondary{background:#26344f}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.job h2{font-size:19px}.job video{width:100%;max-height:680px;background:#05070c}.bar{height:8px;background:#283653;border-radius:5px;overflow:hidden}.bar span{display:block;height:8px;background:#79a6ff}.sources a{color:#90b5ff}.error{color:#ff9e9e}.pill{display:inline-block;border-radius:99px;background:#283653;padding:4px 9px;font-size:12px}@media(max-width:760px){form,.grid{grid-template-columns:1fr}}</style><body><h1>Universal Video Factory</h1><p>Create a vertical video from a topic, with narration, unique images, captions and cited sources.</p><form id="new"><label>Topic<input name="topic" minlength="3" maxlength="180" required placeholder="Enter a topic"></label><label>Language<select name="language"><option value="en">English</option><option value="pl">Polski</option><option value="ru">Русский</option><option value="uk">Українська</option></select></label><label>Length<select name="duration_s"><option>15</option><option>30</option><option>45</option><option>60</option></select></label><button>Create MP4</button></form><div style="display:flex;gap:12px;align-items:end"><label>View<select id="historyView"><option value="user">My videos</option><option value="examples">Examples</option><option value="tests">Test history</option></select></label><button id="refresh" type="button" class="secondary">Refresh</button></div><div id="status" role="status"></div><div id="jobs" class="grid"></div><script>\n\nvar base=location.pathname.replace(/\\/$/,\'\');if(base===\'/\')base=\'\';\nvar requestNo=0,lastFetch=0,hasActiveJobs=false;\nvar list=document.getElementById(\'jobs\'),view=document.getElementById(\'historyView\'),statusBox=document.getElementById(\'status\');\nfunction esc(value){return String(value||\'\').replace(/[&<>"\']/g,function(c){return {\'&\':\'&amp;\',\'<\':\'&lt;\',\'>\':\'&gt;\',\'"\':\'&quot;\',"\'":\'&#39;\'}[c]})}\nasync function api(path,options){var response=await fetch(base+path,options||{});var data=await response.json();if(!response.ok)throw Error(data.error||response.status);return data}\nfunction cardHTML(j){\n var m=j.manifest||{},video=j.status===\'ready\'?\'<video controls playsinline preload="metadata" src="\'+base+\'/api/jobs/\'+j.id+\'/video"></video><p><a href="\'+base+\'/api/jobs/\'+j.id+\'/video" download>Download MP4</a> · <a href="\'+base+\'/api/jobs/\'+j.id+\'/manifest">Sources and media audit</a></p>\':\'\';\n var script=m.script?\'<details><summary>Script and cited sources</summary><p>\'+esc(m.script)+\'</p><div class="sources">\'+(m.sources||[]).map(function(source){return \'<p><a target="_blank" rel="noreferrer" href="\'+esc(source.url)+\'">\'+esc(source.title)+\'</a></p>\'}).join(\'\')+\'</div></details>\':\'\';\n var summary=j.message;\n if(j.status===\'failed\')summary=j.message.indexOf(\'research\')>=0?\'Could not prepare a complete script from the sources.\':j.message.indexOf(\'visual\')>=0?\'Could not find enough suitable images.\':\'Video creation failed.\';\n var error=j.error?\'<details><summary class="error">Error details</summary><p class="error">\'+esc(j.error)+\'</p></details>\':\'\';\n var review=j.status===\'ready\'?\'<p><span class="pill">Review: \'+esc(j.review_status)+\'</span> <button class="secondary" data-action="approved" data-id="\'+j.id+\'">Approve</button> <button class="secondary" data-action="changes_requested" data-id="\'+j.id+\'">Request changes</button></p>\':\'\';\n var resolved=m.resolved_topic&&m.resolved_topic!==j.topic?\'<p>Source topic: \'+esc(m.resolved_topic)+\'</p>\':\'\';\n return \'<article class="job" data-job-id="\'+j.id+\'" data-origin="\'+esc(j.origin)+\'" data-state="\'+esc(j.status)+\'"><h2>\'+esc(j.topic)+\' · \'+j.duration_s+\'s · \'+esc(j.language)+\'</h2><p>\'+esc(j.status)+\' — \'+esc(summary)+\'</p>\'+resolved+\'<div class="bar"><span style="width:\'+j.progress+\'%;\'+(j.status===\'failed\'?\'background:#d86969\':\'\')+\'"></span></div>\'+error+video+script+review+\'</article>\';\n}\nfunction patchCards(jobs){\n var ids=new Set(jobs.map(function(job){return job.id}));\n Array.from(list.children).forEach(function(node){if(!ids.has(node.dataset.jobId))node.remove()});\n jobs.forEach(function(job,index){\n  var signature=JSON.stringify(job),card=list.querySelector(\'[data-job-id="\'+job.id+\'"]\');\n  if(!card||card.dataset.signature!==signature){var template=document.createElement(\'template\');template.innerHTML=cardHTML(job);var next=template.content.firstElementChild;next.dataset.signature=signature;if(card)card.replaceWith(next);card=next;}\n  if(list.children[index]!==card)list.insertBefore(card,list.children[index]||null);\n });\n if(!jobs.length){list.innerHTML=\'<p>No videos in this view.</p>\';}\n}\nasync function draw(){\n var sequence=++requestNo,selected=view.value;\n try{var data=await api(\'/api/jobs?view=\'+encodeURIComponent(selected));if(sequence!==requestNo||selected!==view.value)return;var jobs=data.jobs||[];hasActiveJobs=jobs.some(function(job){return job.status===\'queued\'||job.status===\'running\'});patchCards(jobs);lastFetch=Date.now();statusBox.textContent=\'\';}\n catch(error){if(sequence===requestNo)statusBox.textContent=error.message;}\n}\nlist.addEventListener(\'click\',async function(event){var button=event.target.closest(\'button[data-action]\');if(!button)return;try{await api(\'/api/jobs/\'+button.dataset.id+\'/review\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({status:button.dataset.action})});await draw()}catch(error){statusBox.textContent=error.message}});\nview.addEventListener(\'change\',draw);document.getElementById(\'refresh\').addEventListener(\'click\',draw);\ndocument.getElementById(\'new\').addEventListener(\'submit\',async function(event){\n event.preventDefault();var form=event.target,button=form.querySelector(\'button\'),fields=new FormData(form);button.disabled=true;statusBox.textContent=\'Submitting…\';\n try{await api(\'/api/jobs\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({topic:fields.get(\'topic\'),language:fields.get(\'language\'),duration_s:Number(fields.get(\'duration_s\'))})});form.elements.topic.value=\'\';view.value=\'user\';await draw()}\n catch(error){statusBox.textContent=error.message}finally{button.disabled=false}\n});\ndraw();setInterval(function(){if(!document.hidden&&(hasActiveJobs||Date.now()-lastFetch>30000))draw()},4000);\n\n</script></body></html>'
 class Handler(BaseHTTPRequestHandler):
  def auth(self):
   expected=base64.b64encode((PROJECT.get('STUDIO_AUTH_USERNAME','')+':'+PROJECT.get('STUDIO_AUTH_PASSWORD','')).encode()).decode()
@@ -790,8 +841,14 @@ class Handler(BaseHTTPRequestHandler):
   if p in ('/','/index.html'):
    b=HTML.encode();self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(b)));self.end_headers();self.wfile.write(b);return
   if p=='/api/jobs':
-   with connect() as c:rows=c.execute('SELECT id FROM jobs ORDER BY created_at DESC LIMIT 50').fetchall()
-   return self.json_out(200,{'jobs':[public_job(get_job(x['id'])) for x in rows]})
+   view=urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).get('view',['user'])[0]
+   filters={'user':"origin='user' AND status!='expired'",'examples':"origin='test' AND status='ready'",'tests':"origin='test'"}
+   if view not in filters:return self.json_out(400,{'error':'unknown job view'})
+   with connect() as c:rows=c.execute('SELECT id FROM jobs WHERE '+filters[view]+' ORDER BY created_at DESC LIMIT 50').fetchall()
+   jobs=[public_job(get_job(row['id'])) for row in rows]
+   for job in jobs:
+    if job['manifest']:job['manifest']={key:job['manifest'][key] for key in ('script','sources','resolved_topic') if key in job['manifest']}
+   return self.json_out(200,{'jobs':jobs,'view':view})
   m=re.fullmatch(r'/api/jobs/([0-9a-fA-F-]{36})(?:/(video|manifest))?',p)
   if m:
    jid=safe_id(m.group(1));j=get_job(jid) if jid else None
@@ -838,6 +895,7 @@ class Handler(BaseHTTPRequestHandler):
    if shutil.disk_usage(DATA).free<DISK_RESERVE_BYTES:return self.json_out(507,{'error':'Less than 2 GB free disk space; no new job was created'})
    jid=str(uuid.uuid4());ts=now()
    with connect() as c:c.execute('INSERT INTO jobs(id,created_at,updated_at,topic,language,duration_s,status,stage,progress,message) VALUES(?,?,?,?,?,?,?,?,?,?)',(jid,ts,ts,topic,lang,duration,'queued','queued',0,'Waiting for the single worker'))
+   if b.get('origin')=='test':update(jid,origin='test')
    POOL.submit(execute_job,jid);return self.json_out(202,{'id':jid,'status':'queued'})
   m=re.fullmatch(r'/api/jobs/([0-9a-fA-F-]{36})/review',p)
   if m:

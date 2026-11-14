@@ -7,3 +7,5 @@ COPY app.py /app/app.py
 COPY visual_verifier.py /app/visual_verifier.py
 EXPOSE 3000
 CMD ["python3", "/app/app.py"]
+
+COPY fixtures /app/fixtures

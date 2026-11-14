@@ -1,0 +1,54 @@
+{
+  "job_id": "fcd09078-9c12-4f1b-ba24-3a161e0b0b83",
+  "topic": "Столкновение галактик",
+  "language": "uk",
+  "duration_s": 45,
+  "probe": {
+    "codec_name": "h264",
+    "width": 1080,
+    "height": 1920,
+    "r_frame_rate": "30/1",
+    "duration": "45.000000",
+    "nb_frames": "1350"
+  },
+  "sha256": "c9a8ad6b7e679c54ed9174f32af98e1e88f60bbf956cf4e2d44c90feb22f176a",
+  "full_decode": true,
+  "audit": {
+    "shots_required": 18,
+    "narration_beats": 6,
+    "unique_assets": 18,
+    "images_per_narration_beat": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "minimum_two_images_per_beat": true,
+    "average_shot_duration_ms": 2500.0,
+    "source_count": 1,
+    "all_visuals_have_provenance": true,
+    "all_images_pixel_checked": true,
+    "full_decode": true,
+    "renderer_gates": {
+      "video_dimensions": true,
+      "video_codec": true,
+      "audio_codec": true,
+      "stream_counts": true,
+      "duration_match": true,
+      "audio_duration_match": true,
+      "scene_coverage": true,
+      "asset_hashes": true,
+      "source_audio_excluded": true
+    }
+  },
+  "sources": [
+    {
+      "title": "Взаємодіючі галактики",
+      "url": "https://uk.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D1%94%D0%BC%D0%BE%D0%B4%D1%96%D1%8E%D1%87%D1%96_%D0%B3%D0%B0%D0%BB%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B8",
+      "retrieval_note": null
+    }
+  ],
+  "source_sha256": "d816ed7490fa90deeb8916bde7235ea14d78986663ed111873bf7ec9593ced03"
+}

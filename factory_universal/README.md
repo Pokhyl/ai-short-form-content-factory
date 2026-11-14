@@ -47,7 +47,7 @@ The service listens on port 3000 inside Docker. Route the Studio hostname to fac
 ## Review API
 
 - POST /api/jobs with JSON fields topic, language, and duration_s
-- GET /api/jobs lists recent jobs.
+- GET /api/jobs lists recent user jobs. Add ?view=examples for ready operator examples or ?view=tests for the complete operator diagnostic history. POST jobs may include origin=test for operator verification.
 - GET /api/jobs/{uuid} returns job state and manifest.
 - GET /api/jobs/{uuid}/video streams the MP4 with byte-range support.
 - GET /api/jobs/{uuid}/manifest returns the full source and media audit.
@@ -67,3 +67,7 @@ Wikipedia HTTP 429 stops fresh retrieval. A saved source for the same topic/lang
 ## Delivery acceptance
 
 Six normal API outputs across EN/PL/RU/UK and 15/30/45/60 seconds passed the recorded delivery checks. See [the active delivery record](../docs/CODEX_START_HERE.md) and `acceptance/factory-universal/` for frame counts, actual output hashes, generation revisions, compatibility replay, visual-confuser calibration and storage/public-endpoint receipts. Individual owner review remains available in the browser.
+
+## Browser regression
+
+`browser_regression.py` uses Playwright with Google Chrome and the existing read-only Studio login. Run in a disposable QA container, never install browser dependencies into the app runtime. Default checks only inspect the UI, separated histories and continuous MP4 playback; `--submit` explicitly creates one dated reproduction job. Receipt files under acceptance/factory-universal/regression-20261114-* record the actual submission and full MP4 verification.
