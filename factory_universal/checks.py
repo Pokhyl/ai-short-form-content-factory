@@ -18,6 +18,8 @@ def check():
  solar={'alt':'Solar panels for thermal heating on a house','height':1000,'width':800}
  assert app.photo_score(fossil,slot,'Solar energy')<0
  assert app.photo_score(solar,slot,'Solar energy')>=0
+ assert app.unsupported_qualifier('The largest mud volcanoes are enormous.','Volcano',[{'title':'Volcano'}])
+ assert not app.unsupported_qualifier('The largest mud volcanoes are enormous.','Volcano',[{'title':'Volcano'},{'title':'Mud volcano'}])
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

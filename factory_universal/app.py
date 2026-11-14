@@ -233,6 +233,17 @@ def sentences(paragraph):
  protected=re.sub(abbreviations,lambda match:match.group(0).replace('.',chr(0x2024)),paragraph,re.I)
  return [part.replace(chr(0x2024),'.') for part in re.split(r'(?<=[.!?])\s+',protected.strip())]
 
+def unsupported_qualifier(sentence,topic,sources):
+ # An article about a broad class does not establish photos for an unrepresented subtype.
+ core=set(topic_terms(topic,'en'));represented=set().union(*(set(tokens(source['title'])) for source in sources))
+ grammar=STOP|set('around near within without throughout against among like unlike than onto into larger smaller largest smallest longest shortest numerous several certain various different remaining potential potentially another other such these those total overall individual particular single multiple large small great higher lower historical modern'.split())
+ words=re.findall(r'[^\W_]+',sentence.lower(),re.UNICODE)
+ for index,word in enumerate(words):
+  if not index or not set(tokens(word))&core:continue
+  qualifier=words[index-1]
+  if len(qualifier)<3 or not qualifier.isalpha() or qualifier in grammar or qualifier in core:continue
+  if not set(tokens(qualifier))<=represented:return True
+ return False
 def source_slots(sources,topic,count,lang='en',duration_s=None):
   target_ms=(duration_s if duration_s is not None else count*5)*1000
   object_terms=set(topic_terms(topic,lang))
@@ -259,6 +270,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      direct_topic=bool(sentence_terms&object_terms);process_overlap=process_signal(sentence,lang) if process_intent else 0
      if needed and topic_hits<needed:continue
      if not process_intent and object_terms and (not direct_topic or not set(topic_terms(' '.join(words[:6]),lang))&object_terms):continue
+     if lang=='en' and not process_intent and unsupported_qualifier(sentence,topic,sources):continue
      if process_intent and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
      score=topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
      rows.append((score,si,sentence,words))
@@ -447,8 +459,8 @@ def photo_score(p,slot,topic):
  work_context=r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
  if process_topic and not re.search(work_context,depiction,re.I):return -1
  if not process_topic:
-  qualifiers={term for term in tokens(slot.get('visual_title','')) if term not in tokens(topic) and term.isalpha() and len(term)>3}
-  if len(qualifiers)>=2 and not qualifiers&meta:return -1
+  qualifiers={term for term in tokens(slot.get('visual_title','')) if term not in tokens(topic) and term.isalpha() and len(term)>=3}-{'energy','power','system','plant','factory','production','manufacturing','process','industry','technology','list','century'}
+  if qualifiers and not qualifiers&meta:return -1
  required=visual_actions(slot['text']) if process_topic else set();depicted=visual_actions(depiction)
  specific=required-{'production'}
  if specific and not specific&depicted:return -1
