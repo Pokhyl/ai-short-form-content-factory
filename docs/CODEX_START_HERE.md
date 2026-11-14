@@ -1,3 +1,7 @@
+# Voice acceptance reopened — owner rejection, 2026-11-14
+
+The owner rejected the eSpeak narration. The earlier render and browser checks establish technical playback only, not acceptable speech. Exactly the four Google voices in docs/PROVIDER_POLICY.md are restored; eSpeak output is prohibited. All four returned real synthesis audio. Replacement job 4c041e60-eb7f-46d0-8b7b-58f835f5874e contains uk-UA-Chirp3-HD-Enceladus, 44,736 ms of unchanged natural speech, 99.4141% alignment coverage, and 1,350 MP4 frames. See acceptance/factory-universal/selected-voices-20261114.json and selected-voice-mp4-20261114.json. project_ready remains false pending listening review; no owner audio approval is asserted.
+
 # Regression correction and browser verification — 2026-11-14
 
 The owner’s Russian-input/Ukrainian-output failure has been reproduced and corrected through canonical native article grounding. New normal browser job `fcd09078-9c12-4f1b-ba24-3a161e0b0b83` produced 45 seconds, 1350 frames and 18 distinct image assets. All actual scene midpoints and captions were inspected. Chrome verified continuous playback across a list refresh; no page JavaScript errors occurred. Original failed jobs retain their recorded errors. Operator tests are separated into Examples and Test history.

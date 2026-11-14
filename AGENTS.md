@@ -8,7 +8,7 @@ The active implementation is `factory_universal/`, deployed from `/opt/factory-u
 
 - Maintain the universal topic/language/duration-to-MP4 workflow on EN/PL/RU/UK and 15/30/45/60 seconds.
 - Use the retained read-only settings and credentials. Never print plaintext secrets or commit them.
-- No Gemini or paid model APIs. Local eSpeak NG, the pinned local visual verifier, and the existing media-worker implement generation.
+- No Gemini or paid model APIs. Use exactly the owner-selected Google Cloud voices in docs/PROVIDER_POLICY.md through the retained native credential gateway, with the existing PostgreSQL free-tier quota ledger. eSpeak is permitted only as an internal duration estimate, never audible output or fallback. The local visual verifier and existing media-worker implement the remaining stages.
 - Modify only this project and its app service. Leave unrelated host files, n8n workflows, services and credentials alone. Do not globally prune Docker or shared media.
 - Cleanup may select only exact UUID directories owned by this factory SQLite database. Preserve the output/cache quotas and free-disk reserve.
 

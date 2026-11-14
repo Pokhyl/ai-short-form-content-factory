@@ -29,6 +29,7 @@ def init_db():
  with connect() as c:
   c.execute("""CREATE TABLE IF NOT EXISTS jobs(\n   id TEXT PRIMARY KEY, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,\n   topic TEXT NOT NULL, language TEXT NOT NULL, duration_s INTEGER NOT NULL,\n   status TEXT NOT NULL, stage TEXT NOT NULL, progress INTEGER NOT NULL,\n   message TEXT NOT NULL, error TEXT, manifest TEXT,\n   review_status TEXT NOT NULL DEFAULT 'pending', review_note TEXT)""")
   if 'origin' not in {row['name'] for row in c.execute('PRAGMA table_info(jobs)')}:c.execute("ALTER TABLE jobs ADD COLUMN origin TEXT NOT NULL DEFAULT 'user'")
+  c.execute("CREATE TABLE IF NOT EXISTS voice_attempts(job_id TEXT NOT NULL,attempt INTEGER NOT NULL,text_sha256 TEXT NOT NULL,voice TEXT NOT NULL,state TEXT NOT NULL,receipt TEXT,PRIMARY KEY(job_id,attempt))")
   c.execute("UPDATE jobs SET status='failed',stage='interrupted',message='Process restarted before completion',error='interrupted' WHERE status IN ('queued','running')")
 def update(jid,**fields):
  fields['updated_at']=now()
@@ -161,10 +162,10 @@ def measured_sentence_ms(text,lang):
   folder=ROOT/'tmp'/('speech-plan-'+str(uuid.uuid4()));folder.mkdir(parents=True,exist_ok=True)
   try:
    path=folder/'speech.wav';voice={'en':'en-us','pl':'pl','ru':'ru','uk':'uk'}[lang]
-   subprocess.run(['espeak-ng','-v',voice,'-s','220','-w',str(path),'--',text],check=True,capture_output=True,timeout=15)
+   subprocess.run(['espeak-ng','-v',voice,'-s','155','-w',str(path),'--',text],check=True,capture_output=True,timeout=15)
    with wave.open(str(path),'rb') as audio:return (audio.getnframes()*1000+audio.getframerate()-1)//audio.getframerate()
   finally:shutil.rmtree(folder,ignore_errors=True)
- return cache_fetch('speech-plan-v1|'+lang+'|220|'+text,measure)
+ return cache_fetch('speech-plan-natural-estimate-v2|'+lang+'|155|'+text,measure)
 def fit_narration(rows,count,lang,process_intent=False,duration_ms=None):
  # Exact-count duration-constrained selection over source sentences, measured in the selected voice.
  budget=((duration_ms if duration_ms is not None else count*5000)-100)//25;states=[{} for _ in range(count+1)];states[0][0]=(0.0,())
@@ -348,15 +349,15 @@ def relevant_sources(sources,topic,lang):
   base=lambda title:re.sub(r'\s*\([^)]*\)\s*','',title).strip().casefold()
   return base(source['title'])==base(anchor['title']) and source['title'].casefold()!=anchor['title'].casefold()
  return [anchor]+[source for source in ranked[1:] if not same_name_other_sense(source) and len(basis&vocabulary(source))>=3]
-def plan_script(sources,topic,lang,duration):
+def plan_script(sources,topic,lang,duration,max_beats=None):
  process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
- for count in range(max(2,duration//(5 if process_intent else 7)),max(2,duration//10)-1,-1):
+ for count in range(min(max_beats or 100,max(2,duration//(5 if process_intent else 7))),min(max_beats or 100,max(2,duration//10))-1,-1):
   slots=source_slots(sources,topic,count,lang,duration_s=duration)
   if len(slots)==count:return slots
  if sources and not process_intent:
   canonical=sources[0]['title']
   if canonical.casefold()!=topic.casefold():
-   slots=plan_script(sources,canonical,lang,duration)
+   slots=plan_script(sources,canonical,lang,duration,max_beats=max_beats)
    for slot in slots:slot['resolved_topic']=canonical
    return slots
  return []
@@ -615,44 +616,75 @@ def download_photo(c,dest):
  if len(data)>20_000_000 or ct not in {'image/jpeg','image/png','image/webp'}:raise ValueError('photo payload invalid')
  Path(dest).write_bytes(data)
  with Image.open(dest) as im:im.verify()
-def write_audio(slots,lang,jid,duration):
- voice={'en':'en-us','pl':'pl','ru':'ru','uk':'uk'}[lang];tmp=ROOT/'tmp'/jid;tmp.mkdir(parents=True,exist_ok=True)
- if not slots:raise ValueError('narration has no sentences')
- # Reserve encoder delay without removing any speech; the last scene holds the remainder.
- budget_ms=duration*1000-100
- speed=175
- for attempt in range(6):
-  wavs=[];speech=[]
-  for i,slot in enumerate(slots):
-   path=tmp/('line-%02d.wav'%i)
-   subprocess.run(['espeak-ng','-v',voice,'-s',str(speed),'-w',str(path),'--',slot['text']],check=True,capture_output=True,timeout=20)
-   with wave.open(str(path),'rb') as f:used=(f.getnframes()*1000+f.getframerate()-1)//f.getframerate()
-   wavs.append(path);speech.append(used)
-  measured=sum(speech)
-  if measured<=budget_ms:break
-  if speed>=250:raise ValueError('complete narration exceeds requested duration at the maximum speaking rate')
-  speed=min(250,max(speed+5,round(speed*measured/budget_ms)+3))
- else:raise ValueError('narration timing did not converge')
- slack=budget_ms-sum(speech);gap,remainder=divmod(slack,len(slots))
- targets=[used+gap+(1 if i<remainder else 0) for i,used in enumerate(speech)]
- joined=tmp/'joined.wav'
- with wave.open(str(wavs[0]),'rb') as f:params=f.getparams()
- with wave.open(str(joined),'wb') as out:
-  out.setparams(params);silence=b'\0'*(params.nchannels*params.sampwidth)
-  for i,path in enumerate(wavs):
-   with wave.open(str(path),'rb') as f:
-    if f.getparams()[:3]!=params[:3]:raise ValueError('voice sample format changed')
-    frames=f.readframes(f.getnframes())
-   sample_frames=len(frames)//(params.nchannels*params.sampwidth);target_frames=round(targets[i]*params.framerate/1000)
-   if sample_frames>target_frames:raise ValueError('narration exceeded its visual slot by '+str(round((sample_frames-target_frames)*1000/params.framerate))+' ms')
-   out.writeframes(frames);out.writeframes(silence*(target_frames-sample_frames))
- mp3=VOICE/jid/'final.mp3';mp3.parent.mkdir(parents=True,exist_ok=True)
- subprocess.run(['ffmpeg','-nostdin','-hide_banner','-loglevel','error','-y','-i',str(joined),'-codec:a','libmp3lame','-q:a','3',str(mp3)],check=True,capture_output=True,timeout=45)
- p=subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',str(mp3)],check=True,capture_output=True,text=True,timeout=10)
- audio_ms=round(float(p.stdout.strip())*1000)
- if not duration*1000-100<=audio_ms<=duration*1000:raise ValueError('encoded narration exceeds its exact video duration budget')
- targets[-1]+=100
- return mp3,audio_ms,speech,targets
+
+SELECTED_VOICES={'en':('en-US','en-US-Chirp3-HD-Algenib'),'pl':('pl-PL','pl-PL-Chirp3-HD-Enceladus'),'ru':('ru-RU','ru-RU-Wavenet-D'),'uk':('uk-UA','uk-UA-Chirp3-HD-Enceladus')}
+def selected_voice_request(lang,text):
+ locale,voice=SELECTED_VOICES[lang]
+ text=unicodedata.normalize('NFC',text).replace(chr(0x301),'')
+ return {'input':{'text':text},'voice':{'languageCode':locale,'name':voice},'audioConfig':{'audioEncoding':'MP3'}}
+def google_voice_once(lang,text,jid,attempt):
+ import psycopg
+ body=selected_voice_request(lang,text);spoken=body['input']['text'];voice=body['voice']['name']
+ if not spoken.strip() or len(spoken.encode())>4800:raise ValueError('narration exceeds the selected voice request size')
+ key='universal:'+jid+':voice:'+str(attempt);digest=hashlib.sha256(spoken.encode()).hexdigest()
+ # A durable claim precedes quota accounting and the uncertain send; an interrupted attempt cannot replay.
+ with connect() as c:
+  c.execute('INSERT INTO voice_attempts(job_id,attempt,text_sha256,voice,state) VALUES(?,?,?,?,?)',(jid,attempt,digest,voice,'claimed'))
+ sku='wavenet' if lang=='ru' else 'chirp3_hd'
+ try:
+  with psycopg.connect(SETTINGS['database_url'],connect_timeout=5,options='-c statement_timeout=5000') as pg:
+   with pg.cursor() as cur:
+    cur.execute("SELECT factory.reserve_provider_usage(%s,'google_cloud_tts',%s,'characters',date_trunc('month',CURRENT_DATE)::date,%s,%s,%s::jsonb)",(key,sku,len(spoken),jid,json.dumps({'stage':'universal_selected_voice','attempt':attempt,'voice':voice})))
+    cur.execute('SELECT factory.commit_provider_usage(%s,NULL)',(key,))
+  with connect() as c:c.execute("UPDATE voice_attempts SET state='sent' WHERE job_id=? AND attempt=?",(jid,attempt))
+  request=urllib.request.Request('http://ai-short-form-n8n:5678/webhook/factory-v3-internal-provider',data=json.dumps({'provider':'google_tts','request':{'query':{},'body':body}},ensure_ascii=False).encode(),headers={'Content-Type':'application/json','X-Factory-V3-Broker':SETTINGS['broker_token']})
+  with urllib.request.urlopen(request,timeout=180) as response:raw=response.read(10_000_001)
+  if not raw or len(raw)>10_000_000:raise ValueError('selected voice gateway returned no bounded audio response')
+  receipt=json.loads(raw)
+  if receipt.get('status')!=200:raise ValueError('selected Google voice returned HTTP '+str(receipt.get('status'))+'; no fallback or resend')
+  audio=base64.b64decode(receipt['body']['audioContent'],validate=True)
+  folder=ROOT/'tmp'/jid;folder.mkdir(parents=True,exist_ok=True);path=folder/('voice-attempt-'+str(attempt)+'.mp3')
+  with path.open('xb') as stream:stream.write(audio)
+  duration_ms=round(float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',str(path)],text=True,timeout=10))*1000)
+  audit={'attempt':attempt,'voice':voice,'characters':len(spoken),'text_sha256':digest,'audio_sha256':hashlib.sha256(audio).hexdigest(),'duration_ms':duration_ms,'quota_key':key}
+  with connect() as c:c.execute("UPDATE voice_attempts SET state='measured',receipt=? WHERE job_id=? AND attempt=?",(json.dumps(audit),jid,attempt))
+  return path,audit
+ except Exception:
+  with connect() as c:c.execute("UPDATE voice_attempts SET state='stopped' WHERE job_id=? AND attempt=? AND state!='measured'",(jid,attempt))
+  raise
+def prepare_selected_narration(sources,topic,lang,jid,duration):
+ # Change complete source sentences after a measured miss, never the voice or playback rate.
+ planning_seconds=duration;seen=set();attempts=[];slots=[]
+ for attempt in (1,2,3):
+  slots=plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
+  if not slots or len(slots)>duration//5:raise ValueError('no complete source narration fits the natural speaking budget')
+  script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()
+  if identity in seen:raise ValueError('natural-duration correction produced the same text; no duplicate synthesis')
+  seen.add(identity)
+  update(jid,stage='voice',progress=12,message='Creating narration with your selected '+lang.upper()+' voice; attempt '+str(attempt))
+  path,measured=google_voice_once(lang,script,jid,attempt);attempts.append(measured);actual=measured['duration_ms']
+  if duration*1000-1000<=actual<=duration*1000:break
+  planning_seconds=max(10,min(90,round(planning_seconds*(duration*1000-500)/max(actual,1))))
+ else:raise ValueError('three distinct natural narration texts did not fit; no speed change or voice substitution')
+ # Align the exact, unmodified natural audio through the existing media worker.
+ final=VOICE/jid/'final.mp3';final.parent.mkdir(parents=True,exist_ok=True)
+ with final.open('xb') as output:output.write(path.read_bytes())
+ scene_inputs=[{'scene_uuid':str(uuid.uuid5(uuid.UUID(jid),'spoken:'+str(i))),'scene_key':str(i),'narration':slot['text']} for i,slot in enumerate(slots)]
+ payload={'language_code':lang,'narration':script,'audio_sha256':measured['audio_sha256'],'audio_duration_ms':actual,'scenes':scene_inputs}
+ update(jid,stage='alignment',progress=16,message='Aligning captions to the exact selected voice recording')
+ request=urllib.request.Request(WORKER+'/alignments/'+jid,data=json.dumps(payload).encode(),headers={'Content-Type':'application/json'},method='POST')
+ with urllib.request.urlopen(request,timeout=240) as response:alignment=json.loads(response.read(2_000_000))
+ timings=alignment.get('scene_timings',[])
+ if alignment.get('status')!='ready' or alignment.get('audio_sha256')!=measured['audio_sha256'] or alignment.get('global_coverage',0)<.95 or len(timings)!=len(slots):raise ValueError('selected voice alignment did not cover the complete narration')
+ targets=[];speech=[];start=0
+ for i,(slot,timing) in enumerate(zip(slots,timings)):
+  if timing['scene_uuid']!=scene_inputs[i]['scene_uuid'] or timing['scene_key']!=str(i):raise ValueError('narration alignment identity changed')
+  end=duration*1000 if i==len(slots)-1 else round((timing['end_ms']+timings[i+1]['start_ms'])/200)*100
+  slot['speech_start_ms']=timing['start_ms'];slot['speech_end_ms']=timing['end_ms']
+  targets.append(end-start);speech.append(timing['end_ms']-timing['start_ms']);start=end
+ audit={'engine':'Google Cloud Text-to-Speech','voice':SELECTED_VOICES[lang][1],'audio_duration_ms':actual,'speech_duration_ms':speech,'beat_duration_ms':targets,'sha256':measured['audio_sha256'],'audio_tempo_factor':1.0,'attempts':attempts,'alignment_coverage':alignment['global_coverage']}
+ return slots,final,actual,speech,targets,audit
+
 def post_render(jid,payload):
  req=urllib.request.Request(WORKER+'/renders/'+jid,data=json.dumps(payload).encode(),headers={'Content-Type':'application/json'},method='POST')
  try:
@@ -696,6 +728,7 @@ def run_job(jid):
   if not sources:raise ValueError('no usable source article; try a more specific topic or another language')
   slots=plan_script(sources,topic,lang,duration)
   if not slots:raise ValueError('not enough complete, topic-grounded source sentences fitting the requested duration')
+  slots,mp3,audio_ms,speech_ms,slot_targets,voice_audit=prepare_selected_narration(sources,topic,lang,jid,duration)
   beat_count=len(slots)
   beat_for_shot=shot_beats(visual_count,beat_count);shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
   for slot in slots:
@@ -742,13 +775,9 @@ def run_job(jid):
    if found is None:raise ValueError('no verified distinct image for scene '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
    hashes.append(found['phash']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
    update(jid,progress=20+int((i+1)*25/visual_count),message='Prepared '+str(i+1)+' of '+str(visual_count)+' unique photos')
-  update(jid,stage='voice',progress=50,message='Creating narration locally; no text-generation API')
-  mp3,audio_ms,speech_ms,slot_targets=write_audio(slots,lang,jid,duration)
-  lo={15:14208,30:28464,45:42864,60:58176}[duration];hi={15:15768,30:34000,45:46128,60:61656}[duration]
-  if not lo<=audio_ms<=hi:raise ValueError('measured voice is outside the accepted '+str(duration)+' second window')
   audio_sha=hashlib.sha256(mp3.read_bytes()).hexdigest();target=duration*1000;beat_starts=[sum(slot_targets[:i]) for i in range(beat_count)];cursor=0;scenes=[]
   for i,item in enumerate(selected):
-   beat=beat_for_shot[i];beat_start=beat_starts[beat];end=target if i==visual_count-1 else beat_start+slot_targets[beat]*(i-first_shot[beat]+1)//shots_per_beat[beat];end=round(end/100)*100;spoken_end=min(target,beat_start+speech_ms[beat]);speech_start=max(cursor,beat_start);speech_end=min(end,spoken_end,audio_ms)
+   beat=beat_for_shot[i];beat_start=beat_starts[beat];end=target if i==visual_count-1 else beat_start+slot_targets[beat]*(i-first_shot[beat]+1)//shots_per_beat[beat];end=round(end/100)*100;spoken_end=min(target,slots[beat]['speech_end_ms']);speech_start=max(cursor,slots[beat]['speech_start_ms']);speech_end=min(end,spoken_end,audio_ms)
    if speech_end<=speech_start:speech_start=cursor;speech_end=min(end,cursor+1)
    scenes.append({'scene_uuid':str(uuid.uuid4()),'shot_uuid':item['shot'],'visual_asset_id':str(uuid.uuid4()),'media_type':'photo','asset_sha256':item['hash'],'asset_path':str(item['path']),'asset_width':1080,'asset_height':1920,'scene_order':i+1,'segment_start_ms':cursor,'segment_end_ms':end,'speech_start_ms':speech_start,'speech_end_ms':speech_end})
    cursor=end
@@ -758,10 +787,10 @@ def run_job(jid):
   full=subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(video),'-f','null','-'],capture_output=True,text=True,timeout=150)
   if full.returncode:raise ValueError('full MP4 decode failed')
   if not rendered.get('qa_passed'):raise ValueError('media-worker render QA failed')
-  manifest={'version':'universal-1','job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'script_mode':'source-grounded extractive','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification']} for i,x in enumerate(visual_rows)],'narration':{'engine':'eSpeak NG local','voice':{'en':'en-us','pl':'pl','ru':'ru','uk':'uk'}[lang],'audio_duration_ms':audio_ms,'speech_duration_ms':speech_ms,'beat_duration_ms':slot_targets,'sha256':audio_sha},'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
+  manifest={'version':'universal-1','job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'script_mode':'source-grounded extractive','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification']} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
   (RENDER/jid/'universal-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
   shutil.rmtree(VISUAL/jid,ignore_errors=True);shutil.rmtree(VOICE/jid,ignore_errors=True);shutil.rmtree(ROOT/'tmp'/jid,ignore_errors=True)
-  update(jid,status='ready',stage='review',progress=100,message='MP4 ready for review',manifest=json.dumps(manifest,ensure_ascii=False),error=None)
+  update(jid,status='ready',stage='review',progress=100,message='MP4 ready for review; listening approval pending',manifest=json.dumps(manifest,ensure_ascii=False),error=None)
  except Exception as e:
   for p in (VISUAL/jid,VOICE/jid,ROOT/'tmp'/jid):shutil.rmtree(p,ignore_errors=True)
   stage=(get_job(jid) or {}).get('stage','unknown')
@@ -842,7 +871,7 @@ class Handler(BaseHTTPRequestHandler):
    b=HTML.encode();self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(b)));self.end_headers();self.wfile.write(b);return
   if p=='/api/jobs':
    view=urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).get('view',['user'])[0]
-   filters={'user':"origin='user' AND status!='expired'",'examples':"origin='test' AND status='ready'",'tests':"origin='test'"}
+   filters={'user':"origin='user' AND status!='expired'",'examples':"origin='test' AND status='ready' AND json_extract(manifest,'$.narration.engine')='Google Cloud Text-to-Speech'",'tests':"origin='test'"}
    if view not in filters:return self.json_out(400,{'error':'unknown job view'})
    with connect() as c:rows=c.execute('SELECT id FROM jobs WHERE '+filters[view]+' ORDER BY created_at DESC LIMIT 50').fetchall()
    jobs=[public_job(get_job(row['id'])) for row in rows]

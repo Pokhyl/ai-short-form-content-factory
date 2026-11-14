@@ -1,0 +1,333 @@
+{
+  "job_id": "4c041e60-eb7f-46d0-8b7b-58f835f5874e",
+  "topic": "Столкновение галактик",
+  "voice": {
+    "engine": "Google Cloud Text-to-Speech",
+    "voice": "uk-UA-Chirp3-HD-Enceladus",
+    "audio_duration_ms": 44736,
+    "speech_duration_ms": [
+      5040,
+      4480,
+      4490,
+      6180,
+      4870,
+      4510,
+      5970,
+      6230
+    ],
+    "beat_duration_ms": [
+      5300,
+      4800,
+      5000,
+      6600,
+      5300,
+      4900,
+      6400,
+      6700
+    ],
+    "sha256": "7b9dd3829ae7498bb59fddb56de7e5ab124f87a6c379881334838827224ab63d",
+    "audio_tempo_factor": 1.0,
+    "attempts": [
+      {
+        "attempt": 1,
+        "voice": "uk-UA-Chirp3-HD-Enceladus",
+        "characters": 420,
+        "text_sha256": "424ed8b32028cc556bf0855532407c5330e620c1512394a5c027d79bccd13e34",
+        "audio_sha256": "d61f115c1d2fe09c2b40f70e9a42c57fbe23ac39c56b73e1f253e48a00b373ef",
+        "duration_ms": 31944,
+        "quota_key": "universal:4c041e60-eb7f-46d0-8b7b-58f835f5874e:voice:1"
+      },
+      {
+        "attempt": 2,
+        "voice": "uk-UA-Chirp3-HD-Enceladus",
+        "characters": 658,
+        "text_sha256": "5609345e4e6a1e962afd2c21c971b179f7fd6b05bb721cfc537e787e8d53c5d5",
+        "audio_sha256": "efee8bb0f6e79c3d13825f27aecff7c6f8cb71f7f52453be219b5878f9d56624",
+        "duration_ms": 48744,
+        "quota_key": "universal:4c041e60-eb7f-46d0-8b7b-58f835f5874e:voice:2"
+      },
+      {
+        "attempt": 3,
+        "voice": "uk-UA-Chirp3-HD-Enceladus",
+        "characters": 609,
+        "text_sha256": "4dab270c5c8f985e0c558ba0eb52b22325bb0b0e59784d8be8032fdcce9c1368",
+        "audio_sha256": "7b9dd3829ae7498bb59fddb56de7e5ab124f87a6c379881334838827224ab63d",
+        "duration_ms": 44736,
+        "quota_key": "universal:4c041e60-eb7f-46d0-8b7b-58f835f5874e:voice:3"
+      }
+    ],
+    "alignment_coverage": 0.994141
+  },
+  "render": {
+    "status": "ready",
+    "job_id": "4c041e60-eb7f-46d0-8b7b-58f835f5874e",
+    "storage_path": "/data/renders/4c041e60-eb7f-46d0-8b7b-58f835f5874e/final.mp4",
+    "manifest_path": "/data/renders/4c041e60-eb7f-46d0-8b7b-58f835f5874e/manifest.json",
+    "sha256": "3fd9eafd2b0db8f69be4422f9af6ebee393b73970864fa267598b574a0293e1d",
+    "bytes": 4036822,
+    "width": 1080,
+    "height": 1920,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "pix_fmt": "yuv420p",
+    "fps_num": 30,
+    "fps_den": 1,
+    "duration_ms": 45000,
+    "muxed_audio_duration_ms": 44736,
+    "video_stream_count": 1,
+    "audio_stream_count": 1,
+    "audio_duration_ms": 44736,
+    "requested_duration_ms": 45000,
+    "target_duration_ms": 45000,
+    "duration_delta_ms": 0,
+    "input_audio_sha256": "7b9dd3829ae7498bb59fddb56de7e5ab124f87a6c379881334838827224ab63d",
+    "segments": [
+      {
+        "scene_uuid": "014ce908-3570-40bd-9098-94f00e54ec31",
+        "shot_uuid": "fa00e8d0-b61f-44a4-999a-27dd1994b904",
+        "visual_asset_id": "8db0e8be-5f20-4d02-9e38-9ed914a1961c",
+        "segment_order": 1,
+        "start_ms": 0,
+        "end_ms": 1800,
+        "duration_ms": 1800,
+        "asset_sha256": "fc0debc2f15251d7c00cd5417526b405e0181061be0b764362f5f2b6c11ff8a4",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "db7e849f-aa66-4c4e-9ef3-5407fe443045",
+        "shot_uuid": "dd33d7d6-364b-4865-9edb-f32204fa321b",
+        "visual_asset_id": "9cdc5dd1-ecfb-4b03-bbf8-4b6ba3b37aa0",
+        "segment_order": 2,
+        "start_ms": 1800,
+        "end_ms": 3500,
+        "duration_ms": 1700,
+        "asset_sha256": "ebfa9083e94522718a4453c24c988af6dc23ce39ba7df8ef4b857e184257414c",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "83783b2c-f9aa-4ff2-8192-3c978e1391e5",
+        "shot_uuid": "10ae39d0-b940-4275-9b5b-f380b19dfb3f",
+        "visual_asset_id": "06f07a45-0d78-4df9-bfdf-206b2d5560bf",
+        "segment_order": 3,
+        "start_ms": 3500,
+        "end_ms": 5300,
+        "duration_ms": 1800,
+        "asset_sha256": "f1981b5e3370a38d60754f914e8e615b2918ec0d900948d477a5dd2769ced275",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "f55b25f3-a630-4014-b330-805f7cff1933",
+        "shot_uuid": "3115c279-50ca-4456-b5b1-e670fc73f0c1",
+        "visual_asset_id": "cca02739-36f7-4f31-813d-e4eefd439c98",
+        "segment_order": 4,
+        "start_ms": 5300,
+        "end_ms": 7700,
+        "duration_ms": 2400,
+        "asset_sha256": "e32325501750324e0a5c303f889448014eee3b1b74572e0310a16bab71a557e7",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "101fc694-6b7d-4bf3-8219-718c029d6ded",
+        "shot_uuid": "07846aae-699e-42e8-9fc6-fdcf7e9734a7",
+        "visual_asset_id": "fa7757c5-2d23-49f3-9d33-0489c382e74b",
+        "segment_order": 5,
+        "start_ms": 7700,
+        "end_ms": 10100,
+        "duration_ms": 2400,
+        "asset_sha256": "42d2524139662dc91ce3b255dc5da2f105dd9a69c4d86a189cfee65e35736348",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "f3fc2c85-e74c-41b3-b234-8043f759da03",
+        "shot_uuid": "b6e76837-4cc0-441e-b607-0f586b815ecb",
+        "visual_asset_id": "6ddcf704-8129-4b90-87a1-00a26fdc0cad",
+        "segment_order": 6,
+        "start_ms": 10100,
+        "end_ms": 12600,
+        "duration_ms": 2500,
+        "asset_sha256": "f65df549df368eaf49b479faa65dc1e5f66cf99b5e754ab26bbe065e2d4aeb56",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "86143f51-4d02-4575-995f-c78c444cee92",
+        "shot_uuid": "56d74622-3510-41ad-bcb9-25d1b0a83549",
+        "visual_asset_id": "c9978e47-a7eb-4ddf-ad98-2f0611b057d5",
+        "segment_order": 7,
+        "start_ms": 12600,
+        "end_ms": 15100,
+        "duration_ms": 2500,
+        "asset_sha256": "83f810484bdaa4212b857695eb5d3d528182e23371a92c9a9b7b34b15a515243",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "79a69b41-5d95-41f5-8126-0e76e64d71cf",
+        "shot_uuid": "dcf25871-00aa-425f-8f79-913f1b4a5b54",
+        "visual_asset_id": "98ca0761-fd8b-4336-9cea-4bb2b9387150",
+        "segment_order": 8,
+        "start_ms": 15100,
+        "end_ms": 18400,
+        "duration_ms": 3300,
+        "asset_sha256": "d3240a6300bbb264a3a08db9d23b21a00cafa13165faf33fbe0227d455c98780",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "6e5e0bff-85ab-4380-973a-7bd03f705f2f",
+        "shot_uuid": "f4f0ebcc-fb4c-41e5-a03e-e9d0b786d50b",
+        "visual_asset_id": "6272303a-e2e8-4592-997f-f789ce3baed4",
+        "segment_order": 9,
+        "start_ms": 18400,
+        "end_ms": 21700,
+        "duration_ms": 3300,
+        "asset_sha256": "23463e6e8bf8454e2c30ade69a3e0f0579698bb35bf51eb1a9731a424910ed8d",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "600d5b21-2457-41b2-85e7-bf3019da1c87",
+        "shot_uuid": "dfe48907-07c8-407b-aae1-e62a0877f17a",
+        "visual_asset_id": "5b117388-d530-47ac-9be0-cf5c195e12bb",
+        "segment_order": 10,
+        "start_ms": 21700,
+        "end_ms": 23500,
+        "duration_ms": 1800,
+        "asset_sha256": "eaa3ca9152af9ff76c31032ebef73b08281697fd12fc608b0f83c202f2b5b472",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "f49057ad-d6cd-4785-ab7d-2cfbe3d1bc2c",
+        "shot_uuid": "5e2e3031-9bb0-40a8-9c13-e16020da8c8d",
+        "visual_asset_id": "841a34f2-43f6-4d97-b753-e1ae492786ec",
+        "segment_order": 11,
+        "start_ms": 23500,
+        "end_ms": 25200,
+        "duration_ms": 1700,
+        "asset_sha256": "131746070e1644b593f421558dc8be7756f0ad5fda99b0c807c49360ce7f1c30",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "9323e95d-aa4b-4dd9-a373-aec5f551853b",
+        "shot_uuid": "ec3d3ec5-06ed-40f4-9081-b5a4fe7cd5d7",
+        "visual_asset_id": "ca927c50-fcfc-420d-b202-afa035317506",
+        "segment_order": 12,
+        "start_ms": 25200,
+        "end_ms": 27000,
+        "duration_ms": 1800,
+        "asset_sha256": "6ae96e87a5921bde3e9615317b31e5e368081db77511d6f5687e20ef8b5ecf2b",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "898c0814-5065-4979-890f-6f42270e1ac6",
+        "shot_uuid": "c9c5a762-ffe8-48c2-87d7-858d3cab7a5a",
+        "visual_asset_id": "1c729103-fd80-4fdc-9a00-59eea7f2f198",
+        "segment_order": 13,
+        "start_ms": 27000,
+        "end_ms": 29400,
+        "duration_ms": 2400,
+        "asset_sha256": "c458e0cf8502f952d5a7243e70e9090aa16a12fae7efd85006ab11171a0dc46a",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "2759539b-4884-4b88-823d-0623e7bc7a2b",
+        "shot_uuid": "03979857-12af-44f8-bfa2-bdea7e6d8a31",
+        "visual_asset_id": "e8fd2d51-a2c0-4a12-a0a0-c34bde0a69a6",
+        "segment_order": 14,
+        "start_ms": 29400,
+        "end_ms": 31900,
+        "duration_ms": 2500,
+        "asset_sha256": "fb5b86247cfd132281c86a9870478989d60019f0c70ea66b8bce151914c43a43",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "f1432c1d-caf0-4586-8170-2c67ef3bd859",
+        "shot_uuid": "e8fef2d1-8d77-4aa8-ba4c-e98b589d6748",
+        "visual_asset_id": "aa0c1c78-76f3-44ef-ae3e-3a3538a495d4",
+        "segment_order": 15,
+        "start_ms": 31900,
+        "end_ms": 35100,
+        "duration_ms": 3200,
+        "asset_sha256": "87517626507da366976e0468582f942c8f87bc7451a10a589ec018011d5dafe8",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "56d3ef3d-fa6f-41ca-8012-ae0eb425db63",
+        "shot_uuid": "ab6bfdc9-6d3e-4dec-972e-ba66ba1e958b",
+        "visual_asset_id": "4656c7ad-c10f-4a1a-b3e4-9ce7e4efaf97",
+        "segment_order": 16,
+        "start_ms": 35100,
+        "end_ms": 38300,
+        "duration_ms": 3200,
+        "asset_sha256": "19a9c035eeeb01558994e592cfa7a857d3689ed997b89352f0d44452e77a4e2b",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "2e52c92b-b4b7-45c5-825e-f12e86380c49",
+        "shot_uuid": "b6fe327f-6a3c-4ca5-99cf-dcfd8b6cf540",
+        "visual_asset_id": "f941a343-9e22-45d1-9f6c-22e69356e5fe",
+        "segment_order": 17,
+        "start_ms": 38300,
+        "end_ms": 41600,
+        "duration_ms": 3300,
+        "asset_sha256": "4f16bce1972da3af8bb754d31c50d4accbbeb4f77b3d5fec123a7f9e37244e69",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "3183292a-43c5-4b3d-a901-5e8464da19b1",
+        "shot_uuid": "166c88f3-659e-41e9-9477-1bc5d28adf05",
+        "visual_asset_id": "5cac933e-9eff-44c3-94db-b951b8237896",
+        "segment_order": 18,
+        "start_ms": 41600,
+        "end_ms": 45000,
+        "duration_ms": 3400,
+        "asset_sha256": "f2dc5f75418d6728a67087ee2ecad40949453a1399ed4e581226bdcf4abd8b47",
+        "media_type": "photo"
+      }
+    ],
+    "qa_gates": {
+      "video_dimensions": true,
+      "video_codec": true,
+      "audio_codec": true,
+      "stream_counts": true,
+      "duration_match": true,
+      "audio_duration_match": true,
+      "scene_coverage": true,
+      "asset_hashes": true,
+      "source_audio_excluded": true
+    },
+    "qa_passed": true
+  },
+  "audit": {
+    "shots_required": 18,
+    "narration_beats": 8,
+    "unique_assets": 18,
+    "images_per_narration_beat": [
+      3,
+      2,
+      2,
+      2,
+      3,
+      2,
+      2,
+      2
+    ],
+    "minimum_two_images_per_beat": true,
+    "average_shot_duration_ms": 2500.0,
+    "source_count": 1,
+    "all_visuals_have_provenance": true,
+    "all_images_pixel_checked": true,
+    "full_decode": true,
+    "renderer_gates": {
+      "video_dimensions": true,
+      "video_codec": true,
+      "audio_codec": true,
+      "stream_counts": true,
+      "duration_match": true,
+      "audio_duration_match": true,
+      "scene_coverage": true,
+      "asset_hashes": true,
+      "source_audio_excluded": true
+    }
+  },
+  "script": "Нарешті, серед взаємодіючих галактик досить багато систем з активними ядрами. Зіткнення галактик є звичайним явищем в еволюції Всесвіту. Такі взаємодіючі системи справді були виявлені серед відомих галактик. Багато галактик мали б відчути сильну взаємодію, що завершилася злиттям, у далекому минулому. Взаємодія галактик не обмежується простою зміною їх структури або типу. Припливна взаємодія галактик сприяє формуванню масивних хмар газу. Імовірно ці галактики розташовані неподалік одна від одної і, таким чином, взаємодіють. Його слабке гравітаційне поле не здатне витримати тиск з боку великої галактики.",
+  "video_sha256": "3fd9eafd2b0db8f69be4422f9af6ebee393b73970864fa267598b574a0293e1d",
+  "source_sha256": "e808ab5f447d4f2a94ae5c6beefa55d73e73ae04a8f765d72060a65bb1c37101",
+  "owner_listening_approval": false
+}

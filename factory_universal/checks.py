@@ -34,6 +34,40 @@ def check():
   slots=app.plan_script(fixture['sources'],fixture['input_topic'],fixture['output_language'],fixture['duration_s'])
   assert len(slots)>=4 and all(slot['language']=='uk' for slot in slots)
   assert all(slot.get('resolved_topic')==fixture['sources'][0]['title'] for slot in slots)
+ expected={'en':'en-US-Chirp3-HD-Algenib','pl':'pl-PL-Chirp3-HD-Enceladus','ru':'ru-RU-Wavenet-D','uk':'uk-UA-Chirp3-HD-Enceladus'}
+ for lang,name in expected.items():
+  request=app.selected_voice_request(lang,'Test text.')
+  assert request['voice']['name']==name
+  assert request['audioConfig']=={'audioEncoding':'MP3'}
+  assert set(request)=={'input','voice','audioConfig'}
+ assert app.selected_voice_request('uk','гала́ктики')['input']['text']=='галактики'
+
+ # Regression: the real measured sequence changes text, preserves selected voice, and stops after three sends.
+ from unittest.mock import patch
+ from tempfile import TemporaryDirectory
+ import io,hashlib,uuid
+ with TemporaryDirectory() as temp:
+  directory=Path(temp);job_id=str(uuid.uuid4());calls=[];plans=[]
+  def fake_plan(sources,topic,lang,seconds,max_beats=None):
+   plans.append(seconds);return [{'text':'Complete source sentence number '+str(len(plans))+'.','language':lang}]
+  def fake_voice(lang,text,jid,attempt):
+   calls.append((lang,text,attempt));path=directory/('attempt-'+str(attempt));path.write_bytes(b'unchanged natural voice')
+   return path,{'audio_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'duration_ms':[31944,48744,44736][attempt-1]}
+  def fake_alignment(request,timeout):
+   payload=json.loads(request.data);scene=payload['scenes'][0]
+   return io.BytesIO(json.dumps({'status':'ready','audio_sha256':payload['audio_sha256'],'global_coverage':1.0,'scene_timings':[{'scene_uuid':scene['scene_uuid'],'scene_key':'0','start_ms':0,'end_ms':44700}]}).encode())
+  with patch.multiple(app,ROOT=directory,VOICE=directory/'voice',plan_script=fake_plan,google_voice_once=fake_voice,update=lambda *a,**kw:None):
+   with patch.object(app.urllib.request,'urlopen',fake_alignment):
+    result=app.prepare_selected_narration([], 'topic','uk',job_id,45)
+   assert len(calls)==3 and len({text for _,text,_ in calls})==3
+   assert result[-1]['voice']=='uk-UA-Chirp3-HD-Enceladus' and result[-1]['audio_tempo_factor']==1.0
+   assert result[1].read_bytes()==b'unchanged natural voice'
+   with patch.object(app,'google_voice_once',side_effect=TimeoutError('uncertain send')) as failed:
+    try:app.prepare_selected_narration([], 'topic','uk',str(uuid.uuid4()),45)
+    except TimeoutError:pass
+    else:raise AssertionError('uncertain TTS timeout did not stop')
+    assert failed.call_count==1
+
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

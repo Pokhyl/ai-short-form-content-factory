@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-14",
+  "owner_requested_voices_restored": true,
+  "four_live_synthesis_receipts": [
+    {
+      "attempt": 1,
+      "voice": "en-US-Chirp3-HD-Algenib",
+      "characters": 110,
+      "text_sha256": "6bb33b9979cfb7958406e6fa928765b3872e2e6f37abd983441886fee1903912",
+      "audio_sha256": "562f70b8b6965f73ff53563bca1330e40803521d59c90698b79b3eb9dd93c8e5",
+      "duration_ms": 7248,
+      "quota_key": "universal:6cdb744b-4c6c-4064-86e7-7e924702270f:voice:1",
+      "duplicate_blocked_before_send": true
+    },
+    {
+      "attempt": 1,
+      "voice": "pl-PL-Chirp3-HD-Enceladus",
+      "characters": 121,
+      "text_sha256": "2ed5545fe4201da7687009b88a8af425475306b566141af466247f42e2622c72",
+      "audio_sha256": "1e8d52def26d8867067ab22a5b326e84a23234f352571788b732a167e77403eb",
+      "duration_ms": 8784,
+      "quota_key": "universal:46f5e3ab-48a8-4d02-a293-c11da7bc110c:voice:1",
+      "duplicate_blocked_before_send": true
+    },
+    {
+      "attempt": 1,
+      "voice": "ru-RU-Wavenet-D",
+      "characters": 108,
+      "text_sha256": "e411cc98bc8e221ec9c61ac24621bb07c5eb397df4e7247101863ace3e037260",
+      "audio_sha256": "f9e1674eea2c4c03d0c78f60daf44de1722f8b405bbbc5d62fe5e7918cfed79f",
+      "duration_ms": 7848,
+      "quota_key": "universal:9fd9552d-c293-4936-b5ee-58a17a45e265:voice:1",
+      "duplicate_blocked_before_send": true
+    },
+    {
+      "voice": "uk-UA-Chirp3-HD-Enceladus",
+      "characters": 114,
+      "attempts": 1,
+      "gateway_http": 200,
+      "provider_http": 200,
+      "bytes": 34944,
+      "sha256": "9cec9969011c9ac73e79730208b712e3571c403a94dd49d55e3aa16e6474320c",
+      "duration_s": 8.736
+    }
+  ],
+  "no_speed_or_pitch_fields": true,
+  "no_espeak_fallback": true,
+  "quota_ledger": "existing factory.provider_usage_ledger PostgreSQL",
+  "owner_listening_approval": false,
+  "pricing_reference": "https://cloud.google.com/text-to-speech/pricing"
+}

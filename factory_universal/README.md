@@ -6,7 +6,7 @@ A topic-in, reviewable MP4 factory, built as a small self-contained Python servi
 
 - Accepts a topic, one of EN/PL/RU/UK, and a duration of 15, 30, 45, or 60 seconds.
 - Retrieves up to six source articles from Wikipedia in the requested language, anchors the selected meaning and removes unrelated homonyms. The narration uses complete, source-spanned extracts and the review manifest links each beat to its article.
-- Generates speech locally with eSpeak NG. It makes no Gemini, OpenAI, or other text-generation API calls.
+- Uses the four owner-selected Google Cloud voices: en-US-Chirp3-HD-Algenib, pl-PL-Chirp3-HD-Enceladus, ru-RU-Wavenet-D, and uk-UA-Chirp3-HD-Enceladus. Requests use retained n8n credentials and the shared PostgreSQL free-tier character ledger. No Gemini or OpenAI calls. No voice substitution or playback-speed manipulation.
 - Searches Pexels and Pixabay with at most seven distinct topic/action queries per job, including landscape photographs, caches provider responses for 24 hours, and selects 6/12/18/24 distinct still images for 15/30/45/60-second videos. Provider IDs, creator, provider page, article source, captions, and file hashes are saved in the manifest.
 - Supplements stock images with at most three cached Wikimedia Commons searches per job. Commons media must have explicit Public domain, CC0, or CC BY 2.0/2.5/3.0/4.0 metadata; the card displays the author, source, license and adaptation notice, and the manifest retains the rights fields. Other licenses are excluded.
 - Verifies downloaded image pixels locally using a quantized CLIP model on CPU. The runtime makes no model API calls; its model files are mounted read-only. Compound subjects retain their qualifiers in metadata checks. Common competing visual labels are learned from the bounded candidate pool; semantic aliases are excluded from those competing labels. Each accepted image has similarity scores in the manifest. This automated screen supplements browser review.
@@ -20,7 +20,7 @@ The source-based extractive approach is deterministic and free to run. If the se
 
 ## Runtime requirements
 
-Non-English topics use the English interlanguage article title for photo discovery while keeping source text, captions and speech in the selected language. Narration uses complete article paragraphs and is planned against measured local voice duration. The number of spoken facts can adapt to the available duration; every fact has at least two distinct images, while the total image count stays fixed by video length.
+Non-English topics use the English interlanguage article title for photo discovery while keeping source text, captions and speech in the selected language. Narration uses complete source sentences. An internal eSpeak estimate only plans candidate length; final speech is synthesized with the selected Google voice, measured and aligned to its actual waveform. Up to three distinct text plans may be synthesized after completed duration misses; timeouts and errors stop without retries. Every send is claimed durably and charged to the shared free-tier quota ledger before transmission. The number of spoken facts can adapt to the available duration; every fact has at least two distinct images, while the total image count stays fixed by video length.
 
 The deployment reuses the server's existing media-worker and shorts-v2_media_data volume. The app also joins n8n_default so Caddy can reach it. It expects these protected files on the server:
 
@@ -71,3 +71,5 @@ Six normal API outputs across EN/PL/RU/UK and 15/30/45/60 seconds passed the rec
 ## Browser regression
 
 `browser_regression.py` uses Playwright with Google Chrome and the existing read-only Studio login. Run in a disposable QA container, never install browser dependencies into the app runtime. Default checks only inspect the UI, separated histories and continuous MP4 playback; `--submit` explicitly creates one dated reproduction job. Receipt files under acceptance/factory-universal/regression-20261114-* record the actual submission and full MP4 verification.
+
+The previous eSpeak MP4s are withdrawn as voice acceptance evidence. Technical decode or browser playback does not prove the quality of narration. Selected-voice operation still requires the owner’s listening review.
