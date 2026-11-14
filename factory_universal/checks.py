@@ -13,6 +13,11 @@ def check():
  anchor={'title':'Volcano','text':'Volcanoes emit lava ash magma gas from the crust of Earth.'}
  film={'title':'Volcano (1997 film)','text':'A film about lava ash magma gas in the crust of Earth.'}
  assert app.relevant_sources([film,anchor],'Volcano','en')==[anchor]
+ slot={'text':'Solar thermal conversion produces heat.','visual_title':'Solar thermal collector'}
+ fossil={'alt':'Chimneys, thermal power station, energy','height':1000,'width':800}
+ solar={'alt':'Solar panels for thermal heating on a house','height':1000,'width':800}
+ assert app.photo_score(fossil,slot,'Solar energy')<0
+ assert app.photo_score(solar,slot,'Solar energy')>=0
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

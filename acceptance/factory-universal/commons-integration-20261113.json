@@ -1,0 +1,19 @@
+{
+  "scope": "source module executed inside existing factory container, before deployment",
+  "query": "glass annealing",
+  "eligible_results": 6,
+  "licenses": [
+    "Public domain",
+    "CC0"
+  ],
+  "download_and_card_render": "passed",
+  "visual_review": "full caption and source attribution visible",
+  "reviewed_source": "https://commons.wikimedia.org/w/index.php?curid=10795338",
+  "source_license": "Public domain",
+  "end_to_end_mp4_verified": false,
+  "remaining": [
+    "verify Commons credit rendering for CC BY assets",
+    "verify scene selection and complete MP4",
+    "verify other topics and EN/PL/RU/UK"
+  ]
+}

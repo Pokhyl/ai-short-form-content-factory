@@ -442,11 +442,13 @@ def photo_score(p,slot,topic):
  depiction=p.get('depiction') or p['alt']
  terms=set(tokens(topic+' '+slot['text']+' '+slot.get('visual_title','')));meta=set(tokens(depiction))
  process_topic=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
+ anchors=set(topic_terms(topic,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
+ if anchors and not anchors&meta:return -1
  work_context=r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
  if process_topic and not re.search(work_context,depiction,re.I):return -1
  if not process_topic:
   qualifiers={term for term in tokens(slot.get('visual_title','')) if term not in tokens(topic) and term.isalpha() and len(term)>3}
-  if len(qualifiers)>=2 and len(qualifiers&meta)<2:return -1
+  if len(qualifiers)>=2 and not qualifiers&meta:return -1
  required=visual_actions(slot['text']) if process_topic else set();depicted=visual_actions(depiction)
  specific=required-{'production'}
  if specific and not specific&depicted:return -1
