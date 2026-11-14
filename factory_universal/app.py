@@ -382,7 +382,7 @@ def commons_search(query):
 
 def visual_context_title(slot,sources,lang):
  # Match the native-language fact to article introductions, then use their English titles.
- mapped=[source for source in sources if source.get('visual_title')]
+ mapped=[source for source in sources if source.get('visual_title') and all(year in slot['text'] for year in re.findall(r'\b\d{4}\b',source['title']))]
  if not mapped:return slot.get('visual_title','')
  corpus=[set(topic_terms(source['title']+' '+source['text'][:1800],lang)) for source in mapped]
  weights={term:math.log(1+len(corpus)/(1+sum(term in doc for doc in corpus))) for doc in corpus for term in doc}
@@ -456,6 +456,9 @@ def photo_score(p,slot,topic):
  process_topic=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  anchors=set(topic_terms(topic,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
  if anchors and not anchors&meta:return -1
+ if not process_topic and anchors and not anchors<=meta:return -1
+ if not process_topic and p.get('provider')=='pixabay' and len(anchors)>1 and not any(anchors<=set(tokens(tag)) for tag in depiction.split(',')):return -1
+ if p.get('provider') in {'pixabay','pexels'} and re.search(r'\b(?:fantasy|sci[ -]?fi|digital art|3d render|ai[ -]generated)\b',depiction,re.I):return -1
  work_context=r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
  if process_topic and not re.search(work_context,depiction,re.I):return -1
  if not process_topic:
