@@ -1,3 +1,13 @@
+# Narrative context correction — 2026-11-14
+
+The owner rejected the opening «Нарешті» and reported failed job 10c4bfa5-0330-45d6-9b85-549e5160c7c7 (Ходор/UK/30). Original failure and rejected media remain immutable. The intended identity of Ходор is unresolved; selecting a star is not accepted as fulfillment. New insufficient-source jobs request context and expose the matched source without spending TTS quota; actual Chrome receipt is source-context-ui-20261114.json. This state does not establish a completed Ходор video.
+
+Source sentence offsets are captured before punctuation cleanup; normalized strings are no longer searched and sorted with -1 offsets. Standalone-source selection rejects detached transitions and references, preserves a fitting lead sentence and protects numeric abbreviations and initials. Selected voice timing uses completed measurements before synthesis and the original universal speech floors; voice speed stays 1.0. Completed identical selected-voice audio is cached for 24 hours under the existing 512-MiB JSON cache cap.
+
+Replacement narrative job 7d28019f-8551-476d-bdaa-1d38f1ecfb7d completed with 1,350 frames, 18 unique assets and unchanged uk-UA-Chirp3-HD-Enceladus audio. Original source offsets and full quote spans were verified for every beat; completed-audio cache reuse was verified with the quota/send path disabled. See source-context-mp4-20261114.json. This does not fulfill the unresolved Ходор request.
+
+project_ready remains false.
+
 # Voice acceptance reopened — owner rejection, 2026-11-14
 
 The owner rejected the eSpeak narration. The earlier render and browser checks establish technical playback only, not acceptable speech. Exactly the four Google voices in docs/PROVIDER_POLICY.md are restored; eSpeak output is prohibited. All four returned real synthesis audio. Replacement job 4c041e60-eb7f-46d0-8b7b-58f835f5874e contains uk-UA-Chirp3-HD-Enceladus, 44,736 ms of unchanged natural speech, 99.4141% alignment coverage, and 1,350 MP4 frames. See acceptance/factory-universal/selected-voices-20261114.json and selected-voice-mp4-20261114.json. project_ready remains false pending listening review; no owner audio approval is asserted.

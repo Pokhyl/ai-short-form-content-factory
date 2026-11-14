@@ -52,10 +52,10 @@ def check():
    plans.append(seconds);return [{'text':'Complete source sentence number '+str(len(plans))+'.','language':lang}]
   def fake_voice(lang,text,jid,attempt):
    calls.append((lang,text,attempt));path=directory/('attempt-'+str(attempt));path.write_bytes(b'unchanged natural voice')
-   return path,{'audio_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'duration_ms':[31944,48744,44736][attempt-1]}
+   return path,{'audio_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'duration_ms':[30384,49056,43176][attempt-1]}
   def fake_alignment(request,timeout):
    payload=json.loads(request.data);scene=payload['scenes'][0]
-   return io.BytesIO(json.dumps({'status':'ready','audio_sha256':payload['audio_sha256'],'global_coverage':1.0,'scene_timings':[{'scene_uuid':scene['scene_uuid'],'scene_key':'0','start_ms':0,'end_ms':44700}]}).encode())
+   return io.BytesIO(json.dumps({'status':'ready','audio_sha256':payload['audio_sha256'],'global_coverage':1.0,'scene_timings':[{'scene_uuid':scene['scene_uuid'],'scene_key':'0','start_ms':0,'end_ms':43150}]}).encode())
   with patch.multiple(app,ROOT=directory,VOICE=directory/'voice',plan_script=fake_plan,google_voice_once=fake_voice,update=lambda *a,**kw:None):
    with patch.object(app.urllib.request,'urlopen',fake_alignment):
     result=app.prepare_selected_narration([], 'topic','uk',job_id,45)
@@ -68,6 +68,22 @@ def check():
     else:raise AssertionError('uncertain TTS timeout did not stop')
     assert failed.call_count==1
 
+
+ for text in ['Нарешті, серед взаємодіючих галактик багато систем з активними ядрами.','Такі взаємодіючі системи були виявлені серед відомих галактик.','Імовірно ці галактики розташовані неподалік одна від одної.','Його слабке гравітаційне поле не здатне витримати тиск.','Finally, the stars form a galaxy.','Наконец, галактики сближаются.','Wreszcie galaktyki zderzają się ze sobą.']:
+  assert app.context_dependent_sentence(text),text
+ assert not app.context_dependent_sentence('Зіткнення галактик є звичайним явищем в еволюції Всесвіту.')
+ if fixture_path.exists():
+  for duration in (15,30,45,60):
+   plan=app.plan_script(fixture['sources'],fixture['input_topic'],'uk',duration)
+   assert plan
+   positions=[slot['source_position'] for slot in plan];assert positions==sorted(positions)
+   for slot in plan:
+    assert not app.context_dependent_sentence(slot['text'])
+    source=fixture['sources'][slot['source_index']]['text'];start=slot['source_position']
+    assert source[start:start+len(slot['source_sentence'])]==slot['source_sentence']
+
+ assert app.sentences('Дослідження проводив Б. А. Воронцов. Наступне речення.')==['Дослідження проводив Б. А. Воронцов.','Наступне речення.']
+ assert app.sentences('Це сталося 100 млн. років тому. Інша подія.')==['Це сталося 100 млн. років тому.','Інша подія.']
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

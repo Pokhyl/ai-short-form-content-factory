@@ -1,0 +1,50 @@
+[
+  {
+    "topic": "Energia słoneczna",
+    "language": "pl",
+    "duration_s": 15,
+    "beats": 2,
+    "context_free": true,
+    "source_positions_verified": true
+  },
+  {
+    "topic": "Volcano",
+    "language": "en",
+    "duration_s": 60,
+    "beats": 8,
+    "context_free": true,
+    "source_positions_verified": true
+  },
+  {
+    "topic": "How glass bottles are made",
+    "language": "en",
+    "duration_s": 30,
+    "beats": 4,
+    "context_free": true,
+    "source_positions_verified": true
+  },
+  {
+    "topic": "Lunar eclipse",
+    "language": "en",
+    "duration_s": 45,
+    "beats": 6,
+    "context_free": true,
+    "source_positions_verified": true
+  },
+  {
+    "topic": "Солнечная энергия",
+    "language": "ru",
+    "duration_s": 15,
+    "beats": 2,
+    "context_free": true,
+    "source_positions_verified": true
+  },
+  {
+    "topic": "Сонячна енергія",
+    "language": "uk",
+    "duration_s": 15,
+    "beats": 2,
+    "context_free": true,
+    "source_positions_verified": true
+  }
+]

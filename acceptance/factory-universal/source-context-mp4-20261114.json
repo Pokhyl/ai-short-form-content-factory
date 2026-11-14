@@ -1,0 +1,154 @@
+{
+  "job_id": "7d28019f-8551-476d-bdaa-1d38f1ecfb7d",
+  "script": "Взаємоді́ючі гала́ктики  — галактики, розташовані в просторі досить близько, щоб взаємна гравітація істотно впливала на форму, рух речовини й зір, на процеси зореутворення, а в деяких випадках — і на обмін речовиною між галактиками. Для взаємодіючих галактик характерна наявність «хвостів», «мостів» і викидів речовини. Взаємодія грає дуже велику роль в еволюції зоряних систем. Багато галактик мали б відчути сильну взаємодію, що завершилася злиттям, у далекому минулому. Взаємний вплив навіть порівняно далеких галактик часто призводить до спалаху зореутворення в одній з них, або в обох. Припливна взаємодія галактик сприяє формуванню масивних хмар газу.",
+  "beats": [
+    {
+      "order": 1,
+      "caption": "Взаємоді́ючі гала́ктики  — галактики, розташовані в просторі досить близько, щоб взаємна гравітація істотно впливала на форму, рух речовини й зір, на процеси зореутворення, а в деяких випадках — і на обмін речовиною між галактиками.",
+      "source_span": "Взаємоді́ючі гала́ктики  — галактики , розташовані в просторі досить близько, щоб взаємна гравітація істотно впливала на форму, рух речовини й зір, на процеси зореутворення , а в деяких випадках — і на обмін речовиною між галактиками.",
+      "source_start": 0,
+      "source_title": "Взаємодіючі галактики",
+      "source_url": "https://uk.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D1%94%D0%BC%D0%BE%D0%B4%D1%96%D1%8E%D1%87%D1%96_%D0%B3%D0%B0%D0%BB%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B8"
+    },
+    {
+      "order": 2,
+      "caption": "Для взаємодіючих галактик характерна наявність «хвостів», «мостів» і викидів речовини.",
+      "source_span": "Для взаємодіючих галактик характерна наявність «хвостів», «мостів» і викидів речовини.",
+      "source_start": 235,
+      "source_title": "Взаємодіючі галактики",
+      "source_url": "https://uk.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D1%94%D0%BC%D0%BE%D0%B4%D1%96%D1%8E%D1%87%D1%96_%D0%B3%D0%B0%D0%BB%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B8"
+    },
+    {
+      "order": 3,
+      "caption": "Взаємодія грає дуже велику роль в еволюції зоряних систем.",
+      "source_span": "Взаємодія грає дуже велику роль в еволюції зоряних систем .",
+      "source_start": 5470,
+      "source_title": "Взаємодіючі галактики",
+      "source_url": "https://uk.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D1%94%D0%BC%D0%BE%D0%B4%D1%96%D1%8E%D1%87%D1%96_%D0%B3%D0%B0%D0%BB%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B8"
+    },
+    {
+      "order": 4,
+      "caption": "Багато галактик мали б відчути сильну взаємодію, що завершилася злиттям, у далекому минулому.",
+      "source_span": "Багато галактик мали б відчути сильну взаємодію, що завершилася злиттям, у далекому минулому.",
+      "source_start": 5530,
+      "source_title": "Взаємодіючі галактики",
+      "source_url": "https://uk.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D1%94%D0%BC%D0%BE%D0%B4%D1%96%D1%8E%D1%87%D1%96_%D0%B3%D0%B0%D0%BB%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B8"
+    },
+    {
+      "order": 5,
+      "caption": "Взаємний вплив навіть порівняно далеких галактик часто призводить до спалаху зореутворення в одній з них, або в обох.",
+      "source_span": "Взаємний вплив навіть порівняно далеких галактик часто призводить до спалаху зореутворення в одній з них, або в обох.",
+      "source_start": 6493,
+      "source_title": "Взаємодіючі галактики",
+      "source_url": "https://uk.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D1%94%D0%BC%D0%BE%D0%B4%D1%96%D1%8E%D1%87%D1%96_%D0%B3%D0%B0%D0%BB%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B8"
+    },
+    {
+      "order": 6,
+      "caption": "Припливна взаємодія галактик сприяє формуванню масивних хмар газу.",
+      "source_span": "Припливна взаємодія галактик сприяє формуванню масивних хмар газу.",
+      "source_start": 6611,
+      "source_title": "Взаємодіючі галактики",
+      "source_url": "https://uk.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D1%94%D0%BC%D0%BE%D0%B4%D1%96%D1%8E%D1%87%D1%96_%D0%B3%D0%B0%D0%BB%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B8"
+    }
+  ],
+  "voice": {
+    "engine": "Google Cloud Text-to-Speech",
+    "voice": "uk-UA-Chirp3-HD-Enceladus",
+    "audio_duration_ms": 44904,
+    "speech_duration_ms": [
+      13780,
+      5930,
+      4530,
+      6470,
+      7320,
+      4854
+    ],
+    "beat_duration_ms": [
+      13900,
+      6100,
+      4800,
+      7000,
+      7900,
+      5300
+    ],
+    "sha256": "bced09f5a6cb0baac727dfb836e80a83dc4721c02114e51caf2c30cfd2783bb0",
+    "audio_tempo_factor": 1.0,
+    "attempts": [
+      {
+        "attempt": 1,
+        "voice": "uk-UA-Chirp3-HD-Enceladus",
+        "characters": 596,
+        "text_sha256": "9e92ff3effbb4356077c414226b8dbe0d97a98f096cbb774fecdabc196d7f7cf",
+        "audio_sha256": "11d42c3f2b7c212ed183d9ac8200cb3fe97322ed07972bd2259092634e0ecf75",
+        "duration_ms": 40704,
+        "quota_key": "universal:7d28019f-8551-476d-bdaa-1d38f1ecfb7d:voice:1"
+      },
+      {
+        "attempt": 2,
+        "voice": "uk-UA-Chirp3-HD-Enceladus",
+        "characters": 655,
+        "text_sha256": "b5ed0a90a0dd88d0c99b4577617d6408de5b305347362a79df71ced42d08d22c",
+        "audio_sha256": "bced09f5a6cb0baac727dfb836e80a83dc4721c02114e51caf2c30cfd2783bb0",
+        "duration_ms": 44904,
+        "quota_key": "universal:7d28019f-8551-476d-bdaa-1d38f1ecfb7d:voice:2"
+      }
+    ],
+    "alignment_coverage": 0.98513
+  },
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "duration": "45.000000",
+        "nb_frames": "1350"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "duration": "44.904000",
+        "nb_frames": "1054"
+      }
+    ]
+  },
+  "audit": {
+    "shots_required": 18,
+    "narration_beats": 6,
+    "unique_assets": 18,
+    "images_per_narration_beat": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "minimum_two_images_per_beat": true,
+    "average_shot_duration_ms": 2500.0,
+    "source_count": 1,
+    "all_visuals_have_provenance": true,
+    "all_images_pixel_checked": true,
+    "full_decode": true,
+    "renderer_gates": {
+      "video_dimensions": true,
+      "video_codec": true,
+      "audio_codec": true,
+      "stream_counts": true,
+      "duration_match": true,
+      "audio_duration_match": true,
+      "scene_coverage": true,
+      "asset_hashes": true,
+      "source_audio_excluded": true
+    }
+  },
+  "sha256": "10ee021d08599942c9faf737e550b1b104b98a589f92c7708c71b906a126f71d",
+  "source_sha256": "0be0a491c7dac363aaa4cbbaaf52bb72606ae2e5d71d359dd075d337a1ba3125",
+  "cached_audio_reused_without_quota_or_provider_send": true,
+  "context_case_tts_sends": 0,
+  "hodor_subject_resolved": false,
+  "owner_listening_approval": false
+}

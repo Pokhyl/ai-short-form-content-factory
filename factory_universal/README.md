@@ -73,3 +73,9 @@ Six normal API outputs across EN/PL/RU/UK and 15/30/45/60 seconds passed the rec
 `browser_regression.py` uses Playwright with Google Chrome and the existing read-only Studio login. Run in a disposable QA container, never install browser dependencies into the app runtime. Default checks only inspect the UI, separated histories and continuous MP4 playback; `--submit` explicitly creates one dated reproduction job. Receipt files under acceptance/factory-universal/regression-20261114-* record the actual submission and full MP4 verification.
 
 The previous eSpeak MP4s are withdrawn as voice acceptance evidence. Technical decode or browser playback does not prove the quality of narration. Selected-voice operation still requires the owner’s listening review.
+
+## Source context and narration checks
+
+Source ordering uses original byte-independent character offsets captured before punctuation normalization, with original spans retained in the manifest. A suitable lead sentence is retained during duration fitting. Detached discourse transitions and anaphoric extracts are rejected; initials and numeric abbreviations do not form sentence boundaries. Native article aliases keep compound-topic facts focused on their subject.
+
+Jobs with insufficient source material return needs_input with the matched source and a Clarify topic action. This is a request for missing context, not a finished video or a successful interpretation of an ambiguous name. Original failed jobs are preserved. Completed selected-voice audio with identical voice/text hashes is reused for up to 24 hours within the existing 512-MiB cache cap; there is no new provider send or quota charge on a valid cache hit.
