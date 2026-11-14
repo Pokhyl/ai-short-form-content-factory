@@ -558,7 +558,7 @@ def make_card(raw,caption,dest,credit=None):
   Image.alpha_composite(bg.convert('RGBA'),layer).convert('RGB').save(dest,'JPEG',quality=88,optimize=True)
 def download_photo(c,dest):
  host=(urllib.parse.urlparse(c['url']).hostname or '').lower()
- if urllib.parse.urlparse(c['url']).scheme!='https' or not(host=='images.pexels.com' or host.endswith('.pixabay.com') or host in {'upload.wikimedia.org','thumb.wikimedia.org'}):raise ValueError('photo host not allowed')
+ if urllib.parse.urlparse(c['url']).scheme!='https' or not(host in {'images.pexels.com','pixabay.com'} or host.endswith('.pixabay.com') or host in {'upload.wikimedia.org','thumb.wikimedia.org'}):raise ValueError('photo host not allowed')
  with urllib.request.urlopen(urllib.request.Request(c['url'],headers={'User-Agent':'UniversalShortFactory/1.0 (https://studio.hodor.com.pl/; educational video research)'}),timeout=25) as r:
   data=r.read(20_000_001);ct=r.headers.get('Content-Type','').split(';')[0].lower()
  if len(data)>20_000_000 or ct not in {'image/jpeg','image/png','image/webp'}:raise ValueError('photo payload invalid')
