@@ -1,0 +1,55 @@
+{
+  "public_checks": [
+    {
+      "route": "/healthz",
+      "http_status": 200,
+      "content_range": null
+    },
+    {
+      "route": "/",
+      "http_status": 200,
+      "content_range": null
+    },
+    {
+      "route": "/api/jobs/89ba9b95-7ae9-4316-95ad-d06f7121ad2a/video",
+      "http_status": 206,
+      "content_range": "bytes 0-1023/1238518"
+    },
+    {
+      "route": "/api/jobs/bb024c75-eb1c-4c92-92ed-171e2a8c28bd/video",
+      "http_status": 206,
+      "content_range": "bytes 0-1023/6991584"
+    },
+    {
+      "route": "/api/jobs/d379cf75-db33-4c9e-ac5d-516e07473ec0/video",
+      "http_status": 206,
+      "content_range": "bytes 0-1023/2690820"
+    },
+    {
+      "route": "/api/jobs/3153d204-ca03-4295-a513-02ead76bc103/video",
+      "http_status": 206,
+      "content_range": "bytes 0-1023/1937561"
+    },
+    {
+      "route": "/api/jobs/3abed575-1a61-4a35-91d6-b71c349d1417/video",
+      "http_status": 206,
+      "content_range": "bytes 0-1023/1473188"
+    },
+    {
+      "route": "/api/jobs/f8a85823-497f-4bd5-b49a-f2191dfad4a9/video",
+      "http_status": 206,
+      "content_range": "bytes 0-1023/1533904"
+    }
+  ],
+  "output_limit_bytes": 2147483648,
+  "cache_limit_bytes": 536870912,
+  "disk_reserve_bytes": 2147483648,
+  "disk_free_bytes": 5998477312,
+  "job_timeout_seconds": 900,
+  "source_sha256": "a9cde4fc4c87c0f6463310a873d41b66cce8b9411d1498fa0ca106d375ffd106",
+  "verifier_sha256": "0bac92bb4b0c19852252232864cefcf5b712791d3772cbfcf374d6008dced81e",
+  "accepted_temporary_directories_removed": true,
+  "unused_multilingual_model_present": false,
+  "image_id": "sha256:9d774d5cf62e422f42873ceb67c2f6d6f222a1556d971b2a383b72cc6dec3494",
+  "protected_mounts_read_only": true
+}

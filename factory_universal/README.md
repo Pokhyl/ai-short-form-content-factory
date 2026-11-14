@@ -9,11 +9,11 @@ A topic-in, reviewable MP4 factory, built as a small self-contained Python servi
 - Generates speech locally with eSpeak NG. It makes no Gemini, OpenAI, or other text-generation API calls.
 - Searches Pexels and Pixabay with at most seven distinct topic/action queries per job, including landscape photographs, caches provider responses for 24 hours, and selects 6/12/18/24 distinct still images for 15/30/45/60-second videos. Provider IDs, creator, provider page, article source, captions, and file hashes are saved in the manifest.
 - Supplements stock images with at most three cached Wikimedia Commons searches per job. Commons media must have explicit Public domain, CC0, or CC BY 2.0/2.5/3.0/4.0 metadata; the card displays the author, source, license and adaptation notice, and the manifest retains the rights fields. Other licenses are excluded.
-- Verifies downloaded image pixels locally using a quantized CLIP model on CPU. The runtime makes no model API calls; its model files are mounted read-only. Each accepted image has similarity scores in the manifest. This automated screen supplements browser review.
+- Verifies downloaded image pixels locally using a quantized CLIP model on CPU. The runtime makes no model API calls; its model files are mounted read-only. Compound subjects retain their qualifiers in metadata checks. Common competing visual labels are learned from the bounded candidate pool; semantic aliases are excluded from those competing labels. Each accepted image has similarity scores in the manifest. This automated screen supplements browser review.
 - Preserves each whole photograph on a solid matte, with complete captions. Voice planning reserves MP3 encoder delay so the renderer can produce the exact requested duration at 30 fps.
 - Renders through the existing media-worker, verifies the render QA result, and fully decodes the MP4 with FFmpeg before marking the job ready.
 - Provides a browser review screen with video preview, manifest, approval, and change-request status.
-- Deletes temporary downloads and audio after completion or failure. Before starting new work, it expires MP4s after 30 days, caps this factory’s output directories at 2 GB, caps its cache at 512 MB, and removes abandoned failed-job files older than a day. It refuses new jobs if less than 2 GB is free.
+- Deletes temporary downloads and audio after completion or failure. Before starting new work, it expires MP4s after 30 days, caps this factory’s output directories at 2 GiB, caps its cache at 512 MiB, and removes abandoned failed-job files older than a day. It refuses new jobs if less than 2 GiB is free.
 - Runs one isolated job process at a time with a 15-minute process-group timeout; a stuck native model or media command cannot hold the queue indefinitely.
 
 The source-based extractive approach is deterministic and free to run. If the selected language has too few suitable source passages or photo providers cannot return enough distinct topic-matched images, the job fails visibly instead of filling the video with repeated or unrelated assets.
@@ -63,3 +63,7 @@ Run focused offline checks in the deployed runtime:
 `review_outputs.py` collects the explicitly recorded acceptance jobs, checks frame count/duration and creates midpoint contact sheets. It never submits or retries generation jobs. Its dated plan is diagnostic evidence, not a production dependency.
 
 Wikipedia HTTP 429 stops fresh retrieval. A saved source for the same topic/language may be reused for up to 24 hours, with a retrieval note in the manifest; without one the job fails visibly. Local pixel screening can reject a good photograph or miss a contextual mismatch, so the product keeps review and change-request controls.
+
+## Delivery acceptance
+
+Six normal API outputs across EN/PL/RU/UK and 15/30/45/60 seconds passed the recorded delivery checks. See [the active delivery record](../docs/CODEX_START_HERE.md) and `acceptance/factory-universal/` for frame counts, actual output hashes, generation revisions, compatibility replay, visual-confuser calibration and storage/public-endpoint receipts. Individual owner review remains available in the browser.

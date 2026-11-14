@@ -1,0 +1,49 @@
+{
+  "verification_source_sha256": "a9cde4fc4c87c0f6463310a873d41b66cce8b9411d1498fa0ca106d375ffd106",
+  "verifier_sha256": "0bac92bb4b0c19852252232864cefcf5b712791d3772cbfcf374d6008dced81e",
+  "results": [
+    {
+      "id": "89ba9b95-7ae9-4316-95ad-d06f7121ad2a",
+      "images": 6,
+      "script_matches_current_planner": true,
+      "current_filter_rejections": [],
+      "passed": true
+    },
+    {
+      "id": "bb024c75-eb1c-4c92-92ed-171e2a8c28bd",
+      "images": 24,
+      "script_matches_current_planner": true,
+      "current_filter_rejections": [],
+      "passed": true
+    },
+    {
+      "id": "d379cf75-db33-4c9e-ac5d-516e07473ec0",
+      "images": 12,
+      "script_matches_current_planner": true,
+      "current_filter_rejections": [],
+      "passed": true
+    },
+    {
+      "id": "3153d204-ca03-4295-a513-02ead76bc103",
+      "images": 18,
+      "script_matches_current_planner": true,
+      "current_filter_rejections": [],
+      "passed": true
+    },
+    {
+      "id": "3abed575-1a61-4a35-91d6-b71c349d1417",
+      "images": 6,
+      "script_matches_current_planner": true,
+      "current_filter_rejections": [],
+      "passed": true
+    },
+    {
+      "id": "f8a85823-497f-4bd5-b49a-f2191dfad4a9",
+      "images": 6,
+      "script_matches_current_planner": true,
+      "current_filter_rejections": [],
+      "passed": true
+    }
+  ],
+  "all_verified_outputs_pass": true
+}

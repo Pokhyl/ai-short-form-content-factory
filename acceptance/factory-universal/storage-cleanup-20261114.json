@@ -1,0 +1,39 @@
+{
+  "removed_test_ids": [
+    "660c173e-336c-4985-b173-2d69033429cd",
+    "af651313-4dce-447f-8345-dd2f50059f2a",
+    "18af8f93-a144-4def-9490-99cfe6b55193",
+    "4c3cca52-d812-4f59-9ac0-0a61a42e8929",
+    "ae5a45a1-ebf4-41b5-a018-3be9003bf4c3",
+    "581e0770-8761-41af-b2e1-c30fca6a84dd",
+    "9b44d66c-fefc-40a1-9168-372eafa6e5bf",
+    "357f8980-0ea3-434c-a2f3-17d9a3f6a022",
+    "f08281f8-cc95-4e6e-b2f0-ad0ef30d4a9d",
+    "216565da-e346-43f4-b7d4-72aacc208c62",
+    "ce059b5a-68e6-4408-9650-9e6edfe48a67",
+    "935add60-5844-4c60-b4e3-65159b0b33cc",
+    "5241731e-f31d-47f2-90b2-d6ae0156f6b5",
+    "b9501c2a-4975-41b7-bb90-5d3d97f77b81",
+    "e6348574-ebcb-43b6-9688-4bfbad380af0",
+    "6a996ced-b7dd-4195-a32a-5989f8276836",
+    "21670766-5e47-4d85-97fd-d7b3ebbe383c",
+    "30b22046-31ee-4f60-b01b-95b911b893b3",
+    "59519c48-dd34-4a65-a16e-520059ccae97",
+    "edf43734-7070-427a-9565-981c1eaff19d"
+  ],
+  "bytes_removed": 50939707,
+  "free_before": 5948764160,
+  "free_after": 5998477312,
+  "accepted_output_ids_preserved": [
+    "3153d204-ca03-4295-a513-02ead76bc103",
+    "3abed575-1a61-4a35-91d6-b71c349d1417",
+    "89ba9b95-7ae9-4316-95ad-d06f7121ad2a",
+    "bb024c75-eb1c-4c92-92ed-171e2a8c28bd",
+    "d379cf75-db33-4c9e-ac5d-516e07473ec0",
+    "f8a85823-497f-4bd5-b49a-f2191dfad4a9"
+  ],
+  "unrelated_directories_selected": 0,
+  "output_limit_bytes": 2147483648,
+  "cache_limit_bytes": 536870912,
+  "disk_reserve_bytes": 2147483648
+}
