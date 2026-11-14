@@ -1,0 +1,48 @@
+{
+  "competitors": [
+    "A photograph of a solar eclipse.",
+    "A photograph of a moon eclipse."
+  ],
+  "results": [
+    {
+      "frame": 1,
+      "expected": true,
+      "passed": true,
+      "positive": 0.287256,
+      "margin": 0.021656,
+      "excluded_aliases": [
+        "A photograph of a moon eclipse."
+      ]
+    },
+    {
+      "frame": 2,
+      "expected": false,
+      "passed": false,
+      "positive": 0.266273,
+      "margin": -0.042779,
+      "excluded_aliases": [
+        "A photograph of a moon eclipse."
+      ]
+    },
+    {
+      "frame": 17,
+      "expected": true,
+      "passed": true,
+      "positive": 0.300895,
+      "margin": 0.034098,
+      "excluded_aliases": [
+        "A photograph of a moon eclipse."
+      ]
+    },
+    {
+      "frame": 18,
+      "expected": false,
+      "passed": false,
+      "positive": 0.263318,
+      "margin": -0.047797,
+      "excluded_aliases": [
+        "A photograph of a moon eclipse."
+      ]
+    }
+  ]
+}

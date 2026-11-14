@@ -50,9 +50,10 @@ class VisualVerifier:
   images=results['image_embeds'];texts=results['text_embeds']
   images=images/np.maximum(np.linalg.norm(images,axis=-1,keepdims=True),1e-12)
   texts=texts/np.maximum(np.linalg.norm(texts,axis=-1,keepdims=True),1e-12)
+  self.text_vectors=texts
   return [float(score) for score in (images@texts.T)[0]]
 
- def check(self, image_path, subject, actions, caption=''):
+ def check(self, image_path, subject, actions, caption='', competitors=None, competitor_subject=''):
   positive=[]
   templates={
    'heat':['Industrial heating and melting of {subject}.','A furnace melting {subject} material during manufacturing.'],
@@ -68,6 +69,14 @@ class VisualVerifier:
   if actions:negative.append('Studio product photography of finished '+subject+' on a tabletop against a plain white background.')
   if 'shape' in actions:negative.append('A person attaching a cap or fitting to an already finished '+subject+'.')
   if 'glass' in subject.lower():negative.append('Metalworking, steel bars being heated and forged by a blacksmith.')
-  scores=self.compare(image_path,positive+negative)
-  positive_score=max(scores[:len(positive)]);negative_score=max(scores[len(positive):]);margin=positive_score-negative_score
-  return {'passed':positive_score>=0.24 and margin>=0.015,'positive_score':round(positive_score,6),'negative_score':round(negative_score,6),'margin':round(margin,6),'model_sha256':MODEL_SHA256,'descriptions':positive+negative,'scores':[round(x,6) for x in scores]}
+  base_count=len(negative);extra=(competitors or [])[:2];negative.extend(extra)
+  descriptions=positive+negative
+  if extra:descriptions.append('A photograph of a '+(competitor_subject or subject)+'.')
+  scores=self.compare(image_path,descriptions);excluded=[];negative_indices=list(range(len(positive),len(positive)+base_count))
+  for index,description in enumerate(extra):
+   position=len(positive)+base_count+index
+   # Near-identical text embeddings denote aliases, not competing classes.
+   if float(self.text_vectors[position]@self.text_vectors[-1])>=.96:excluded.append(description)
+   else:negative_indices.append(position)
+  positive_score=max(scores[:len(positive)]);negative_score=max(scores[index] for index in negative_indices);margin=positive_score-negative_score
+  return {'passed':positive_score>=0.24 and margin>=0.015,'positive_score':round(positive_score,6),'negative_score':round(negative_score,6),'margin':round(margin,6),'model_sha256':MODEL_SHA256,'descriptions':descriptions,'excluded_competitor_aliases':excluded,'scores':[round(x,6) for x in scores]}

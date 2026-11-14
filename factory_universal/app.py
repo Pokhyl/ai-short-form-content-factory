@@ -450,6 +450,19 @@ def visual_actions(text):
   'production':r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|automat\w*|machine\w*|fabryk\w*|produkc\w*|zakład\w*|завод\w*|производств\w*|виробниц\w*)'
  }
  return {key for key,pattern in patterns.items() if re.search(pattern,text or '',re.I)}
+def visual_competitors(topic,candidates):
+ core=topic_terms(topic,'en');generic={'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
+ anchors=[term for term in core if term not in generic]
+ if len(anchors)<2:return []
+ head=anchors[-1];counts={};grammar=STOP|set('partial total full complete great large small closeup stunning dramatic beautiful captivating breathtaking detailed mesmerizing amazing during before after'.split())
+ for candidate in candidates:
+  words=re.findall(r'[a-z]+',(candidate.get('depiction') or candidate['alt']).lower());found=set()
+  for index,word in enumerate(words):
+   if not index or tokens(word)!=[head]:continue
+   modifier=words[index-1]
+   if len(modifier)>2 and modifier not in grammar and modifier not in core:found.add(modifier+' '+head)
+  for phrase in found:counts[phrase]=counts.get(phrase,0)+1
+ return ['A photograph of a '+phrase+'.' for phrase,count in sorted(counts.items(),key=lambda item:(-item[1],item[0])) if count>=3][:2]
 def photo_score(p,slot,topic):
  depiction=p.get('depiction') or p['alt']
  terms=set(tokens(topic+' '+slot['text']+' '+slot.get('visual_title','')));meta=set(tokens(depiction))
@@ -477,7 +490,7 @@ def get_pixel_verifier():
 def pixel_check(raw,topic,slot):
  visual_subject=(slot.get('visual_title') or topic) if not slot.get('process_intent',True) else topic
  subject=' '.join(dict.fromkeys(topic_terms(visual_subject,'en')))
- return get_pixel_verifier().check(raw,subject or topic,visual_actions(slot['text']) if slot.get('process_intent',True) else set(),slot['text'] if slot.get('language','en')=='en' else '')
+ return get_pixel_verifier().check(raw,subject or topic,visual_actions(slot['text']) if slot.get('process_intent',True) else set(),slot['text'] if slot.get('language','en')=='en' else '',slot.get('visual_competitors',[]),topic)
 
 def allocate_photos(candidates,slots,topic,shot_count=None):
  # Assign the entire storyboard before downloads, preserving scarce assets for scenes that need them.
@@ -643,6 +656,8 @@ def run_job(jid):
   update(jid,stage='visuals',progress=20,message='Searching a bounded photo pool; requiring unique relevant assets')
   candidates=discover_photos(media_topic,'en',slots)
   if len(candidates)<visual_count:raise ValueError('photo search found '+str(len(candidates))+' distinct candidates; '+str(visual_count)+' are required')
+  competitors=[] if slots[0].get('process_intent') else visual_competitors(media_topic,candidates)
+  for slot in slots:slot['visual_competitors']=competitors
   get_pixel_verifier()
   allocated=allocate_photos(candidates,slots,media_topic,visual_count)
   topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[]
