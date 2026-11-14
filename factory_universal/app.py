@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import base64, hashlib, hmac, json, os, re, shutil, sqlite3, subprocess, time, urllib.parse, urllib.request, uuid, wave, unicodedata, sys, signal
+import base64, hashlib, hmac, json, os, re, shutil, sqlite3, subprocess, time, urllib.parse, urllib.request, uuid, wave, unicodedata, sys, signal, math
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from html.parser import HTMLParser
@@ -368,6 +368,15 @@ def commons_search(query):
    found.append({'provider':'commons','id':str(page['pageid']),'alt':plain_metadata(page.get('title',''))+' '+get('ImageDescription'),'depiction':plain_metadata(page.get('title','')),'query':query,'url':url,'source_url':source,'creator':get('Artist') or get('Credit') or 'Wikimedia Commons','creator_url':im.get('descriptionurl') or source,'width':width,'height':height,'license':license_name,'license_url':license_url,'changes':'resized and composited with narration captions'})
  return found
 
+def visual_context_title(slot,sources,lang):
+ # Match the native-language fact to article introductions, then use their English titles.
+ mapped=[source for source in sources if source.get('visual_title')]
+ if not mapped:return slot.get('visual_title','')
+ corpus=[set(topic_terms(source['title']+' '+source['text'][:1800],lang)) for source in mapped]
+ weights={term:math.log(1+len(corpus)/(1+sum(term in doc for doc in corpus))) for doc in corpus for term in doc}
+ query=set(topic_terms(slot['text'],lang))
+ scores=[sum(weights.get(term,0)**2 for term in query&doc)/max(1,sum(weights[term]**2 for term in doc))**.5 for doc in corpus]
+ return mapped[max(range(len(mapped)),key=lambda index:scores[index])]['visual_title']
 def media_search_topic(topic,lang,sources):
  if lang=='en':return topic
  terms=topic_terms(topic,lang)
@@ -407,7 +416,7 @@ def discover_photos(topic,lang,slots):
  actions=set().union(*(visual_actions(slot['text']) if slot.get('process_intent',True) else set() for slot in slots))
  labels={'heat':'furnace','shape':'forming','cool':'annealing','inspect':'inspection','production':'manufacturing'}
  queries=[((' '.join(core_terms) if action=='inspect' else core)+' '+labels[action]).strip() for action in ('cool','inspect','heat','shape','production') if action in actions][:3]
- if not queries:queries=[topic]
+ if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]))[:3]
  for query in queries:
   try:
    for candidate in commons_search(query):pool.setdefault((candidate['provider'],candidate['id']),candidate)
@@ -435,6 +444,9 @@ def photo_score(p,slot,topic):
  process_topic=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  work_context=r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
  if process_topic and not re.search(work_context,depiction,re.I):return -1
+ if not process_topic:
+  qualifiers={term for term in tokens(slot.get('visual_title','')) if term not in tokens(topic) and term.isalpha() and len(term)>3}
+  if len(qualifiers)>=2 and len(qualifiers&meta)<2:return -1
  required=visual_actions(slot['text']) if process_topic else set();depicted=visual_actions(depiction)
  specific=required-{'production'}
  if specific and not specific&depicted:return -1
@@ -609,6 +621,7 @@ def run_job(jid):
    slot['language']=lang
    source=sources[slot['source_index']]
    slot['visual_title']=source.get('visual_title') or (source['title'] if lang=='en' else '')
+   if not slot.get('process_intent'):slot['visual_title']=visual_context_title(slot,sources,lang)
   media_topic=media_search_topic(topic,lang,sources)
   update(jid,stage='visuals',progress=20,message='Searching a bounded photo pool; requiring unique relevant assets')
   candidates=discover_photos(media_topic,'en',slots)
@@ -650,7 +663,7 @@ def run_job(jid):
   if not lo<=audio_ms<=hi:raise ValueError('measured voice is outside the accepted '+str(duration)+' second window')
   audio_sha=hashlib.sha256(mp3.read_bytes()).hexdigest();target=duration*1000;beat_starts=[sum(slot_targets[:i]) for i in range(beat_count)];cursor=0;scenes=[]
   for i,item in enumerate(selected):
-   beat=beat_for_shot[i];beat_start=beat_starts[beat];end=target if i==visual_count-1 else beat_start+slot_targets[beat]*(i-first_shot[beat]+1)//shots_per_beat[beat];spoken_end=min(target,beat_start+speech_ms[beat]);speech_start=max(cursor,beat_start);speech_end=min(end,spoken_end,audio_ms)
+   beat=beat_for_shot[i];beat_start=beat_starts[beat];end=target if i==visual_count-1 else beat_start+slot_targets[beat]*(i-first_shot[beat]+1)//shots_per_beat[beat];end=round(end/100)*100;spoken_end=min(target,beat_start+speech_ms[beat]);speech_start=max(cursor,beat_start);speech_end=min(end,spoken_end,audio_ms)
    if speech_end<=speech_start:speech_start=cursor;speech_end=min(end,cursor+1)
    scenes.append({'scene_uuid':str(uuid.uuid4()),'shot_uuid':item['shot'],'visual_asset_id':str(uuid.uuid4()),'media_type':'photo','asset_sha256':item['hash'],'asset_path':str(item['path']),'asset_width':1080,'asset_height':1920,'scene_order':i+1,'segment_start_ms':cursor,'segment_end_ms':end,'speech_start_ms':speech_start,'speech_end_ms':speech_end})
    cursor=end
