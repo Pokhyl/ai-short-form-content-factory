@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Universal Video Factory</title><style>:root{color-scheme:dark;font:16px system-ui;background:#0b1020;color:#edf2ff}body{margin:0 auto;max-width:1100px;padding:32px 20px}h1{font-size:32px;margin:0}p{color:#aab6d3}form,.job{background:#141c31;border:1px solid #2b3858;border-radius:16px;padding:20px;margin:22px 0}form{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end}label{display:grid;gap:6px;color:#bdc9e5}input,select,button{font:inherit;border-radius:9px;padding:12px;border:1px solid #3b4b70;background:#0b1020;color:#fff}button{cursor:pointer;background:#4b72ea;border:0;font-weight:700}button.secondary{background:#26344f}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.job h2{font-size:19px}.job video{width:100%;max-height:680px;background:#05070c}.bar{height:8px;background:#283653;border-radius:5px;overflow:hidden}.bar span{display:block;height:8px;background:#79a6ff}.job[data-state=needs_input]{border-color:#c8a85f}.sources a{color:#90b5ff}.error{color:#ff9e9e}.pill{display:inline-block;border-radius:99px;background:#283653;padding:4px 9px;font-size:12px}@media(max-width:760px){form,.grid{grid-template-columns:1fr}}</style><body><h1>Universal Video Factory</h1><p>Create a vertical video from a topic, with narration, unique images, captions and cited sources.</p><div id="providerStatus" role="status"></div><form id="new"><label>Topic<input name="topic" minlength="3" maxlength="180" required placeholder="Enter a topic"></label><label>Language<select name="language"><option value="en">English</option><option value="pl">Polski</option><option value="ru">Русский</option><option value="uk">Українська</option></select></label><label>Length<select name="duration_s"><option>15</option><option>30</option><option>45</option><option>60</option></select></label><button>Create MP4</button></form><div style="display:flex;gap:12px;align-items:end"><label>View<select id="historyView"><option value="user">My videos</option><option value="examples">Examples</option><option value="tests">Test history</option></select></label><button id="refresh" type="button" class="secondary">Refresh</button></div><div id="status" role="status"></div><div id="jobs" class="grid"></div><script>
+
+var base=location.pathname.replace(/\/$/,'');if(base==='/')base='';
+var requestNo=0,lastFetch=0,hasActiveJobs=false,voiceAvailable=false,providerCheckRunning=false;
+var list=document.getElementById('jobs'),view=document.getElementById('historyView'),statusBox=document.getElementById('status');
+function esc(value){return String(value||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+async function api(path,options){var response=await fetch(base+path,options||{});var data=await response.json();if(!response.ok)throw Error(data.error||response.status);return data}
+function cardHTML(j){
+ var m=j.manifest||{},video=j.status==='ready'?'<video controls playsinline preload="metadata" src="'+base+'/api/jobs/'+j.id+'/video"></video><p><a href="'+base+'/api/jobs/'+j.id+'/video" download>Download MP4</a> · <a href="'+base+'/api/jobs/'+j.id+'/manifest">Sources and media audit</a></p>':'';
+ var script=m.script?'<details><summary>Script and cited sources</summary><p>'+esc(m.script)+'</p><div class="sources">'+(m.sources||[]).map(function(source){return '<p><a target="_blank" rel="noreferrer" href="'+esc(source.url)+'">'+esc(source.title)+'</a></p>'}).join('')+'</div></details>':'';
+ var summary=j.message;
+ if(j.status==='failed')summary=j.message.indexOf('research')>=0?'Could not prepare a complete script from the sources.':j.message.indexOf('visual')>=0?'Could not find enough suitable images.':'Video creation failed.';
+ var error=j.error?'<details><summary class="error">Error details</summary><p class="error">'+esc(j.error)+'</p></details>':'';
+ var review=j.status==='ready'?'<p><span class="pill">Review: '+esc(j.review_status)+'</span> <button class="secondary" data-action="approved" data-id="'+j.id+'">Approve</button> <button class="secondary" data-action="changes_requested" data-id="'+j.id+'">Request changes</button></p>':'';
+ if(j.status==='ready'&&m.resolved_entity_id){review+='<p><button class="secondary" data-action="wrong_subject" data-id="'+j.id+'">Wrong subject</button></p>';}
+ var resolved=m.resolved_topic&&m.resolved_topic!==j.topic?'<p>Source topic: '+esc(m.resolved_topic)+'</p>':'';
+ if(j.status==='needs_input'){script='<p>'+esc(m.input_needed||j.message)+'</p><div class="sources">'+(m.sources||[]).map(function(source){return '<p>Matched source: <a target="_blank" rel="noreferrer" href="'+esc(source.url)+'">'+esc(source.title)+'</a></p>'}).join('')+'</div>';review='<p><button class="secondary" data-action="clarify" data-id="'+j.id+'">Clarify topic</button></p>';}
+ return '<article class="job" data-job-id="'+j.id+'" data-topic="'+esc(j.topic)+'" data-language="'+esc(j.language)+'" data-duration="'+j.duration_s+'" data-origin="'+esc(j.origin)+'" data-state="'+esc(j.status)+'"><h2>'+esc(j.topic)+' · '+j.duration_s+'s · '+esc(j.language)+'</h2><p>'+esc(j.status==='needs_input'?'Needs context':j.status)+' — '+esc(summary)+'</p>'+resolved+'<div class="bar"><span style="width:'+j.progress+'%;'+(j.status==='failed'?'background:#d86969':'')+'"></span></div>'+error+video+script+review+'</article>';
+}
+function patchCards(jobs){
+ var ids=new Set(jobs.map(function(job){return job.id}));
+ Array.from(list.children).forEach(function(node){if(!ids.has(node.dataset.jobId))node.remove()});
+ jobs.forEach(function(job,index){
+  var signature=JSON.stringify(job),card=list.querySelector('[data-job-id="'+job.id+'"]');
+  if(!card||card.dataset.signature!==signature){var template=document.createElement('template');template.innerHTML=cardHTML(job);var next=template.content.firstElementChild;next.dataset.signature=signature;if(card)card.replaceWith(next);card=next;}
+  if(list.children[index]!==card)list.insertBefore(card,list.children[index]||null);
+ });
+ if(!jobs.length){list.innerHTML='<p>No videos in this view.</p>';}
+}
+async function draw(){
+ var sequence=++requestNo,selected=view.value;
+ try{var data=await api('/api/jobs?view='+encodeURIComponent(selected));if(sequence!==requestNo||selected!==view.value)return;var jobs=data.jobs||[];hasActiveJobs=jobs.some(function(job){return job.status==='queued'||job.status==='running'});patchCards(jobs);lastFetch=Date.now();statusBox.textContent='';}
+ catch(error){if(sequence===requestNo)statusBox.textContent=error.message;}
+}
+list.addEventListener('click',async function(event){var button=event.target.closest('button[data-action]');if(!button)return;if(button.dataset.action==='wrong_subject'){button.disabled=true;try{await api('/api/jobs/'+button.dataset.id+'/subject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:'rejected'})});var sourceCard=button.closest('article'),newForm=document.getElementById('new');newForm.elements.topic.value=sourceCard.dataset.topic;newForm.elements.language.value=sourceCard.dataset.language;newForm.elements.duration_s.value=sourceCard.dataset.duration;await draw();statusBox.textContent='Add context to the topic to specify the subject you mean.';newForm.elements.topic.focus();newForm.scrollIntoView({behavior:'smooth'});}catch(error){statusBox.textContent=error.message;}finally{button.disabled=false;}return;}if(button.dataset.action==='clarify'){var card=button.closest('article'),form=document.getElementById('new');form.elements.topic.value=card.dataset.topic;form.elements.language.value=card.dataset.language;form.elements.duration_s.value=card.dataset.duration;form.elements.topic.focus();form.scrollIntoView({behavior:'smooth'});return;}try{await api('/api/jobs/'+button.dataset.id+'/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:button.dataset.action})});await draw()}catch(error){statusBox.textContent=error.message}});
+view.addEventListener('change',draw);document.getElementById('refresh').addEventListener('click',draw);
+document.getElementById('new').addEventListener('submit',async function(event){
+ event.preventDefault();var form=event.target,button=form.querySelector('button'),fields=new FormData(form);button.disabled=true;statusBox.textContent='Submitting…';
+ try{await api('/api/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:fields.get('topic'),language:fields.get('language'),duration_s:Number(fields.get('duration_s'))})});form.elements.topic.value='';view.value='user';await draw()}
+ catch(error){statusBox.textContent=error.message}finally{button.disabled=!voiceAvailable}
+});
+draw();setInterval(function(){if(!document.hidden&&(hasActiveJobs||Date.now()-lastFetch>30000))draw()},4000);
+
+
+async function checkProvider(force){
+ if(providerCheckRunning)return;
+ providerCheckRunning=true;
+ var box=document.getElementById('providerStatus'),submit=document.querySelector('#new button');
+ try{
+  var state=await api('/api/provider-status'+(force?'?refresh=1':''));
+  voiceAvailable=state.ready===true;submit.disabled=!voiceAvailable;box.replaceChildren();
+  if(!voiceAvailable){
+   var message=document.createElement('p');message.textContent=state.message;box.appendChild(message);
+   if(state.code==='GOOGLE_RECONNECT_REQUIRED'){
+    var link=document.createElement('a');link.href=state.reconnect_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Reconnect Google account';box.appendChild(link);
+   }
+   var check=document.createElement('button');check.type='button';check.className='secondary';check.style.marginLeft='12px';check.textContent='Check connection';check.onclick=function(){checkProvider(true)};box.appendChild(check);
+  }
+ }catch(error){voiceAvailable=false;submit.disabled=true;box.textContent='Could not check the voice connection. Refresh this page.'}
+ finally{providerCheckRunning=false}
+}
+document.querySelector('#new button').disabled=true;
+checkProvider(false);
+setInterval(function(){if(!document.hidden)checkProvider(false)},60000);
+
+</script></body></html>

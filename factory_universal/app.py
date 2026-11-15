@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import base64, hashlib, hmac, json, os, re, shutil, sqlite3, subprocess, time, urllib.parse, urllib.request, uuid, wave, unicodedata, sys, signal, math
+import base64, hashlib, threading, json, os, re, shutil, sqlite3, subprocess, time, urllib.parse, urllib.request, uuid, wave, unicodedata, sys, signal, math
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from html.parser import HTMLParser
@@ -29,6 +29,7 @@ def init_db():
  with connect() as c:
   c.execute("""CREATE TABLE IF NOT EXISTS jobs(\n   id TEXT PRIMARY KEY, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,\n   topic TEXT NOT NULL, language TEXT NOT NULL, duration_s INTEGER NOT NULL,\n   status TEXT NOT NULL, stage TEXT NOT NULL, progress INTEGER NOT NULL,\n   message TEXT NOT NULL, error TEXT, manifest TEXT,\n   review_status TEXT NOT NULL DEFAULT 'pending', review_note TEXT)""")
   if 'origin' not in {row['name'] for row in c.execute('PRAGMA table_info(jobs)')}:c.execute("ALTER TABLE jobs ADD COLUMN origin TEXT NOT NULL DEFAULT 'user'")
+  c.execute('CREATE TABLE IF NOT EXISTS source_decisions(topic_key TEXT NOT NULL,language TEXT NOT NULL,entity_id TEXT NOT NULL,decision TEXT NOT NULL,note TEXT,created_at TEXT NOT NULL,PRIMARY KEY(topic_key,language,entity_id))')
   c.execute("CREATE TABLE IF NOT EXISTS voice_attempts(job_id TEXT NOT NULL,attempt INTEGER NOT NULL,text_sha256 TEXT NOT NULL,voice TEXT NOT NULL,state TEXT NOT NULL,receipt TEXT,PRIMARY KEY(job_id,attempt))")
   c.execute("UPDATE jobs SET status='failed',stage='interrupted',message='Process restarted before completion',error='interrupted' WHERE status IN ('queued','running')")
 def update(jid,**fields):
@@ -38,6 +39,16 @@ def get_job(jid):
  with connect() as c:r=c.execute('SELECT * FROM jobs WHERE id=?',(jid,)).fetchone()
  if not r:return None
  d=dict(r);d['manifest']=json.loads(d['manifest']) if d['manifest'] else None;return d
+def subject_rejected(topic,lang,entity_id):
+ if not entity_id:return False
+ try:
+  with connect() as c:row=c.execute("SELECT decision FROM source_decisions WHERE topic_key=? AND language=? AND entity_id=?",(' '.join(topic.casefold().split()),lang,entity_id)).fetchone()
+  return bool(row and row['decision']=='rejected')
+ except sqlite3.OperationalError:return False
+def reject_subject(topic,lang,entity_id,note='Owner rejected this source interpretation'):
+ if not re.fullmatch(r'Q[1-9][0-9]*',str(entity_id)):raise ValueError('missing resolved subject identity')
+ with connect() as c:c.execute("INSERT OR REPLACE INTO source_decisions(topic_key,language,entity_id,decision,note,created_at) VALUES(?,?,?,'rejected',?,?)",(' '.join(topic.casefold().split()),lang,entity_id,note,now()))
+
 def public_job(j):
  if not j:return None
  return {k:j[k] for k in ('id','created_at','updated_at','topic','language','duration_s','status','stage','progress','message','error','review_status','review_note')}|{'manifest':j['manifest'],'origin':j.get('origin','user')}
@@ -89,7 +100,7 @@ def process_signal(text,lang):
    'ru':r'(плав\w*|форм\w*|выдув\w*|охлажд\w*|отжиг\w*|провер\w*|печ\w*|смес\w*|капл\w*)',
    'uk':r'(плав\w*|форм\w*|видув\w*|охолодж\w*|відпал\w*|перевір\w*|печ\w*|шихт\w*|крап\w*)'
   }
-  return len(re.findall(patterns.get(lang,patterns['en']),text or '',re.I|re.UNICODE))
+  return len(re.findall(patterns.get(lang,patterns['en']),text or '',re.I|re.UNICODE))+len(re.findall({'en':r'\b(?:mix\w*|separat\w*|clean\w*|wash\w*|grind\w*|crush\w*|cook\w*|drain\w*|dry\w*|dri\w*|filter\w*|remov\w*|layer\w*|laid|add\w*|pour\w*|roll\w*|cut\w*|assembl\w*|bake\w*|stir\w*)','pl':r'\b(?:miesza\w*|rozdziel\w*|oczyszcz\w*|sus\w*|pras\w*|miel\w*|dodaj\w*|walc\w*|filtrow\w*)','ru':r'\b(?:смеш\w*|раздел\w*|очищ\w*|измельч\w*|дроб\w*|суш\w*|пресс\w*|фильтр\w*|добавля\w*|удаля\w*)','uk':r'\b(?:зміш\w*|розділ\w*|очищ\w*|подрібн\w*|прес\w*|суш\w*|фільтр\w*|дода\w*|видаля\w*)'}.get(lang,r'(?!)'),text or '',re.I|re.UNICODE))
 WIKI_LAST_REQUEST=0.0
 def http_json(url,headers=None,timeout=20):
  global WIKI_LAST_REQUEST
@@ -102,7 +113,7 @@ def http_json(url,headers=None,timeout=20):
  with urllib.request.urlopen(urllib.request.Request(url,headers=h),timeout=timeout) as r:return json.loads(r.read(8_000_000).decode('utf-8'))
 class WikiHTML(HTMLParser):
  VOID={'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}
- SKIP_TAGS={'script','style','table','figure','gallery','sup'}
+ SKIP_TAGS={'script','style','table','figure','gallery'}
  SKIP_CLASSES={'mw-editsection','reference','navbox','metadata','mw-references-wrap','toc','sidebar','hatnote','ambox','vertical-navbox','reflist'}
  SKIP_SECTIONS={
   'en':{'references','notes','see also','further reading','external links','bibliography','works cited','sources'},
@@ -112,8 +123,11 @@ class WikiHTML(HTMLParser):
  }
  def __init__(self,lang='en',paragraphs_only=False):
   self.paragraphs_only=paragraphs_only;self.paragraph_depth=0
-  super().__init__(convert_charrefs=True);self.lang=lang;self.skip=0;self.skip_section=False;self.heading=None;self.heading_text=[];self.parts=[]
+  super().__init__(convert_charrefs=True);self.lang=lang;self.sup_level=0;self.sup_text=[];self.skip=0;self.skip_section=False;self.heading=None;self.heading_text=[];self.parts=[]
  def handle_starttag(self,tag,attrs):
+  if self.sup_level:
+   if tag not in self.VOID:self.sup_level+=1
+   return
   if tag in {'h2','h3'}:
    if tag=='h2' and self.skip_section:self.skip_section=False
    self.heading=tag;self.heading_text=[];return
@@ -125,9 +139,18 @@ class WikiHTML(HTMLParser):
   if tag in self.SKIP_TAGS or classes&self.SKIP_CLASSES or (self.paragraphs_only and tag=='li'):
    if tag not in self.VOID:self.skip=1
    return
+  if tag=='sup':self.sup_level=1;self.sup_text=[];return
+  if tag=='sub':self.parts.append('_')
   if tag=='p':self.paragraph_depth+=1
   if tag in {'p','h4','li','br'}:self.parts.append('\n')
  def handle_endtag(self,tag):
+  if self.sup_level:
+   if tag not in self.VOID:self.sup_level-=1
+   if not self.sup_level:
+    value=''.join(self.sup_text).strip()
+    if value and not re.fullmatch(r'\[[^\]]*\]|[⇨↗↑↓•*†‡]+',value):self.parts.append('^'+value)
+    self.sup_text=[]
+   return
   if self.heading:
    if tag==self.heading:
     name=re.sub(r'\s+',' ',' '.join(self.heading_text)).strip().lower();skip=self.SKIP_SECTIONS.get(self.lang,set())
@@ -143,7 +166,8 @@ class WikiHTML(HTMLParser):
   if tag in {'p','h4','li'}:self.parts.append('\n')
   elif tag in {'a','b','strong','i','em','span'}:self.parts.append(' ')
  def handle_data(self,data):
-  if self.heading:self.heading_text.append(data)
+  if self.sup_level:self.sup_text.append(data)
+  elif self.heading:self.heading_text.append(data)
   elif not self.skip and not self.skip_section and (not self.paragraphs_only or self.paragraph_depth>0):self.parts.append(data)
  def text(self):
   raw=''.join(self.parts)
@@ -166,9 +190,26 @@ def measured_sentence_ms(text,lang):
    with wave.open(str(path),'rb') as audio:return (audio.getnframes()*1000+audio.getframerate()-1)//audio.getframerate()
   finally:shutil.rmtree(folder,ignore_errors=True)
  return cache_fetch('speech-plan-natural-estimate-v2|'+lang+'|155|'+text,measure)
-def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required_sentence=None):
+NATURAL_RATE_CACHE={}
+def natural_char_rate(lang):
+ if lang in NATURAL_RATE_CACHE:return NATURAL_RATE_CACHE[lang]
+ from statistics import median
+ try:
+  with connect() as c:rows=c.execute("SELECT receipt FROM voice_attempts WHERE voice=? AND state='measured' AND receipt IS NOT NULL ORDER BY rowid DESC LIMIT 12",(SELECTED_VOICES[lang][1],)).fetchall()
+  data=[json.loads(row['receipt']) for row in rows]
+  values=[item['duration_ms']/item['characters'] for item in data if item.get('characters',0)>=120]
+  if values:
+   NATURAL_RATE_CACHE[lang]=median(values);return NATURAL_RATE_CACHE[lang]
+ except (sqlite3.Error,ValueError,KeyError):pass
+ NATURAL_RATE_CACHE[lang]={'en':65.0,'pl':65.0,'ru':70.0,'uk':70.0}[lang]
+ return NATURAL_RATE_CACHE[lang]
+
+def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required_sentence=None,natural=False):
  # Exact-count duration-constrained selection over source sentences, measured in the selected voice.
- budget=((duration_ms if duration_ms is not None else count*5000)-100)//25;states=[{} for _ in range(count+1)];states[0][0]=(0.0,())
+ rate=natural_char_rate(lang) if natural else None
+ cost_ms=lambda text:round((len(selected_voice_request(lang,text)['input']['text'])+1)*rate) if natural else measured_sentence_ms(text,lang)
+ step=10 if natural else 25
+ budget=((duration_ms if duration_ms is not None else count*5000)-(0 if natural else 100))//step;states=[{} for _ in range(count+1)];states[0][0]=(0.0,())
  seen=set();candidates=[]
  for row in rows:
   norm=re.sub(r'\W+','',row[2].lower())
@@ -177,7 +218,7 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
   if len(candidates)>=240:break
  if len(candidates)>60:
   mandatory=next((row for row in candidates if row[2]==required_sentence),None)
-  candidates=candidates[:40]+sorted(candidates[40:],key=lambda row:measured_sentence_ms(row[2],lang))[:20]
+  candidates=candidates[:40]+sorted(candidates[40:],key=lambda row:cost_ms(row[2]))[:20]
   if mandatory is not None and mandatory not in candidates:candidates[-1]=mandatory
  actions=[visual_actions(row[2])-{'production'} for row in candidates]
  terms=[set(topic_terms(row[2],lang)) for row in candidates]
@@ -191,21 +232,26 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
  required=next((i for i,row in enumerate(candidates) if row[2]==required_sentence),None)
  if required_sentence and required is None:return []
  if required is not None:
-  cost=(measured_sentence_ms(candidates[required][2],lang)+24)//25
+  cost=(cost_ms(candidates[required][2])+step-1)//step
   if cost>budget:return []
   states[0].clear();states[1][cost]=(candidates[required][0],(required,))
  for index,(score,source_index,sentence,words) in enumerate(candidates):
   if index==required:continue
-  cost=(measured_sentence_ms(sentence,lang)+24)//25
+  cost=(cost_ms(sentence)+step-1)//step
   if cost>budget:continue
   for selected in range(min(count,index+1+(required is not None)),0,-1):
    for used,(total,chosen) in list(states[selected-1].items()):
     target=used+cost
     if target>budget:continue
+    if natural:
+     current_text=re.sub(r'\W+','',sentence.casefold())
+     if any(current_text in re.sub(r'\W+','',candidates[old][2].casefold()) or re.sub(r'\W+','',candidates[old][2].casefold()) in current_text for old in chosen):continue
     candidate=(total+score-sum(penalties[index][old] for old in chosen),chosen+(index,))
     if target not in states[selected] or candidate[0]>states[selected][target][0]:states[selected][target]=candidate
  if not states[count]:return []
- chosen=max(states[count].values(),key=lambda item:item[0])[1]
+ options=[(used,value) for used,value in states[count].items() if not natural or used*step >= (duration_ms or count*5000)*.90]
+ if not options:return []
+ chosen=max(options,key=lambda item:(item[1][0],item[0]))[1][1]
  return [{'text':candidates[index][2],'language':lang,'source_index':candidates[index][1],'source_sentence':candidates[index][2],'score':candidates[index][0]} for index in chosen]
 
 def wikipedia(topic,lang):
@@ -213,7 +259,7 @@ def wikipedia(topic,lang):
   made=bool(re.search(r'\b(make|made|manufactur\w*|produc\w*|fabricat\w*|build|create|zrobi\w*|produk\w*|wytwarz\w*|изготов\w*|производ\w*|виробля\w*|виготов\w*)\b',topic,re.I))
   core=list(dict.fromkeys(topic_terms(topic,lang)))
   suffix={'en':'manufacturing process','pl':'proces produkcji','ru':'процесс производства','uk':'процес виробництва'}
-  stage={'en':'furnace forming annealing machine','pl':'piec formowanie wyzarzanie maszyna','ru':'печь формование отжиг машина','uk':'піч формування відпал машина'}
+  stage={'en':'production method materials equipment','pl':'metoda produkcji materiały urządzenia','ru':'способ производства материалы оборудование','uk':'спосіб виробництва матеріали обладнання'}
   if made and core:
    queries.insert(0,(' '.join(core)+' '+suffix[lang],8));queries.append((' '.join(core)+' '+stage[lang],8))
   hits=[];seen=set()
@@ -223,11 +269,14 @@ def wikipedia(topic,lang):
    for hit in (data.get('query') or {}).get('search') or []:
     title=str(hit.get('title') or '').strip();key=str(hit.get('pageid') or title)
     if title and key not in seen:seen.add(key);hits.append(title)
-  core_set=set(core);method_terms=set(topic_terms({'en':'furnace forming annealing glassblowing container glass production line','pl':'piec formowanie wyzarzanie szklo pojemnik linia produkcyjna','ru':'печь формование отжиг стекло тара производственная линия','uk':'піч формування відпал скло тара виробнича лінія'}[lang],lang))
-  hits=[title for title in hits if (set(topic_terms(title,lang))&core_set) or (made and bool(set(topic_terms(title,lang))&method_terms))]
+  core_set=set(core);method_terms=set(topic_terms({'en':'manufacturing making production process materials equipment','pl':'produkcja wytwarzanie proces materiały urządzenia','ru':'производство изготовление процесс материалы оборудование','uk':'виробництво виготовлення процес матеріали обладнання'}[lang],lang))
+  def core_matches(title):
+   words=set(topic_terms(title,lang))
+   return {term for term in core_set if term in words or (made and lang=='en' and len(term)>=4 and any(word.startswith(term) and word[len(term):] in {'making','manufacturing','production','blowing'} for word in words))}
+  hits=[title for title in hits if core_matches(title) or (made and bool(set(topic_terms(title,lang))&method_terms))]
   if made and len(core_set)>1:
    hits=[title for title in hits if core_set<=set(topic_terms(title,lang)) or bool((set(topic_terms(title,lang))-core_set)&method_terms) or (bool(set(topic_terms(title,lang))&core_set) and bool(re.search(r'manufactur|produc|fabricat|process|produk|wytwarz|proces|производ|изготов|процесс|виробниц|виготов|процес',title,re.I)))]
-  hits=sorted(hits,key=lambda title:(-len(set(topic_terms(title,lang))&core_set),hits.index(title)))
+  hits=sorted(hits,key=lambda title:(-len(core_matches(title)),-int(made and bool(re.search(r'making|manufactur|production|produk|wytwarz|производ|изготов|виробниц|виготов',title,re.I))),hits.index(title)))
   if not hits:
    hints=['uk','ru','en','pl'] if re.search('[іїєґІЇЄҐ]',topic) else ['ru','uk','en','pl'] if re.search('[А-Яа-яЁё]',topic) else ['pl','en','ru','uk'] if re.search('[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]',topic) else ['en','pl','ru','uk']
    for query_lang in hints:
@@ -258,7 +307,7 @@ def wikipedia(topic,lang):
    if len(out)>=6:break
   return out
 def sentences(paragraph):
- abbreviations=r'\b(?:e\.g|i\.e|U\.S|U\.K|Mr|Mrs|Dr|Prof|np|m\.in|itp|itd|tj|tzn|tzw|ok|godz|proc|por|rys|św|млн|млрд|тис|тыс|т\.е|т\.д|т\.п|гг|рис|ім|ст)\.'
+ abbreviations=r'\b(?:e\.g|i\.e|U\.S|U\.K|Mr|Mrs|Dr|Prof|np|m\.in|m\.st|нар|род|itp|itd|tj|tzn|tzw|ok|godz|proc|por|rys|św|млн|млрд|тис|тыс|т\.е|т\.д|т\.п|гг|рис|ім|ст)\.'
  protected=re.sub(abbreviations,lambda match:match.group(0).replace('.',chr(0x2024)),paragraph,re.I)
  protected=re.sub(r'(?<!\w)([A-ZА-ЯІЇЄҐ])\.(?=\s+[A-ZА-ЯІЇЄҐ])',lambda match:match.group(1)+chr(0x2024),protected)
  return [part.replace(chr(0x2024),'.') for part in re.split(r'(?<=[.!?])\s+',protected.strip())]
@@ -274,12 +323,80 @@ def unsupported_qualifier(sentence,topic,sources):
   if len(qualifier)<3 or not qualifier.isalpha() or qualifier in grammar or qualifier in core:continue
   if not set(tokens(qualifier))<=represented:return True
  return False
+
+def entity_profile(sources,lang):
+ if not sources:return {}
+ title=sources[0].get('visual_title') or sources[0]['title']
+ def retrieve():
+  query=urllib.parse.urlencode({'action':'query','titles':title,'prop':'pageprops','format':'json','formatversion':'2','redirects':'1'})
+  pages=http_json('https://en.wikipedia.org/w/api.php?'+query,timeout=20).get('query',{}).get('pages',[])
+  qid=next((page.get('pageprops',{}).get('wikibase_item') for page in pages if page.get('pageprops',{}).get('wikibase_item')),None)
+  if not qid:return {}
+  entity=http_json('https://www.wikidata.org/wiki/Special:EntityData/'+qid+'.json',timeout=20).get('entities',{}).get(qid,{})
+  claims=entity.get('claims',{})
+  values=lambda prop:[item.get('mainsnak',{}).get('datavalue',{}).get('value') for item in claims.get(prop,[])]
+  types={value.get('id') for value in values('P31') if isinstance(value,dict)}
+  labels=entity.get('labels',{});name=labels.get('en',{}).get('value') or title
+  native=labels.get(lang,{}).get('value') or sources[0]['title']
+  descriptions=entity.get('descriptions',{})
+  aliases=[name]+[value['value'] for value in entity.get('aliases',{}).get('en',[]) if len(value.get('value','').split())<=4]
+  categories=[value for value in values('P373') if isinstance(value,str)]
+  kind='human' if 'Q5' in types else 'concept' if name[:1].islower() else 'entity'
+  english_text=sources[0]['text'] if lang=='en' else ''
+  if kind=='concept' and not english_text:
+   try:
+    query=urllib.parse.urlencode({'action':'parse','page':title,'prop':'text','format':'json'})
+    parsed=http_json('https://en.wikipedia.org/w/api.php?'+query,timeout=20).get('parse',{})
+    parser=WikiHTML('en',paragraphs_only=True);parser.feed(parsed.get('text',{}).get('*',''))
+    english_text=parser.text()[:5000]
+   except Exception:pass
+  vocabulary=sorted(set(tokens(english_text[:5000]+' '+descriptions.get('en',{}).get('value',''))))[:350]
+  visual_lead=sentences(english_text.splitlines()[0])[0][:400] if kind=='concept' and english_text.strip() else ''
+  return {'id':qid,'kind':kind,'name':name,'native_name':native,
+          'native_description':descriptions.get(lang,{}).get('value',''),'visual_vocabulary':vocabulary,
+          'labels':{language:labels.get(language,{}).get('value','') for language in LANGS},
+          'aliases':list(dict.fromkeys(aliases))[:8],
+          'commons_category':categories[0] if categories else '',
+          'visual_description':visual_lead or re.sub(r'\s+since\b.*$','',descriptions.get('en',{}).get('value',''),flags=re.I).strip(),
+          'visual_description_source':('https://en.wikipedia.org/wiki/'+urllib.parse.quote(title.replace(' ','_'))) if visual_lead else 'https://www.wikidata.org/wiki/'+qid,
+          'source_url':'https://www.wikidata.org/wiki/'+qid}
+
+ try:return cache_fetch('subject-profile-v5|'+lang+'|'+title,retrieve)
+ except Exception:return {}
+def omit_parenthetical_asides(text):
+ depth=0;out=[]
+ for char in text:
+  if char=='(':depth+=1;continue
+  if char==')':
+   if depth:depth-=1;continue
+  if not depth:out.append(char)
+ return re.sub(r'\s+',' ',''.join(out)).strip()
+def bind_human_images(candidates,profile):
+ commons=[p for p in candidates if p.get('provider')=='commons'];entities={}
+ for start in range(0,len(commons),50):
+  batch=commons[start:start+50];ids='|'.join('M'+p['id'] for p in batch)
+  if not ids:continue
+  def retrieve():
+   query=urllib.parse.urlencode({'action':'wbgetentities','ids':ids,'props':'claims','format':'json'})
+   return http_json('https://commons.wikimedia.org/w/api.php?'+query,timeout=25).get('entities',{})
+  try:entities.update(cache_fetch('commons-depicts-v1|'+ids,retrieve))
+  except Exception:pass
+ for p in commons:
+  entity=entities.get('M'+p['id'],{});statements=entity.get('statements') or entity.get('claims') or {}
+  depicts={claim.get('mainsnak',{}).get('datavalue',{}).get('value',{}).get('id') for claim in statements.get('P180',[])}
+  category='Category:'+profile.get('commons_category','')
+  if profile['id'] in depicts:basis='Commons structured depicts statement'
+  elif profile.get('commons_category') and category in p.get('categories',[]):basis='Wikidata-linked Commons category'
+  else:continue
+  p['identity_verification']={'entity_id':profile['id'],'basis':basis,'file_page':p['source_url'],'entity_source':profile['source_url']}
+ return candidates
+
 def grounding_terms(text,lang):
  return {term[:4] if lang!='en' else term for term in topic_terms(text,lang)}
 
 def context_dependent_sentence(text):
  # Source paragraphs may refer to material omitted from a short video.
- leading=r'^(?:finally|lastly|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
+ leading=r'^(?:finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
  references=r'\b(?:цього|цієї|цих|цим|цій|цей|ця|цю|ці|їх|її|його|такі|таких|такого|этой|этого|этих|такие|таких|tych|tej|tego|takie|takich|this|these|those|such)\b'
  pronouns=r'^(?:he|she|it|they|their|its|он|она|оно|они|его|ее|её|их|він|вона|воно|вони|це|його|її|їх|one|ona|ono|oni|jej|jego|ich)\b'
  return bool(re.search(leading,text,re.I) or re.search(references,text,re.I) or re.search(pronouns,text,re.I))
@@ -306,6 +423,9 @@ def narrative_focus(sources,topic,lang):
   if len(words)==2 and root(words[-1])==head:focus.add(root(words[0]))
  return focus
 
+def source_overview_mode(sources):
+ return bool(sources and sources[0].get('entity_profile',{}).get('id')) or any(source.get('source_type')=='structured definition' for source in sources)
+
 def source_slots(sources,topic,count,lang='en',duration_s=None):
   target_ms=(duration_s if duration_s is not None else count*5)*1000
   object_terms=grounding_terms(topic,lang)
@@ -313,23 +433,47 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
   focus=set() if process_intent else narrative_focus(sources,topic,lang)
   bottle_words=grounding_terms('bottle bottles бутылка пляшка пляшки butelka butelki',lang)
   container_words=grounding_terms('container containers packaging jar pojemnik pojemniki opakowanie тара контейнер контейнери',lang)
+  human=bool(sources and sources[0].get('entity_profile',{}).get('kind')=='human')
   rows=[];source_positions={};source_spans={}
+  definition_index=next((i for i,source in enumerate(sources) if source.get('source_type')=='structured definition'),None)
+  definition=sources[definition_index]['text'] if definition_index is not None else None
+  if not definition and source_overview_mode(sources):
+   paragraph=next((p for p in sources[0]['text'].splitlines() if p.strip()),'')
+   original=sentences(paragraph)[0] if paragraph else ''
+   lead=re.sub(r'\s+([,.;:!?])',r'\1',omit_parenthetical_asides(original)).strip()
+   if lead.endswith(('.', '!', '?')) and 5<=len(lead.split())<=90 and len(lead)<=650 and not re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',lead):
+    definition_index=0;definition=lead
+    source_positions[(0,lead)]=sources[0]['text'].find(original);source_spans[(0,lead)]=original
+  if definition:
+   rows.append((40,definition_index,definition,definition.split()))
+   source_positions.setdefault((definition_index,definition),0);source_spans.setdefault((definition_index,definition),definition)
   for si,src in enumerate(sources):
+   if definition and si!=0:continue
    title_terms=grounding_terms(src['title'],lang)
    for paragraph_index,paragraph in enumerate(src['text'].splitlines()):
+    if definition and paragraph_index>11:continue
+    if human and (si>0 or paragraph_index>4):continue
+    if human and paragraph_index>1 and not re.search(r'critic|scandal|controvers|corrupt|критик|скандал|корупц|коррупц|kryty|afer',topic,re.I) and not re.match(r'\s*(?:born|народив|народил|родил|urodzi)',paragraph,re.I):continue
+    if definition and process_intent and not re.search(r'histor|ancient|истори|істор|dziej|handmade|manual|traditional|ручн|ręczn|традиц',topic,re.I) and re.search(r'ancient|centur|etymolog|invention|invented|traditional|originally|истори|древн|стародав|wynalezion|starożytn',paragraph,re.I):continue
     paragraph_start=src['text'].find(paragraph)
-    for sentence in sentences(paragraph):
+    units=sentences(paragraph)
+    if definition and len(units)>1 and (process_signal(paragraph,lang)>=2 or any(context_dependent_sentence(unit) for unit in units[1:])):units=units+[paragraph]
+    for sentence in units:
+     connected_block=sentence==paragraph and len(sentences(paragraph))>1
      original_sentence=sentence;source_position=paragraph_start+paragraph.find(original_sentence)
+     if human or definition:sentence=omit_parenthetical_asides(sentence)
+     if definition and process_intent and lang=='en' and re.search(r',\s+which\b',sentence,re.I):sentence=re.split(r',\s+which\b',sentence,maxsplit=1,flags=re.I)[0].rstrip()+'.'
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
      first=re.search(r'[^\W_]',sentence,re.UNICODE)
      if not first or not (first.group().isupper() or first.group().isdigit()):continue
-     if context_dependent_sentence(sentence):continue
-     if not sentence.endswith(('.', '!', '?')) or not (5 if process_intent else 8)<=len(words)<=(24 if process_intent else 36):continue
+     context_text=sentences(sentence)[0] if connected_block else sentence
+     if context_dependent_sentence(context_text):continue
+     if not sentence.endswith(('.', '!', '?')) or not (5 if process_intent else 8)<=len(words)<=(90 if definition and process_intent else 60 if definition else 24 if process_intent else 36):continue
+     if re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',sentence):continue
      if sentence.count('(')!=sentence.count(')') or re.search(r'\bIPA\s*:|U\+[0-9A-F]{4}|Unicode',sentence):continue
      if re.match(r'^(?:examples? include|another example|for example|such)\b',sentence,re.I):continue
-     if lang=='uk' and re.search(r'\bяк\b',sentence,re.I) and not re.search(r'\b(?:є|має|може|можуть|було|були|була|був|\w+(?:ється|ються|ають|ують|ить|ає|ує|али|ала|ила|или))\b',sentence,re.I):continue
-     if re.search(r'\b(?:этой|этого|этих|цього|цієї|tych|tej|tego|this|these|those|such|their)\b',sentence,re.I):continue
-     if re.search(r'\b(?:it|they)\b',sentence,re.I) or re.match(r'^(?:he|she|он|она|оно|они|він|вона|воно|вони|one|ona|ono|oni|jej|jego|w ten sposób)\b',sentence,re.I):continue
+     if re.search(r'\b(?:этой|этого|этих|цього|цієї|tych|tej|tego|this|these|those|such|their)\b',context_text,re.I):continue
+     if re.search(r'\b(?:it|they)\b',context_text,re.I) or re.match(r'^(?:he|she|он|она|оно|они|він|вона|воно|вони|one|ona|ono|oni|jej|jego|w ten sposób)\b',context_text,re.I):continue
      history_requested=bool(re.search(r'histor|ancient|истори|істор|dziej',topic,re.I))
      research_requested=bool(re.search(r'research|scientist|computer|дослід|дослiд|исслед|комп.ютер|учен|nauk|badani',topic,re.I))
      if not research_requested and re.search(r'humanity|supercomputer|людству|суперкомп|систематично спостерігати|systematically observ',sentence,re.I):continue
@@ -337,17 +481,27 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      sentence_terms=grounding_terms(sentence,lang);combined=sentence_terms|title_terms
      topic_hits=len(combined&object_terms);needed=min(2,len(object_terms))
      if object_terms&bottle_words and combined&container_words:topic_hits=max(topic_hits,min(2,len(object_terms)))
-     if focus and not sentence_terms&focus:continue
-     direct_topic=bool(sentence_terms&object_terms);process_overlap=process_signal(sentence,lang) if process_intent else 0
+     if focus and not human and not sentence_terms&focus:continue
+     direct_topic=(human or bool(definition)) and si==0 and paragraph_index<5 or bool(sentence_terms&object_terms);process_overlap=process_signal(sentence,lang) if process_intent else 0
+     if definition and si==0:topic_hits=max(topic_hits,needed)
      if needed and topic_hits<needed:continue
-     if not process_intent and object_terms and (not direct_topic or (lang=='en' and not grounding_terms(' '.join(words[:6]),lang)&object_terms)):continue
-     if lang=='en' and not process_intent and unsupported_qualifier(sentence,topic,sources):continue
-     if process_intent and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
-     score=topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
+     if not process_intent and object_terms and (not direct_topic or (lang=='en' and not definition and not grounding_terms(' '.join(words[:6]),lang)&object_terms)):continue
+     if lang=='en' and not human and not definition and not process_intent and unsupported_qualifier(sentence,topic,sources):continue
+     if process_intent and not definition and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
+     score=((5 if process_intent else 30)/(1+paragraph_index) if definition else 0)+(8*process_overlap if definition and process_intent else 0)+topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
      rows.append((score,si,sentence,words));source_positions.setdefault((si,sentence),source_position);source_spans.setdefault((si,sentence),original_sentence)
   rows.sort(key=lambda x:(-x[0],x[1],abs(len(x[3])-13)))
+  if definition:
+   candidate=next((row for row in rows if row[1]==0 and source_positions[(row[1],row[2])]<4 and re.search(r'—|\b(?:is|are|jest|są|є|это)\b',row[2],re.I) and len(selected_voice_request(lang,row[2])['input']['text'])*natural_char_rate(lang)<=target_ms*.8),None)
+   if process_intent:
+    procedural=[row for row in rows if row[1]==0 and process_signal(row[2],lang)>=2 and grounding_terms(row[2],lang)&grounding_terms(sources[0]['title'],lang) and len(selected_voice_request(lang,row[2])['input']['text'])*natural_char_rate(lang)<=target_ms]
+    if procedural:candidate=min(procedural,key=lambda row:(source_positions[(0,row[2])],-len(row[2])))
+   if candidate and (definition_index!=0 or candidate[2]!=definition):
+    rows=[row for row in rows if not (row[1]==definition_index and row[2]==definition)]
+    definition_index=0;definition=candidate[2]
   all_rows=list(rows)
   opening=min((row for row in rows if row[1]==0 and source_positions[(row[1],row[2])]<len('\n'.join(sources[0]['text'].splitlines()[:2])) and measured_sentence_ms(row[2],lang)<=target_ms*.6),key=lambda row:source_positions[(row[1],row[2])],default=None) if not process_intent else None
+  if definition:opening=next(row for row in rows if row[1]==definition_index and row[2]==definition)
   chosen=[];seen=set();used=set();source_counts={};action_counts={}
   while rows and len(chosen)<count:
    best_i=max(range(len(rows)),key=lambda i:rows[i][0]+.3*len(set(topic_terms(rows[i][2],lang))-used)+2/(1+source_counts.get(rows[i][1],0))-(8 if process_intent else 0)*sum(action_counts.get(action,0) for action in visual_actions(rows[i][2]) if action!='production'))
@@ -359,42 +513,49 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
   if len(chosen)!=count:return []
   if opening is not None and not any(slot['text']==opening[2] for slot in chosen):
    chosen[-1]={'text':opening[2],'language':lang,'process_intent':process_intent,'source_index':opening[1],'source_sentence':opening[2],'score':opening[0]}
-  if sum(measured_sentence_ms(slot['text'],lang) for slot in chosen)>target_ms-100:
-   chosen=fit_narration(all_rows,count,lang,process_intent,target_ms,required_sentence=opening[2] if opening else None)
+  if definition or sum(measured_sentence_ms(slot['text'],lang) for slot in chosen)>target_ms-100:
+   chosen=fit_narration(all_rows,count,lang,process_intent if not definition else False,target_ms,required_sentence=opening[2] if opening else None,natural=bool(definition))
    if len(chosen)!=count:return []
    for slot in chosen:slot['process_intent']=process_intent
   for slot in chosen:
    key=(slot['source_index'],slot['text']);slot['source_position']=source_positions[key];slot['source_sentence']=source_spans[key]
-  if process_intent and not re.search(r'histor|ancient|истори|істор|dziej',topic,re.I):
+  if process_intent and not definition and not re.search(r'histor|ancient|истори|істор|dziej',topic,re.I):
    stage_order={'heat':0,'shape':1,'cool':2,'inspect':3}
    return sorted(chosen,key=lambda x:(max((stage_order[action] for action in visual_actions(x['text']) if action in stage_order),default=0),x['source_index'],x['source_position']))
-  return sorted(chosen,key=lambda x:(x['source_index'],x['source_position']))
-def source_cache_key(topic,lang):return 'wikipedia-v8|'+lang+'|'+topic
+  return sorted(chosen,key=lambda x:(0 if definition and x['source_index']==definition_index else 1,x['source_index'],x['source_position']))
+def source_cache_key(topic,lang):return 'wikipedia-v10|'+lang+'|'+topic
 def load_sources(topic,lang):
  current=ROOT/'cache'/(hashlib.sha256(source_cache_key(topic,lang).encode()).hexdigest()+'.json')
- previous=ROOT/'cache'/(hashlib.sha256(('wikipedia-v6|'+lang+'|'+topic).encode()).hexdigest()+'.json')
- if not current.exists() and previous.exists() and time.time()-previous.stat().st_mtime<86400:
-  old=json.loads(previous.read_text())
-  if isinstance(old,list) and any(grounding_terms(topic,lang)&grounding_terms(source.get('title',''),lang) for source in old if isinstance(source,dict)):shutil.copy2(previous,current)
- try:return attach_native_aliases(cache_fetch(source_cache_key(topic,lang),lambda:wikipedia(topic,lang)),lang)
+ try:
+  sources=attach_native_aliases(relevant_sources(cache_fetch(source_cache_key(topic,lang),lambda:wikipedia(topic,lang)),topic,lang),lang)
+  if sources:
+   profile=entity_profile(sources,lang);sources[0]['entity_profile']=profile
+   description=profile.get('native_description','').strip().rstrip('.')
+   label=profile.get('native_name','').strip()
+   original=grounding_terms(topic,lang)
+   known=' '.join([sources[0]['title']]+list(profile.get('labels',{}).values()))
+   grounded=bool(original&grounding_terms(known,lang)) or (lang=='en' and any(len(term)>=4 and any(word.startswith(term) and word[len(term):] in {'making','manufacturing','production','blowing'} for word in tokens(known)) for term in original))
+   if description and label and grounded and 15<=len(description)<=220:
+    definition=label[:1].upper()+label[1:]+' — '+description+'.'
+    sources.append({'title':label+' — Wikidata','url':profile['source_url'],'text':definition,
+                    'visual_title':sources[0].get('visual_title',''),
+                    'source_type':'structured definition','label':label,'description':description})
+  return sources
  except urllib.error.HTTPError as error:
   if error.code!=429:raise
-  for version in (5,4,3):
-   path=ROOT/'cache'/(hashlib.sha256(('wikipedia-v'+str(version)+'|'+lang+'|'+topic).encode()).hexdigest()+'.json')
-   if not path.exists() or time.time()-path.stat().st_mtime>86400:continue
-   sources=json.loads(path.read_text())
-   if sources and all(source.get('text') and source.get('url') for source in sources):
-    for source in sources:source['retrieval_note']='Previously retrieved source reused after Wikipedia HTTP 429'
-    return sources
   raise ValueError('Wikipedia temporarily rate-limited (HTTP 429); no saved sources for this topic') from error
 
 def relevant_sources(sources,topic,lang):
+ definitions=[source for source in sources if source.get('source_type')=='structured definition']
+ sources=[source for source in sources if source.get('source_type')!='structured definition']
  terms=topic_terms(topic,lang)
  def stem(word):return word[:4] if not word.isascii() else word
+ process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  def title_rank(source):
   title=topic_terms(source['title'],lang)
-  matched=sum(any(stem(a)==stem(b) for b in title) for a in terms)
-  return (matched,-len(title))
+  matched=sum(any(stem(a)==stem(b) or (process_intent and lang=='en' and len(a)>=4 and b.startswith(a) and b[len(a):] in {'making','manufacturing','production','blowing'}) for b in title) for a in terms)
+  method=bool(process_intent and re.search(r'making|manufactur|production|produk|wytwarz|производ|изготов|виробниц|виготов',source['title'],re.I))
+  return (matched,int(method),-len(title))
  ranked=sorted(sources,key=title_rank,reverse=True)
  if not ranked:return []
  anchor=ranked[0]
@@ -404,12 +565,27 @@ def relevant_sources(sources,topic,lang):
  def same_name_other_sense(source):
   base=lambda title:re.sub(r'\s*\([^)]*\)\s*','',title).strip().casefold()
   return base(source['title'])==base(anchor['title']) and source['title'].casefold()!=anchor['title'].casefold()
- return [anchor]+[source for source in ranked[1:] if not same_name_other_sense(source) and len(basis&vocabulary(source))>=3]
+ return [anchor]+[source for source in ranked[1:] if not same_name_other_sense(source) and len(basis&vocabulary(source))>=3]+definitions
+def expand_source_blocks(slots,max_beats):
+ expanded=[]
+ for slot in slots:
+  for text in sentences(slot['text']):
+   row=dict(slot);row['text']=text;expanded.append(row)
+ return expanded if len(expanded)<=max_beats else []
+
 def plan_script(sources,topic,lang,duration,max_beats=None):
  process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
- for count in range(min(max_beats or 100,max(2,duration//(5 if process_intent else 7))),1,-1):
+ structured=source_overview_mode(sources)
+ limit=int(min(max_beats or 100,max(2,duration//5)))
+ preferred=min(limit,max(2,int(duration//7)))
+ counts=list(range(preferred,0,-1))+list(range(preferred+1,limit+1)) if structured else range(int(min(max_beats or 100,max(2,duration//(5 if process_intent else 7)))),1,-1)
+ for count in counts:
   slots=source_slots(sources,topic,count,lang,duration_s=duration)
-  if len(slots)==count:return slots
+  if len(slots)==count:
+   if structured:
+    expanded=expand_source_blocks(slots,int(max_beats or duration//5))
+    if expanded:return expanded
+   else:return slots
  if sources and not process_intent:
   canonical=sources[0]['title']
   if canonical.casefold()!=topic.casefold():
@@ -429,7 +605,11 @@ def photo_search(topic,lang):
    locale={'en':'en-US','pl':'pl-PL','ru':'ru-RU','uk':'uk-UA'}[lang];q=urllib.parse.urlencode({'query':topic,'per_page':80,'locale':locale})
    data=cache_fetch('pexels-all-v2|'+lang+'|'+topic,lambda:http_json('https://api.pexels.com/v1/search?'+q,{'Authorization':pex},25))
    for x in data.get('photos') or []:
-    src=x.get('src') or {};url=src.get('portrait') or src.get('large') or src.get('original')
+    src=x.get('src') or {};url=src.get('original') or src.get('large2x') or src.get('large')
+    if url and src.get('original'):
+     parsed=urllib.parse.urlsplit(url);query=dict(urllib.parse.parse_qsl(parsed.query));query.update({'auto':'compress','cs':'tinysrgb','w':'1600'})
+     for key in ('h','fit','crop'):query.pop(key,None)
+     url=urllib.parse.urlunsplit((parsed.scheme,parsed.netloc,parsed.path,urllib.parse.urlencode(query),''))
     if url:found.append({'provider':'pexels','id':str(x.get('id')),'alt':x.get('alt') or '','query':topic,'url':url,'source_url':x.get('url') or '','creator':x.get('photographer') or '','creator_url':x.get('photographer_url') or '','width':int(x.get('width') or 0),'height':int(x.get('height') or 0)})
   except Exception as e:errors.append('Pexels unavailable (HTTP '+str(getattr(e,'code','request error'))+')')
  if pix:
@@ -449,9 +629,9 @@ def photo_search(topic,lang):
 def plain_metadata(value):
  parser=WikiHTML();parser.feed(str(value or ''))
  return re.sub(r'\s+',' ',parser.text()).strip()
-def commons_search(query):
- params=urllib.parse.urlencode({'action':'query','generator':'search','gsrsearch':query+' filetype:bitmap','gsrnamespace':6,'gsrlimit':20,'prop':'imageinfo','iiprop':'url|size|extmetadata','iiurlwidth':1600,'format':'json'})
- data=cache_fetch('commons-v1|'+query,lambda:http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=25))
+def commons_search(query,limit=20):
+ params=urllib.parse.urlencode({'action':'query','generator':'search','gsrsearch':query+' filetype:bitmap','gsrnamespace':6,'gsrlimit':max(1,min(50,int(limit))),'prop':'imageinfo|categories','cllimit':'50','iiprop':'url|size|extmetadata','iiurlwidth':1600,'format':'json'})
+ data=cache_fetch('commons-v3|'+str(limit)+'|'+query,lambda:http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=25))
  found=[]
  for page in sorted((data.get('query') or {}).get('pages',{}).values(),key=lambda x:x.get('index',999)):
   for im in page.get('imageinfo',[]):
@@ -465,7 +645,7 @@ def commons_search(query):
    width=int(im.get('thumbwidth') or im.get('width') or 0);height=int(im.get('thumbheight') or im.get('height') or 0)
    if min(width,height)<640:continue
    source='https://commons.wikimedia.org/w/index.php?curid='+str(page['pageid'])
-   found.append({'provider':'commons','id':str(page['pageid']),'alt':plain_metadata(page.get('title',''))+' '+get('ImageDescription'),'depiction':plain_metadata(page.get('title','')),'query':query,'url':url,'source_url':source,'creator':get('Artist') or get('Credit') or 'Wikimedia Commons','creator_url':im.get('descriptionurl') or source,'width':width,'height':height,'license':license_name,'license_url':license_url,'changes':'resized and composited with narration captions'})
+   found.append({'provider':'commons','categories':[category['title'] for category in page.get('categories',[])],'id':str(page['pageid']),'alt':plain_metadata(page.get('title',''))+' '+get('ImageDescription'),'depiction':plain_metadata(page.get('title','')),'query':query,'url':url,'source_url':source,'creator':get('Artist') or get('Credit') or 'Wikimedia Commons','creator_url':im.get('descriptionurl') or source,'width':width,'height':height,'license':license_name,'license_url':license_url,'changes':'resized and composited with narration captions'})
  return found
 
 def visual_context_title(slot,sources,lang):
@@ -477,7 +657,25 @@ def visual_context_title(slot,sources,lang):
  query=set(topic_terms(slot['text'],lang))
  scores=[sum(weights.get(term,0)**2 for term in query&doc)/max(1,sum(weights[term]**2 for term in doc))**.5 for doc in corpus]
  return mapped[max(range(len(mapped)),key=lambda index:scores[index])]['visual_title']
+def scoped_visual_title(slot,sources,lang):
+ primary=sources[0]
+ base=grounding_terms(primary['title'],lang);words=grounding_terms(slot['text'],lang)
+ choices=[]
+ for source in sources[1:]:
+  if source.get('source_type')=='structured definition' or not source.get('visual_title'):continue
+  extra=grounding_terms(source['title'],lang)-base
+  if 1<=len(extra)<=2 and extra<=words:choices.append((len(extra),source['visual_title']))
+ return max(choices,key=lambda item:item[0])[1] if choices else primary.get('visual_title','')
+
 def media_search_topic(topic,lang,sources):
+ structured=source_overview_mode(sources)
+ process=bool(re.search(r'made|making|manufactur|produc|дела|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
+ if structured:
+  if process and lang=='en':return ' '.join(dict.fromkeys(topic_terms(topic,'en')))+' manufacturing'
+  title=sources[0].get('visual_title') or (sources[0]['title'] if lang=='en' else '')
+  if title:
+   if process and re.search(r'making$',title,re.I):return re.sub(r'making$','',title,flags=re.I).strip()+' manufacturing'
+   return title
  if lang=='en':
   if sources and not set(topic_terms(topic,'en'))&set(topic_terms(sources[0]['title'],'en')):return sources[0].get('visual_title') or sources[0]['title']
   return topic
@@ -494,6 +692,12 @@ def media_search_topic(topic,lang,sources):
 
 def visual_queries(topic,lang,slots):
  core=list(dict.fromkeys(topic_terms(topic,lang)));queries=[topic]
+ if slots and slots[0].get('source_driven'):
+  titles=[slot.get('visual_title') for slot in slots if slot.get('visual_title')]
+  if slots[0].get('process_intent'):
+   subject=' '.join(core)
+   return list(dict.fromkeys([topic]+titles+[subject+' '+term for term in ['factory','manufacturing','handmade','workshop','production machinery']]))[:7]
+  return list(dict.fromkeys([topic]+titles))[:7]
  labels={'heat':'melting furnace','shape':'forming molding','cool':'annealing','inspect':'quality inspection','production':'manufacturing'}
  needed=set().union(*(visual_actions(slot['text']) if slot.get('process_intent',True) else set() for slot in slots))
  for action in ('inspect','cool','shape','heat','production'):
@@ -520,25 +724,53 @@ def media_aliases(topic):
   return result
  try:return cache_fetch('visual-aliases-v1|'+topic,retrieve)
  except Exception:return [topic]
+SEARCH_QUERIES={'stock':set(),'commons':set()}
+DISCOVERED_PHOTOS={}
+def named_astronomical_subject(profile):
+ if profile.get('kind')!='entity':return False
+ description=profile.get('visual_description','').strip().lower()
+ pattern=r'^(?:(?:the|a|an|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|dwarf|minor|terrestrial|spiral|barred|elliptical|binary|variable|red|blue|yellow|white|giant|natural|main-sequence)\s+){0,5}(?:planet|star|galaxy|moon|satellite|nebula|asteroid|comet)\b'
+ return bool(re.search(pattern,description) or re.match(r"^[\w-]+['’]s (?:only )?natural satellite\b",description))
+
+def photographic_metadata(p):
+ text=p.get('depiction','')+' '+p.get('alt','')
+ return not re.search(r'\.svg\b|\b(?:diagram|chart|graph|schematic|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
+
 def discover_photos(topic,lang,slots):
- pool={};errors=[]
+ pool=dict(DISCOVERED_PHOTOS);errors=[]
+ profile=slots[0].get('entity_profile',{}) if slots else {}
  aliases=list(dict.fromkeys(alias for slot in slots for alias in slot.get('topic_aliases',[])))
- for query in list(dict.fromkeys(visual_queries(topic,lang,slots)+aliases))[:7]:
+ for query in ([] if profile.get('kind')=='human' or named_astronomical_subject(profile) else list(dict.fromkeys(visual_queries(topic,lang,slots)+aliases))[:7]):
+  key=query.casefold().strip()
+  if key not in SEARCH_QUERIES['stock'] and len(SEARCH_QUERIES['stock'])>=7:continue
+  SEARCH_QUERIES['stock'].add(key)
   try:
    for candidate in photo_search(query,lang):pool.setdefault((candidate['provider'],candidate['id']),candidate)
   except Exception as e:errors.append(str(e))
  # Commons supplements source-backed technical images, with a separate three-query bound.
  core_terms=list(dict.fromkeys(topic_terms(topic,lang)))
  core=' '.join(core_terms[:1])
- actions=set().union(*(visual_actions(slot['text']) if slot.get('process_intent',True) else set() for slot in slots))
+ actions=set() if slots and slots[0].get('source_driven') else set().union(*(visual_actions(slot['text']) if slot.get('process_intent',True) else set() for slot in slots))
  labels={'heat':'furnace','shape':'forming','cool':'annealing','inspect':'inspection','production':'manufacturing'}
  queries=[((' '.join(core_terms) if action=='inspect' else core)+' '+labels[action]).strip() for action in ('cool','inspect','heat','shape','production') if action in actions][:3]
+ if named_astronomical_subject(profile):
+  terrain=bool(re.search(r'\b(?:planet|moon|satellite)\b',profile.get('visual_description',''),re.I))
+  queries=[topic+' planet NASA',topic+' surface ESA',topic+' surface JPL'] if terrain else [topic+' NASA',topic+' ESA',topic+' ESO']
+ if slots and slots[0].get('source_driven') and slots[0].get('process_intent'):
+  category=profile.get('commons_category')
+  queries=([('incategory:"'+category+'"')] if category else [])+[topic,' '.join(core_terms)+' manufacturing']
+  queries=list(dict.fromkeys(queries))[:3]
+ if profile.get('kind')=='human' and profile.get('commons_category'):queries=['incategory:"'+profile['commons_category']+'"',profile['name']]+profile.get('aliases',[])[1:2]
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  for query in queries:
+  key=query.casefold().strip()
+  if key not in SEARCH_QUERIES['commons'] and len(SEARCH_QUERIES['commons'])>=3:continue
+  SEARCH_QUERIES['commons'].add(key)
   try:
-   for candidate in commons_search(query):pool.setdefault((candidate['provider'],candidate['id']),candidate)
+   for candidate in commons_search(query,limit=50 if profile.get('kind')=='human' or (slots and slots[0].get('source_driven')) else 20):pool.setdefault((candidate['provider'],candidate['id']),candidate)
   except Exception as e:errors.append('Commons: '+str(e))
  if not pool:raise ValueError('; '.join(errors) or 'no photo candidates')
+ DISCOVERED_PHOTOS.update(pool)
  return list(pool.values())
 
 def dhash(im):
@@ -552,7 +784,7 @@ def visual_actions(text):
   'shape':r'\b(?:blow(?:n|ing|pipe)?|blows|glassblow\w*|form(?:ed|ing)|mold\w*|mould\w*|shap(?:ed|ing)|wydmuch\w*|formow\w*|wyduw\w*|выдув\w*|формов\w*|видув\w*|формув\w*)',
   'cool':r'\b(?:cool(?:ed|ing)|anneal\w*|lehr|leer|chłodz\w*|wyżarz\w*|охлажд\w*|отжиг\w*|охолодж\w*|відпал\w*)',
   'inspect':r'\b(?:inspect\w*|quality control|quality check\w*|test(?:ed|ing)|kontrol\w*|sprawdz\w*|провер\w*|контрол\w*|перевір\w*)',
-  'production':r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|automat\w*|machine\w*|fabryk\w*|produkc\w*|zakład\w*|завод\w*|производств\w*|виробниц\w*)'
+  'production':r'\b(?:factor(?:y|ies)|manufactur\w*|\w{3,}making|production|assembly|automat\w*|machine\w*|fabryk\w*|produkc\w*|zakład\w*|завод\w*|производств\w*|виробниц\w*)'
  }
  return {key for key,pattern in patterns.items() if re.search(pattern,text or '',re.I)}
 def visual_competitors(topic,candidates):
@@ -569,23 +801,36 @@ def visual_competitors(topic,candidates):
   for phrase in found:counts[phrase]=counts.get(phrase,0)+1
  return ['A photograph of a '+phrase+'.' for phrase,count in sorted(counts.items(),key=lambda item:(-item[1],item[0])) if count>=3][:2]
 def photo_score(p,slot,topic):
+ if not photographic_metadata(p):return -1
+ profile=slot.get('entity_profile',{})
+ if named_astronomical_subject(profile):
+  if p.get('provider')!='commons':return -1
+  if not re.search(r'\b(?:NASA|ESA|JPL|Hubble|STScI|ESO|USGS|NOIRLab|NAOJ|JAXA|ISRO|CNSA)\b',p.get('creator','')+' '+p.get('alt',''),re.I):return -1
+  if re.search(r'\b(?:astronaut|cosmonaut|spacesuit|space suit|simulation|simulated|concept|analogue|analog|rendering)\b',p.get('alt',''),re.I):return -1
+ if slot.get('entity_profile',{}).get('kind')=='human':
+  if re.search(r'\b(?:signature|autograph|letter|document|certificate|poster|propaganda|graffiti|mural|banner|caricature|billboard|stamp|statue|bust|sculpture)\b',p.get('depiction') or p['alt'],re.I):return -1
+  return (20+(10 if re.search(r'portrait|cropped',p['alt'],re.I) else 0)+(3 if p['height']>=p['width'] else 0)) if p.get('identity_verification',{}).get('entity_id')==slot['entity_profile']['id'] else -1
  depiction=p.get('depiction') or p['alt']
  terms=set(tokens(topic+' '+slot['text']+' '+slot.get('visual_title','')));meta=set(tokens(depiction))
+ for word in list(meta):
+  if len(word)>8 and word.endswith('making'):meta.add(word[:-6])
  process_topic=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  anchors=set(topic_terms(topic,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
  if process_topic and anchors and not anchors&meta:return -1
  if not process_topic and anchors:
+  concept=slot.get('source_driven') and slot.get('entity_profile',{}).get('kind')=='concept'
+  supported_concept=concept and bool(meta&set(slot['entity_profile'].get('visual_vocabulary',[])))
   names=[topic]+slot.get('topic_aliases',[])
   groups=[set(topic_terms(name,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'} for name in names]
-  if not any(group and group<=meta for group in groups):return -1
- if not process_topic and p.get('provider')=='pixabay' and len(anchors)>1 and not any(group and group<=set(tokens(tag)) for group in groups for tag in depiction.split(',')):return -1
+  if not any(group and group<=meta for group in groups) and not supported_concept:return -1
+ if not process_topic and not slot.get('source_driven') and p.get('provider')=='pixabay' and len(anchors)>1 and not any(group and group<=set(tokens(tag)) for group in groups for tag in depiction.split(',')):return -1
  if p.get('provider') in {'pixabay','pexels'} and re.search(r'\b(?:fantasy|sci[ -]?fi|digital art|3d render|ai[ -]generated)\b',depiction,re.I):return -1
- work_context=r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
+ work_context=r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|\w{3,}making|handmade|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
  if process_topic and not re.search(work_context,depiction,re.I):return -1
  if not process_topic:
   qualifiers={term for term in tokens(slot.get('visual_title','')) if term not in tokens(topic) and term.isalpha() and len(term)>=3}-{'energy','power','system','plant','factory','production','manufacturing','process','industry','technology','list','century'}
   if qualifiers and not qualifiers&meta:return -1
- required=visual_actions(slot['text']) if process_topic else set();depicted=visual_actions(depiction)
+ required=({'production'} if slot.get('source_driven') else visual_actions(slot['text'])) if process_topic else set();depicted=visual_actions(depiction)
  specific=required-{'production'}
  if specific and not specific&depicted:return -1
  if required and not required&depicted:return -1
@@ -595,7 +840,28 @@ def get_pixel_verifier():
  global PIXEL_VERIFIER
  if PIXEL_VERIFIER is None:PIXEL_VERIFIER=VisualVerifier()
  return PIXEL_VERIFIER
-def pixel_check(raw,topic,slot):
+def pixel_check(raw,topic,slot,candidate=None):
+ if slot.get('entity_profile',{}).get('kind')=='human':
+  identity=(candidate or {}).get('identity_verification') or {}
+  if identity.get('entity_id')!=slot['entity_profile']['id']:raise ValueError('portrait lacks source-backed subject identity')
+  audit=get_pixel_verifier().check_person(raw,identity,slot['entity_profile'].get('visual_description',''))
+  audit['identity_verification']=identity;return audit
+ if slot.get('source_driven'):
+  profile=slot.get('entity_profile',{})
+  if named_astronomical_subject(profile):
+   name=profile['name']
+   positive=['A photograph of '+name+' in space.']
+   if re.search(r'\b(?:planet|moon|satellite)\b',profile.get('visual_description',''),re.I):
+    positive+=['A photograph of the rocky surface of '+name+' taken by a rover.','An orbital photograph of the surface of '+name+'.']
+   return get_pixel_verifier().check(raw,name,set(),'',[],name,extra_positives=positive,extra_negatives=['A photograph of a spacecraft being built in a laboratory.','A person wearing an astronaut costume on Earth.'])
+  if slot.get('process_intent'):
+   subject=' '.join(dict.fromkeys(topic_terms(topic,'en'))) or topic
+   return get_pixel_verifier().check(raw,subject,{'production'},slot['text'] if slot.get('language')=='en' else '',slot.get('visual_competitors',[]),topic)
+  visual_subject=slot.get('visual_title') or topic
+  description=profile.get('visual_description','') if visual_subject.casefold() in {profile.get('name','').casefold(),topic.casefold()} else ''
+  subject=visual_subject+(' — '+description if description else '')
+  extras=['A wide landscape photograph of a flower garden.'] if re.search(r'\binsects?\b',profile.get('visual_description',''),re.I) else []
+  return get_pixel_verifier().check(raw,subject,set(),'',slot.get('visual_competitors',[]),topic,extra_negatives=extras)
  visual_subject=(slot.get('visual_title') or topic) if not slot.get('process_intent',True) else topic
  subject=' '.join(dict.fromkeys(topic_terms(visual_subject,'en')))
  return get_pixel_verifier().check(raw,subject or topic,visual_actions(slot['text']) if slot.get('process_intent',True) else set(),slot['text'] if slot.get('language','en')=='en' else '',slot.get('visual_competitors',[]),topic)
@@ -678,6 +944,32 @@ def selected_voice_request(lang,text):
  locale,voice=SELECTED_VOICES[lang]
  text=unicodedata.normalize('NFC',text).replace(chr(0x301),'')
  return {'input':{'text':text},'voice':{'languageCode':locale,'name':voice},'audioConfig':{'audioEncoding':'MP3'}}
+GOOGLE_STATUS_LOCK=threading.Lock()
+def google_connection_status(force=False):
+ path=ROOT/'google-connection-status.json'
+ with GOOGLE_STATUS_LOCK:
+  try:
+   saved=json.loads(path.read_text())
+   if time.time()-saved.get('checked_at',0)<(5 if force else 60):return saved
+  except (OSError,ValueError,TypeError):pass
+  result={'ready':False,'code':'GOOGLE_UNAVAILABLE','message':'The Google voice connection is unavailable. Check the connection again.','reconnect_url':'https://publisher.hodor.com.pl/home/credentials'}
+  project=(SETTINGS.get('free_tier_proof') or {}).get('project_id')
+  try:
+   payload={'provider':'google_metadata','request':{'operation':'billing','body':{'project_id':project}}}
+   request=urllib.request.Request('http://ai-short-form-n8n:5678/webhook/factory-v3-internal-provider',data=json.dumps(payload).encode(),headers={'Content-Type':'application/json','X-Factory-V3-Broker':SETTINGS['broker_token']})
+   with urllib.request.urlopen(request,timeout=8) as response:receipt=json.loads(response.read(1000000))
+   result['gateway_execution_id']=receipt.get('gateway_execution_id')
+   if receipt.get('error_reason')=='OAUTH_GRANT_REJECTED':
+    result.update(code='GOOGLE_RECONNECT_REQUIRED',message='Reconnect Google account to restore narration.')
+   elif receipt.get('error_reason')=='ACCESS_TOKEN_SCOPE_INSUFFICIENT':
+    result.update(code='GOOGLE_RECONNECT_REQUIRED',message='Reconnect Google account with the required Cloud access.')
+   elif isinstance(receipt.get('status'),int) and 200<=receipt['status']<500:
+    result.update(ready=True,code='READY',message='')
+  except (OSError,ValueError,TypeError):pass
+  result['checked_at']=time.time()
+  draft=path.with_suffix('.tmp');draft.write_text(json.dumps(result));draft.replace(path)
+  return result
+
 def google_voice_once(lang,text,jid,attempt):
  import psycopg
  body=selected_voice_request(lang,text);spoken=body['input']['text'];voice=body['voice']['name']
@@ -708,7 +1000,11 @@ def google_voice_once(lang,text,jid,attempt):
   with urllib.request.urlopen(request,timeout=180) as response:raw=response.read(10_000_001)
   if not raw or len(raw)>10_000_000:raise ValueError('selected voice gateway returned no bounded audio response')
   receipt=json.loads(raw)
-  if receipt.get('status')!=200:raise ValueError('selected Google voice returned HTTP '+str(receipt.get('status'))+'; no fallback or resend')
+  if receipt.get('status')!=200:
+   failure={'attempt':attempt,'voice':voice,'characters':len(spoken),'text_sha256':digest,'upstream_status':receipt.get('status'),'error_status':receipt.get('error_status'),'error_reason':receipt.get('error_reason'),'gateway_execution_id':receipt.get('gateway_execution_id'),'quota_key':key}
+   with connect() as c:c.execute("UPDATE voice_attempts SET state='stopped',receipt=? WHERE job_id=? AND attempt=?",(json.dumps(failure),jid,attempt))
+   reason=receipt.get('error_reason') or receipt.get('error_status') or 'UNKNOWN_PROVIDER_RESULT'
+   raise ValueError('selected Google voice unavailable: '+str(reason)+'; no fallback or resend')
   audio=base64.b64decode(receipt['body']['audioContent'],validate=True)
   folder=ROOT/'tmp'/jid;folder.mkdir(parents=True,exist_ok=True);path=folder/('voice-attempt-'+str(attempt)+'.mp3')
   with path.open('xb') as stream:stream.write(audio)
@@ -724,9 +1020,10 @@ def google_voice_once(lang,text,jid,attempt):
   raise
 
 def natural_voice_window(duration):
- # Preserve the universal factory's established speech floor; MP4 length remains exact.
- return {15:14208,30:28464,45:42864,60:58176}[duration],duration*1000
+ return round(duration*900),duration*1000
+
 def initial_natural_budget(sources,topic,lang,duration):
+ if source_overview_mode(sources):return duration
  from statistics import median
  with connect() as c:
   rows=c.execute("SELECT receipt FROM voice_attempts WHERE voice=? AND state='measured' AND receipt IS NOT NULL ORDER BY rowid DESC LIMIT 12",(SELECTED_VOICES[lang][1],)).fetchall()
@@ -744,7 +1041,7 @@ def initial_natural_budget(sources,topic,lang,duration):
   budget=max(10,min(90,round(budget*target/max(predicted,1))))
  return min(options)[1] if options else duration
 
-def prepare_selected_narration(sources,topic,lang,jid,duration):
+def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None):
  # Change complete source sentences after a measured miss, never the voice or playback rate.
  planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=set();attempts=[];slots=[]
  for attempt in (1,2,3):
@@ -753,18 +1050,19 @@ def prepare_selected_narration(sources,topic,lang,jid,duration):
   script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()
   if identity in seen:raise ValueError('natural-duration correction produced the same text; no duplicate synthesis')
   seen.add(identity)
-  update(jid,stage='voice',progress=12,message='Creating narration with your selected '+lang.upper()+' voice; attempt '+str(attempt))
+  if before_send is not None:before_send(slots)
+  update(jid,stage='voice',progress=50,message='Creating narration with your selected '+lang.upper()+' voice; attempt '+str(attempt))
   path,measured=google_voice_once(lang,script,jid,attempt);attempts.append(measured);actual=measured['duration_ms']
   low,high=natural_voice_window(duration)
   if low<=actual<=high:break
-  planning_seconds=max(10,min(90,round(planning_seconds*(duration*1000-500)/max(actual,1))))
+  planning_seconds=max(5,min(90,planning_seconds*(duration*1000-350)/max(actual,1))) if source_overview_mode(sources) else max(10,min(90,round(planning_seconds*(duration*1000-500)/max(actual,1))))
  else:raise ValueError('three distinct natural narration texts did not fit; no speed change or voice substitution')
  # Align the exact, unmodified natural audio through the existing media worker.
  final=VOICE/jid/'final.mp3';final.parent.mkdir(parents=True,exist_ok=True)
  with final.open('xb') as output:output.write(path.read_bytes())
  scene_inputs=[{'scene_uuid':str(uuid.uuid5(uuid.UUID(jid),'spoken:'+str(i))),'scene_key':str(i),'narration':slot['text']} for i,slot in enumerate(slots)]
  payload={'language_code':lang,'narration':script,'audio_sha256':measured['audio_sha256'],'audio_duration_ms':actual,'scenes':scene_inputs}
- update(jid,stage='alignment',progress=16,message='Aligning captions to the exact selected voice recording')
+ update(jid,stage='alignment',progress=55,message='Aligning captions to the exact selected voice recording')
  request=urllib.request.Request(WORKER+'/alignments/'+jid,data=json.dumps(payload).encode(),headers={'Content-Type':'application/json'},method='POST')
  with urllib.request.urlopen(request,timeout=240) as response:alignment=json.loads(response.read(2_000_000))
  timings=alignment.get('scene_timings',[])
@@ -813,64 +1111,83 @@ def execute_job(jid):
   job=get_job(jid) or {}
   if job.get('status')!='ready':update(jid,status='failed',stage='failed',progress=100,message='Worker stopped',error=scrub_error(error))
 
+def prepare_visuals(jid,sources,topic,lang,duration,slots):
+ visual_count=duration*2//5
+ beat_count=len(slots)
+ beat_for_shot=shot_beats(visual_count,beat_count);shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
+ for slot in slots:
+  slot['language']=lang;slot['entity_profile']=sources[0].get('entity_profile',{});slot['source_driven']=source_overview_mode(sources)
+  source=sources[slot['source_index']]
+  slot['visual_title']=source.get('visual_title') or (source['title'] if lang=='en' else '')
+  if not slot.get('process_intent'):slot['visual_title']=scoped_visual_title(slot,sources,lang) if slot.get('source_driven') else visual_context_title(slot,sources,lang)
+ media_topic=media_search_topic(topic,lang,sources)
+ update(jid,stage='visuals',progress=max(20,(get_job(jid) or {}).get('progress',0)),message='Searching a bounded photo pool; requiring unique relevant assets')
+ aliases=[media_topic] if slots[0].get('process_intent') else media_aliases(media_topic)
+ for slot in slots:slot['topic_aliases']=aliases
+ candidates=discover_photos(media_topic,'en',slots)
+ if sources[0].get('entity_profile',{}).get('kind')=='human':candidates=bind_human_images(candidates,sources[0]['entity_profile'])
+ if len(candidates)<visual_count:raise ValueError('photo search found '+str(len(candidates))+' distinct candidates; '+str(visual_count)+' are required')
+ competitors=[] if slots[0].get('process_intent') else visual_competitors(media_topic,candidates)
+ for slot in slots:slot['visual_competitors']=competitors
+ get_pixel_verifier()
+ allocated=allocate_photos(candidates,slots,media_topic,visual_count)
+ topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[]
+ for i in range(visual_count):
+  slot=slots[beat_for_shot[i]]
+  reserved={(p['provider'],p['id']) for p in allocated[i+1:]}
+  ranked=[allocated[i]]+sorted([p for p in candidates if (p['provider'],p['id']) not in reserved and p is not allocated[i]],key=lambda p:photo_score(p,slot,media_topic),reverse=True)
+  found=None;attempts=0;rejection_reasons=[]
+  for p in ranked:
+   key=(p['provider'],p['id'])
+   if key in used_ids or photo_score(p,slot,media_topic)<0:continue
+   meta=set(tokens(p['alt']))
+   if not meta:continue
+   if attempts>=24:break
+   attempts+=1
+   shot=str(uuid.uuid4());folder=VISUAL/jid/shot;folder.mkdir(parents=True,exist_ok=False)
+   raw=folder/'source.download';final=folder/'selected.jpg'
+   try:
+    download_photo(p,raw)
+    with Image.open(raw) as im:ph=dhash(im.convert('RGB'))
+    if any((ph^old).bit_count()<=4 for old in hashes):raw.unlink(missing_ok=True);shutil.rmtree(folder);continue
+    pixel_audit=pixel_check(raw,media_topic,slot,p)
+    if not pixel_audit['passed']:raise ValueError('pixel comparison rejected candidate: score='+str(pixel_audit['positive_score'])+' margin='+str(pixel_audit['margin']))
+    make_card(raw,slot['text'],final,p);raw.unlink(missing_ok=True)
+   except Exception as e:
+    rejection_reasons.append(scrub_error(e));shutil.rmtree(folder,ignore_errors=True);continue
+   row=dict(p);row.update({'pixel_verification':pixel_audit,'caption':slot['text'],'article_title':sources[slot['source_index']]['title'],'article_url':sources[slot['source_index']]['url'],'asset_sha256':hashlib.sha256(final.read_bytes()).hexdigest()})
+   found={'provider':p,'shot':shot,'path':final,'hash':row['asset_sha256'],'phash':ph,'row':row};break
+  if found is None:raise ValueError('no verified distinct image for scene '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
+  hashes.append(found['phash']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
+  update(jid,progress=max(20+int((i+1)*25/visual_count),(get_job(jid) or {}).get('progress',0)),message='Prepared '+str(i+1)+' of '+str(visual_count)+' unique photos')
+ return {'selected':selected,'visual_rows':visual_rows,'media_topic':media_topic,'beat_count':beat_count,'beat_for_shot':beat_for_shot,'shots_per_beat':shots_per_beat,'first_shot':first_shot,'script':' '.join(slot['text'] for slot in slots)}
+
 def run_job(jid):
  j=get_job(jid);topic=j['topic'];lang=j['language'];duration=j['duration_s'];visual_count=duration*2//5;beat_count=duration//5
  try:
+  connection=google_connection_status()
+  if not connection['ready']:
+   update(jid,status='needs_connection',stage='connection',progress=0,message=connection['message'],error=None);return
   update(jid,status='running',stage='research',progress=5,message='Finding cited facts in the selected language')
   sources=relevant_sources(load_sources(topic,lang),topic,lang)
   if not sources:
    update(jid,status='needs_input',stage='research',progress=0,message='Please add context to the topic or provide a more specific subject',error=None);return
+  if subject_rejected(topic,lang,sources[0].get('entity_profile',{}).get('id')):
+   partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources[:3]],'resolved_topic':sources[0]['title'],'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'input_needed':'This source interpretation was rejected. Add context to specify the subject you mean.'}
+   update(jid,status='needs_input',stage='research',progress=0,message=partial['input_needed'],error=None,manifest=json.dumps(partial,ensure_ascii=False));return
   slots=plan_script(sources,topic,lang,duration)
   if not slots:
    partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources],'resolved_topic':sources[0]['title'],'input_needed':'The available source cannot establish a complete narration for this request. Please clarify which subject you mean.'}
    update(jid,status='needs_input',stage='research',progress=0,message='More context is needed for this topic; check the matched source below',error=None,manifest=json.dumps(partial,ensure_ascii=False));return
-  slots,mp3,audio_ms,speech_ms,slot_targets,voice_audit=prepare_selected_narration(sources,topic,lang,jid,duration)
-  beat_count=len(slots)
-  beat_for_shot=shot_beats(visual_count,beat_count);shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
-  for slot in slots:
-   slot['language']=lang
-   source=sources[slot['source_index']]
-   slot['visual_title']=source.get('visual_title') or (source['title'] if lang=='en' else '')
-   if not slot.get('process_intent'):slot['visual_title']=visual_context_title(slot,sources,lang)
-  media_topic=media_search_topic(topic,lang,sources)
-  update(jid,stage='visuals',progress=20,message='Searching a bounded photo pool; requiring unique relevant assets')
-  aliases=[media_topic] if slots[0].get('process_intent') else media_aliases(media_topic)
-  for slot in slots:slot['topic_aliases']=aliases
-  candidates=discover_photos(media_topic,'en',slots)
-  if len(candidates)<visual_count:raise ValueError('photo search found '+str(len(candidates))+' distinct candidates; '+str(visual_count)+' are required')
-  competitors=[] if slots[0].get('process_intent') else visual_competitors(media_topic,candidates)
-  for slot in slots:slot['visual_competitors']=competitors
-  get_pixel_verifier()
-  allocated=allocate_photos(candidates,slots,media_topic,visual_count)
-  topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[]
-  for i in range(visual_count):
-   slot=slots[beat_for_shot[i]]
-   reserved={(p['provider'],p['id']) for p in allocated[i+1:]}
-   ranked=[allocated[i]]+sorted([p for p in candidates if (p['provider'],p['id']) not in reserved and p is not allocated[i]],key=lambda p:photo_score(p,slot,media_topic),reverse=True)
-   found=None;attempts=0;rejection_reasons=[]
-   for p in ranked:
-    key=(p['provider'],p['id'])
-    if key in used_ids or photo_score(p,slot,media_topic)<0:continue
-    meta=set(tokens(p['alt']))
-    if not meta:continue
-    if attempts>=24:break
-    attempts+=1
-    shot=str(uuid.uuid4());folder=VISUAL/jid/shot;folder.mkdir(parents=True,exist_ok=False)
-    raw=folder/'source.download';final=folder/'selected.jpg'
-    try:
-     download_photo(p,raw)
-     with Image.open(raw) as im:ph=dhash(im.convert('RGB'))
-     if any((ph^old).bit_count()<=4 for old in hashes):raw.unlink(missing_ok=True);shutil.rmtree(folder);continue
-     pixel_audit=pixel_check(raw,media_topic,slot)
-     if not pixel_audit['passed']:raise ValueError('pixel comparison rejected candidate: score='+str(pixel_audit['positive_score'])+' margin='+str(pixel_audit['margin']))
-     make_card(raw,slot['text'],final,p);raw.unlink(missing_ok=True)
-    except Exception as e:
-     rejection_reasons.append(scrub_error(e));shutil.rmtree(folder,ignore_errors=True);continue
-    row=dict(p);row.update({'pixel_verification':pixel_audit,'caption':slot['text'],'article_title':sources[slot['source_index']]['title'],'article_url':sources[slot['source_index']]['url'],'asset_sha256':hashlib.sha256(final.read_bytes()).hexdigest()})
-    found={'provider':p,'shot':shot,'path':final,'hash':row['asset_sha256'],'phash':ph,'row':row};break
-   if found is None:raise ValueError('no verified distinct image for scene '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
-   hashes.append(found['phash']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
-   update(jid,progress=20+int((i+1)*25/visual_count),message='Prepared '+str(i+1)+' of '+str(visual_count)+' unique photos')
+  visual_state={}
+  def before_send(planned_slots):
+   shutil.rmtree(VISUAL/jid,ignore_errors=True)
+   prepared=prepare_visuals(jid,sources,topic,lang,duration,planned_slots)
+   visual_state.clear();visual_state.update(prepared)
+  slots,mp3,audio_ms,speech_ms,slot_targets,voice_audit=prepare_selected_narration(sources,topic,lang,jid,duration,before_send=before_send)
+  if visual_state.get('script')!=' '.join(slot['text'] for slot in slots):raise ValueError('prepared storyboard does not match the final narration')
+  selected=visual_state['selected'];visual_rows=visual_state['visual_rows'];media_topic=visual_state['media_topic']
+  beat_count=visual_state['beat_count'];beat_for_shot=visual_state['beat_for_shot'];shots_per_beat=visual_state['shots_per_beat'];first_shot=visual_state['first_shot']
   audio_sha=hashlib.sha256(mp3.read_bytes()).hexdigest();target=duration*1000;beat_starts=[sum(slot_targets[:i]) for i in range(beat_count)];cursor=0;scenes=[]
   for i,item in enumerate(selected):
    beat=beat_for_shot[i];beat_start=beat_starts[beat];end=target if i==visual_count-1 else beat_start+slot_targets[beat]*(i-first_shot[beat]+1)//shots_per_beat[beat];end=round(end/100)*100;spoken_end=min(target,slots[beat]['speech_end_ms']);speech_start=max(cursor,slots[beat]['speech_start_ms']);speech_end=min(end,spoken_end,audio_ms)
@@ -883,7 +1200,7 @@ def run_job(jid):
   full=subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(video),'-f','null','-'],capture_output=True,text=True,timeout=150)
   if full.returncode:raise ValueError('full MP4 decode failed')
   if not rendered.get('qa_passed'):raise ValueError('media-worker render QA failed')
-  manifest={'version':'universal-1','job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'script_mode':'source-grounded extractive','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_start':s['source_position'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification']} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
+  manifest={'version':'universal-1','job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'script_mode':'source-grounded overview','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note'),'source_type':x.get('source_type','article'),'label':x.get('label'),'description':x.get('description')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_start':s['source_position'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification']} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'images_verified_before_voice':True,'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
   (RENDER/jid/'universal-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
   shutil.rmtree(VISUAL/jid,ignore_errors=True);shutil.rmtree(VOICE/jid,ignore_errors=True);shutil.rmtree(ROOT/'tmp'/jid,ignore_errors=True)
   update(jid,status='ready',stage='review',progress=100,message='MP4 ready for review; listening approval pending',manifest=json.dumps(manifest,ensure_ascii=False),error=None)
@@ -904,7 +1221,7 @@ def directory_bytes(path):
  return total
 def cleanup():
  cutoff=time.time()-30*86400;finished=[]
- with connect() as c:rows=c.execute("SELECT id,status,created_at,updated_at,review_status FROM jobs WHERE status IN ('ready','failed')").fetchall()
+ with connect() as c:rows=c.execute("SELECT id,status,created_at,updated_at,review_status FROM jobs WHERE status IN ('ready','failed','preflight_passed')").fetchall()
  for row in rows:
   jid=safe_id(row['id'])
   if not jid or jid!=row['id']:continue
@@ -942,12 +1259,10 @@ def cleanup():
    if total<=CACHE_MAX_BYTES:break
    try:total-=path.stat().st_size;path.unlink()
    except OSError:pass
-HTML='<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Universal Video Factory</title><style>:root{color-scheme:dark;font:16px system-ui;background:#0b1020;color:#edf2ff}body{margin:0 auto;max-width:1100px;padding:32px 20px}h1{font-size:32px;margin:0}p{color:#aab6d3}form,.job{background:#141c31;border:1px solid #2b3858;border-radius:16px;padding:20px;margin:22px 0}form{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end}label{display:grid;gap:6px;color:#bdc9e5}input,select,button{font:inherit;border-radius:9px;padding:12px;border:1px solid #3b4b70;background:#0b1020;color:#fff}button{cursor:pointer;background:#4b72ea;border:0;font-weight:700}button.secondary{background:#26344f}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.job h2{font-size:19px}.job video{width:100%;max-height:680px;background:#05070c}.bar{height:8px;background:#283653;border-radius:5px;overflow:hidden}.bar span{display:block;height:8px;background:#79a6ff}.job[data-state=needs_input]{border-color:#c8a85f}.sources a{color:#90b5ff}.error{color:#ff9e9e}.pill{display:inline-block;border-radius:99px;background:#283653;padding:4px 9px;font-size:12px}@media(max-width:760px){form,.grid{grid-template-columns:1fr}}</style><body><h1>Universal Video Factory</h1><p>Create a vertical video from a topic, with narration, unique images, captions and cited sources.</p><form id="new"><label>Topic<input name="topic" minlength="3" maxlength="180" required placeholder="Enter a topic"></label><label>Language<select name="language"><option value="en">English</option><option value="pl">Polski</option><option value="ru">Русский</option><option value="uk">Українська</option></select></label><label>Length<select name="duration_s"><option>15</option><option>30</option><option>45</option><option>60</option></select></label><button>Create MP4</button></form><div style="display:flex;gap:12px;align-items:end"><label>View<select id="historyView"><option value="user">My videos</option><option value="examples">Examples</option><option value="tests">Test history</option></select></label><button id="refresh" type="button" class="secondary">Refresh</button></div><div id="status" role="status"></div><div id="jobs" class="grid"></div><script>\n\nvar base=location.pathname.replace(/\\/$/,\'\');if(base===\'/\')base=\'\';\nvar requestNo=0,lastFetch=0,hasActiveJobs=false;\nvar list=document.getElementById(\'jobs\'),view=document.getElementById(\'historyView\'),statusBox=document.getElementById(\'status\');\nfunction esc(value){return String(value||\'\').replace(/[&<>"\']/g,function(c){return {\'&\':\'&amp;\',\'<\':\'&lt;\',\'>\':\'&gt;\',\'"\':\'&quot;\',"\'":\'&#39;\'}[c]})}\nasync function api(path,options){var response=await fetch(base+path,options||{});var data=await response.json();if(!response.ok)throw Error(data.error||response.status);return data}\nfunction cardHTML(j){\n var m=j.manifest||{},video=j.status===\'ready\'?\'<video controls playsinline preload="metadata" src="\'+base+\'/api/jobs/\'+j.id+\'/video"></video><p><a href="\'+base+\'/api/jobs/\'+j.id+\'/video" download>Download MP4</a> · <a href="\'+base+\'/api/jobs/\'+j.id+\'/manifest">Sources and media audit</a></p>\':\'\';\n var script=m.script?\'<details><summary>Script and cited sources</summary><p>\'+esc(m.script)+\'</p><div class="sources">\'+(m.sources||[]).map(function(source){return \'<p><a target="_blank" rel="noreferrer" href="\'+esc(source.url)+\'">\'+esc(source.title)+\'</a></p>\'}).join(\'\')+\'</div></details>\':\'\';\n var summary=j.message;\n if(j.status===\'failed\')summary=j.message.indexOf(\'research\')>=0?\'Could not prepare a complete script from the sources.\':j.message.indexOf(\'visual\')>=0?\'Could not find enough suitable images.\':\'Video creation failed.\';\n var error=j.error?\'<details><summary class="error">Error details</summary><p class="error">\'+esc(j.error)+\'</p></details>\':\'\';\n var review=j.status===\'ready\'?\'<p><span class="pill">Review: \'+esc(j.review_status)+\'</span> <button class="secondary" data-action="approved" data-id="\'+j.id+\'">Approve</button> <button class="secondary" data-action="changes_requested" data-id="\'+j.id+\'">Request changes</button></p>\':\'\';\n var resolved=m.resolved_topic&&m.resolved_topic!==j.topic?\'<p>Source topic: \'+esc(m.resolved_topic)+\'</p>\':\'\';\n if(j.status===\'needs_input\'){script=\'<p>\'+esc(m.input_needed||j.message)+\'</p><div class="sources">\'+(m.sources||[]).map(function(source){return \'<p>Matched source: <a target="_blank" rel="noreferrer" href="\'+esc(source.url)+\'">\'+esc(source.title)+\'</a></p>\'}).join(\'\')+\'</div>\';review=\'<p><button class="secondary" data-action="clarify" data-id="\'+j.id+\'">Clarify topic</button></p>\';}\n return \'<article class="job" data-job-id="\'+j.id+\'" data-topic="\'+esc(j.topic)+\'" data-language="\'+esc(j.language)+\'" data-duration="\'+j.duration_s+\'" data-origin="\'+esc(j.origin)+\'" data-state="\'+esc(j.status)+\'"><h2>\'+esc(j.topic)+\' · \'+j.duration_s+\'s · \'+esc(j.language)+\'</h2><p>\'+esc(j.status===\'needs_input\'?\'Needs context\':j.status)+\' — \'+esc(summary)+\'</p>\'+resolved+\'<div class="bar"><span style="width:\'+j.progress+\'%;\'+(j.status===\'failed\'?\'background:#d86969\':\'\')+\'"></span></div>\'+error+video+script+review+\'</article>\';\n}\nfunction patchCards(jobs){\n var ids=new Set(jobs.map(function(job){return job.id}));\n Array.from(list.children).forEach(function(node){if(!ids.has(node.dataset.jobId))node.remove()});\n jobs.forEach(function(job,index){\n  var signature=JSON.stringify(job),card=list.querySelector(\'[data-job-id="\'+job.id+\'"]\');\n  if(!card||card.dataset.signature!==signature){var template=document.createElement(\'template\');template.innerHTML=cardHTML(job);var next=template.content.firstElementChild;next.dataset.signature=signature;if(card)card.replaceWith(next);card=next;}\n  if(list.children[index]!==card)list.insertBefore(card,list.children[index]||null);\n });\n if(!jobs.length){list.innerHTML=\'<p>No videos in this view.</p>\';}\n}\nasync function draw(){\n var sequence=++requestNo,selected=view.value;\n try{var data=await api(\'/api/jobs?view=\'+encodeURIComponent(selected));if(sequence!==requestNo||selected!==view.value)return;var jobs=data.jobs||[];hasActiveJobs=jobs.some(function(job){return job.status===\'queued\'||job.status===\'running\'});patchCards(jobs);lastFetch=Date.now();statusBox.textContent=\'\';}\n catch(error){if(sequence===requestNo)statusBox.textContent=error.message;}\n}\nlist.addEventListener(\'click\',async function(event){var button=event.target.closest(\'button[data-action]\');if(!button)return;if(button.dataset.action===\'clarify\'){var card=button.closest(\'article\'),form=document.getElementById(\'new\');form.elements.topic.value=card.dataset.topic;form.elements.language.value=card.dataset.language;form.elements.duration_s.value=card.dataset.duration;form.elements.topic.focus();form.scrollIntoView({behavior:\'smooth\'});return;}try{await api(\'/api/jobs/\'+button.dataset.id+\'/review\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({status:button.dataset.action})});await draw()}catch(error){statusBox.textContent=error.message}});\nview.addEventListener(\'change\',draw);document.getElementById(\'refresh\').addEventListener(\'click\',draw);\ndocument.getElementById(\'new\').addEventListener(\'submit\',async function(event){\n event.preventDefault();var form=event.target,button=form.querySelector(\'button\'),fields=new FormData(form);button.disabled=true;statusBox.textContent=\'Submitting…\';\n try{await api(\'/api/jobs\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({topic:fields.get(\'topic\'),language:fields.get(\'language\'),duration_s:Number(fields.get(\'duration_s\'))})});form.elements.topic.value=\'\';view.value=\'user\';await draw()}\n catch(error){statusBox.textContent=error.message}finally{button.disabled=false}\n});\ndraw();setInterval(function(){if(!document.hidden&&(hasActiveJobs||Date.now()-lastFetch>30000))draw()},4000);\n\n</script></body></html>'
+HTML=Path(__file__).with_name('index.html').read_text()
 class Handler(BaseHTTPRequestHandler):
  def auth(self):
-  expected=base64.b64encode((PROJECT.get('STUDIO_AUTH_USERNAME','')+':'+PROJECT.get('STUDIO_AUTH_PASSWORD','')).encode()).decode()
-  if hmac.compare_digest(self.headers.get('Authorization',''),'Basic '+expected):return True
-  self.send_response(401);self.send_header('WWW-Authenticate','Basic realm="Universal Video Factory"');self.send_header('Content-Length','0');self.end_headers();return False
+  return True
  def route(self):
   p=urllib.parse.urlsplit(self.path).path
   return (p[len(BASE_PATH):] or '/') if BASE_PATH and p.startswith(BASE_PATH) else p
@@ -965,6 +1280,9 @@ class Handler(BaseHTTPRequestHandler):
   p=self.route()
   if p in ('/','/index.html'):
    b=HTML.encode();self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(b)));self.end_headers();self.wfile.write(b);return
+  if p=='/api/provider-status':
+   force=urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).get('refresh',['0'])[0]=='1'
+   return self.json_out(200,google_connection_status(force=force))
   if p=='/api/jobs':
    view=urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).get('view',['user'])[0]
    filters={'user':"origin='user' AND status!='expired'",'examples':"origin='test' AND status='ready' AND json_extract(manifest,'$.narration.engine')='Google Cloud Text-to-Speech'",'tests':"origin='test'"}
@@ -972,7 +1290,7 @@ class Handler(BaseHTTPRequestHandler):
    with connect() as c:rows=c.execute('SELECT id FROM jobs WHERE '+filters[view]+' ORDER BY created_at DESC LIMIT 50').fetchall()
    jobs=[public_job(get_job(row['id'])) for row in rows]
    for job in jobs:
-    if job['manifest']:job['manifest']={key:job['manifest'][key] for key in ('script','sources','resolved_topic') if key in job['manifest']}
+    if job['manifest']:job['manifest']={key:job['manifest'][key] for key in ('script','sources','resolved_topic','resolved_entity_id','input_needed') if key in job['manifest']}
    return self.json_out(200,{'jobs':jobs,'view':view})
   m=re.fullmatch(r'/api/jobs/([0-9a-fA-F-]{36})(?:/(video|manifest))?',p)
   if m:
@@ -1016,12 +1334,23 @@ class Handler(BaseHTTPRequestHandler):
    if len(topic)<3 or len(topic)>180:return self.json_out(400,{'error':'topic must contain 3–180 characters'})
    if lang not in LANGS:return self.json_out(400,{'error':'language must be en, pl, ru or uk'})
    if duration not in DURATIONS:return self.json_out(400,{'error':'duration must be 15, 30, 45 or 60 seconds'})
+   connection=google_connection_status()
+   if not connection['ready']:return self.json_out(503,{'error':connection['message'],'code':connection['code']})
    cleanup()
    if shutil.disk_usage(DATA).free<DISK_RESERVE_BYTES:return self.json_out(507,{'error':'Less than 2 GB free disk space; no new job was created'})
    jid=str(uuid.uuid4());ts=now()
    with connect() as c:c.execute('INSERT INTO jobs(id,created_at,updated_at,topic,language,duration_s,status,stage,progress,message) VALUES(?,?,?,?,?,?,?,?,?,?)',(jid,ts,ts,topic,lang,duration,'queued','queued',0,'Waiting for the single worker'))
    if b.get('origin')=='test':update(jid,origin='test')
    POOL.submit(execute_job,jid);return self.json_out(202,{'id':jid,'status':'queued'})
+  m=re.fullmatch(r'/api/jobs/([0-9a-fA-F-]{36})/subject',p)
+  if m:
+   jid=safe_id(m.group(1));j=get_job(jid) if jid else None
+   if not j:return self.json_out(404,{'error':'job_not_found'})
+   entity_id=(j.get('manifest') or {}).get('resolved_entity_id')
+   try:reject_subject(j['topic'],j['language'],entity_id)
+   except ValueError as error:return self.json_out(400,{'error':str(error)})
+   update(jid,review_status='changes_requested',review_note='Wrong source subject')
+   return self.json_out(200,{'ok':True})
   m=re.fullmatch(r'/api/jobs/([0-9a-fA-F-]{36})/review',p)
   if m:
    jid=safe_id(m.group(1));j=get_job(jid) if jid else None

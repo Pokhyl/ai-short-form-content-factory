@@ -53,19 +53,21 @@ class VisualVerifier:
   self.text_vectors=texts
   return [float(score) for score in (images@texts.T)[0]]
 
- def check(self, image_path, subject, actions, caption='', competitors=None, competitor_subject=''):
+ def check(self, image_path, subject, actions, caption='', competitors=None, competitor_subject='',extra_negatives=None,extra_positives=None):
   positive=[]
   templates={
    'heat':['Industrial heating and melting of {subject}.','A furnace melting {subject} material during manufacturing.'],
    'shape':['Industrial machinery forming and molding molten {subject}.','A worker shaping {subject} during its manufacturing process.'],
    'cool':['An annealing oven cooling {subject} after manufacturing.','Technical illustration of an annealing furnace for {subject}.'],
    'inspect':['A worker inspecting {subject} quality during manufacturing.','A photograph of a worker inspecting the quality of {subject}.','Quality control equipment inspecting {subject}.'],
-   'production':['Factory production machinery manufacturing {subject}.']}
+   'production':['Factory production machinery manufacturing {subject}.','A person making {subject} by hand.']}
   for action in sorted(actions):
    for template in templates.get(action,[]):positive.append(template.format(subject=subject))
   if caption:positive.append('An image illustrating: '+caption)
   if not positive:positive=['A photograph of '+subject]
-  negative=['A photograph of an unrelated landscape or animal.']
+  positive.extend((extra_positives or [])[:4])
+  negative=['A photograph of an unrelated landscape or animal.','A labeled line diagram, graph, chart or schematic.','A hand drawn illustration or painting.']
+  negative.extend((extra_negatives or [])[:2])
   if actions:negative.append('Studio product photography of finished '+subject+' on a tabletop against a plain white background.')
   if 'shape' in actions:negative.append('A person attaching a cap or fitting to an already finished '+subject+'.')
   if 'glass' in subject.lower():negative.append('Metalworking, steel bars being heated and forged by a blacksmith.')
@@ -80,3 +82,14 @@ class VisualVerifier:
    else:negative_indices.append(position)
   positive_score=max(scores[:len(positive)]);negative_score=max(scores[index] for index in negative_indices);margin=positive_score-negative_score
   return {'passed':positive_score>=0.24 and margin>=0.015,'positive_score':round(positive_score,6),'negative_score':round(negative_score,6),'margin':round(margin,6),'model_sha256':MODEL_SHA256,'descriptions':descriptions,'excluded_competitor_aliases':excluded,'scores':[round(x,6) for x in scores]}
+
+ def check_person(self,image_path,identity,description=''):
+  if not identity.get('entity_id') or not identity.get('basis'):raise ValueError('source-backed person identity required')
+  content=['A photograph of a man.','A photograph of a woman.','A close up photograph of a human face.','A photograph of a man standing.','A photograph of a woman standing.','A photograph of a man sitting at a desk.','A photograph of a woman sitting at a desk.','A portrait photo of a man in a green shirt.','A portrait photo of a woman wearing a suit.','A portrait photo of a man wearing a suit and tie.','A photograph of two men shaking hands.','A photograph of men sitting together at a table.','A photograph of a man speaking into a microphone.','A photograph of a woman speaking into a microphone.','A photograph of two people standing together.']
+  positive=content+['A portrait photograph of a person.','A photograph of people at an official meeting.','A photograph of politicians at an international summit.','A photograph of a public official speaking in front of flags.','A photograph of a person wearing a suit.']
+  if description:positive.append('A photograph of '+description+'.')
+  negative=['A photograph of an unrelated landscape or animal.','A drawing, poster or painting of a person.','An empty room or a flag with no people.','A photograph of a printed document, letter or certificate.','A photograph of a street billboard or propaganda poster.','A photograph of a billboard with a politician on it.','A statue or sculpture of a person.']
+  descriptions=positive+negative;scores=self.compare(image_path,descriptions)
+  positive_score=max(scores[:len(positive)]);negative_score=max(scores[len(positive):]);margin=positive_score-negative_score
+  human_content_score=max(scores[:len(content)])
+  return {'passed':positive_score>=.24 and human_content_score>=.24 and margin>=.015,'human_content_score':round(human_content_score,6),'positive_score':round(positive_score,6),'negative_score':round(negative_score,6),'margin':round(margin,6),'model_sha256':MODEL_SHA256,'descriptions':descriptions,'scores':[round(score,6) for score in scores],'identity_verification':identity,'pixel_check_scope':'photographic human content; subject identity comes from linked Commons metadata'}

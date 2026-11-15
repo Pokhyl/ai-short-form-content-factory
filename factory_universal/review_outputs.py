@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """Collect existing acceptance jobs and midpoint frames; never create or retry jobs."""
-import io,json,sqlite3,subprocess,hashlib
+import io,json,sqlite3,subprocess,hashlib,argparse
 from pathlib import Path
 from PIL import Image,ImageDraw
 
 root=Path('/data/factory-universal')
-plan=json.loads((root/'acceptance-20261114.json').read_text())
+parser=argparse.ArgumentParser()
+parser.add_argument('--plan',default=str(root/'acceptance-20261114.json'))
+parser.add_argument('--receipt',default=str(root/'acceptance-20261114-results.json'))
+args=parser.parse_args()
+plan=json.loads(Path(args.plan).read_text())
 conn=sqlite3.connect(root/'jobs.sqlite3');conn.row_factory=sqlite3.Row
 out=root/'reviews';out.mkdir(exist_ok=True)
 results=[]
-for case in plan['jobs']:
+for case in plan.get('jobs',plan.get('cases',[])):
  row=conn.execute('SELECT status,stage,error,manifest FROM jobs WHERE id=?',(case['id'],)).fetchone()
  result=case|{'status':row['status'],'stage':row['stage'],'error':row['error']}
  if row['status']=='ready':
@@ -30,4 +34,4 @@ for case in plan['jobs']:
  results.append(result)
  print(json.dumps({key:value for key,value in result.items() if key not in {'script','audit','render'}},ensure_ascii=False),flush=True)
 plan['results']=results;plan['technical_pass']=all(result['status']=='ready' and result.get('exact_frames') and result.get('exact_duration') and result.get('hash_matches') and result.get('llm_calls')==0 and result.get('audit',{}).get('full_decode') and result['audit']['unique_assets']==result['audit']['shots_required'] and result['audit']['all_images_pixel_checked'] and result['audit']['all_visuals_have_provenance'] and result['audit']['minimum_two_images_per_beat'] and all(result['audit']['renderer_gates'].values()) for result in results)
-(root/'acceptance-20261114-results.json').write_text(json.dumps(plan,ensure_ascii=False,indent=2))
+Path(args.receipt).write_text(json.dumps(plan,ensure_ascii=False,indent=2))

@@ -2,7 +2,7 @@ name: factory-universal
 services:
   app:
     build: .
-    image: factory-universal:clean-20261111
+    image: factory-universal:public-access-20261115
     container_name: factory-universal
     restart: unless-stopped
     expose:
