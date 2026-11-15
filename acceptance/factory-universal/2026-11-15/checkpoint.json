@@ -1,0 +1,40 @@
+{
+  "project_ready": false,
+  "first_new_mp4_technical_pass": true,
+  "normal_api_job_id": "8cc37137-3cde-412b-9b77-f8d034c71eb5",
+  "video_url": "https://studio.hodor.com.pl/api/jobs/8cc37137-3cde-412b-9b77-f8d034c71eb5/video",
+  "requested_seconds": 15,
+  "frames": 450,
+  "voice": "en-US-Chirp3-HD-Algenib",
+  "natural_audio_ms": 14016,
+  "images": 6,
+  "frame_review": "assistant passed",
+  "owner_listening_approval": false,
+  "remaining_acceptance": "PL30, RU45, UK60, manufacturing EN30 and named-person UK30 normal API outputs",
+  "failed_attempts_preserved": [
+    {
+      "id": "10aac900-e8de-40d1-b70c-61e28e5580dd",
+      "topic": "Warszawa",
+      "language": "pl",
+      "duration_s": 30,
+      "error": "natural-duration correction produced the same text; no duplicate synthesis"
+    },
+    {
+      "id": "db43f2c5-9c6f-480a-a97f-823b7da002f3",
+      "topic": "Photosynthesis",
+      "language": "en",
+      "duration_s": 15,
+      "error": "Renderer rejected the job: render target/audio duration contract is invalid"
+    },
+    {
+      "id": "f632a0cf-b09b-4bd7-a553-d7c9e695900a",
+      "topic": "Photosynthesis",
+      "language": "en",
+      "duration_s": 15,
+      "error": "selected Google voice returned HTTP 502; no fallback or resend"
+    }
+  ],
+  "public_access": true,
+  "google_synthesis_restored": true,
+  "shared_renderer_modified": false
+}

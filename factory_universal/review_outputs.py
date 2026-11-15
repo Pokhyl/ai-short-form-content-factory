@@ -14,7 +14,10 @@ conn=sqlite3.connect(root/'jobs.sqlite3');conn.row_factory=sqlite3.Row
 out=root/'reviews';out.mkdir(exist_ok=True)
 results=[]
 for case in plan.get('jobs',plan.get('cases',[])):
+ if not case.get('id'):
+  results.append(case|{'status':'not_submitted'});continue
  row=conn.execute('SELECT status,stage,error,manifest FROM jobs WHERE id=?',(case['id'],)).fetchone()
+ if row is None:raise ValueError('Recorded acceptance job does not exist')
  result=case|{'status':row['status'],'stage':row['stage'],'error':row['error']}
  if row['status']=='ready':
   manifest=json.loads(row['manifest']);video=Path(manifest['render']['storage_path']);segments=manifest['render']['segments']

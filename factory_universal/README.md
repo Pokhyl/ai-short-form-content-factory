@@ -8,7 +8,7 @@ Studio: https://studio.hodor.com.pl/ . The site and review API require no passwo
 
 project_ready=false. The owner restored the retained Google connection; read-only metadata execution 14691 returned READY. The app checks that connection before admitting a job. Full MP4 acceptance is still required; metadata readiness alone does not establish narration success.
 
-First replacement test f632a0cf-b09b-4bd7-a553-d7c9e695900a completed images and stopped at the voice gateway. Its stopped synthesis is not resent. Full replacement MP4 acceptance remains pending after reconnection and image-review corrections. Image-only checks do not establish MP4 or listening acceptance.
+First replacement test f632a0cf-b09b-4bd7-a553-d7c9e695900a completed images and stopped at the voice gateway. Its stopped synthesis is not resent. Google synthesis now succeeds with the selected voice. The first post-reconnect MP4 test reached render and exposed incompatible legacy renderer duration thresholds; its failed ID db43f2c5-9c6f-480a-a97f-823b7da002f3 is preserved. Full replacement MP4 acceptance remains pending the project-owned renderer and image-review corrections. Image-only checks do not establish MP4 or listening acceptance.
 
 ## Pipeline
 
@@ -19,7 +19,7 @@ First replacement test f632a0cf-b09b-4bd7-a553-d7c9e695900a completed images and
 - Search at most seven distinct stock queries and three Commons queries across the whole job, including duration corrections. Commons searches return at most 50 candidates each. Cache source/provider results for 24 hours.
 - Preserve complete photographs at their original aspect ratio. Screen pixels using the pinned local CLIP model. Human subjects additionally require matching Commons depicts metadata or the exact Wikidata-linked category and a separate photographic human-content screen.
 - Verify all 6/12/18/24 distinct images before requesting narration. Each narration beat has at least two images.
-- Align the unchanged selected-voice MP3; render 1080×1920 H.264/AAC at 30 fps; fully decode before ready.
+- Align the unchanged selected-voice MP3; render 1080×1920 H.264/AAC at 30 fps using the project-owned FFmpeg renderer; fully decode before ready.
 - Keep source/media provenance, licenses, image hashes, pixel screening, voice receipts, alignment and render checks in the manifest.
 
 | Language | Fixed owner-selected voice |
@@ -31,7 +31,7 @@ First replacement test f632a0cf-b09b-4bd7-a553-d7c9e695900a completed images and
 
 Google uses the retained native n8n gateway and shared PostgreSQL free-tier character ledger. Durable claims precede uncertain sends. Timeouts/errors stop without automatic resends. Up to three distinct texts may be synthesized after completed duration misses. Completed identical audio may be reused for 24 hours. No audible eSpeak fallback, tempo change, Gemini call or paid model API is allowed.
 
-Experimental drafting/translation models failed quality checks and were removed. They are not dependencies. Only the checksum-pinned visual model remains, mounted read-only. eSpeak is an internal estimate only.
+Experimental drafting/translation models failed quality checks and were removed. They are not dependencies. Only the checksum-pinned visual model remains, mounted read-only. The shared media-worker is used for alignment; its old per-duration render thresholds are not part of the universal renderer. eSpeak is an internal estimate only.
 
 ## Bounds
 
@@ -48,7 +48,8 @@ Retained settings under /var/lib/factory-rebuild/secrets are mounted read-only. 
 Reverify the visual model with factory_universal/setup_models.py. Check active jobs before recreating only this app:
 
     docker compose -f factory_universal/compose.yaml build app
-    docker exec -i factory-universal python3 - < factory_universal/checks.py
+    docker compose -f factory_universal/compose.yaml run --rm --no-deps -T app python3 - < factory_universal/checks.py
+    docker compose -f factory_universal/compose.yaml run --rm --no-deps -T app python3 - < factory_universal/renderer_checks.py
     docker compose -f factory_universal/compose.yaml up -d app
 
 Leave the shared media-worker, volume, n8n networks and unrelated services intact.

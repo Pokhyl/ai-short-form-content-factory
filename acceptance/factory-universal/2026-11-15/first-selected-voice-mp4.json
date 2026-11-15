@@ -1,0 +1,462 @@
+{
+  "version": "universal-1",
+  "job_id": "8cc37137-3cde-412b-9b77-f8d034c71eb5",
+  "topic": "Photosynthesis",
+  "language": "en",
+  "requested_duration_s": 15,
+  "visual_search_topic": "Photosynthesis",
+  "created_at": "2026-11-15T20:49:49.281921+00:00",
+  "script": "Photosynthesis — biological process to convert light into chemical energy. The average rate of energy captured by global photosynthesis is approximately 130 terawatts, which is about eight times the total power consumption of human civilization.",
+  "resolved_topic": "Photosynthesis",
+  "resolved_entity_id": "Q11982",
+  "script_mode": "source-grounded overview",
+  "llm_calls": 0,
+  "sources": [
+    {
+      "title": "Photosynthesis",
+      "url": "https://en.wikipedia.org/wiki/Photosynthesis",
+      "retrieval_note": null,
+      "source_type": "article",
+      "label": null,
+      "description": null
+    },
+    {
+      "title": "Artificial photosynthesis",
+      "url": "https://en.wikipedia.org/wiki/Artificial_photosynthesis",
+      "retrieval_note": null,
+      "source_type": "article",
+      "label": null,
+      "description": null
+    },
+    {
+      "title": "Anoxygenic photosynthesis",
+      "url": "https://en.wikipedia.org/wiki/Anoxygenic_photosynthesis",
+      "retrieval_note": null,
+      "source_type": "article",
+      "label": null,
+      "description": null
+    },
+    {
+      "title": "photosynthesis — Wikidata",
+      "url": "https://www.wikidata.org/wiki/Q11982",
+      "retrieval_note": null,
+      "source_type": "structured definition",
+      "label": "photosynthesis",
+      "description": "biological process to convert light into chemical energy"
+    }
+  ],
+  "beats": [
+    {
+      "order": 1,
+      "caption": "Photosynthesis — biological process to convert light into chemical energy.",
+      "source_span": "Photosynthesis — biological process to convert light into chemical energy.",
+      "source_start": 0,
+      "source_title": "photosynthesis — Wikidata",
+      "source_url": "https://www.wikidata.org/wiki/Q11982"
+    },
+    {
+      "order": 2,
+      "caption": "The average rate of energy captured by global photosynthesis is approximately 130 terawatts, which is about eight times the total power consumption of human civilization.",
+      "source_span": "The average rate of energy captured by global photosynthesis is approximately 130 terawatts , which is about eight times the total power consumption of human civilization .",
+      "source_start": 3685,
+      "source_title": "Photosynthesis",
+      "source_url": "https://en.wikipedia.org/wiki/Photosynthesis"
+    }
+  ],
+  "visuals": [
+    {
+      "order": 1,
+      "provider": "pixabay",
+      "provider_id": "4543260",
+      "alt": "leaf, green, structure, photosynthesis, veins, cells, chlorophyll, nature, oxygen, macro",
+      "creator": "AStoKo",
+      "creator_url": "https://pixabay.com/users/AStoKo/",
+      "provider_page": "https://pixabay.com/photos/leaf-green-structure-photosynthesis-4543260/",
+      "license": null,
+      "license_url": null,
+      "changes": null,
+      "search_query": "Photosynthesis",
+      "caption": "Photosynthesis — biological process to convert light into chemical energy.",
+      "source_article": "https://www.wikidata.org/wiki/Q11982",
+      "source_title": "photosynthesis — Wikidata",
+      "asset_sha256": "e8bffc5bbc780dc643abb54caf858189e94920530db53b1ec1673cd8e36680e9",
+      "pixel_verification": {
+        "passed": true,
+        "positive_score": 0.268532,
+        "negative_score": 0.229277,
+        "margin": 0.039255,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of Photosynthesis — Photosynthesis is a system of biological processes by which photopigment -bearing autotrophic organisms , such as most plants , algae and cyanobacteria , convert light energy —typically from sunlight —into the chemical energy necessary to fuel their metabolism .",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.268532,
+          0.229277,
+          0.215287,
+          0.215882
+        ]
+      }
+    },
+    {
+      "order": 2,
+      "provider": "pixabay",
+      "provider_id": "3322452",
+      "alt": "leaf, nature, plant, vein, environment, photosynthesis",
+      "creator": "makamuki0",
+      "creator_url": "https://pixabay.com/users/makamuki0/",
+      "provider_page": "https://pixabay.com/photos/leaf-plant-vein-environment-3322452/",
+      "license": null,
+      "license_url": null,
+      "changes": null,
+      "search_query": "Photosynthesis",
+      "caption": "Photosynthesis — biological process to convert light into chemical energy.",
+      "source_article": "https://www.wikidata.org/wiki/Q11982",
+      "source_title": "photosynthesis — Wikidata",
+      "asset_sha256": "59b257894c4c9ea439754ba25cf52eb2a129bd4ee0baa67f17e2f202ea9fb1aa",
+      "pixel_verification": {
+        "passed": true,
+        "positive_score": 0.265068,
+        "negative_score": 0.238738,
+        "margin": 0.02633,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of Photosynthesis — Photosynthesis is a system of biological processes by which photopigment -bearing autotrophic organisms , such as most plants , algae and cyanobacteria , convert light energy —typically from sunlight —into the chemical energy necessary to fuel their metabolism .",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.265068,
+          0.238738,
+          0.223206,
+          0.198428
+        ]
+      }
+    },
+    {
+      "order": 3,
+      "provider": "pixabay",
+      "provider_id": "6688988",
+      "alt": "leaves, botany, plant, foliage, nature, photosynthesis, droplets",
+      "creator": "Green_Grey",
+      "creator_url": "https://pixabay.com/users/Green_Grey/",
+      "provider_page": "https://pixabay.com/photos/leaves-botany-plant-foliage-6688988/",
+      "license": null,
+      "license_url": null,
+      "changes": null,
+      "search_query": "Photosynthesis",
+      "caption": "Photosynthesis — biological process to convert light into chemical energy.",
+      "source_article": "https://www.wikidata.org/wiki/Q11982",
+      "source_title": "photosynthesis — Wikidata",
+      "asset_sha256": "e9cd78625c645e4a9b324641d9d12255e206a16649b8c12af1b8cfccc1cb9308",
+      "pixel_verification": {
+        "passed": true,
+        "positive_score": 0.260357,
+        "negative_score": 0.231504,
+        "margin": 0.028852,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of Photosynthesis — Photosynthesis is a system of biological processes by which photopigment -bearing autotrophic organisms , such as most plants , algae and cyanobacteria , convert light energy —typically from sunlight —into the chemical energy necessary to fuel their metabolism .",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.260357,
+          0.231504,
+          0.217388,
+          0.212044
+        ]
+      }
+    },
+    {
+      "order": 4,
+      "provider": "pixabay",
+      "provider_id": "6543435",
+      "alt": "leaf, botany, dewdrop, water, macro, photosynthesis, nature, foliage",
+      "creator": "wal_172619",
+      "creator_url": "https://pixabay.com/users/wal_172619/",
+      "provider_page": "https://pixabay.com/photos/leaf-botany-dewdrop-water-macro-6543435/",
+      "license": null,
+      "license_url": null,
+      "changes": null,
+      "search_query": "Photosynthesis",
+      "caption": "The average rate of energy captured by global photosynthesis is approximately 130 terawatts, which is about eight times the total power consumption of human civilization.",
+      "source_article": "https://en.wikipedia.org/wiki/Photosynthesis",
+      "source_title": "Photosynthesis",
+      "asset_sha256": "16029841b9d82fee8631bce80e81bd2ce13e5213bac26ee4466507c33ed5bf3d",
+      "pixel_verification": {
+        "passed": true,
+        "positive_score": 0.261115,
+        "negative_score": 0.241172,
+        "margin": 0.019944,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of Photosynthesis — Photosynthesis is a system of biological processes by which photopigment -bearing autotrophic organisms , such as most plants , algae and cyanobacteria , convert light energy —typically from sunlight —into the chemical energy necessary to fuel their metabolism .",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.261115,
+          0.241172,
+          0.216909,
+          0.222503
+        ]
+      }
+    },
+    {
+      "order": 5,
+      "provider": "pixabay",
+      "provider_id": "391447",
+      "alt": "photosynthesis, green, color, holidays, summer, summer plants, veins, nature, plant, photosynthesis, photosynthesis, photosynthesis, photosynthesis, photosynthesis",
+      "creator": "hajninjah",
+      "creator_url": "https://pixabay.com/users/hajninjah/",
+      "provider_page": "https://pixabay.com/photos/photosynthesis-green-color-holidays-391447/",
+      "license": null,
+      "license_url": null,
+      "changes": null,
+      "search_query": "Photosynthesis",
+      "caption": "The average rate of energy captured by global photosynthesis is approximately 130 terawatts, which is about eight times the total power consumption of human civilization.",
+      "source_article": "https://en.wikipedia.org/wiki/Photosynthesis",
+      "source_title": "Photosynthesis",
+      "asset_sha256": "6e84ed2ec1264a6385ce75444cd9c13f1c78cda842f1613a8e70726bc3a1ccf0",
+      "pixel_verification": {
+        "passed": true,
+        "positive_score": 0.278995,
+        "negative_score": 0.245116,
+        "margin": 0.03388,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of Photosynthesis — Photosynthesis is a system of biological processes by which photopigment -bearing autotrophic organisms , such as most plants , algae and cyanobacteria , convert light energy —typically from sunlight —into the chemical energy necessary to fuel their metabolism .",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.278995,
+          0.245116,
+          0.238997,
+          0.200662
+        ]
+      }
+    },
+    {
+      "order": 6,
+      "provider": "pixabay",
+      "provider_id": "6529715",
+      "alt": "leaf, botany, photosynthesis, veins, macro, nature, green, photosynthesis, photosynthesis, photosynthesis, photosynthesis, photosynthesis",
+      "creator": "mfuente",
+      "creator_url": "https://pixabay.com/users/mfuente/",
+      "provider_page": "https://pixabay.com/photos/leaf-botany-photosynthesis-veins-6529715/",
+      "license": null,
+      "license_url": null,
+      "changes": null,
+      "search_query": "Photosynthesis",
+      "caption": "The average rate of energy captured by global photosynthesis is approximately 130 terawatts, which is about eight times the total power consumption of human civilization.",
+      "source_article": "https://en.wikipedia.org/wiki/Photosynthesis",
+      "source_title": "Photosynthesis",
+      "asset_sha256": "6df106e0e773ed8a0d05bd956754ebf313f47160e0defeb829f8d431ce3a3ad7",
+      "pixel_verification": {
+        "passed": true,
+        "positive_score": 0.26458,
+        "negative_score": 0.234405,
+        "margin": 0.030175,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of Photosynthesis — Photosynthesis is a system of biological processes by which photopigment -bearing autotrophic organisms , such as most plants , algae and cyanobacteria , convert light energy —typically from sunlight —into the chemical energy necessary to fuel their metabolism .",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.26458,
+          0.234405,
+          0.205713,
+          0.203416
+        ]
+      }
+    }
+  ],
+  "narration": {
+    "engine": "Google Cloud Text-to-Speech",
+    "voice": "en-US-Chirp3-HD-Algenib",
+    "audio_duration_ms": 14016,
+    "speech_duration_ms": [
+      4120,
+      8940
+    ],
+    "beat_duration_ms": [
+      4700,
+      10300
+    ],
+    "sha256": "5767ad337b47ea2f5ce5f43ddc18af6677b3e97cb4ee15de5711d1ae836a7ebb",
+    "audio_tempo_factor": 1.0,
+    "attempts": [
+      {
+        "attempt": 1,
+        "voice": "en-US-Chirp3-HD-Algenib",
+        "characters": 245,
+        "text_sha256": "ba83ccb61f5a174bb7c9f7d08296b566528211476ed49c585d9e431718537563",
+        "audio_sha256": "5767ad337b47ea2f5ce5f43ddc18af6677b3e97cb4ee15de5711d1ae836a7ebb",
+        "duration_ms": 14016,
+        "quota_key": "universal:db43f2c5-9c6f-480a-a97f-823b7da002f3:voice:2",
+        "provider_send": false,
+        "reused_completed_audio": true
+      }
+    ],
+    "alignment_coverage": 1.0
+  },
+  "render": {
+    "status": "ready",
+    "job_id": "8cc37137-3cde-412b-9b77-f8d034c71eb5",
+    "engine": "project FFmpeg renderer",
+    "storage_path": "/data/renders/8cc37137-3cde-412b-9b77-f8d034c71eb5/final.mp4",
+    "manifest_path": "/data/renders/8cc37137-3cde-412b-9b77-f8d034c71eb5/manifest.json",
+    "sha256": "c9b6b18d4783328e903ba2494a381f92fc7a7f9ac3d3b99a2b5377a3739e4aea",
+    "bytes": 1623219,
+    "width": 1080,
+    "height": 1920,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "pix_fmt": "yuv420p",
+    "fps_num": 30,
+    "fps_den": 1,
+    "duration_ms": 15000,
+    "muxed_audio_duration_ms": 15000,
+    "video_stream_count": 1,
+    "audio_stream_count": 1,
+    "frame_count": 450,
+    "audio_duration_ms": 14016,
+    "requested_duration_ms": 15000,
+    "target_duration_ms": 15000,
+    "duration_delta_ms": 0,
+    "input_audio_sha256": "5767ad337b47ea2f5ce5f43ddc18af6677b3e97cb4ee15de5711d1ae836a7ebb",
+    "segments": [
+      {
+        "scene_uuid": "94170425-0e09-4119-b64e-acfdc24b05a5",
+        "shot_uuid": "6ef4f173-3765-4d93-985a-4d23f31de2a9",
+        "visual_asset_id": "1e978eef-1e96-43b0-8e88-4f1750980652",
+        "segment_order": 1,
+        "start_ms": 0,
+        "end_ms": 1600,
+        "duration_ms": 1600,
+        "asset_sha256": "e8bffc5bbc780dc643abb54caf858189e94920530db53b1ec1673cd8e36680e9",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "1e3e30ea-abbe-4268-84f5-c3617d1896cd",
+        "shot_uuid": "9d542f90-d492-46b8-9e1d-576dc40110ee",
+        "visual_asset_id": "47ce7d4c-e2c0-4c78-ac44-739be837e410",
+        "segment_order": 2,
+        "start_ms": 1600,
+        "end_ms": 3100,
+        "duration_ms": 1500,
+        "asset_sha256": "59b257894c4c9ea439754ba25cf52eb2a129bd4ee0baa67f17e2f202ea9fb1aa",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "5cac4368-a0b4-4c28-862f-28f0a68eca10",
+        "shot_uuid": "5decdc73-82d5-442e-a93c-93435d1ca80c",
+        "visual_asset_id": "8da83226-9892-4392-b097-6fc299c3172c",
+        "segment_order": 3,
+        "start_ms": 3100,
+        "end_ms": 4700,
+        "duration_ms": 1600,
+        "asset_sha256": "e9cd78625c645e4a9b324641d9d12255e206a16649b8c12af1b8cfccc1cb9308",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "b626d760-21b8-4dff-ad6e-df29bdd6a9d2",
+        "shot_uuid": "152107ed-b213-4b64-86ce-82c2b1b36921",
+        "visual_asset_id": "61b19569-a2fb-4f9a-876b-5122cd9238a4",
+        "segment_order": 4,
+        "start_ms": 4700,
+        "end_ms": 8100,
+        "duration_ms": 3400,
+        "asset_sha256": "16029841b9d82fee8631bce80e81bd2ce13e5213bac26ee4466507c33ed5bf3d",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "8e72561c-93fb-4f76-94df-b35a0ff17d93",
+        "shot_uuid": "57af1382-d270-466e-acf3-0e3b5a7931b1",
+        "visual_asset_id": "944e52cd-f515-4f17-9c3d-c6ac03175c40",
+        "segment_order": 5,
+        "start_ms": 8100,
+        "end_ms": 11600,
+        "duration_ms": 3500,
+        "asset_sha256": "6e84ed2ec1264a6385ce75444cd9c13f1c78cda842f1613a8e70726bc3a1ccf0",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "b0530ecd-2760-45f1-979b-0ae23c51a9cb",
+        "shot_uuid": "05e42532-93b1-421d-bb66-f5c5759f36f1",
+        "visual_asset_id": "c19706e0-5c19-4c2b-b94e-a4aaf83db3f4",
+        "segment_order": 6,
+        "start_ms": 11600,
+        "end_ms": 15000,
+        "duration_ms": 3400,
+        "asset_sha256": "6df106e0e773ed8a0d05bd956754ebf313f47160e0defeb829f8d431ce3a3ad7",
+        "media_type": "photo"
+      }
+    ],
+    "qa_passed": true,
+    "qa_gates": {
+      "exact_frames": true,
+      "exact_duration": true,
+      "portrait_dimensions": true,
+      "h264": true,
+      "aac": true,
+      "yuv420p": true,
+      "fps_30": true,
+      "unique_images": true,
+      "continuous_timeline": true,
+      "unchanged_source_audio": true,
+      "natural_audio_fits": true
+    }
+  },
+  "audit": {
+    "shots_required": 6,
+    "narration_beats": 2,
+    "unique_assets": 6,
+    "images_per_narration_beat": [
+      3,
+      3
+    ],
+    "minimum_two_images_per_beat": true,
+    "average_shot_duration_ms": 2500.0,
+    "source_count": 4,
+    "all_visuals_have_provenance": true,
+    "images_verified_before_voice": true,
+    "all_images_pixel_checked": true,
+    "full_decode": true,
+    "renderer_gates": {
+      "exact_frames": true,
+      "exact_duration": true,
+      "portrait_dimensions": true,
+      "h264": true,
+      "aac": true,
+      "yuv420p": true,
+      "fps_30": true,
+      "unique_images": true,
+      "continuous_timeline": true,
+      "unchanged_source_audio": true,
+      "natural_audio_fits": true
+    }
+  },
+  "retention_days": 30,
+  "assistant_frame_review": {
+    "status": "passed",
+    "scope": "actual MP4 midpoint frame of every shot; complete captions and whole photographs",
+    "owner_listening_approval": false
+  }
+}

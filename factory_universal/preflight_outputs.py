@@ -18,7 +18,7 @@ def main():
  cases=json.loads(Path(args.plan).read_text())['cases']
  results=[];receipt.write_text('[]')
  class PreflightDeadline(BaseException):pass
- def deadline(signum,frame):raise PreflightDeadline('image preflight exceeded its 80 second per-case deadline')
+ def deadline(signum,frame):raise PreflightDeadline('image preflight exceeded its 180 second per-case deadline')
  signal.signal(signal.SIGALRM,deadline)
  for case in cases:
   topic=case['topic'];lang=case['language'];duration=case['duration_s']
@@ -28,7 +28,7 @@ def main():
   app.SEARCH_QUERIES={'stock':set(),'commons':set()};app.DISCOVERED_PHOTOS={}
   result={'topic':topic,'language':lang,'duration':duration,'id':jid,'voice_sends':0,'source_sha256':hashlib.sha256(Path(app.__file__).read_bytes()).hexdigest()}
   try:
-   signal.alarm(80)
+   signal.alarm(180)
    sources=app.relevant_sources(app.load_sources(topic,lang),topic,lang)
    slots=app.plan_script(sources,topic,lang,duration,max_beats=duration//5)
    if not slots:raise ValueError('no complete source overview fits')

@@ -67,7 +67,7 @@ class VisualVerifier:
   if not positive:positive=['A photograph of '+subject]
   positive.extend((extra_positives or [])[:4])
   negative=['A photograph of an unrelated landscape or animal.','A labeled line diagram, graph, chart or schematic.','A hand drawn illustration or painting.']
-  negative.extend((extra_negatives or [])[:2])
+  negative.extend((extra_negatives or [])[:4])
   if actions:negative.append('Studio product photography of finished '+subject+' on a tabletop against a plain white background.')
   if 'shape' in actions:negative.append('A person attaching a cap or fitting to an already finished '+subject+'.')
   if 'glass' in subject.lower():negative.append('Metalworking, steel bars being heated and forged by a blacksmith.')

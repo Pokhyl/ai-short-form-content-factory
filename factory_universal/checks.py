@@ -180,6 +180,10 @@ def check():
  query=app.urllib.parse.parse_qs(app.urllib.parse.urlsplit(photo['url']).query)
  assert query['w']==['1600'] and not any(key in query for key in ['crop','fit','h'])
 
+ assert app.photo_origin({'provider':'commons','depiction':'File:Planet Valles.jpeg'})==app.photo_origin({'provider':'commons','depiction':'File:Planet Valles EDIT.jpg'})
+ assert app.context_dependent_sentence('The outcome often weighs several tons.')
+ process_slot={'text':'Paper is made in a factory.','source_driven':True,'process_intent':True,'entity_profile':{}}
+ assert app.photo_score({'provider':'pexels','id':'wrong','alt':'Hands working on paper patterns for dressmaking in a workshop','width':1000,'height':1000},process_slot,'paper manufacturing')<0
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

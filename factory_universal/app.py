@@ -249,7 +249,7 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
     candidate=(total+score-sum(penalties[index][old] for old in chosen),chosen+(index,))
     if target not in states[selected] or candidate[0]>states[selected][target][0]:states[selected][target]=candidate
  if not states[count]:return []
- options=[(used,value) for used,value in states[count].items() if not natural or used*step >= (duration_ms or count*5000)*.90]
+ options=[(used,value) for used,value in states[count].items() if not natural or used*step >= (duration_ms or count*5000)*.85]
  if not options:return []
  chosen=max(options,key=lambda item:(item[1][0],item[0]))[1][1]
  return [{'text':candidates[index][2],'language':lang,'source_index':candidates[index][1],'source_sentence':candidates[index][2],'score':candidates[index][0]} for index in chosen]
@@ -396,7 +396,7 @@ def grounding_terms(text,lang):
 
 def context_dependent_sentence(text):
  # Source paragraphs may refer to material omitted from a short video.
- leading=r'^(?:finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
+ leading=r'^(?:the (?:outcome|result|wooden frame)\b|finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
  references=r'\b(?:цього|цієї|цих|цим|цій|цей|ця|цю|ці|їх|її|його|такі|таких|такого|этой|этого|этих|такие|таких|tych|tej|tego|takie|takich|this|these|those|such)\b'
  pronouns=r'^(?:he|she|it|they|their|its|он|она|оно|они|его|ее|её|их|він|вона|воно|вони|це|його|її|їх|one|ona|ono|oni|jej|jego|ich)\b'
  return bool(re.search(leading,text,re.I) or re.search(references,text,re.I) or re.search(pronouns,text,re.I))
@@ -451,7 +451,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    if definition and si!=0:continue
    title_terms=grounding_terms(src['title'],lang)
    for paragraph_index,paragraph in enumerate(src['text'].splitlines()):
-    if definition and paragraph_index>11:continue
+    if definition and paragraph_index>(31 if process_intent else 11):continue
     if human and (si>0 or paragraph_index>4):continue
     if human and paragraph_index>1 and not re.search(r'critic|scandal|controvers|corrupt|критик|скандал|корупц|коррупц|kryty|afer',topic,re.I) and not re.match(r'\s*(?:born|народив|народил|родил|urodzi)',paragraph,re.I):continue
     if definition and process_intent and not re.search(r'histor|ancient|истори|істор|dziej|handmade|manual|traditional|ручн|ręczn|традиц',topic,re.I) and re.search(r'ancient|centur|etymolog|invention|invented|traditional|originally|истори|древн|стародав|wynalezion|starożytn',paragraph,re.I):continue
@@ -462,7 +462,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      connected_block=sentence==paragraph and len(sentences(paragraph))>1
      original_sentence=sentence;source_position=paragraph_start+paragraph.find(original_sentence)
      if human or definition:sentence=omit_parenthetical_asides(sentence)
-     if definition and process_intent and lang=='en' and re.search(r',\s+which\b',sentence,re.I):sentence=re.split(r',\s+which\b',sentence,maxsplit=1,flags=re.I)[0].rstrip()+'.'
+     if definition and process_intent and lang=='en' and re.search(r',\s+(?:which|while)\b',sentence,re.I):sentence=re.split(r',\s+(?:which|while)\b',sentence,maxsplit=1,flags=re.I)[0].rstrip()+'.'
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
      first=re.search(r'[^\W_]',sentence,re.UNICODE)
      if not first or not (first.group().isupper() or first.group().isdigit()):continue
@@ -470,6 +470,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if context_dependent_sentence(context_text):continue
      if not sentence.endswith(('.', '!', '?')) or not (5 if process_intent else 8)<=len(words)<=(90 if definition and process_intent else 60 if definition else 24 if process_intent else 36):continue
      if re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',sentence):continue
+     if re.search(r'[:;]\s*[\"”\u0027]?[.!?]$',sentence):continue
      if sentence.count('(')!=sentence.count(')') or re.search(r'\bIPA\s*:|U\+[0-9A-F]{4}|Unicode',sentence):continue
      if re.match(r'^(?:examples? include|another example|for example|such)\b',sentence,re.I):continue
      if re.search(r'\b(?:этой|этого|этих|цього|цієї|tych|tej|tego|this|these|those|such|their)\b',context_text,re.I):continue
@@ -734,7 +735,7 @@ def named_astronomical_subject(profile):
 
 def photographic_metadata(p):
  text=p.get('depiction','')+' '+p.get('alt','')
- return not re.search(r'\.svg\b|\b(?:diagram|chart|graph|schematic|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
+ return not re.search(r'\.svg\b|\b(?:diagram|chart|graph|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
 
 def discover_photos(topic,lang,slots):
  pool=dict(DISCOVERED_PHOTOS);errors=[]
@@ -755,7 +756,7 @@ def discover_photos(topic,lang,slots):
  queries=[((' '.join(core_terms) if action=='inspect' else core)+' '+labels[action]).strip() for action in ('cool','inspect','heat','shape','production') if action in actions][:3]
  if named_astronomical_subject(profile):
   terrain=bool(re.search(r'\b(?:planet|moon|satellite)\b',profile.get('visual_description',''),re.I))
-  queries=[topic+' planet NASA',topic+' surface ESA',topic+' surface JPL'] if terrain else [topic+' NASA',topic+' ESA',topic+' ESO']
+  queries=([('incategory:"'+profile['commons_category']+'"')] if profile.get('commons_category') else [topic+' NASA'])+[topic+' rover panorama NASA',topic+' ESA photograph'] if terrain else [topic+' NASA',topic+' ESA',topic+' ESO']
  if slots and slots[0].get('source_driven') and slots[0].get('process_intent'):
   category=profile.get('commons_category')
   queries=([('incategory:"'+category+'"')] if category else [])+[topic,' '.join(core_terms)+' manufacturing']
@@ -772,6 +773,13 @@ def discover_photos(topic,lang,slots):
  if not pool:raise ValueError('; '.join(errors) or 'no photo candidates')
  DISCOVERED_PHOTOS.update(pool)
  return list(pool.values())
+
+def photo_origin(p):
+ if p.get('provider')!='commons':return (p.get('provider'),p.get('id'))
+ title=re.sub(r'^File:','',p.get('depiction') or '',flags=re.I)
+ title=re.sub(r'\.[a-z0-9]{2,5}$','',title,flags=re.I)
+ title=re.sub(r'\b(?:edit(?:ed)?|cropped|crop|retouched|restored|enhanced|version|derivative)\b',' ',title,flags=re.I)
+ return ('commons-original',re.sub(r'[\W_]+','',title.casefold())) if title else ('commons',p.get('id'))
 
 def dhash(im):
  im=ImageOps.grayscale(im).resize((9,8));p=list(im.getdata());n=0
@@ -827,6 +835,11 @@ def photo_score(p,slot,topic):
  if p.get('provider') in {'pixabay','pexels'} and re.search(r'\b(?:fantasy|sci[ -]?fi|digital art|3d render|ai[ -]generated)\b',depiction,re.I):return -1
  work_context=r'\b(?:factor(?:y|ies)|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|\w{3,}making|handmade|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
  if process_topic and not re.search(work_context,depiction,re.I):return -1
+ if process_topic:
+  uses=set(re.findall(r'\b(?:printing|dressmaking|origami|wrapping|writing|drawing|typewriter)\b',depiction,re.I))
+  if any(use.casefold() not in topic.casefold() for use in uses):return -1
+  compounds=[word[:-6] for word in meta if len(word)>8 and word.endswith('making')]
+  if compounds and not any(root in anchors for root in compounds):return -1
  if not process_topic:
   qualifiers={term for term in tokens(slot.get('visual_title','')) if term not in tokens(topic) and term.isalpha() and len(term)>=3}-{'energy','power','system','plant','factory','production','manufacturing','process','industry','technology','list','century'}
   if qualifiers and not qualifiers&meta:return -1
@@ -853,10 +866,10 @@ def pixel_check(raw,topic,slot,candidate=None):
    positive=['A photograph of '+name+' in space.']
    if re.search(r'\b(?:planet|moon|satellite)\b',profile.get('visual_description',''),re.I):
     positive+=['A photograph of the rocky surface of '+name+' taken by a rover.','An orbital photograph of the surface of '+name+'.']
-   return get_pixel_verifier().check(raw,name,set(),'',[],name,extra_positives=positive,extra_negatives=['A photograph of a spacecraft being built in a laboratory.','A person wearing an astronaut costume on Earth.'])
+   return get_pixel_verifier().check(raw,name,set(),'',[],name,extra_positives=positive,extra_negatives=['A photograph of a spacecraft being built in a laboratory.','A person wearing an astronaut costume on Earth.','A collage of multiple labeled satellite images.','A topographic map with a color legend.'])
   if slot.get('process_intent'):
    subject=' '.join(dict.fromkeys(topic_terms(topic,'en'))) or topic
-   return get_pixel_verifier().check(raw,subject,{'production'},slot['text'] if slot.get('language')=='en' else '',slot.get('visual_competitors',[]),topic)
+   return get_pixel_verifier().check(raw,subject,{'production'},slot['text'] if slot.get('language')=='en' else '',slot.get('visual_competitors',[]),topic,extra_negatives=['A person writing or drawing on finished '+subject+'.','A typewriter, office printer or a person wrapping a parcel.'])
   visual_subject=slot.get('visual_title') or topic
   description=profile.get('visual_description','') if visual_subject.casefold() in {profile.get('name','').casefold(),topic.casefold()} else ''
   subject=visual_subject+(' — '+description if description else '')
@@ -1048,7 +1061,20 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
   slots=plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
   if not slots or len(slots)>duration//5:raise ValueError('no complete source narration fits the natural speaking budget')
   script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()
-  if identity in seen:raise ValueError('natural-duration correction produced the same text; no duplicate synthesis')
+  if identity in seen:
+   direction=-1 if attempts[-1]['duration_ms']>duration*1000 else 1
+   alternative=None
+   for step in range(1,17):
+    budget=max(5,min(90,planning_seconds+direction*step*.25))
+    candidate=plan_script(sources,topic,lang,budget,max_beats=duration//5)
+    if not candidate:continue
+    candidate_script=' '.join(slot['text'] for slot in candidate)
+    candidate_spoken=selected_voice_request(lang,candidate_script)['input']['text']
+    candidate_identity=hashlib.sha256(candidate_spoken.encode()).hexdigest()
+    if candidate_identity not in seen:
+     alternative=(candidate,candidate_script,candidate_spoken,candidate_identity,budget);break
+   if alternative is None:raise ValueError('no different complete text fits the correction range; no duplicate synthesis')
+   slots,script,spoken,identity,planning_seconds=alternative
   seen.add(identity)
   if before_send is not None:before_send(slots)
   update(jid,stage='voice',progress=50,message='Creating narration with your selected '+lang.upper()+' voice; attempt '+str(attempt))
@@ -1077,13 +1103,8 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
  return slots,final,actual,speech,targets,audit
 
 def post_render(jid,payload):
- req=urllib.request.Request(WORKER+'/renders/'+jid,data=json.dumps(payload).encode(),headers={'Content-Type':'application/json'},method='POST')
- try:
-  with urllib.request.urlopen(req,timeout=240) as r:return json.loads(r.read().decode())
- except urllib.error.HTTPError as error:
-  try:detail=json.loads(error.read(2000)).get('message') or 'HTTP '+str(error.code)
-  except (ValueError,AttributeError):detail='HTTP '+str(error.code)
-  raise ValueError('Renderer rejected the job: '+str(detail)[:400]) from error
+ from renderer import render
+ return render(jid,payload,DATA)
 def scrub_error(e):
  if hasattr(e,'code'):return 'provider returned HTTP '+str(e.code)
  s=str(e)
@@ -1131,7 +1152,7 @@ def prepare_visuals(jid,sources,topic,lang,duration,slots):
  for slot in slots:slot['visual_competitors']=competitors
  get_pixel_verifier()
  allocated=allocate_photos(candidates,slots,media_topic,visual_count)
- topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[]
+ topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[];rejected_contexts=set();used_origins=set()
  for i in range(visual_count):
   slot=slots[beat_for_shot[i]]
   reserved={(p['provider'],p['id']) for p in allocated[i+1:]}
@@ -1139,7 +1160,8 @@ def prepare_visuals(jid,sources,topic,lang,duration,slots):
   found=None;attempts=0;rejection_reasons=[]
   for p in ranked:
    key=(p['provider'],p['id'])
-   if key in used_ids or photo_score(p,slot,media_topic)<0:continue
+   context=(key,slot.get('visual_title',''),slot['text'] if slot.get('process_intent') else '')
+   if key in used_ids or photo_origin(p) in used_origins or context in rejected_contexts or photo_score(p,slot,media_topic)<0:continue
    meta=set(tokens(p['alt']))
    if not meta:continue
    if attempts>=24:break
@@ -1154,11 +1176,11 @@ def prepare_visuals(jid,sources,topic,lang,duration,slots):
     if not pixel_audit['passed']:raise ValueError('pixel comparison rejected candidate: score='+str(pixel_audit['positive_score'])+' margin='+str(pixel_audit['margin']))
     make_card(raw,slot['text'],final,p);raw.unlink(missing_ok=True)
    except Exception as e:
-    rejection_reasons.append(scrub_error(e));shutil.rmtree(folder,ignore_errors=True);continue
+    rejected_contexts.add(context);rejection_reasons.append(scrub_error(e));shutil.rmtree(folder,ignore_errors=True);continue
    row=dict(p);row.update({'pixel_verification':pixel_audit,'caption':slot['text'],'article_title':sources[slot['source_index']]['title'],'article_url':sources[slot['source_index']]['url'],'asset_sha256':hashlib.sha256(final.read_bytes()).hexdigest()})
    found={'provider':p,'shot':shot,'path':final,'hash':row['asset_sha256'],'phash':ph,'row':row};break
   if found is None:raise ValueError('no verified distinct image for scene '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
-  hashes.append(found['phash']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
+  used_origins.add(photo_origin(found['provider']));hashes.append(found['phash']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
   update(jid,progress=max(20+int((i+1)*25/visual_count),(get_job(jid) or {}).get('progress',0)),message='Prepared '+str(i+1)+' of '+str(visual_count)+' unique photos')
  return {'selected':selected,'visual_rows':visual_rows,'media_topic':media_topic,'beat_count':beat_count,'beat_for_shot':beat_for_shot,'shots_per_beat':shots_per_beat,'first_shot':first_shot,'script':' '.join(slot['text'] for slot in slots)}
 

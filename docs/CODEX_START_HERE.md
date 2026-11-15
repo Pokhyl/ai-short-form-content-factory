@@ -10,7 +10,7 @@ https://studio.hodor.com.pl/ is password-free in the checkout and deployed app. 
 
 ## Google connection restored
 
-The owner reconnected the retained Google account. Read-only metadata execution 14691 returned READY after earlier OAUTH_GRANT_REJECTED executions 14689–14690. Do not ask the owner to reconnect again while current health checks pass. Metadata readiness alone does not prove successful synthesis; new normal API acceptance remains required.
+The owner reconnected the retained Google account. Read-only metadata execution 14691 returned READY after earlier OAUTH_GRANT_REJECTED executions 14689–14690. Do not ask the owner to reconnect again while current health checks pass. Selected-voice synthesis now succeeds: test db43f2c5-9c6f-480a-a97f-823b7da002f3 received unchanged Algenib recordings of 13008 and 14016 ms, then failed at the legacy shared renderer duration gate. Preserve that failed ID; do not replay it. The new project-owned FFmpeg renderer removes the unrelated legacy gate while preserving exact frames and unchanged voice input. Full new API acceptance remains required.
 
 The public app checks the native connection before admitting jobs. Failed test f632a0cf-b09b-4bd7-a553-d7c9e695900a remains immutable; any new test must record the restored connection and diagnosed image fixes as its reason.
 
@@ -41,7 +41,7 @@ The first image-only matrix was not delivery acceptance: manual review rejected 
 
 ## Continuity
 
-Server checkout: /opt/factory-universal. App: factory-universal. Branch: codex/factory-universal-20261112. Before these pending changes, HEAD was 7529a6e5cafe771516231ddf6d81bf2d2a8ed774.
+Server checkout: /opt/factory-universal. App: factory-universal. Branch: codex/factory-universal-20261112. Checkpoint f18fe794f9fc8ab0aa8d48c4ea1bdf1c9b283303 is published; subsequent renderer and frame-review corrections remain pending publication.
 
 Mac local execution was unavailable; SentinelX host_58bbeb7da5059807 is the working connection. Use one short Sentinel call at a time and finite background jobs. No subagents.
 
