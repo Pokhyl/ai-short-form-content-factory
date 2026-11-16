@@ -184,6 +184,27 @@ def check():
  assert app.context_dependent_sentence('The outcome often weighs several tons.')
  process_slot={'text':'Paper is made in a factory.','source_driven':True,'process_intent':True,'entity_profile':{}}
  assert app.photo_score({'provider':'pexels','id':'wrong','alt':'Hands working on paper patterns for dressmaking in a workshop','width':1000,'height':1000},process_slot,'paper manufacturing')<0
+ place={'kind':'entity','name':'Example City','native_name':'Example City','visual_description':'capital and largest city of a country'}
+ assert app.named_place_subject(place)
+ assert not app.place_identity({'provider':'pexels','alt':'Example City'},place)
+ assert app.place_identity({'provider':'commons','categories':['Category:Buildings in Example City']},place)
+
+ # Retention accounts for ASR records and never selects unrelated shared UUIDs.
+ with TemporaryDirectory() as temp:
+  base=Path(temp);owned=str(app.uuid.uuid4());unrelated=str(app.uuid.uuid4())
+  with patch.multiple(app,DATA=base,ROOT=base/'factory-universal',DB=base/'factory-universal/jobs.sqlite3',RENDER=base/'renders',VISUAL=base/'visuals',VOICE=base/'voiceovers',RENDER_MAX_BYTES=100):
+   app.ROOT.mkdir();app.init_db();ts=app.now()
+   with app.connect() as db:db.execute("INSERT INTO jobs(id,created_at,updated_at,topic,language,duration_s,status,stage,progress,message) VALUES(?,?,?,?,?,?,'ready','review',100,'fixture')",(owned,ts,ts,'fixture','en',15))
+   for jid in [owned,unrelated]:
+    directory=base/'alignments'/jid;directory.mkdir(parents=True);(directory/'whisper.json').write_text('x'*200)
+   app.cleanup()
+   assert not (base/'alignments'/owned).exists()
+   assert (base/'alignments'/unrelated/'whisper.json').exists()
+   assert app.get_job(owned)['status']=='expired'
+
+ assert not app.photographic_metadata({'depiction':'File:Example City location map.png','alt':'City location'})
+ assert not app.photographic_metadata({'depiction':'File:City.png','alt':'Wikivoyage locator maps','creator':''})
+ assert not app.photographic_metadata({'depiction':'File:City.png','alt':'City','creator':'original.svg derivative work'})
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

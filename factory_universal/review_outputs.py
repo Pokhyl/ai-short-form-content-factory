@@ -11,7 +11,7 @@ parser.add_argument('--receipt',default=str(root/'acceptance-20261114-results.js
 args=parser.parse_args()
 plan=json.loads(Path(args.plan).read_text())
 conn=sqlite3.connect(root/'jobs.sqlite3');conn.row_factory=sqlite3.Row
-out=root/'reviews';out.mkdir(exist_ok=True)
+out=None
 results=[]
 for case in plan.get('jobs',plan.get('cases',[])):
  if not case.get('id'):
@@ -21,6 +21,7 @@ for case in plan.get('jobs',plan.get('cases',[])):
  result=case|{'status':row['status'],'stage':row['stage'],'error':row['error']}
  if row['status']=='ready':
   manifest=json.loads(row['manifest']);video=Path(manifest['render']['storage_path']);segments=manifest['render']['segments']
+  out=video.parent/'review';out.mkdir(exist_ok=True)
   probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=nb_frames,r_frame_rate,duration','-of','json',str(video)],text=True))['streams'][0]
   result.update({'script':manifest['script'],'audit':manifest['audit'],'render':manifest['render'],'frame_count':int(probe['nb_frames']),'exact_frames':int(probe['nb_frames'])==case['duration_s']*30,'exact_duration':abs(float(probe['duration'])-case['duration_s'])<.001})
   result['llm_calls']=manifest['llm_calls'];result['speech_voice']=manifest['narration']['voice']

@@ -1,48 +1,48 @@
-# Universal factory — active checkpoint, 2026-11-15
+# Universal factory — active checkpoint
 
-Read factory_universal/README.md and the root AGENTS.md.
+Read root AGENTS.md and factory_universal/README.md. The active app is factory_universal, deployed from /opt/factory-universal at https://studio.hodor.com.pl/ .
 
-project_ready=false. Unit checks, image-only preflights and historical eSpeak videos do not establish completed universal MP4 acceptance.
+project_ready=false until the complete six-case MP4 matrix and actual output frames pass. Never infer completion from unit checks, preflights or a ready status alone.
 
-## Studio access is fixed
+## Access and providers
 
-https://studio.hodor.com.pl/ is password-free in the checkout and deployed app. Real unauthenticated checks returned HTTP 200 for page/API, HTTP 206 for an MP4 range, and HTTP 400 for invalid form data without creating a job. Keep Studio password-free.
+Studio is password-free. Actual unauthenticated page/API requests return 200 and MP4 ranges return 206. Invalid requests return 400 without creating jobs.
 
-## Google connection restored
+The owner restored the retained Google connection. Actual synthesis succeeds with the four fixed voices. Do not ask for another login while health passes; do not request new API keys. No Gemini, paid model API, audible eSpeak, voice substitution or speed/pitch change.
 
-The owner reconnected the retained Google account. Read-only metadata execution 14691 returned READY after earlier OAUTH_GRANT_REJECTED executions 14689–14690. Do not ask the owner to reconnect again while current health checks pass. Selected-voice synthesis now succeeds: test db43f2c5-9c6f-480a-a97f-823b7da002f3 received unchanged Algenib recordings of 13008 and 14016 ms, then failed at the legacy shared renderer duration gate. Preserve that failed ID; do not replay it. The new project-owned FFmpeg renderer removes the unrelated legacy gate while preserving exact frames and unchanged voice input. Full new API acceptance remains required.
+## Verified normal API outputs
 
-The public app checks the native connection before admitting jobs. Failed test f632a0cf-b09b-4bd7-a553-d7c9e695900a remains immutable; any new test must record the restored connection and diagnosed image fixes as its reason.
+- Photosynthesis EN15: 8cc37137-3cde-412b-9b77-f8d034c71eb5, 450 frames; actual frames reviewed.
+- Mars RU45: 5e57a397-1ee2-41ff-889a-4cab8699d515, 1350 frames; actual frames reviewed. ESA Phobos-over-Mars photographs were checked against their source descriptions: these are real single shots, not staged astronaut stock.
+- Bees UK60: 40afaf97-73c4-4ec1-ab41-d13ecbe7e870, ready; actual-frame review remains required.
+- Named person UK30: c1ed6a0a-4a8d-433f-adfb-3e5ae30bf3eb, 900 frames; actual frames reviewed. Photographs illustrate the person and do not claim the exact narrated historical date.
 
-## Implemented and checked
+Listening approval remains pending; assistant checks are never owner/HUMAN approval.
 
-- Four selected Google voices, unchanged natural audio, no audible eSpeak or paid model API.
-- Primary-article identity binding, typed native definitions, connected source blocks and original spans.
-- Correct abbreviation/exponent handling; no spoken navigation marks.
-- Generic process discovery and source-scoped visual subjects.
-- Source-backed human identity plus a separate human-content screen. Real document and billboard controls were rejected.
-- Whole-photo aspect ratios, bounded searches, distinct images, complete captions and provenance.
-- All image verification precedes synthesis. Tests verify missing images cause zero sends.
-- Rejected meanings persist as data. The owner-rejected Ходор → Hadar-star interpretation (Q13175) stays rejected pending clarification.
-- Public UI/API, provider admission gate, JavaScript syntax and focused runtime checks passed.
-- Failed drafting/translation experiments and about 1.4 GiB of unused weights were removed. Only the pinned visual model remains.
+## Current acceptance work
 
-## Acceptance still required
+The authoritative in-progress plan is /data/factory-universal/qa/factory-acceptance-20261115-v6.json. Its batch follows only existing IDs and never replays failed synthesis. PL30 replaces an image-review failure (a map among photographs). Manufacturing EN30 checks improved photographic production prompts while keeping .24 positive/.015 margin gates.
 
-Normal API test f632a0cf-b09b-4bd7-a553-d7c9e695900a (Photosynthesis EN15) completed images and stopped at gateway HTTP 502. Preserve its failed ID and stopped attempt. Do not resend it or refund its conservative quota claim.
+Retain all prior plans/failed IDs. The original failed Google test f632a0cf-b09b-4bd7-a553-d7c9e695900a, legacy-render failure db43f2c5-9c6f-480a-a97f-823b7da002f3 and later diagnosed cases remain historical evidence. Completed identical audio may be reused; uncertain sends must not repeat.
 
-The replacement matrix covers Photosynthesis EN15, Warszawa PL30, Марс RU45, Бджоли UK60, paper manufacturing EN30 and Зеленский UK30. Full MP4/frame/audio/render review remains pending acceptance runs after reconnection. Image-only tests are separate operator records, not completed videos.
+## Implementation
 
-Temporary sanitized records are under /data/factory-universal/qa/. Publish meaningful changes and evidence under acceptance/factory-universal/, then verify checkout and deployment against the delivery branch.
+Primary-source identity binding and complete source spans drive native narration. Human identity uses Commons depicts/category metadata and a separate content gate. Named places require Commons category provenance; named details get distinct bounded queries. Named astronomical bodies require institutional provenance. Reject maps, diagrams, woodcuts, staged space imagery, downstream manufacturing uses and derivative duplicates.
 
-## Image review correction
+All photographs are verified before narration. Use 6/12/18/24 distinct images, at least two per beat, whole aspect ratios, complete captions and provenance.
 
-The first image-only matrix was not delivery acceptance: manual review rejected Photosynthesis charts/drawings, staged Mars stock scenes and one bee landscape without a visible bee. Paper manufacturing also failed image selection. The next bounded image-only matrix checks photographic metadata, astronomical provenance, insect framing and generic manufacturing subject extraction before any new synthesis. Preserve both histories.
+The project-owned FFmpeg renderer preserves input narration and writes exact requested frames. The shared media-worker remains unchanged and supplies ASR alignment. A known shared tokenizer error may recover from its already-produced Whisper JSON using project lexical normalization with the same 95% global and 85% per-scene coverage gates.
+
+Cyrillic biological overviews prefer complete native source facts over Latin taxonomy. Natural duration corrections search different complete texts before any send. Three completed text attempts maximum; no uncertain retries.
+
+## Storage and verification
+
+One worker, a 900-second process-group deadline, a 2-GiB output cap including ASR and review artifacts, a 512-MiB audio/JSON cache cap, 30-day retention and a 2-GiB free-space reserve. Expired manifests are compacted; job/error IDs remain. Cleanup selects only exact factory SQLite-owned UUIDs. Never prune unrelated Docker/shared media or alter unrelated services.
+
+Run checks.py, alignment_checks.py and renderer_checks.py inside the runtime. preflight_outputs.py creates bounded image-only tests without narration. acceptance_outputs.py submits each recorded case once; review_outputs.py collects actual frames and audits without creating jobs.
 
 ## Continuity
 
-Server checkout: /opt/factory-universal. App: factory-universal. Branch: codex/factory-universal-20261112. Checkpoint f18fe794f9fc8ab0aa8d48c4ea1bdf1c9b283303 is published; subsequent renderer and frame-review corrections remain pending publication.
+Delivery branch: codex/factory-universal-20261112. Published checkpoint before these pending refinements: 5fdf30bfe4a10af87b24a46bead9fe16740c0d28. Publish meaningful code and sanitized acceptance evidence, verify checkout and deployed source, and leave no false ready claim.
 
-Mac local execution was unavailable; SentinelX host_58bbeb7da5059807 is the working connection. Use one short Sentinel call at a time and finite background jobs. No subagents.
-
-Do not restore Gemini or failed text-model experiments, alter unrelated files/services/workflows, expose secrets, rewrite failed jobs or remove storage/quota bounds.
+Use SentinelX host_58bbeb7da5059807, one short call at a time, and finite background work. Mac local execution was unavailable. No subagents. Keep the rejected Ходор to Hadar-star interpretation Q13175 in source_decisions; no new intended meaning has been supplied.

@@ -6,9 +6,9 @@ Studio: https://studio.hodor.com.pl/ . The site and review API require no passwo
 
 ## Current delivery state
 
-project_ready=false. The owner restored the retained Google connection; read-only metadata execution 14691 returned READY. The app checks that connection before admitting a job. Full MP4 acceptance is still required; metadata readiness alone does not establish narration success.
+project_ready=false pending the complete six-case normal API matrix and actual-frame review. EN15, RU45, UK60 and named-person UK30 MP4s have been produced with the fixed selected voices. Revised PL30 and manufacturing EN30 checks are in progress. Actual unauthenticated Studio/video requests pass.
 
-First replacement test f632a0cf-b09b-4bd7-a553-d7c9e695900a completed images and stopped at the voice gateway. Its stopped synthesis is not resent. Google synthesis now succeeds with the selected voice. The first post-reconnect MP4 test reached render and exposed incompatible legacy renderer duration thresholds; its failed ID db43f2c5-9c6f-480a-a97f-823b7da002f3 is preserved. Full replacement MP4 acceptance remains pending the project-owned renderer and image-review corrections. Image-only checks do not establish MP4 or listening acceptance.
+The owner restored Google authorization. No new keys or voice configuration are needed. Historical failed IDs remain immutable. Technical checks and assistant frame review never imply owner listening approval.
 
 ## Pipeline
 
@@ -17,7 +17,7 @@ First replacement test f632a0cf-b09b-4bd7-a553-d7c9e695900a completed images and
 - Select complete source sentences and connected paragraphs, preserving original spans. Connected blocks expand into readable aligned captions. Protect abbreviations and real exponents; omit reference/navigation marks.
 - Fit natural narration using completed selected-voice measurements. Prefer fewer complete facts and more images per fact. Exact MP4 frame counts remain mandatory; natural speech may leave a short final visual hold.
 - Search at most seven distinct stock queries and three Commons queries across the whole job, including duration corrections. Commons searches return at most 50 candidates each. Cache source/provider results for 24 hours.
-- Preserve complete photographs at their original aspect ratio. Screen pixels using the pinned local CLIP model. Human subjects additionally require matching Commons depicts metadata or the exact Wikidata-linked category and a separate photographic human-content screen.
+- Preserve complete photographs at their original aspect ratio. Screen pixels using the pinned local CLIP model. Human subjects additionally require matching Commons depicts metadata or the exact Wikidata-linked category and a separate photographic human-content screen. Named places require Commons category identity, with bounded distinct searches for proper-name details. Named astronomical bodies require institutional provenance. Maps, woodcuts and downstream uses of manufactured goods are rejected.
 - Verify all 6/12/18/24 distinct images before requesting narration. Each narration beat has at least two images.
 - Align the unchanged selected-voice MP3; render 1080×1920 H.264/AAC at 30 fps using the project-owned FFmpeg renderer; fully decode before ready.
 - Keep source/media provenance, licenses, image hashes, pixel screening, voice receipts, alignment and render checks in the manifest.
@@ -35,7 +35,7 @@ Experimental drafting/translation models failed quality checks and were removed.
 
 ## Bounds
 
-One isolated worker, with a 900-second process-group deadline. Cleanup selects exact SQLite-owned UUID directories: 30-day output retention, 2-GiB output cap, 512-MiB JSON cache cap, 2-GiB free-disk reserve. Temporary image/audio files are removed after completion/failure. Image-only acceptance artifacts share the output cap.
+One isolated worker, with a 900-second process-group deadline. Cleanup selects exact SQLite-owned UUID directories: 30-day output retention, 2-GiB output cap including ASR/review records, 512-MiB JSON/audio cache cap, 2-GiB free-disk reserve. Temporary image/audio files are removed after completion/failure. Image-only acceptance artifacts share the output cap. Expired manifests are compacted while job/error identities remain.
 
 Commons requires Public domain, CC0 or CC BY 2.0/2.5/3.0/4.0 metadata. Cards include required author/source/license/adaptation notices.
 
@@ -49,6 +49,7 @@ Reverify the visual model with factory_universal/setup_models.py. Check active j
 
     docker compose -f factory_universal/compose.yaml build app
     docker compose -f factory_universal/compose.yaml run --rm --no-deps -T app python3 - < factory_universal/checks.py
+    docker compose -f factory_universal/compose.yaml run --rm --no-deps -T app python3 - < factory_universal/alignment_checks.py
     docker compose -f factory_universal/compose.yaml run --rm --no-deps -T app python3 - < factory_universal/renderer_checks.py
     docker compose -f factory_universal/compose.yaml up -d app
 

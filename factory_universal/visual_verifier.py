@@ -60,15 +60,15 @@ class VisualVerifier:
    'shape':['Industrial machinery forming and molding molten {subject}.','A worker shaping {subject} during its manufacturing process.'],
    'cool':['An annealing oven cooling {subject} after manufacturing.','Technical illustration of an annealing furnace for {subject}.'],
    'inspect':['A worker inspecting {subject} quality during manufacturing.','A photograph of a worker inspecting the quality of {subject}.','Quality control equipment inspecting {subject}.'],
-   'production':['Factory production machinery manufacturing {subject}.','A person making {subject} by hand.']}
+   'production':['A photograph of industrial {subject} production machinery.','An archival photograph of {subject} manufacturing inside a factory.','A photograph of {subject} being made by hand.']}
   for action in sorted(actions):
    for template in templates.get(action,[]):positive.append(template.format(subject=subject))
   if caption:positive.append('An image illustrating: '+caption)
   if not positive:positive=['A photograph of '+subject]
   positive.extend((extra_positives or [])[:4])
-  negative=['A photograph of an unrelated landscape or animal.','A labeled line diagram, graph, chart or schematic.','A hand drawn illustration or painting.']
+  negative=['A photograph of an unrelated landscape or animal.','A labeled line diagram, graph, chart or schematic.','A hand drawn illustration or painting.','A black and white woodcut engraving or historical line drawing.','A geographic map or a city locator map.','A photograph of a printed document, letter, certificate or text page.']
   negative.extend((extra_negatives or [])[:4])
-  if actions:negative.append('Studio product photography of finished '+subject+' on a tabletop against a plain white background.')
+  if actions:negative.append('A product photograph of finished '+subject+' without people or machinery.')
   if 'shape' in actions:negative.append('A person attaching a cap or fitting to an already finished '+subject+'.')
   if 'glass' in subject.lower():negative.append('Metalworking, steel bars being heated and forged by a blacksmith.')
   base_count=len(negative);extra=(competitors or [])[:2];negative.extend(extra)
