@@ -205,6 +205,80 @@ def check():
  assert not app.photographic_metadata({'depiction':'File:Example City location map.png','alt':'City location'})
  assert not app.photographic_metadata({'depiction':'File:City.png','alt':'Wikivoyage locator maps','creator':''})
  assert not app.photographic_metadata({'depiction':'File:City.png','alt':'City','creator':'original.svg derivative work'})
+
+ # A person search must use licensed result pools within the same three-query bound.
+ person_queries=[]
+ def person_search(query,limit=20):
+  person_queries.append((query,limit))
+  return [{'provider':'commons','id':str(len(person_queries))}]
+ with patch.object(app,'SEARCH_QUERIES',{'stock':set(),'commons':set()}),patch.object(app,'DISCOVERED_PHOTOS',{}),patch.object(app,'commons_search',person_search),patch.object(app,'photo_search',side_effect=AssertionError('unverified stock identity')):
+  app.discover_photos('Example Person','en',[{'text':'Example Person is an engineer.','source_driven':True,'entity_profile':{'kind':'human','id':'Q123','name':'Example Person','commons_category':'Example Person'}}])
+ assert len(person_queries)==3 and all(limit==50 for _,limit in person_queries)
+ assert person_queries[0][0]=='haswbstatement:P180=Q123'
+ assert 'incategory:"CC-BY-2.0"' in person_queries[1][0] and 'incategory:"CC-BY-4.0"' in person_queries[2][0]
+ assert app.context_dependent_sentence('Згодом переїхав до іншого міста.')
+
+
+ # Personal category ancestry can establish identity; family categories cannot.
+ parent_fixture={'Category:Example Person in 2024':['Category:Example Person by year'],'Category:Example Person by year':['Category:Example Person'],'Category:Family of Example Person':['Category:Example Person']}
+ def category_http(url,*args,**kwargs):
+  titles=app.urllib.parse.parse_qs(app.urllib.parse.urlsplit(url).query)['titles'][0].split('|')
+  return {'query':{'pages':{str(i):{'title':title,'categories':[{'title':parent} for parent in parent_fixture.get(title,[])]} for i,title in enumerate(titles)}}}
+ people=[{'categories':['Category:Example Person in 2024']},{'categories':['Category:Family of Example Person']},{'categories':['Category:Other Person in 2024']}]
+ with patch.object(app,'http_json',category_http),patch.object(app,'cache_fetch',lambda key,fetch:fetch()):
+  verified=app.verified_human_categories(people,{'name':'Example Person','commons_category':'Example Person'})
+ assert verified=={'Category:Example Person in 2024'}
+
+
+ # Renamed portrait crops retain the same specific Commons description.
+ original={'provider':'commons','id':'1','depiction':'File:Official portrait.jpg','alt':'File:Official portrait.jpg Official photographic portrait of the president standing in the office beside a flag, photographed in January.','identity_verification':{'entity_id':'Q123'}}
+ derivative={**original,'id':'2','depiction':'File:Unrelated filename (4x5).png'}
+ derivative['alt']=derivative['depiction']+' '+original['alt'].removeprefix(original['depiction']).strip()
+ assert app.photo_origins(original)&app.photo_origins(derivative)
+ distinct={**derivative,'alt':derivative['depiction']+' A photograph of the president giving a public speech at a separate official ceremony on the following day.'}
+ assert not app.photo_origins(original)&app.photo_origins(distinct)
+
+
+ # A verified portrait cannot stand in for the linked object of a later fact.
+ from storyboard import target_score,shot_slots,build,SceneUnavailable
+ target={'id':'Q987','name':'Example Rockets','native_name':'Ракети Приклад','description':'aerospace manufacturer','commons_category':'Example Rockets'}
+ scene={'text':'The founder established Example Rockets.','visual_target':target}
+ portrait={'provider':'commons','id':'p','depiction':'File:Example Person portrait.jpg','alt':'Example Person portrait','identity_verification':{'entity_id':'Q123'}}
+ rocket={'provider':'commons','id':'r','depiction':'File:Example Rockets launch.jpg','alt':'Example Rockets rocket launching','width':1000,'height':1000}
+ assert target_score(portrait,scene,app)<0 and target_score(rocket,scene,app)>0
+ assert app.photo_score(portrait,{**scene,'entity_profile':{'kind':'human','id':'Q123'}},'Example Person')<0
+ rotated=shot_slots([{'text':'Two linked objects','visual_targets':[target,{**target,'id':'Q988'}]}],[0,0,0])
+ assert [row['visual_target']['id'] for row in rotated]==['Q987','Q988','Q987']
+ assert len(app.sentences('In 2004 he joined Example, Inc. as an early investor. A new sentence follows.'))==2
+
+
+ # Reused anchor labels in other paragraphs cannot change a scene's subject.
+ import storyboard
+ parser=storyboard.ArticleLinks()
+ parser.feed('<p>A <a href="/wiki/River_One">river</a> feeds the lake.</p><p>The <a href="/wiki/Unrelated_Fiction">river</a> is a fictional character.</p>')
+ first='A river feeds the lake.'
+ local_sources=[{'text':first+'\nThe river is a fictional character.','url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'concept','id':'Q123'}}]
+ local_slots=[{'text':'An introduction.','source_index':0,'source_sentence':'An introduction.'},{'text':first,'source_index':0,'source_sentence':first}]
+ entities={'River One':{'id':'Q901','name':'River One','kind':'entity','description':'river','native_name':'River One'},'Unrelated Fiction':{'id':'Q902','name':'Unrelated Fiction','kind':'entity','description':'fictional character','native_name':'Unrelated Fiction'}}
+ with patch.object(storyboard,'source_links',return_value=parser.links),patch.object(storyboard,'resolve_links',return_value=entities):
+  storyboard.build(local_slots,local_sources,'en',app)
+ assert [x['id'] for x in local_slots[1]['visual_targets']]==['Q901']
+
+
+ # Context beats a broad shared keyword: treatment is not a nuclear test.
+ medical={'id':'Q900','name':'radioactivity','description':'physical phenomenon'}
+ medical['intent']=storyboard.scene_intent('Research on cancer treatment using radioactivity.',medical)
+ atomic={'provider':'commons','depiction':'File:Radioactivity nuclear test.jpg','alt':'radioactivity from an atomic bomb explosion'}
+ therapy={'provider':'commons','depiction':'File:Radioactivity cancer therapy.jpg','alt':'radioactivity cancer therapy in a hospital'}
+ assert storyboard.target_score(atomic,{'visual_target':medical},app)<0
+ assert storyboard.target_score(therapy,{'visual_target':medical},app)>0
+ organization={**target,'description':'aerospace manufacturer'}
+ organization['intent']=storyboard.scene_intent('The founder established Example Rockets.',organization)
+ conference={**rocket,'depiction':'File:Example Rockets press conference.jpg','alt':'Example Rockets press conference'}
+ assert storyboard.target_score(conference,{'visual_target':organization},app)<0
+ weighted=app.storyboard_beats(12,[{'text':'An introduction.','visual_role':'establishing'},{'text':'A detailed process description. '*5},{'text':'A shorter fact.'}])
+ assert weighted.count(0)==2 and weighted.count(1)>weighted.count(2)>=2
+
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

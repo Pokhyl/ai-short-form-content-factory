@@ -1,14 +1,18 @@
 # Universal Video Factory
 
+Owner rejection: e4371771-bf21-4585-b195-fe7c77d23650 is a scene-irrelevant portrait slideshow and must not be accepted. General scene-to-media grounding is required; do not fix one video with handpicked assets.
+
+Owner regression, 2026-11-16: Илон Маск / UK60 failed image selection at scene 24 (ae9b4750-4df5-4e1a-9ea0-7083625de950), with zero narration sends. Earlier six-case acceptance remains historical; general readiness is withdrawn until this regression and broader person selection are verified.
+
 Native-language topic → source-grounded vertical MP4.
 
 Studio: https://studio.hodor.com.pl/ . The site and review API require no password.
 
 ## Current delivery state
 
-project_ready=true for the implemented automated MP4 workflow. Six normal API outputs passed exact frames/duration, full decoding, unchanged selected-voice input, image/provenance gates and assistant inspection of every shot: EN15, PL30, RU45, UK60, manufacturing EN30 and named-person UK30.
+project_ready=false for the implemented automated MP4 workflow. Six normal API outputs passed exact frames/duration, full decoding, unchanged selected-voice input, image/provenance gates and assistant inspection of every shot: EN15, PL30, RU45, UK60, manufacturing EN30 and named-person UK30.
 
-Evidence: acceptance/factory-universal/2026-11-16/acceptance.json . Studio is password-free; unauthenticated page/video-range checks pass. The deployed source matches the checkout. Owner listening approval is separate and remains pending.
+Evidence: acceptance/factory-universal/2026-11-16/acceptance.json . Studio is password-free; unauthenticated page/video-range checks pass. The owner rejected the portrait-only replacement e4371771-bf21-4585-b195-fe7c77d23650. General source-linked storyboard work is under verification and is not deployed; general readiness remains withdrawn. Owner listening approval is separate and remains pending.
 
 Inputs require an identifiable source and enough suitable licensed photographs. Ambiguous or unsupported inputs stop instead of inventing facts or inserting unrelated media.
 
@@ -18,7 +22,7 @@ Inputs require an identifiable source and enough suitable licensed photographs. 
 - Resolve the primary native Wikipedia article before binding its Wikidata identity. Structured label/description evidence is typed separately from article quotes.
 - Select complete source sentences and connected paragraphs, preserving original spans. Connected blocks expand into readable aligned captions. Protect abbreviations and real exponents; omit reference/navigation marks.
 - Fit natural narration using completed selected-voice measurements. Prefer fewer complete facts and more images per fact. Exact MP4 frame counts remain mandatory; natural speech may leave a short final visual hold.
-- Search at most seven distinct stock queries and three Commons queries across the whole job, including duration corrections. Commons searches return at most 50 candidates each. Cache source/provider results for 24 hours.
+- Search at most seven distinct stock queries and three Commons queries for broad subjects, or 24 bounded Commons queries for source-linked storyboards, across the whole job including planning and duration corrections. Commons searches return at most 50 candidates each. Cache source/provider results for 24 hours.
 - Preserve complete photographs at their original aspect ratio. Screen pixels using the pinned local CLIP model. Human subjects additionally require matching Commons depicts metadata or the exact Wikidata-linked category and a separate photographic human-content screen. Named places require Commons category identity, with bounded distinct searches for proper-name details. Named astronomical bodies require institutional provenance. Maps, woodcuts and downstream uses of manufactured goods are rejected.
 - Verify all 6/12/18/24 distinct images before requesting narration. Each narration beat has at least two images.
 - Align the unchanged selected-voice MP3; render 1080×1920 H.264/AAC at 30 fps using the project-owned FFmpeg renderer; fully decode before ready.

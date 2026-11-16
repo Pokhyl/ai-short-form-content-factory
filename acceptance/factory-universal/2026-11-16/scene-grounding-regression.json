@@ -1,0 +1,42 @@
+{
+  "project_ready": false,
+  "status": "source_linked_storyboard_under_verification",
+  "owner_requirement": "Universal scene-to-media planning; no named-person asset lists or one-video patches",
+  "rejected_job": "e4371771-bf21-4585-b195-fe7c77d23650",
+  "rejection": "Random portraits do not illustrate company, technology and biographical scenes",
+  "initial_image_only_cases": [
+    {
+      "topic": "Илон Маск",
+      "language": "uk",
+      "duration_s": 60,
+      "id": "105b74c2-c4b4-4c7b-9bed-43290f37d333",
+      "status": "failed",
+      "reason": "Six local source alternatives were insufficient"
+    },
+    {
+      "topic": "Marie Curie",
+      "language": "pl",
+      "duration_s": 30,
+      "id": "e2cabfac-7b15-470e-95e4-37531a4103cf",
+      "status": "failed",
+      "reason": "Six local source alternatives were insufficient"
+    },
+    {
+      "topic": "How paper is made",
+      "language": "en",
+      "duration_s": 30,
+      "id": "a7a135b7-94ba-4e2a-8d04-4ec828b1bc24",
+      "status": "preflight_passed",
+      "images": 12
+    }
+  ],
+  "new_narration_sends": 0,
+  "changes": [
+    "Exact source-paragraph linked entities become per-scene subjects",
+    "Scene targets take precedence over person identity in both metadata and pixel gates",
+    "Each shot records the linked subject and source span",
+    "Unavailable subjects replace associated facts before narration",
+    "Complete corporate-name sentences; prefer fewer complete facts and more images per fact"
+  ],
+  "owner_listening_approval": false
+}

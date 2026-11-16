@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends espeak-ng ffmpe
 RUN pip install --no-cache-dir Pillow==11.3.0 onnxruntime==1.23.2 tokenizers==0.22.1 numpy==2.3.4 psycopg[binary]==3.2.10
 WORKDIR /app
 COPY app.py /app/app.py
+COPY storyboard.py /app/storyboard.py
 COPY renderer.py /app/renderer.py
 COPY alignment_core.py /app/alignment_core.py
 COPY index.html /app/index.html

@@ -1,0 +1,99 @@
+{
+  "project_ready": false,
+  "status": "owner_rejected_scene_irrelevant_portrait_slideshow",
+  "owner_failed_job": "ae9b4750-4df5-4e1a-9ea0-7083625de950",
+  "topic": "Илон Маск",
+  "language": "uk",
+  "duration_s": 60,
+  "original_status": "failed",
+  "original_error": "no verified distinct image for scene 24 after 2 candidates; pixel comparison rejected candidate: score=0.23155 margin=0.026721; pixel comparison rejected candidate: score=0.223663 margin=0.02457",
+  "original_voice_attempts": 0,
+  "historical_six_case_acceptance": "acceptance.json",
+  "interpretation": "Prior six passing examples did not establish reliable coverage of other inputs",
+  "owner_listening_approval": false,
+  "fixes": [
+    "Search Commons structured depicts QID before result limit",
+    "Restore CC BY 2.0 person-photo query",
+    "Paginate categories and verify personal ancestry to Wikidata-linked category",
+    "Reject caricatures/graphs and web UI screenshots",
+    "Shorten native description to one complete sentence and admit self-contained career facts"
+  ],
+  "image_only": {
+    "id": "b9ea26c1-066e-40a0-9f96-ac9ff9d1df7a",
+    "status": "preflight_passed",
+    "images": 24,
+    "searches": {
+      "stock": 0,
+      "commons": 3
+    },
+    "voice_sends": 0,
+    "source_sha256": "e0ec29de7b5b866799c85b4775fdd91915fb4e4e716489c354d0ac74acac1cd6",
+    "assistant_contact_review": true
+  },
+  "replacement_job": "e4371771-bf21-4585-b195-fe7c77d23650",
+  "known_remaining_issue": "Human identity screening bypasses per-scene semantic relevance. Unique portraits are insufficient evidence for a factual storyboard.",
+  "full_mp4": {
+    "id": "e4371771-bf21-4585-b195-fe7c77d23650",
+    "supersedes": "ae9b4750-4df5-4e1a-9ea0-7083625de950",
+    "status": "ready",
+    "origin": "user",
+    "duration_s": 60,
+    "frames": 1800,
+    "dimensions": [
+      1080,
+      1920
+    ],
+    "sha256": "8d4a8a88281b56fdf83452590661c9f266b03b31f634b6e0a9a3130e4b9ee077",
+    "bytes": 5591405,
+    "voice": "uk-UA-Chirp3-HD-Enceladus",
+    "audio_duration_ms": 59016,
+    "audio_tempo_factor": 1.0,
+    "alignment_coverage": 0.964029,
+    "narration_attempts": 2,
+    "audit": {
+      "shots_required": 24,
+      "narration_beats": 8,
+      "unique_assets": 24,
+      "images_per_narration_beat": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "minimum_two_images_per_beat": true,
+      "average_shot_duration_ms": 2500.0,
+      "source_count": 2,
+      "all_visuals_have_provenance": true,
+      "images_verified_before_voice": true,
+      "all_images_pixel_checked": true,
+      "full_decode": true,
+      "renderer_gates": {
+        "exact_frames": true,
+        "exact_duration": true,
+        "portrait_dimensions": true,
+        "h264": true,
+        "aac": true,
+        "yuv420p": true,
+        "fps_30": true,
+        "unique_images": true,
+        "continuous_timeline": true,
+        "unchanged_source_audio": true,
+        "natural_audio_fits": true
+      }
+    },
+    "technical_pass": true,
+    "assistant_actual_frame_review": {
+      "shots": 24,
+      "passed": false,
+      "correction": "Prior frame pass checked identity and layout, not semantic fit to narration; withdrawn."
+    },
+    "unauthenticated_video_range_status": 206,
+    "owner_listening_approval": false,
+    "video_url": "https://studio.hodor.com.pl/api/jobs/e4371771-bf21-4585-b195-fe7c77d23650/video",
+    "owner_rejected": true
+  }
+}

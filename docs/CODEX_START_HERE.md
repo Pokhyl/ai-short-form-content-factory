@@ -1,12 +1,16 @@
-# Universal factory — verified delivery, 2026-11-16
+# Universal factory — active scene-grounding rework, 2026-11-16
+
+Owner rejection: e4371771-bf21-4585-b195-fe7c77d23650 is a scene-irrelevant portrait slideshow and must not be accepted. General scene-to-media grounding is required; do not fix one video with handpicked assets.
+
+Owner regression, 2026-11-16: Илон Маск / UK60 failed image selection at scene 24 (ae9b4750-4df5-4e1a-9ea0-7083625de950), with zero narration sends. Earlier six-case acceptance remains historical; general readiness is withdrawn until this regression and broader person selection are verified.
 
 Read root AGENTS.md and factory_universal/README.md.
 
-project_ready=true for the implemented automated source-grounded topic/language/duration-to-MP4 workflow. Six normal API outputs passed exact-frame/duration/hash checks, full decoding, fixed-voice validation and assistant inspection of every shot. This does not imply owner listening approval.
+project_ready=false for the implemented automated source-grounded topic/language/duration-to-MP4 workflow. Six normal API outputs passed exact-frame/duration/hash checks, full decoding, fixed-voice validation and assistant inspection of every shot. This does not imply owner listening approval.
 
 ## Evidence
 
-Authoritative receipt: acceptance/factory-universal/2026-11-16/acceptance.json . The deployed app source matches the receipt and checkout. Studio is public at https://studio.hodor.com.pl/ ; actual unauthenticated checks returned page 200 and MP4 ranges 206.
+Authoritative receipt: acceptance/factory-universal/2026-11-16/acceptance.json . That receipt describes the previous six-case snapshot. The owner rejected e4371771-bf21-4585-b195-fe7c77d23650 despite its technical pass: identity-only photographs do not illustrate each scene. Source-linked general storyboard work is under verification and is not deployed. Studio is public at https://studio.hodor.com.pl/ ; actual unauthenticated checks returned page 200 and MP4 ranges 206.
 
 | Topic | Language | Seconds | Frames | Job |
 |---|---|---:|---:|---|

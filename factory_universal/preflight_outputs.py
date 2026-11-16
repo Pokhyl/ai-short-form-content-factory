@@ -18,7 +18,7 @@ def main():
  cases=json.loads(Path(args.plan).read_text())['cases']
  results=[];receipt.write_text('[]')
  class PreflightDeadline(BaseException):pass
- def deadline(signum,frame):raise PreflightDeadline('image preflight exceeded its 180 second per-case deadline')
+ def deadline(signum,frame):raise PreflightDeadline('image preflight exceeded its 300 second per-case deadline')
  signal.signal(signal.SIGALRM,deadline)
  for case in cases:
   topic=case['topic'];lang=case['language'];duration=case['duration_s']
@@ -27,12 +27,18 @@ def main():
    db.execute("INSERT INTO jobs(id,created_at,updated_at,topic,language,duration_s,status,stage,progress,message,origin) VALUES(?,?,?,?,?,?,'preflight','visuals',0,'Image-only check; no narration requested','test')",(jid,ts,ts,topic,lang,duration))
   app.SEARCH_QUERIES={'stock':set(),'commons':set()};app.DISCOVERED_PHOTOS={}
   result={'topic':topic,'language':lang,'duration':duration,'id':jid,'voice_sends':0,'source_sha256':hashlib.sha256(Path(app.__file__).read_bytes()).hexdigest()}
+  sources=[]
   try:
-   signal.alarm(180)
+   signal.alarm(300)
    sources=app.relevant_sources(app.load_sources(topic,lang),topic,lang)
    slots=app.plan_script(sources,topic,lang,duration,max_beats=duration//5)
    if not slots:raise ValueError('no complete source overview fits')
-   prepared=app.prepare_visuals(jid,sources,topic,lang,duration,slots)
+   prepared={}
+   def before_send(planned_slots):
+    app.shutil.rmtree(app.VISUAL/jid,ignore_errors=True)
+    value=app.prepare_visuals(jid,sources,topic,lang,duration,planned_slots)
+    prepared.clear();prepared.update(value)
+   slots=app.prepare_illustrated_slots(sources,topic,lang,duration,duration,slots,before_send)
    directory=app.RENDER/jid;directory.mkdir(parents=True,exist_ok=True)
    count=len(prepared['selected']);rows=(count+3)//4
    sheet=app.Image.new('RGB',(1080,rows*480),(7,13,23))
@@ -46,6 +52,7 @@ def main():
    app.update(jid,status='preflight_passed',stage='visuals',progress=100,message='Images verified; no narration requested',manifest=json.dumps({'script':prepared['script'],'sources':[{'title':source['title'],'url':source['url']} for source in sources],'audit':{'images':count,'voice_sends':0}}))
   except (Exception,PreflightDeadline) as error:
    result.update(status='failed',error=app.scrub_error(error))
+   result['planning_rejections']=[rejection for source in sources for rejection in source.get('visual_planning_rejections',[])]
    app.update(jid,status='failed',stage='preflight',progress=100,message='Image-only verification stopped',error=result['error'])
   finally:
    signal.alarm(0)
