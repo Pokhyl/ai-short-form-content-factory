@@ -1,0 +1,1628 @@
+{
+  "project_ready": true,
+  "scope": "Automated source-grounded topic/language/duration to vertical MP4; six-case engineering acceptance",
+  "technical_pass": true,
+  "assistant_actual_frame_review_pass": true,
+  "owner_listening_approval": false,
+  "app_source_sha256": "1eeb41578464490bfb5191123584c12cf55e08b2b6cf1c1561d10a75cf7def4e",
+  "app_git_blob": "31636d2a7abd5d33265f5b50a18fd5c713d2b4ec",
+  "deployed_source_matches_checkout": true,
+  "public_access": {
+    "page_status": 200,
+    "auth_challenge": null,
+    "video_range_status": 206,
+    "range_bytes": 1024
+  },
+  "llm_calls": 0,
+  "storage": {
+    "output_cap_bytes": 2147483648,
+    "cache_cap_bytes": 536870912,
+    "free_reserve_bytes": 2147483648,
+    "retention_days": 30,
+    "includes_alignment_and_review_artifacts": true,
+    "cleanup_selects_only_factory_database_owned_UUIDs": true
+  },
+  "checks": {
+    "runtime_unit_checks": "passed",
+    "real_FFmpeg_450_frame_regression": "passed; renderer source unchanged",
+    "alignment_normalization_checks": "passed",
+    "unrelated_UUID_retention_regression": "passed",
+    "source_plan_reuse_and_stale_source_rejection": "passed"
+  },
+  "results": [
+    {
+      "job_id": "8cc37137-3cde-412b-9b77-f8d034c71eb5",
+      "topic": "Photosynthesis",
+      "language": "en",
+      "duration_s": 15,
+      "video_url": "https://studio.hodor.com.pl/api/jobs/8cc37137-3cde-412b-9b77-f8d034c71eb5/video",
+      "video_sha256": "c9b6b18d4783328e903ba2494a381f92fc7a7f9ac3d3b99a2b5377a3739e4aea",
+      "frames": 450,
+      "voice": "en-US-Chirp3-HD-Algenib",
+      "natural_audio_ms": 14016,
+      "audio_tempo_factor": 1.0,
+      "input_audio_sha256": "5767ad337b47ea2f5ce5f43ddc18af6677b3e97cb4ee15de5711d1ae836a7ebb",
+      "alignment_coverage": 1.0,
+      "script": "Photosynthesis — biological process to convert light into chemical energy. The average rate of energy captured by global photosynthesis is approximately 130 terawatts, which is about eight times the total power consumption of human civilization.",
+      "beats": [
+        {
+          "order": 1,
+          "caption": "Photosynthesis — biological process to convert light into chemical energy.",
+          "source_span": "Photosynthesis — biological process to convert light into chemical energy.",
+          "source_start": 0,
+          "source_title": "photosynthesis — Wikidata",
+          "source_url": "https://www.wikidata.org/wiki/Q11982"
+        },
+        {
+          "order": 2,
+          "caption": "The average rate of energy captured by global photosynthesis is approximately 130 terawatts, which is about eight times the total power consumption of human civilization.",
+          "source_span": "The average rate of energy captured by global photosynthesis is approximately 130 terawatts , which is about eight times the total power consumption of human civilization .",
+          "source_start": 3685,
+          "source_title": "Photosynthesis",
+          "source_url": "https://en.wikipedia.org/wiki/Photosynthesis"
+        }
+      ],
+      "audit": {
+        "shots_required": 6,
+        "narration_beats": 2,
+        "unique_assets": 6,
+        "images_per_narration_beat": [
+          3,
+          3
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 4,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true
+        }
+      },
+      "frame_review": {
+        "job_id": "8cc37137-3cde-412b-9b77-f8d034c71eb5",
+        "video_sha256": "c9b6b18d4783328e903ba2494a381f92fc7a7f9ac3d3b99a2b5377a3739e4aea",
+        "assistant_frame_review": "passed",
+        "scope": "actual decoded MP4 midpoint frame for every shot; whole images, complete captions, relevant subject, distinct assets and source provenance",
+        "owner_listening_approval": false
+      },
+      "sources": [
+        {
+          "title": "Photosynthesis",
+          "url": "https://en.wikipedia.org/wiki/Photosynthesis",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Artificial photosynthesis",
+          "url": "https://en.wikipedia.org/wiki/Artificial_photosynthesis",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Anoxygenic photosynthesis",
+          "url": "https://en.wikipedia.org/wiki/Anoxygenic_photosynthesis",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "photosynthesis — Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q11982",
+          "retrieval_note": null,
+          "source_type": "structured definition",
+          "label": "photosynthesis",
+          "description": "biological process to convert light into chemical energy"
+        }
+      ],
+      "visual_provenance": [
+        {
+          "provider": "pixabay",
+          "provider_id": "4543260",
+          "provider_page": "https://pixabay.com/photos/leaf-green-structure-photosynthesis-4543260/",
+          "creator": "AStoKo",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "e8bffc5bbc780dc643abb54caf858189e94920530db53b1ec1673cd8e36680e9"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "3322452",
+          "provider_page": "https://pixabay.com/photos/leaf-plant-vein-environment-3322452/",
+          "creator": "makamuki0",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "59b257894c4c9ea439754ba25cf52eb2a129bd4ee0baa67f17e2f202ea9fb1aa"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "6688988",
+          "provider_page": "https://pixabay.com/photos/leaves-botany-plant-foliage-6688988/",
+          "creator": "Green_Grey",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "e9cd78625c645e4a9b324641d9d12255e206a16649b8c12af1b8cfccc1cb9308"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "6543435",
+          "provider_page": "https://pixabay.com/photos/leaf-botany-dewdrop-water-macro-6543435/",
+          "creator": "wal_172619",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "16029841b9d82fee8631bce80e81bd2ce13e5213bac26ee4466507c33ed5bf3d"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "391447",
+          "provider_page": "https://pixabay.com/photos/photosynthesis-green-color-holidays-391447/",
+          "creator": "hajninjah",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "6e84ed2ec1264a6385ce75444cd9c13f1c78cda842f1613a8e70726bc3a1ccf0"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "6529715",
+          "provider_page": "https://pixabay.com/photos/leaf-botany-photosynthesis-veins-6529715/",
+          "creator": "mfuente",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "6df106e0e773ed8a0d05bd956754ebf313f47160e0defeb829f8d431ce3a3ad7"
+        }
+      ]
+    },
+    {
+      "job_id": "98d9b91e-7f56-4893-a181-f7e5c95a3232",
+      "topic": "Warszawa",
+      "language": "pl",
+      "duration_s": 30,
+      "video_url": "https://studio.hodor.com.pl/api/jobs/98d9b91e-7f56-4893-a181-f7e5c95a3232/video",
+      "video_sha256": "1843d173cc8e3c4e1221e25a38193d7b193c6c5e8bad2e1d8a4c2086bdeed5bf",
+      "frames": 900,
+      "voice": "pl-PL-Chirp3-HD-Enceladus",
+      "natural_audio_ms": 28656,
+      "audio_tempo_factor": 1.0,
+      "input_audio_sha256": "b45093a376516ce9a027efea458d3344ef5c0338de2e81e229530296d7e6ac0a",
+      "alignment_coverage": 1.0,
+      "script": "Warszawa — stolica Polski i jej najludniejsze miasto, stolica województwa mazowieckiego. Od 2002 jest gminą miejską mającą status miasta na prawach powiatu. W jej skład wchodzi 18 jednostek pomocniczych – dzielnic m.st. Warszawy. Odbudowane po wojnie Stare Miasto w 1980 zostało wpisane na listę światowego dziedzictwa UNESCO.",
+      "beats": [
+        {
+          "order": 1,
+          "caption": "Warszawa — stolica Polski i jej najludniejsze miasto, stolica województwa mazowieckiego.",
+          "source_span": "Warszawa — stolica Polski i jej najludniejsze miasto, stolica województwa mazowieckiego.",
+          "source_start": 0,
+          "source_title": "Warszawa — Wikidata",
+          "source_url": "https://www.wikidata.org/wiki/Q270"
+        },
+        {
+          "order": 2,
+          "caption": "Od 2002 jest gminą miejską mającą status miasta na prawach powiatu.",
+          "source_span": "Od 2002 jest gminą miejską mającą status miasta na prawach powiatu .",
+          "source_start": 351,
+          "source_title": "Warszawa",
+          "source_url": "https://pl.wikipedia.org/wiki/Warszawa"
+        },
+        {
+          "order": 3,
+          "caption": "W jej skład wchodzi 18 jednostek pomocniczych – dzielnic m.st. Warszawy.",
+          "source_span": "W jej skład wchodzi 18 jednostek pomocniczych – dzielnic m.st. Warszawy .",
+          "source_start": 420,
+          "source_title": "Warszawa",
+          "source_url": "https://pl.wikipedia.org/wiki/Warszawa"
+        },
+        {
+          "order": 4,
+          "caption": "Odbudowane po wojnie Stare Miasto w 1980 zostało wpisane na listę światowego dziedzictwa UNESCO.",
+          "source_span": "Odbudowane po wojnie Stare Miasto w 1980 zostało wpisane na listę światowego dziedzictwa UNESCO .",
+          "source_start": 1534,
+          "source_title": "Warszawa",
+          "source_url": "https://pl.wikipedia.org/wiki/Warszawa"
+        }
+      ],
+      "audit": {
+        "shots_required": 12,
+        "narration_beats": 4,
+        "unique_assets": 12,
+        "images_per_narration_beat": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 7,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true
+        }
+      },
+      "frame_review": {
+        "job_id": "98d9b91e-7f56-4893-a181-f7e5c95a3232",
+        "video_sha256": "1843d173cc8e3c4e1221e25a38193d7b193c6c5e8bad2e1d8a4c2086bdeed5bf",
+        "assistant_frame_review": "passed",
+        "scope": "Every actual MP4 midpoint frame; 12 photographs, verified city provenance, no maps/documents, Old Town photographs for the named detail",
+        "owner_listening_approval": false
+      },
+      "sources": [
+        {
+          "title": "Warszawa",
+          "url": "https://pl.wikipedia.org/wiki/Warszawa",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "FSO Warszawa",
+          "url": "https://pl.wikipedia.org/wiki/FSO_Warszawa",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Warszawa Centralna",
+          "url": "https://pl.wikipedia.org/wiki/Warszawa_Centralna",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Projekt Warszawa",
+          "url": "https://pl.wikipedia.org/wiki/Projekt_Warszawa",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Legia Warszawa (piłka nożna)",
+          "url": "https://pl.wikipedia.org/wiki/Legia_Warszawa_%28pi%C5%82ka_no%C5%BCna%29",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Polonia Warszawa (piłka nożna)",
+          "url": "https://pl.wikipedia.org/wiki/Polonia_Warszawa_%28pi%C5%82ka_no%C5%BCna%29",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Warszawa — Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q270",
+          "retrieval_note": null,
+          "source_type": "structured definition",
+          "label": "Warszawa",
+          "description": "stolica Polski i jej najludniejsze miasto, stolica województwa mazowieckiego"
+        }
+      ],
+      "visual_provenance": [
+        {
+          "provider": "commons",
+          "provider_id": "4722194",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=4722194",
+          "creator": "Benon Tuszyński",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "c3dc52aa748ea959204380edc6b8b44c2e1b0d68d2e6551717ebe9d21ebd55ec"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "77536413",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=77536413",
+          "creator": "Аимаина хикари",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "a923d5826ac412fec914d252492964120bdff9ea600f50581d9a56da4a9f29d8"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "83098316",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=83098316",
+          "creator": "Аимаина хикари",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "7e34b9370a86f5ff8b115ee53a6895761e2283da4d674a8079b36840e807c478"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "56305746",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=56305746",
+          "creator": "kikiwis",
+          "license": "CC BY 3.0",
+          "license_url": "https://creativecommons.org/licenses/by/3.0",
+          "asset_sha256": "ff733650973bebab2645b895c85e0b39a82da12ed4dfe0c8ec39a153c2036ed6"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "56305760",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=56305760",
+          "creator": "kikiwis",
+          "license": "CC BY 3.0",
+          "license_url": "https://creativecommons.org/licenses/by/3.0",
+          "asset_sha256": "6d4850d7abde837aa5c16e8572f376d682e273b59f9c0cba1d9a96555b4d48fe"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "56305810",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=56305810",
+          "creator": "kikiwis",
+          "license": "CC BY 3.0",
+          "license_url": "https://creativecommons.org/licenses/by/3.0",
+          "asset_sha256": "78a0aef04696649cd28a132fe4f69244aa9ad776ab710294ec0c5db45b43599f"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "56305816",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=56305816",
+          "creator": "kikiwis",
+          "license": "CC BY 3.0",
+          "license_url": "https://creativecommons.org/licenses/by/3.0",
+          "asset_sha256": "d8482d7362aeb59ad22722080ceb6427fa3e494997228b2c4bd3cef11c75b4e3"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "56305844",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=56305844",
+          "creator": "kikiwis",
+          "license": "CC BY 3.0",
+          "license_url": "https://creativecommons.org/licenses/by/3.0",
+          "asset_sha256": "b6bd1003957f3de5216262019430d6974240180553894c264ad2d12b2f01e0b4"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "56305772",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=56305772",
+          "creator": "kikiwis",
+          "license": "CC BY 3.0",
+          "license_url": "https://creativecommons.org/licenses/by/3.0",
+          "asset_sha256": "3b9b6e80facc36a915618580a0e4679340664da91a8aa6f380c2a0c3f9d0d1a8"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "77536415",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=77536415",
+          "creator": "Аимаина хикари",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "00061705ccfa37e31c26ac177788ef5e17c76df5586bca7d2e4f8f51ccb14a61"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "77536414",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=77536414",
+          "creator": "Аимаина хикари",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "d7700fd0f03a459beb676ee8a0e65f99c4a005a53fa3651bed585b8872c02abd"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "68652888",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=68652888",
+          "creator": "Аимаина хикари",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "9307c1277c5173c535f20908442cca81bce86c268f55e76f8faef146e81da06c"
+        }
+      ]
+    },
+    {
+      "job_id": "5e57a397-1ee2-41ff-889a-4cab8699d515",
+      "topic": "Марс",
+      "language": "ru",
+      "duration_s": 45,
+      "video_url": "https://studio.hodor.com.pl/api/jobs/5e57a397-1ee2-41ff-889a-4cab8699d515/video",
+      "video_sha256": "faab2817d5d07331f294fe99a6546030a1ab0b4bb536da1e16983d49c5199a30",
+      "frames": 1350,
+      "voice": "ru-RU-Wavenet-D",
+      "natural_audio_ms": 41280,
+      "audio_tempo_factor": 1.0,
+      "input_audio_sha256": "d90cdd491e260c40458e0e566d9a371e8014d6d8b151f80099931660db7b2799",
+      "alignment_coverage": 0.986486,
+      "script": "Марс — четвёртая по удалённости от Солнца и седьмая по размеру планета Солнечной системы. Наряду с Меркурием, Венерой и Землёй принадлежит к семейству планет земной группы. Марс уступает по яркости лишь Юпитеру, Венере, Луне и Солнцу. Год на Марсе длится 687 земных суток, или около 669 марсианских солнечных суток. Атмосфера Марса сильно разрежена, давление на его поверхности примерно в 160 раз меньше земного. Как правило, во время великого противостояния оранжевый Марс становится ярчайшим объектом ночного неба после Луны и Венеры.",
+      "beats": [
+        {
+          "order": 1,
+          "caption": "Марс — четвёртая по удалённости от Солнца и седьмая по размеру планета Солнечной системы.",
+          "source_span": "Марс  — четвёртая по удалённости от Солнца и седьмая по размеру планета Солнечной системы .",
+          "source_start": 0,
+          "source_title": "Марс",
+          "source_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81"
+        },
+        {
+          "order": 2,
+          "caption": "Наряду с Меркурием, Венерой и Землёй принадлежит к семейству планет земной группы.",
+          "source_span": "Наряду с Меркурием , Венерой и Землёй принадлежит к семейству планет земной группы .",
+          "source_start": 92,
+          "source_title": "Марс",
+          "source_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81"
+        },
+        {
+          "order": 3,
+          "caption": "Марс уступает по яркости лишь Юпитеру, Венере, Луне и Солнцу.",
+          "source_span": "Марс уступает по яркости лишь Юпитеру (во время великого противостояния Марса он может превзойти Юпитер), Венере , Луне и Солнцу.",
+          "source_start": 547,
+          "source_title": "Марс",
+          "source_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81"
+        },
+        {
+          "order": 4,
+          "caption": "Год на Марсе длится 687 земных суток, или около 669 марсианских солнечных суток.",
+          "source_span": "Год на Марсе длится 687 земных суток, или около 669 марсианских солнечных суток (солов).",
+          "source_start": 1116,
+          "source_title": "Марс",
+          "source_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81"
+        },
+        {
+          "order": 5,
+          "caption": "Атмосфера Марса сильно разрежена, давление на его поверхности примерно в 160 раз меньше земного.",
+          "source_span": "Атмосфера Марса сильно разрежена, давление на его поверхности примерно в 160 раз меньше земного.",
+          "source_start": 1351,
+          "source_title": "Марс",
+          "source_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81"
+        },
+        {
+          "order": 6,
+          "caption": "Как правило, во время великого противостояния оранжевый Марс становится ярчайшим объектом ночного неба после Луны и Венеры.",
+          "source_span": "Как правило, во время великого противостояния (то есть когда противостояние Марса с Землёй происходит близко к прохождению Марсом перигелия своей орбиты) оранжевый Марс становится ярчайшим объектом ночного неба после Луны и Венеры .",
+          "source_start": 4854,
+          "source_title": "Марс",
+          "source_url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81"
+        }
+      ],
+      "audit": {
+        "shots_required": 18,
+        "narration_beats": 6,
+        "unique_assets": 18,
+        "images_per_narration_beat": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 6,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true
+        }
+      },
+      "frame_review": {
+        "job_id": "5e57a397-1ee2-41ff-889a-4cab8699d515",
+        "video_sha256": "faab2817d5d07331f294fe99a6546030a1ab0b4bb536da1e16983d49c5199a30",
+        "assistant_frame_review": "passed",
+        "scope": "actual decoded MP4 midpoint frame for every shot; whole images, complete captions, relevant subject, distinct assets and source provenance",
+        "owner_listening_approval": false
+      },
+      "sources": [
+        {
+          "title": "Марс",
+          "url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Марс-1",
+          "url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81-1",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Марс-6",
+          "url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D1%81-6",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Жизнь на Марсе",
+          "url": "https://ru.wikipedia.org/wiki/%D0%96%D0%B8%D0%B7%D0%BD%D1%8C_%D0%BD%D0%B0_%D0%9C%D0%B0%D1%80%D1%81%D0%B5",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Бруно Марс",
+          "url": "https://ru.wikipedia.org/wiki/%D0%91%D1%80%D1%83%D0%BD%D0%BE_%D0%9C%D0%B0%D1%80%D1%81",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Марс — Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q111",
+          "retrieval_note": null,
+          "source_type": "structured definition",
+          "label": "Марс",
+          "description": "четвёртая от Солнца и седьмая по размеру планета Солнечной системы, относится к земной группе"
+        }
+      ],
+      "visual_provenance": [
+        {
+          "provider": "commons",
+          "provider_id": "145394042",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=145394042",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "83072e3b121d0345c030a3bfb1d312e390d290861398780e2a39e5438fa1f719"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "145243846",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=145243846",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "8404271f079c6336410f45ab49ada792de58ba44cfabddfd408c795ad511755f"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "192447648",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=192447648",
+          "creator": "NASA/JPL",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "a5a5d74dde09d59f5b8934190b87aa2e2eae0790402f4be7dc651d958ac4e624"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "144820754",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=144820754",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "595c8e5457fbf80184fd3b0013c30dc8876f072b71c992930cbbb9279d2c3cef"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "161624553",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=161624553",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "a0bbdd8953afb7eb016393e0983143978067c83746d4bfa3f891556dc3e10376"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "145282919",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=145282919",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "ef5b2e510411f2e834e7618ef0588c495a81c5c1c14b717b76fd1f1e7b90cc34"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "161541118",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=161541118",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "0d4ad7558e9de1b959a9dd2d1a71542819f4bf173cb981ce167efe588c9d02ab"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "150065529",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=150065529",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "57695cbab2d5f433acd2a6dbe890a39b724bcf200171f933176b05032351597c"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "164505783",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=164505783",
+          "creator": "NASA/JPL-Caltech/MSSS",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "8206d1b39b914a2e2bce6bd7136a07b9f510ed6f6923ce63df5958ca8fee7a64"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "172223477",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=172223477",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "f8c4681ad6a986477afa365859ab0e716ec8d5791fc2eac3080c6874ceb710a2"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "149304132",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=149304132",
+          "creator": "Andrea Luck",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "951213814a6c373179d9934cb7236331286a0dba357f6f482c207796feeea621"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "164505784",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=164505784",
+          "creator": "NASA/JPL-Caltech/MSSS",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "10ec607251b4d2fd0cd47e381e05d474b34a024463fa6317ac194fc5fc5bdbdc"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "19400",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=19400",
+          "creator": "NASA / USGS (see PIA04304 catalog page )",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "936a393d4afb6fe19566b710b75737b762a01834d4be594ec40748ffde8eceab"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "5567270",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=5567270",
+          "creator": "NASA/Jet Propulsion Lab-Caltech/University of Arizona",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "bf5add8c5f50966609f0a3fb276c120b1b9aebc02cc35715ba1d2ef02347393e"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "1227500",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=1227500",
+          "creator": "NASA",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "35fe73eaf75d8df7e7aac9e18d3a7af003be2aa5c9aa06290f468c079777bda3"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "146814120",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=146814120",
+          "creator": "Kevin M. Gill",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "053a5e46705d6b51d59eee0fed4a4ccc8d9571e6ddf8c188a9b766d94085ffce"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "184217689",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=184217689",
+          "creator": "Andrea Luck",
+          "license": "CC BY 4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0",
+          "asset_sha256": "c01fbb684682dbcb36e290b8a4c80f1c26e6ef83a9d1397fc6d4d367d95e1d48"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "146814108",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=146814108",
+          "creator": "Kevin M. Gill",
+          "license": "CC BY 2.0",
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "asset_sha256": "295723589d5354709db0b228710971449d64248ec5285cac6a286856b94037e8"
+        }
+      ]
+    },
+    {
+      "job_id": "40afaf97-73c4-4ec1-ab41-d13ecbe7e870",
+      "topic": "Бджоли",
+      "language": "uk",
+      "duration_s": 60,
+      "video_url": "https://studio.hodor.com.pl/api/jobs/40afaf97-73c4-4ec1-ab41-d13ecbe7e870/video",
+      "video_sha256": "53b9207858d65bf24a45fc3f4cf7f7e85a1d63ad590f8ebadcf61fe4c283bb1e",
+      "frames": 1800,
+      "voice": "uk-UA-Chirp3-HD-Enceladus",
+      "natural_audio_ms": 54624,
+      "audio_tempo_factor": 1.0,
+      "input_audio_sha256": "892589aec72d657b679c4273193ed2999187df9980242c5d4183a5f2be76220b",
+      "alignment_coverage": 0.989214,
+      "script": "Існує близько 20 тисяч видів бджіл. Бджоли пристосувалися харчуватися нектаром і пилком, використовуючи нектар головним чином як джерело енергії, а пилок для отримання білків та інших живильних речовин. Бджоли мають довгий хоботок, яким вони користуються для висмоктування нектару рослин. У них також є вусики, кожен з яких складається з 13 сегментів у самців і 12 сегментів у самок. Усі бджоли мають дві пари крил, задня пара за розміром менша від передньої; тільки у декількох видів у однієї касти крила дуже короткі, що робить політ бджоли важкою або неможливою справою. На задньому кінці тіла самиці і робочі особини більшості видів бджіл мають жало. Засобом спілкування суспільних бджіл є, так звані, «танці». Повертаючись після розвідки у вулик, бджола виконує певні умовні рухи — «танцює».",
+      "beats": [
+        {
+          "order": 1,
+          "caption": "Існує близько 20 тисяч видів бджіл.",
+          "source_span": "Існує близько 20 тисяч видів бджіл.",
+          "source_start": 208,
+          "source_title": "Бджоли",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8"
+        },
+        {
+          "order": 2,
+          "caption": "Бджоли пристосувалися харчуватися нектаром і пилком, використовуючи нектар головним чином як джерело енергії, а пилок для отримання білків та інших живильних речовин.",
+          "source_span": "Бджоли пристосувалися харчуватися нектаром і пилком , використовуючи нектар головним чином як джерело енергії , а пилок для отримання білків та інших живильних речовин.",
+          "source_start": 301,
+          "source_title": "Бджоли",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8"
+        },
+        {
+          "order": 3,
+          "caption": "Бджоли мають довгий хоботок, яким вони користуються для висмоктування нектару рослин.",
+          "source_span": "Бджоли мають довгий хоботок, яким вони користуються для висмоктування нектару рослин.",
+          "source_start": 470,
+          "source_title": "Бджоли",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8"
+        },
+        {
+          "order": 4,
+          "caption": "У них також є вусики, кожен з яких складається з 13 сегментів у самців і 12 сегментів у самок.",
+          "source_span": "У них також є вусики (або сяжки), кожен з яких складається з 13 сегментів у самців і 12 сегментів у самок .",
+          "source_start": 556,
+          "source_title": "Бджоли",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8"
+        },
+        {
+          "order": 5,
+          "caption": "Усі бджоли мають дві пари крил, задня пара за розміром менша від передньої; тільки у декількох видів у однієї касти крила дуже короткі, що робить політ бджоли важкою або неможливою справою.",
+          "source_span": "Усі бджоли мають дві пари крил , задня пара за розміром менша від передньої; тільки у декількох видів у однієї касти крила дуже короткі, що робить політ бджоли важкою або неможливою справою.",
+          "source_start": 664,
+          "source_title": "Бджоли",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8"
+        },
+        {
+          "order": 6,
+          "caption": "На задньому кінці тіла самиці і робочі особини більшості видів бджіл мають жало.",
+          "source_span": "На задньому кінці тіла самиці і робочі особини більшості видів бджіл мають жало .",
+          "source_start": 855,
+          "source_title": "Бджоли",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8"
+        },
+        {
+          "order": 7,
+          "caption": "Засобом спілкування суспільних бджіл є, так звані, «танці».",
+          "source_span": "Засобом спілкування суспільних бджіл є, так звані, «танці».",
+          "source_start": 1183,
+          "source_title": "Бджоли",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8"
+        },
+        {
+          "order": 8,
+          "caption": "Повертаючись після розвідки у вулик, бджола виконує певні умовні рухи — «танцює».",
+          "source_span": "Повертаючись після розвідки у вулик , бджола виконує певні умовні рухи — «танцює».",
+          "source_start": 1243,
+          "source_title": "Бджоли",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8"
+        }
+      ],
+      "audit": {
+        "shots_required": 24,
+        "narration_beats": 8,
+        "unique_assets": 24,
+        "images_per_narration_beat": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 6,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true
+        }
+      },
+      "frame_review": {
+        "job_id": "40afaf97-73c4-4ec1-ab41-d13ecbe7e870",
+        "video_sha256": "53b9207858d65bf24a45fc3f4cf7f7e85a1d63ad590f8ebadcf61fe4c283bb1e",
+        "assistant_frame_review": "passed",
+        "scope": "actual decoded MP4 midpoint frame for every shot; whole images, complete captions, relevant subject, distinct assets and source provenance",
+        "owner_listening_approval": false
+      },
+      "sources": [
+        {
+          "title": "Бджоли",
+          "url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B8",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Робоча бджола",
+          "url": "https://uk.wikipedia.org/wiki/%D0%A0%D0%BE%D0%B1%D0%BE%D1%87%D0%B0_%D0%B1%D0%B4%D0%B6%D0%BE%D0%BB%D0%B0",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Бджола медоносна",
+          "url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B0_%D0%BC%D0%B5%D0%B4%D0%BE%D0%BD%D0%BE%D1%81%D0%BD%D0%B0",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Бджола (геральдика)",
+          "url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B0_%28%D0%B3%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%B4%D0%B8%D0%BA%D0%B0%29",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Бджола велика",
+          "url": "https://uk.wikipedia.org/wiki/%D0%91%D0%B4%D0%B6%D0%BE%D0%BB%D0%B0_%D0%B2%D0%B5%D0%BB%D0%B8%D0%BA%D0%B0",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "бджоли — Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q7391",
+          "retrieval_note": null,
+          "source_type": "structured definition",
+          "label": "бджоли",
+          "description": "секція в надродині Apoidea літаючих комах ряду перетинчастокрилих, споріднена з осами і мурашками"
+        }
+      ],
+      "visual_provenance": [
+        {
+          "provider": "pixabay",
+          "provider_id": "8515123",
+          "provider_page": "https://pixabay.com/photos/bee-flower-yellow-apricot-apricot-8515123/",
+          "creator": "achildinthewood",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "55d4bfd6479abd4d322e0c090de8785b38c0648c1799c38093c3fb85317f3e60"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "9705160",
+          "provider_page": "https://pixabay.com/photos/bee-insect-pollination-nature-9705160/",
+          "creator": "christels",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "096b454f0a97cf5098255126c17dfb61f136f6f504e8df4928dc6a118bcb0aa3"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "7963186",
+          "provider_page": "https://pixabay.com/photos/bee-insect-honey-flower-7963186/",
+          "creator": "jbooba",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "75f4012037ce84415cd83552c3136b8b188ae3dd7c27f066b765c1b25bd0f34b"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "6975865",
+          "provider_page": "https://pixabay.com/photos/honeybee-sunflower-pollination-bee-6975865/",
+          "creator": "Kiasari",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "67d005fdca8753d97daa384286194bba86baf92cff3e6d9eb3fd7f68239a793b"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "10382439",
+          "provider_page": "https://pixabay.com/photos/bee-echinacea-flower-nature-10382439/",
+          "creator": "Alexas_Fotos",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "3d27dac4efab34ffcc1f0a8c2b90e8d92a6eb7584de206edce4ddea1e42e0fc2"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "10368436",
+          "provider_page": "https://pixabay.com/photos/bee-insect-pollinator-resting-eye-10368436/",
+          "creator": "akirEVarga",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "afcb3285b7b026de60d7ee6fce8a2b79e788109c569cd4b839635127f5ad57d1"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "8281758",
+          "provider_page": "https://pixabay.com/photos/aster-bee-pollination-8281758/",
+          "creator": "nature_focus_fs",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "94763ede2eaf64bfcbae2cfc196f3b74e195bbf5ac582d0005c4d14b0bfc3844"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "10448940",
+          "provider_page": "https://pixabay.com/photos/bee-purple-flower-insect-pollinator-10448940/",
+          "creator": "Alexas_Fotos",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "6f462f02ba5f9a9879ea15795715ea8912d08442bb56e31a741458e3463a8a49"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "4126065",
+          "provider_page": "https://pixabay.com/photos/bees-insects-macro-honey-bees-4126065/",
+          "creator": "analogicus",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "721aeb7ee937e335153f3137683f51ab8d81062c2919aeee5dfd8945aaf80c15"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "8244643",
+          "provider_page": "https://pixabay.com/photos/bee-insect-wings-closeup-8244643/",
+          "creator": "Ralf1403",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "c3812b57b8a9b9e74d7692904ab7cef8806a413fb0396e0dcf5e7f9c1e1f3a64"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "6369484",
+          "provider_page": "https://pixabay.com/photos/bee-insect-pollinate-pollination-6369484/",
+          "creator": "NIL-Foto",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "9437d0cd6674b38fcf07a8d99341de9531d53ca0bba30c86925f3bee67d003f4"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "31344530",
+          "provider_page": "https://www.pexels.com/photo/honey-bee-pollinating-a-spring-blossom-31344530/",
+          "creator": "Bejan  Adrian",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "f6e7de7c0c6b68fd28f454c2413515e2938c6bc03388389d9e391457f613fd96"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "37779486",
+          "provider_page": "https://www.pexels.com/photo/close-up-of-honey-bee-on-flower-in-new-south-wales-37779486/",
+          "creator": "Stuart  Robinson",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "9626f940bd1328ebc85cf6e4fc754f364bbd804f20b0ef15345d355894891234"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "7344462",
+          "provider_page": "https://pixabay.com/photos/bee-blossom-bloom-pollination-7344462/",
+          "creator": "Ralf1403",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "5e657b259ea1d89b366809994c8ee17bcf134aff6b6e8d4b3d3d6e0105404cfe"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "16926807",
+          "provider_page": "https://www.pexels.com/photo/bee-on-flowers-16926807/",
+          "creator": "Andrea Imre",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "642f054d6fa9727fa1ea9f5ebe9001a83a32b477a4eed345d5fafbb975f153de"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "11593227",
+          "provider_page": "https://www.pexels.com/photo/black-bee-in-a-flower-11593227/",
+          "creator": "Hussein Samad",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "157a3b5eb5d1196cc2cb7135f48b5ad7ba25af51334ede07f2abf15c28597182"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "35747935",
+          "provider_page": "https://www.pexels.com/photo/honey-bee-pollinating-white-wildflowers-35747935/",
+          "creator": "Stuart  Robinson",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "8c24398eeb0b68226a5c903e09ea7c4caa3372dd8924376e7096307a99439e2a"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "31759478",
+          "provider_page": "https://www.pexels.com/photo/bee-pollinating-white-blossoms-macro-shot-31759478/",
+          "creator": "Didier ROUSSEL",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "ff93e060ac411a3fba47f6dcd1aa93cf1324ffad5c5294d288156f418b013928"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "37118238",
+          "provider_page": "https://www.pexels.com/photo/bee-pollinating-white-apple-blossoms-in-spring-37118238/",
+          "creator": "Talha Kuğu",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "d198d9fb66fe1630615038eca3f5a02eceac9012225e7c59fd10d8c1f2cd5673"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "31759469",
+          "provider_page": "https://www.pexels.com/photo/bee-pollinating-white-flowers-in-sunny-garden-31759469/",
+          "creator": "Didier ROUSSEL",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "3002df992e225dfe674f79ad7e22a695f51b3a62301e83e61b3c2211886fb6be"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "19294564",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=19294564",
+          "creator": "Michael Gäbler",
+          "license": "CC BY 3.0",
+          "license_url": "https://creativecommons.org/licenses/by/3.0",
+          "asset_sha256": "2512f82510f3eefff88028abe2340e1981ad5880607ca3b91132763bd3463851"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "33821247",
+          "provider_page": "https://www.pexels.com/photo/close-up-of-honeybee-pollinating-flowers-in-jervis-bay-33821247/",
+          "creator": "Stuart  Robinson",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "57cedfa2d5572f2d40d0168bacac4c93049356ace340312ad98beae8ae2abf30"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "177705227",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=177705227",
+          "creator": "PookieFugglestein",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "eb16cd258334edfc40afc72f1efaa6a32c3ee68dddc5ab40b31a9b8583d996e0"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "31853362",
+          "provider_page": "https://www.pexels.com/photo/close-up-of-honey-bee-on-white-flowers-31853362/",
+          "creator": "Matheus Bertelli",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "fed921eb3c0950874e9ba1b1f095f23a030512493402ccf73d05aad64eb3bfa4"
+        }
+      ]
+    },
+    {
+      "job_id": "0165ea1e-96fd-45b0-b013-5b051ecaca88",
+      "topic": "How paper is made",
+      "language": "en",
+      "duration_s": 30,
+      "video_url": "https://studio.hodor.com.pl/api/jobs/0165ea1e-96fd-45b0-b013-5b051ecaca88/video",
+      "video_sha256": "61ce5309dd12d202e544785eec47b7bfebadc52c38780d137dd9334d9d136d8e",
+      "frames": 900,
+      "voice": "en-US-Chirp3-HD-Algenib",
+      "natural_audio_ms": 27768,
+      "audio_tempo_factor": 1.0,
+      "input_audio_sha256": "d95021739a31d4f4b43161d892c7b27ac13f81be69676cfe38acc06964dd976a",
+      "alignment_coverage": 0.991892,
+      "script": "In papermaking, a dilute suspension consisting mostly of separate cellulose fibres in water is drained through a sieve-like screen, so that a mat of randomly interwoven fibres is laid down. Water is further removed from this sheet by pressing, sometimes aided by suction or vacuum, or heating. Once dry, a generally flat, uniform and strong sheet of paper is achieved. The wet paper sheet goes through presses and dries and finally rolls into large rolls.",
+      "beats": [
+        {
+          "order": 1,
+          "caption": "In papermaking, a dilute suspension consisting mostly of separate cellulose fibres in water is drained through a sieve-like screen, so that a mat of randomly interwoven fibres is laid down.",
+          "source_span": "In papermaking, a dilute suspension consisting mostly of separate cellulose fibres in water is drained through a sieve-like screen, so that a mat of randomly interwoven fibres is laid down. Water is further removed from this sheet by pressing, sometimes aided by suction or vacuum, or heating. Once dry, a generally flat, uniform and strong sheet of paper is achieved.",
+          "source_start": 307,
+          "source_title": "Papermaking",
+          "source_url": "https://en.wikipedia.org/wiki/Papermaking"
+        },
+        {
+          "order": 2,
+          "caption": "Water is further removed from this sheet by pressing, sometimes aided by suction or vacuum, or heating.",
+          "source_span": "In papermaking, a dilute suspension consisting mostly of separate cellulose fibres in water is drained through a sieve-like screen, so that a mat of randomly interwoven fibres is laid down. Water is further removed from this sheet by pressing, sometimes aided by suction or vacuum, or heating. Once dry, a generally flat, uniform and strong sheet of paper is achieved.",
+          "source_start": 307,
+          "source_title": "Papermaking",
+          "source_url": "https://en.wikipedia.org/wiki/Papermaking"
+        },
+        {
+          "order": 3,
+          "caption": "Once dry, a generally flat, uniform and strong sheet of paper is achieved.",
+          "source_span": "In papermaking, a dilute suspension consisting mostly of separate cellulose fibres in water is drained through a sieve-like screen, so that a mat of randomly interwoven fibres is laid down. Water is further removed from this sheet by pressing, sometimes aided by suction or vacuum, or heating. Once dry, a generally flat, uniform and strong sheet of paper is achieved.",
+          "source_start": 307,
+          "source_title": "Papermaking",
+          "source_url": "https://en.wikipedia.org/wiki/Papermaking"
+        },
+        {
+          "order": 4,
+          "caption": "The wet paper sheet goes through presses and dries and finally rolls into large rolls.",
+          "source_span": "The wet paper sheet goes through presses and dries and finally rolls into large rolls.",
+          "source_start": 8535,
+          "source_title": "Papermaking",
+          "source_url": "https://en.wikipedia.org/wiki/Papermaking"
+        }
+      ],
+      "audit": {
+        "shots_required": 12,
+        "narration_beats": 4,
+        "unique_assets": 12,
+        "images_per_narration_beat": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 7,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true
+        }
+      },
+      "frame_review": {
+        "job_id": "0165ea1e-96fd-45b0-b013-5b051ecaca88",
+        "video_sha256": "61ce5309dd12d202e544785eec47b7bfebadc52c38780d137dd9334d9d136d8e",
+        "assistant_frame_review": "passed",
+        "scope": "actual decoded MP4 midpoint frame for every shot; whole images, complete captions, relevant subject, distinct assets and source provenance",
+        "owner_listening_approval": false
+      },
+      "sources": [
+        {
+          "title": "Papermaking",
+          "url": "https://en.wikipedia.org/wiki/Papermaking",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Paper",
+          "url": "https://en.wikipedia.org/wiki/Paper",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "History of paper",
+          "url": "https://en.wikipedia.org/wiki/History_of_paper",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Paper chemicals",
+          "url": "https://en.wikipedia.org/wiki/Paper_chemicals",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Paper cup",
+          "url": "https://en.wikipedia.org/wiki/Paper_cup",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Environmental impact of paper",
+          "url": "https://en.wikipedia.org/wiki/Environmental_impact_of_paper",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "papermaking — Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q335415",
+          "retrieval_note": null,
+          "source_type": "structured definition",
+          "label": "papermaking",
+          "description": "economic sector"
+        }
+      ],
+      "visual_provenance": [
+        {
+          "provider": "commons",
+          "provider_id": "177833894",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=177833894",
+          "creator": "Matti&Keti",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "6e0c7bfdbc145b65fde9b0873ae5e6f9c7193eaa945bd830789d678e8656c085"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "40986920",
+          "provider_page": "https://www.pexels.com/photo/traditional-paper-making-process-in-factory-40986920/",
+          "creator": "Tuti Isnawati",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "63da36232a2bfa36445affcda7d8f2e66018d9e251d8565f14fadef1151f94aa"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "75590001",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=75590001",
+          "creator": "Asahel Curtis",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "b9916f9d74baa65a8c36a68097f099173575ec55066c5c625d7f118a646d8a3c"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "216532",
+          "provider_page": "https://pixabay.com/photos/pulp-and-paper-mill-finland-night-216532/",
+          "creator": "12019",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "b4deaf5ec7b7b4cef2cd7640db1d3d0535b0108f7ef37c576dad4f4a4315900f"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "67779796",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=67779796",
+          "creator": "National Photo Company Collection",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "fa5952b3347a674a9eb0923ddcfc21cbe1b00358456c1b64ca2a0addfc44eaa6"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "8771302",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=8771302",
+          "creator": "Unknown authorUnknown author",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "3ba96ab3e5abf3bfd8ab8fb5a776b56638a7014150c468f2a34a27141efac747"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "279007",
+          "provider_page": "https://pixabay.com/photos/paper-roll-newspaper-paper-mill-279007/",
+          "creator": "minthu",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "023f64ba2ee63879b2f770e6ca9aee2fa90564d1fd6e34dc9f0ee9e7ab60c0f2"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "8280883",
+          "provider_page": "https://www.pexels.com/photo/a-man-standing-near-the-table-8280883/",
+          "creator": "Quang Nguyen Vinh",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "ba6e9bb095ea507d45fef51a428d8617a1bbf4bde2b15fb4fca39b1227527df2"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "32641560",
+          "provider_page": "https://www.pexels.com/photo/papermaking-workspace-in-apucarana-brazil-32641560/",
+          "creator": "Rodolfo Gaion",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "1d8f92a64e3e96e81657015fd1fa4b9518c9306359f84f556ed9c38c97751efe"
+        },
+        {
+          "provider": "pexels",
+          "provider_id": "35372653",
+          "provider_page": "https://www.pexels.com/photo/elderly-vietnamese-woman-engaged-in-traditional-craft-35372653/",
+          "creator": "silvana spi",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "9928c93a70b372fed809de3428dbb173c5ce3a597185afd34c7f48b95f813792"
+        },
+        {
+          "provider": "pixabay",
+          "provider_id": "196958",
+          "provider_page": "https://pixabay.com/photos/paper-manufacturing-cardboard-mesh-196958/",
+          "creator": "LoggaWiggler",
+          "license": null,
+          "license_url": null,
+          "asset_sha256": "cf8f9e331756113326d8bd56613b1daad722f6fa6746ea9fd37cba91b5f8fd9d"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "34534553",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=34534553",
+          "creator": "https://www.loc.gov/pictures/item/wi0322.photos.371740p",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "a2538850982a35524ca3b6b77f7ac42f28422e245f4afdfc23aeb849db72c2f7"
+        }
+      ]
+    },
+    {
+      "job_id": "c1ed6a0a-4a8d-433f-adfb-3e5ae30bf3eb",
+      "topic": "Зеленский",
+      "language": "uk",
+      "duration_s": 30,
+      "video_url": "https://studio.hodor.com.pl/api/jobs/c1ed6a0a-4a8d-433f-adfb-3e5ae30bf3eb/video",
+      "video_sha256": "6f2a00d6fd6943cb222fd6af0f1843d826b5423c23765aaaaa633bf4a7ca99c1",
+      "frames": 900,
+      "voice": "uk-UA-Chirp3-HD-Enceladus",
+      "natural_audio_ms": 27624,
+      "audio_tempo_factor": 1.0,
+      "input_audio_sha256": "6044d4cd3e4331e4d30034dcb0d76cb90ad09908b889b4eef94ca029892c460e",
+      "alignment_coverage": 0.990536,
+      "script": "Володи́мир Олекса́ндрович Зеле́нський — український державний і політичний діяч, 6-й Президент України. Широку популярність здобув як менеджер у сфері культури, актор, шоумен і комік у складі студії Квартал 95. З виборів 2019 року розпочав політичну діяльність, за підтримки політичної партії Слуга народу. Після перемоги в другому турі виборів обраний на посаду Президента України.",
+      "beats": [
+        {
+          "order": 1,
+          "caption": "Володи́мир Олекса́ндрович Зеле́нський — український державний і політичний діяч, 6-й Президент України.",
+          "source_span": "Володи́мир Олекса́ндрович Зеле́нський (нар. 25 січня 1978 (19780125 ) , Кривий Ріг ) — український державний і політичний діяч , 6-й Президент України (з 20 травня 2019).",
+          "source_start": 0,
+          "source_title": "Зеленський Володимир Олександрович",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%97%D0%B5%D0%BB%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%92%D0%BE%D0%BB%D0%BE%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9E%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87"
+        },
+        {
+          "order": 2,
+          "caption": "Широку популярність здобув як менеджер у сфері культури, актор, шоумен і комік у складі студії Квартал 95.",
+          "source_span": "Широку популярність здобув як менеджер у сфері культури , актор, шоумен і комік у складі студії Квартал 95 .",
+          "source_start": 171,
+          "source_title": "Зеленський Володимир Олександрович",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%97%D0%B5%D0%BB%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%92%D0%BE%D0%BB%D0%BE%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9E%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87"
+        },
+        {
+          "order": 3,
+          "caption": "З виборів 2019 року розпочав політичну діяльність, за підтримки політичної партії Слуга народу.",
+          "source_span": "З виборів 2019 року розпочав політичну діяльність, за підтримки політичної партії Слуга народу .",
+          "source_start": 280,
+          "source_title": "Зеленський Володимир Олександрович",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%97%D0%B5%D0%BB%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%92%D0%BE%D0%BB%D0%BE%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9E%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87"
+        },
+        {
+          "order": 4,
+          "caption": "Після перемоги в другому турі виборів обраний на посаду Президента України.",
+          "source_span": "Після перемоги в другому турі виборів обраний на посаду Президента України .",
+          "source_start": 1095,
+          "source_title": "Зеленський Володимир Олександрович",
+          "source_url": "https://uk.wikipedia.org/wiki/%D0%97%D0%B5%D0%BB%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%92%D0%BE%D0%BB%D0%BE%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9E%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87"
+        }
+      ],
+      "audit": {
+        "shots_required": 12,
+        "narration_beats": 4,
+        "unique_assets": 12,
+        "images_per_narration_beat": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 2,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true
+        }
+      },
+      "frame_review": {
+        "job_id": "c1ed6a0a-4a8d-433f-adfb-3e5ae30bf3eb",
+        "video_sha256": "6f2a00d6fd6943cb222fd6af0f1843d826b5423c23765aaaaa633bf4a7ca99c1",
+        "assistant_frame_review": "passed",
+        "scope": "actual decoded MP4 midpoint frame for every shot; whole images, complete captions, relevant subject, distinct assets and source provenance",
+        "owner_listening_approval": false
+      },
+      "sources": [
+        {
+          "title": "Зеленський Володимир Олександрович",
+          "url": "https://uk.wikipedia.org/wiki/%D0%97%D0%B5%D0%BB%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%92%D0%BE%D0%BB%D0%BE%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9E%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87",
+          "retrieval_note": null,
+          "source_type": "article",
+          "label": null,
+          "description": null
+        },
+        {
+          "title": "Володимир Олександрович Зеленський — Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q3874799",
+          "retrieval_note": null,
+          "source_type": "structured definition",
+          "label": "Володимир Олександрович Зеленський",
+          "description": "український політик, 6-й Президент України (з 20 травня 2019), колишній шоумен, телеведучий, гуморист, актор, продюсер"
+        }
+      ],
+      "visual_provenance": [
+        {
+          "provider": "commons",
+          "provider_id": "181694319",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=181694319",
+          "creator": "АрміяInform",
+          "license": "CC BY 4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0",
+          "asset_sha256": "0b18413cd56072f8a29b7ee279f11019a7837e7f8b76949815ba02c78a9212e7"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "164205595",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=164205595",
+          "creator": "The White House",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "f4040b6bcbf4228285970333081025c04ac8edb1ea32a867e5349489ae71bcb0"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "163442491",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=163442491",
+          "creator": "Christophe Licoppe / European Union, 2025 / EC - Audiovisual Service",
+          "license": "CC BY 4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0",
+          "asset_sha256": "e2af1387d3775949603e774e1fd63dc8257a6ccaaa765cef8cc34eea6ce874e5"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "149023252",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=149023252",
+          "creator": "Presidential Communications Office",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "2507e922dfa35baf7ff2c3b01a9ee2cac413b735d3db8e30bfa83da506dba649"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "143313553",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=143313553",
+          "creator": "President.gov.ua",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "3d841636fb48c5eccad7ec0eab7c51c7932a1b16bb1cddba4ce07dc6f1410111"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "84983537",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=84983537",
+          "creator": "The Presidential Office of Ukraine .",
+          "license": "CC BY 4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0",
+          "asset_sha256": "f8604e60d1269752170cbb97e26f4cc4886ce02c89f58d270c07b91c23dd18b4"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "149023254",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=149023254",
+          "creator": "Presidential Communications Office",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "093bb4f95b50534284c8989aa9a137f3b0d358cb0d96e0e0b2754f2b7ec470d9"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "149026770",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=149026770",
+          "creator": "Presidential Communications Office",
+          "license": "Public domain",
+          "license_url": "",
+          "asset_sha256": "74fbb6c9e5aa4b277acbfdbd6a6e506f21e55b1d2af476893c5c221e768517f3"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "164021029",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=164021029",
+          "creator": "President Of Ukraine from Україна",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "b8f5d00e52c9ec4c7f38f7ce843904bdf120d804610ced23bd1577e67940a3a2"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "146187277",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=146187277",
+          "creator": "President of Ukraine Volodymyr Zelenskyy Official website",
+          "license": "CC BY 4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0",
+          "asset_sha256": "99c220f460202a022ebea4b4327101435937fd5dcbb4158bfc3587759065f278"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "155023809",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=155023809",
+          "creator": "Volodymyr Zelensky",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "asset_sha256": "74f3d948912e5a54d03808b72ff3a9cc51f470670149907c79655be7025ae83b"
+        },
+        {
+          "provider": "commons",
+          "provider_id": "84298249",
+          "provider_page": "https://commons.wikimedia.org/w/index.php?curid=84298249",
+          "creator": "http://www.president.gov.ua/",
+          "license": "CC BY 4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0",
+          "asset_sha256": "4816a05c75d7819bdc996698de3f8932d8cee634a2f1dadce9f94b4bb5b8b4f4"
+        }
+      ]
+    }
+  ]
+}

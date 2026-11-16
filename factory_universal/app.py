@@ -586,7 +586,7 @@ def plan_script(sources,topic,lang,duration,max_beats=None):
  process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  structured=source_overview_mode(sources)
  limit=int(min(max_beats or 100,max(2,duration//5)))
- preferred=min(limit,max(2,int(duration//7)))
+ preferred=min(limit,max(2,int((max_beats*5 if max_beats else duration)//7)))
  counts=list(range(preferred,0,-1))+list(range(preferred+1,limit+1)) if structured else range(int(min(max_beats or 100,max(2,duration//(5 if process_intent else 7)))),1,-1)
  for count in counts:
   slots=source_slots(sources,topic,count,lang,duration_s=duration)
@@ -810,7 +810,7 @@ def discover_photos(topic,lang,slots):
  if named_place_subject(profile):
   name=profile['name'];native=profile.get('native_name') or name;category=profile.get('commons_category') or name
   details=list(dict.fromkeys(slot.get('place_detail_query') for slot in slots if slot.get('place_detail_query')))
-  queries=(['incategory:"'+category+'"']+details+['intitle:"'+name+'" city'])[:3]
+  queries=([name+' panorama incategory:"CC-BY-3.0"']+details+[name+' panorama incategory:"CC-BY-4.0"'])[:3]
  if profile.get('kind')=='human' and profile.get('commons_category'):queries=['incategory:"'+profile['commons_category']+'"',profile['name']]+profile.get('aliases',[])[1:2]
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  for query in queries:
@@ -1109,11 +1109,35 @@ def initial_natural_budget(sources,topic,lang,duration):
   budget=max(10,min(90,round(budget*target/max(predicted,1))))
  return min(options)[1] if options else duration
 
+def completed_narration_plan(sources,topic,lang,duration):
+ entity=sources[0].get('entity_profile',{}).get('id') if sources else None
+ if not entity:return None
+ try:
+  with connect() as db:rows=db.execute("SELECT manifest,review_status,review_note FROM jobs WHERE topic=? AND language=? AND duration_s=? AND status='ready' AND manifest IS NOT NULL ORDER BY created_at DESC LIMIT 12",(topic,lang,duration)).fetchall()
+ except sqlite3.OperationalError:return None
+ low,high=natural_voice_window(duration)
+ for row in rows:
+  if row['review_status']=='changes_requested' and not (row['review_note'] or '').casefold().startswith('assistant frame'):continue
+  previous=json.loads(row['manifest']);voice=previous.get('narration',{})
+  if previous.get('resolved_entity_id')!=entity or voice.get('voice')!=SELECTED_VOICES[lang][1] or not low<=voice.get('audio_duration_ms',0)<=high or voice.get('audio_tempo_factor')!=1.0:continue
+  slots=[];valid=True
+  for beat in previous.get('beats',[]):
+   index=next((i for i,source in enumerate(sources) if source['url']==beat['source_url']),None)
+   span=beat.get('source_span','');start=beat.get('source_start',-1)
+   if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:valid=False;break
+   slots.append({'text':beat['caption'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
+  if not valid or not slots or len(slots)>duration//5:continue
+  spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
+  digest=hashlib.sha256(spoken.encode()).hexdigest()
+  cache=ROOT/'cache'/(hashlib.sha256(('selected-voice-audio-v1|'+SELECTED_VOICES[lang][1]+'|'+digest).encode()).hexdigest()+'.json')
+  if cache.is_file() and time.time()-cache.stat().st_mtime<86400:return slots
+ return None
+
 def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None):
  # Change complete source sentences after a measured miss, never the voice or playback rate.
- planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=set();attempts=[];slots=[]
+ planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=set();attempts=[];slots=[];completed_plan=completed_narration_plan(sources,topic,lang,duration)
  for attempt in (1,2,3):
-  slots=plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
+  slots=completed_plan if attempt==1 and completed_plan else plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
   if not slots or len(slots)>duration//5:raise ValueError('no complete source narration fits the natural speaking budget')
   script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()
   if identity in seen:
@@ -1220,10 +1244,15 @@ def prepare_visuals(jid,sources,topic,lang,duration,slots):
  for slot in slots:slot['visual_competitors']=competitors
  get_pixel_verifier()
  allocated=allocate_photos(candidates,slots,media_topic,visual_count)
+ eligible_by_beat=[{(p['provider'],p['id']) for p in candidates if photo_score(p,slot,media_topic)>=0} for slot in slots]
  topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[];rejected_contexts=set();used_origins=set()
  for i in range(visual_count):
   slot=slots[beat_for_shot[i]]
-  reserved={(p['provider'],p['id']) for p in allocated[i+1:]}
+  # Reserve scarce images only for a stricter future constraint. Equal
+  # subject constraints share a pool; reserving their unverified assignments
+  # can falsely exhaust today's scene despite usable images in that pool.
+  current_eligible=eligible_by_beat[beat_for_shot[i]]
+  reserved={(p['provider'],p['id']) for future_index,p in enumerate(allocated[i+1:],i+1) if eligible_by_beat[beat_for_shot[future_index]]<current_eligible}
   ranked=[allocated[i]]+sorted([p for p in candidates if (p['provider'],p['id']) not in reserved and p is not allocated[i]],key=lambda p:photo_score(p,slot,media_topic),reverse=True)
   found=None;attempts=0;rejection_reasons=[]
   for p in ranked:

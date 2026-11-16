@@ -6,9 +6,11 @@ Studio: https://studio.hodor.com.pl/ . The site and review API require no passwo
 
 ## Current delivery state
 
-project_ready=false pending the complete six-case normal API matrix and actual-frame review. EN15, RU45, UK60 and named-person UK30 MP4s have been produced with the fixed selected voices. Revised PL30 and manufacturing EN30 checks are in progress. Actual unauthenticated Studio/video requests pass.
+project_ready=true for the implemented automated MP4 workflow. Six normal API outputs passed exact frames/duration, full decoding, unchanged selected-voice input, image/provenance gates and assistant inspection of every shot: EN15, PL30, RU45, UK60, manufacturing EN30 and named-person UK30.
 
-The owner restored Google authorization. No new keys or voice configuration are needed. Historical failed IDs remain immutable. Technical checks and assistant frame review never imply owner listening approval.
+Evidence: acceptance/factory-universal/2026-11-16/acceptance.json . Studio is password-free; unauthenticated page/video-range checks pass. The deployed source matches the checkout. Owner listening approval is separate and remains pending.
+
+Inputs require an identifiable source and enough suitable licensed photographs. Ambiguous or unsupported inputs stop instead of inventing facts or inserting unrelated media.
 
 ## Pipeline
 
@@ -29,7 +31,7 @@ The owner restored Google authorization. No new keys or voice configuration are 
 | RU | ru-RU-Wavenet-D |
 | UK | uk-UA-Chirp3-HD-Enceladus |
 
-Google uses the retained native n8n gateway and shared PostgreSQL free-tier character ledger. Durable claims precede uncertain sends. Timeouts/errors stop without automatic resends. Up to three distinct texts may be synthesized after completed duration misses. Completed identical audio may be reused for 24 hours. No audible eSpeak fallback, tempo change, Gemini call or paid model API is allowed.
+Google uses the retained native n8n gateway and shared PostgreSQL free-tier character ledger. Durable claims precede uncertain sends. Timeouts/errors stop without automatic resends. Up to three distinct texts may be synthesized after completed duration misses. Completed identical audio may be reused for 24 hours. A completed narration plan is reusable only while its entity, exact source spans, selected voice and duration still match; stale sources are rejected. No audible eSpeak fallback, tempo change, Gemini call or paid model API is allowed.
 
 Experimental drafting/translation models failed quality checks and were removed. They are not dependencies. Only the checksum-pinned visual model remains, mounted read-only. The shared media-worker is used for alignment; its old per-duration render thresholds are not part of the universal renderer. eSpeak is an internal estimate only.
 
