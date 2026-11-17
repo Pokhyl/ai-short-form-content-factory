@@ -72,3 +72,6 @@ Leave the shared media-worker, volume, n8n networks and unrelated services intac
 - POST /api/jobs/{uuid}/subject: reject that resolved meaning without rewriting the original job or replaying synthesis.
 
 The UI is index.html. It preserves playback during polling. Source clarification and Google reconnection are separate actions. Technical checks or assistant frame review never imply owner listening approval.
+
+
+2026-11-17 verification checkpoint (not a release): images are screened for photographic genre and scene identity before narration. Physical awards must show the award object rather than unrelated laureates; process scenes require the narrated operation instead of generic factory imagery. Crop/resize duplicate detection uses bounded in-memory OpenCV features. `preflight_outputs.py` remains image-only with a duration-scaled 300–480 second per-case deadline, no synthesis. Failed or semantically rejected image tests are not successful MP4 acceptance. No new production deployment is implied by an image build.

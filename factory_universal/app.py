@@ -20,6 +20,10 @@ STOP=set('the and for with from that this are was were have has into its which t
 ROOT.mkdir(parents=True,exist_ok=True)
 POOL=ThreadPoolExecutor(max_workers=1)
 
+def implementation_hashes():
+ base=Path(__file__).parent
+ return {name:hashlib.sha256((base/name).read_bytes()).hexdigest() for name in ('app.py','storyboard.py','visual_verifier.py','photo_duplicates.py','renderer.py','alignment_core.py')}
+
 def now(): return datetime.now(timezone.utc).isoformat()
 def connect():
  c=sqlite3.connect(DB,timeout=20); c.row_factory=sqlite3.Row
@@ -307,7 +311,7 @@ def wikipedia(topic,lang):
    if len(out)>=6:break
   return out
 def sentences(paragraph):
- abbreviations=r'\b(?:e\.g|i\.e|U\.S|U\.K|Mr|Mrs|Dr|Prof|Inc|Ltd|Corp|Co|np|m\.in|m\.st|нар|род|itp|itd|tj|tzn|tzw|ok|godz|proc|por|rys|św|млн|млрд|тис|тыс|т\.е|т\.д|т\.п|гг|рис|ім|ст)\.'
+ abbreviations=r'\b(?:e\.g|i\.e|U\.S|U\.K|Mr|Mrs|Dr|Prof|Inc|Ltd|Corp|Co|im|np|m\.in|m\.st|нар|род|itp|itd|tj|tzn|tzw|ok|godz|proc|por|rys|św|млн|млрд|тис|тыс|т\.е|т\.д|т\.п|гг|рис|ім|ст)\.'
  protected=re.sub(abbreviations,lambda match:match.group(0).replace('.',chr(0x2024)),paragraph,re.I)
  protected=re.sub(r'(?<!\w)([A-ZА-ЯІЇЄҐ])\.(?=\s+[A-ZА-ЯІЇЄҐ])',lambda match:match.group(1)+chr(0x2024),protected)
  return [part.replace(chr(0x2024),'.') for part in re.split(r'(?<=[.!?])\s+',protected.strip())]
@@ -362,6 +366,9 @@ def entity_profile(sources,lang):
           'source_url':'https://www.wikidata.org/wiki/'+qid}
 
  try:return cache_fetch('subject-profile-v5|'+lang+'|'+title,retrieve)
+ except urllib.error.HTTPError as error:
+  if error.code in {429,503}:raise
+  return {}
  except Exception:return {}
 def omit_parenthetical_asides(text):
  depth=0;out=[]
@@ -411,6 +418,8 @@ def bind_human_images(candidates,profile):
    query=urllib.parse.urlencode({'action':'wbgetentities','ids':ids,'props':'claims','format':'json'})
    return http_json('https://commons.wikimedia.org/w/api.php?'+query,timeout=25).get('entities',{})
   try:entities.update(cache_fetch('commons-depicts-v1|'+ids,retrieve))
+  except urllib.error.HTTPError as error:
+   if error.code in {429,503}:raise
   except Exception:pass
  for p in commons:
   entity=entities.get('M'+p['id'],{});statements=entity.get('statements') or entity.get('claims') or {}
@@ -428,10 +437,12 @@ def grounding_terms(text,lang):
 
 def context_dependent_sentence(text):
  # Source paragraphs may refer to material omitted from a short video.
- leading=r'^(?:ось чому|вот почему|that is why|that.s why|dlatego|згодом|пізніше|затем|впоследствии|subsequently|later|potem|następnie|the (?:outcome|result|wooden frame)\b|finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
+ leading=r'^(?:był on|była ona|byli oni|były one|ось чому|вот почему|that is why|that.s why|dlatego|згодом|пізніше|затем|впоследствии|subsequently|later|potem|następnie|the (?:outcome|result|wooden frame)\b|finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
  references=r'\b(?:цього|цієї|цих|цим|цій|цей|ця|цю|ці|їх|її|його|такі|таких|такого|этой|этого|этих|такие|таких|tych|tej|tego|takie|takich|this|these|those|such)\b'
  pronouns=r'^(?:he|she|it|they|their|its|он|она|оно|они|его|ее|её|их|він|вона|воно|вони|це|його|її|їх|one|ona|ono|oni|jej|jego|ich)\b'
- return bool(re.search(leading,text,re.I) or re.search(references,text,re.I) or re.search(pronouns,text,re.I))
+ reference=re.search(references,text,re.I)
+ dangling=bool(reference and len(text[:reference.start()].split())<5)
+ return bool(re.search(leading,text,re.I) or dangling or re.search(pronouns,text,re.I))
 
 
 def attach_native_aliases(sources,lang):
@@ -504,7 +515,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
     for sentence in units:
      connected_block=sentence==paragraph and len(sentences(paragraph))>1
      original_sentence=sentence;source_position=paragraph_start+paragraph.find(original_sentence)
-     if original_sentence in src.get('excluded_visual_sentences',[]):continue
+     if any(excluded in original_sentence for excluded in src.get('excluded_visual_sentences',[])):continue
      if human or definition:sentence=omit_parenthetical_asides(sentence)
      if definition and process_intent and lang=='en' and re.search(r',\s+(?:which|while)\b',sentence,re.I):sentence=re.split(r',\s+(?:which|while)\b',sentence,maxsplit=1,flags=re.I)[0].rstrip()+'.'
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
@@ -518,8 +529,6 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if re.search(r'[:;]\s*[\"”\u0027]?[.!?]$',sentence):continue
      if sentence.count('(')!=sentence.count(')') or re.search(r'\bIPA\s*:|U\+[0-9A-F]{4}|Unicode',sentence):continue
      if re.match(r'^(?:examples? include|another example|for example|such)\b',sentence,re.I):continue
-     if re.search(r'\b(?:этой|этого|этих|цього|цієї|tych|tej|tego|this|these|those|such|their)\b',context_text,re.I):continue
-     if re.search(r'\b(?:it|they)\b',context_text,re.I) or re.match(r'^(?:he|she|он|она|оно|они|він|вона|воно|вони|one|ona|ono|oni|jej|jego|w ten sposób)\b',context_text,re.I):continue
      history_requested=bool(re.search(r'histor|ancient|истори|істор|dziej',topic,re.I))
      research_requested=bool(re.search(r'research|scientist|computer|дослід|дослiд|исслед|комп.ютер|учен|nauk|badani',topic,re.I))
      if not research_requested and re.search(r'humanity|supercomputer|людству|суперкомп|систематично спостерігати|systematically observ',sentence,re.I):continue
@@ -576,6 +585,8 @@ def load_sources(topic,lang):
  try:
   sources=attach_native_aliases(relevant_sources(cache_fetch(source_cache_key(topic,lang),lambda:wikipedia(topic,lang)),topic,lang),lang)
   if sources:
+   from storyboard import ensure_source
+   ensure_source(sources,lang,sys.modules[__name__])
    profile=entity_profile(sources,lang);sources[0]['entity_profile']=profile
    description=profile.get('native_description','').strip().rstrip('.')
    if description:description=sentences(description)[0].rstrip('.!?')
@@ -687,8 +698,8 @@ def plain_metadata(value):
  parser=WikiHTML();parser.feed(str(value or ''))
  return re.sub(r'\s+',' ',parser.text()).strip()
 def commons_search(query,limit=20):
- params=urllib.parse.urlencode({'action':'query','generator':'search','gsrsearch':query+' filetype:bitmap','gsrnamespace':6,'gsrlimit':max(1,min(50,int(limit))),'prop':'imageinfo|categories','cllimit':'50','iiprop':'url|size|extmetadata','iiurlwidth':1600,'format':'json'})
- data=cache_fetch('commons-v3|'+str(limit)+'|'+query,lambda:http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=25))
+ params=urllib.parse.urlencode({'action':'query','generator':'search','gsrsearch':query+' filetype:bitmap','gsrnamespace':6,'gsrlimit':max(1,min(50,int(limit))),'prop':'imageinfo|categories','cllimit':'50','iiprop':'url|size|extmetadata','iiurlwidth':1280,'format':'json'})
+ data=cache_fetch('commons-v4|'+str(limit)+'|'+query,lambda:http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=25))
  found=[]
  for page in sorted((data.get('query') or {}).get('pages',{}).values(),key=lambda x:x.get('index',999)):
   for im in page.get('imageinfo',[]):
@@ -697,12 +708,14 @@ def commons_search(query,limit=20):
    license_name=get('LicenseShortName');license_url=get('LicenseUrl')
    if license_name not in {'Public domain','CC0','CC BY 2.0','CC BY 2.5','CC BY 3.0','CC BY 4.0'}:continue
    if license_name.startswith('CC BY') and (not license_url or not get('Artist')):continue
-   url=im.get('thumburl') or im.get('url','');host=urllib.parse.urlparse(url).hostname
+   original_url=im.get('url','');original_size=int(im.get('size') or 0);pixels=int(im.get('width') or 0)*int(im.get('height') or 0)
+   prefer_original=0<original_size<=4_000_000 and 0<pixels<=20_000_000
+   url=original_url if prefer_original else im.get('thumburl') or original_url;host=urllib.parse.urlparse(url).hostname
    if host not in {'upload.wikimedia.org','thumb.wikimedia.org'}:continue
    width=int(im.get('thumbwidth') or im.get('width') or 0);height=int(im.get('thumbheight') or im.get('height') or 0)
    if min(width,height)<640:continue
    source='https://commons.wikimedia.org/w/index.php?curid='+str(page['pageid'])
-   found.append({'provider':'commons','categories':[category['title'] for category in page.get('categories',[])],'id':str(page['pageid']),'alt':plain_metadata(page.get('title',''))+' '+get('ImageDescription'),'depiction':plain_metadata(page.get('title','')),'query':query,'url':url,'source_url':source,'creator':get('Artist') or get('Credit') or 'Wikimedia Commons','creator_url':im.get('descriptionurl') or source,'width':width,'height':height,'license':license_name,'license_url':license_url,'changes':'resized and composited with narration captions'})
+   found.append({'provider':'commons','categories':[category['title'] for category in page.get('categories',[])],'id':str(page['pageid']),'alt':plain_metadata(page.get('title',''))+' '+get('ImageDescription'),'depiction':plain_metadata(page.get('title','')),'query':query,'url':url,'original_url':original_url,'original_size':original_size,'original_pixels':pixels,'source_url':source,'creator':get('Artist') or get('Credit') or 'Wikimedia Commons','creator_url':im.get('descriptionurl') or source,'width':width,'height':height,'license':license_name,'license_url':license_url,'changes':'resized and composited with narration captions'})
  return found
 
 def visual_context_title(slot,sources,lang):
@@ -754,7 +767,8 @@ def visual_queries(topic,lang,slots):
   if slots[0].get('process_intent'):
    subject=' '.join(core)
    industry=[subject+' mill'] if 'mill' in slots[0].get('entity_profile',{}).get('visual_vocabulary',[]) else []
-   return list(dict.fromkeys([topic]+titles+industry+[subject+' '+term for term in ['factory','manufacturing','handmade','workshop','production machinery']]))[:7]
+   stages=[subject+' '+STAGE_QUERIES[next(iter(scene_actions(slot['text'])))] for slot in slots if scene_actions(slot['text'])!={'production'}]
+   return list(dict.fromkeys(stages+[topic]+titles+industry+[subject+' '+term for term in ['factory','manufacturing','handmade','workshop','production machinery']]))[:7]
   return list(dict.fromkeys([topic]+titles))[:7]
  labels={'heat':'melting furnace','shape':'forming molding','cool':'annealing','inspect':'quality inspection','production':'manufacturing'}
  needed=set().union(*(visual_actions(slot['text']) if slot.get('process_intent',True) else set() for slot in slots))
@@ -829,7 +843,7 @@ def bind_place_images(candidates,profile):
 
 def photographic_metadata(p):
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
- return not re.search(r'\.svg\b|\b(?:flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
+ return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
 
 def discover_photos(topic,lang,slots):
  pool=dict(DISCOVERED_PHOTOS);errors=[]
@@ -841,7 +855,9 @@ def discover_photos(topic,lang,slots):
   SEARCH_QUERIES['stock'].add(key)
   try:
    for candidate in photo_search(query,lang):pool.setdefault((candidate['provider'],candidate['id']),candidate)
-  except Exception as e:errors.append(str(e))
+  except Exception as e:
+   if getattr(e,'code',None) in {429,503}:raise
+   errors.append(str(e))
  # Commons supplements source-backed technical images, with a separate three-query bound.
  core_terms=list(dict.fromkeys(topic_terms(topic,lang)))
  core=' '.join(core_terms[:1])
@@ -854,7 +870,8 @@ def discover_photos(topic,lang,slots):
  if slots and slots[0].get('source_driven') and slots[0].get('process_intent'):
   category=profile.get('commons_category')
   queries=([('incategory:"'+category+'"')] if category else [])+[topic+' machinery',' '.join(core_terms)+(' mill interior' if 'mill' in profile.get('visual_vocabulary',[]) else ' handmade')]
-  queries=list(dict.fromkeys(queries))[:3]
+  stages=[' '.join(core_terms)+' '+STAGE_QUERIES[next(iter(scene_actions(slot['text'])))] for slot in slots if scene_actions(slot['text'])!={'production'}]
+  queries=list(dict.fromkeys(stages+queries))[:7]
  if named_place_subject(profile):
   name=profile['name'];native=profile.get('native_name') or name;category=profile.get('commons_category') or name
   details=list(dict.fromkeys(slot.get('place_detail_query') for slot in slots if slot.get('place_detail_query')))
@@ -867,7 +884,7 @@ def discover_photos(topic,lang,slots):
  from storyboard import query_plan
  scene_queries=query_plan(slots)
  if scene_queries:queries=list(dict.fromkeys(queries[:2]+scene_queries))[:24]
- commons_limit=24 if scene_queries else 3
+ commons_limit=24 if scene_queries else (7 if slots and slots[0].get('process_intent') else 3)
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  for query in queries:
   key=query.casefold().strip()
@@ -875,7 +892,9 @@ def discover_photos(topic,lang,slots):
   SEARCH_QUERIES['commons'].add(key)
   try:
    for candidate in commons_search(query,limit=50 if profile.get('kind')=='human' or (slots and slots[0].get('source_driven')) else 20):pool.setdefault((candidate['provider'],candidate['id']),candidate)
-  except Exception as e:errors.append('Commons: '+str(e))
+  except Exception as e:
+   if getattr(e,'code',None) in {429,503}:raise
+   errors.append('Commons: '+str(e))
  if not pool:raise ValueError('; '.join(errors) or 'no photo candidates')
  DISCOVERED_PHOTOS.update(pool)
  return list(pool.values())
@@ -906,13 +925,28 @@ def dhash(im):
  return n
 def visual_actions(text):
  patterns={
-  'heat':r'\b(?:melt\w*|molten|furnace\w*|heat(?:ed|ing)|kiln\w*|topi\w*|piec\w*|плав\w*|печ\w*|нагр\w*)',
+  'melt':r'\b(?:melt\w*|molten|topi\w*|плав\w*)',
+  'drain':r'\b(?:drain\w*|siev\w*|screen\w*|dewater\w*|odwad\w*|sącz\w*|осуш\w*|сито\w*)',
+  'press':r'\b(?:press\w*|squeez\w*|pras\w*|пресс\w*|прес\w*)',
+  'dry':r'\b(?:dry\w*|dried|dryer\w*|susz\w*|суш\w*)',
+  'cut':r'\b(?:cut\w*|slit\w*|trim\w*|cię\w*|рез\w*|різ\w*)',
+  'mix':r'\b(?:mix\w*|stirr\w*|blend\w*|miesz\w*|смеш\w*|зміш\w*)',
+  'heat':r'\b(?:furnace\w*|heat(?:ed|ing)|kiln\w*|topi\w*|piec\w*|плав\w*|печ\w*|нагр\w*)',
   'shape':r'\b(?:blow(?:n|ing|pipe)?|blows|glassblow\w*|form(?:ed|ing)|mold\w*|mould\w*|shap(?:ed|ing)|wydmuch\w*|formow\w*|wyduw\w*|выдув\w*|формов\w*|видув\w*|формув\w*)',
   'cool':r'\b(?:cool(?:ed|ing)|anneal\w*|lehr|leer|chłodz\w*|wyżarz\w*|охлажд\w*|отжиг\w*|охолодж\w*|відпал\w*)',
   'inspect':r'\b(?:inspect\w*|quality control|quality check\w*|test(?:ed|ing)|kontrol\w*|sprawdz\w*|провер\w*|контрол\w*|перевір\w*)',
   'production':r'\b(?:factor(?:y|ies)|mill(?:ing)?|refiner\w*|manufactur\w*|\w{3,}making|production|assembly|automat\w*|machine\w*|fabryk\w*|produkc\w*|zakład\w*|завод\w*|производств\w*|виробниц\w*)'
  }
  return {key for key,pattern in patterns.items() if re.search(pattern,text or '',re.I)}
+def scene_actions(text):
+ actions=visual_actions(text)
+ # The main operation takes precedence over auxiliary heat/vacuum in a clause.
+ for action in ('press','drain','cut','mix','melt','dry','inspect','cool','shape','heat'):
+  if action in actions:return {action}
+ return {'production'}
+
+STAGE_QUERIES={'press':'pressing press','drain':'forming screen drainage','cut':'cutting slitting','mix':'mixing pulp','melt':'melting furnace','dry':'drying','inspect':'quality inspection','cool':'annealing','shape':'forming molding','heat':'heating','production':'manufacturing'}
+
 def visual_competitors(topic,candidates):
  core=topic_terms(topic,'en');generic={'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
  anchors=[term for term in core if term not in generic]
@@ -926,9 +960,15 @@ def visual_competitors(topic,candidates):
    if len(modifier)>2 and modifier not in grammar and modifier not in core:found.add(modifier+' '+head)
   for phrase in found:counts[phrase]=counts.get(phrase,0)+1
  return ['A photograph of a '+phrase+'.' for phrase,count in sorted(counts.items(),key=lambda item:(-item[1],item[0])) if count>=3][:2]
+def institutional_astronomical_photo(candidate):
+ text=candidate.get('creator','')+' '+candidate.get('alt','')
+ return candidate.get('provider')=='commons' and bool(re.search(r'\b(?:NASA|ESA|JPL|Hubble|STScI|ESO|USGS|NOIRLab|NAOJ|JAXA|ISRO|CNSA)\b',text,re.I)) and not re.search(r'\b(?:astronaut|cosmonaut|spacesuit|space suit|simulation|simulated|concept|analogue|analog|rendering)\b',candidate.get('alt',''),re.I)
+
 def photo_score(p,slot,topic):
  if not photographic_metadata(p):return -1
  if slot.get('visual_target'):
+  target=slot['visual_target']
+  if named_astronomical_subject({'kind':target.get('kind'),'visual_description':target.get('description','')}) and not institutional_astronomical_photo(p):return -1
   from storyboard import target_score
   return target_score(p,slot,sys.modules[__name__])
  profile=slot.get('entity_profile',{})
@@ -969,11 +1009,15 @@ def photo_score(p,slot,topic):
  if not process_topic:
   qualifiers={term for term in tokens(slot.get('visual_title','')) if term not in tokens(topic) and term.isalpha() and len(term)>=3}-{'energy','power','system','plant','factory','production','manufacturing','process','industry','technology','list','century'}
   if qualifiers and not qualifiers&meta:return -1
- required=({'production'} if slot.get('source_driven') else visual_actions(slot['text'])) if process_topic else set();depicted=visual_actions(depiction)
+ required=scene_actions(slot['text']) if process_topic else set();depicted=visual_actions(depiction)
  specific=required-{'production'}
  if specific and not specific&depicted:return -1
  if required and not required&depicted:return -1
  return 2*len(terms&meta)+.8*len(set(tokens(topic))&meta)+8*len(required&depicted)+(6 if slot.get('visual_title') and slot['visual_title'].casefold()==p.get('query','').casefold() else 0)+(.5 if p['height']>=p['width'] else 0)
+def scene_photo_score(candidate,slot,topic):
+ if slot.get('visual_target_optional'):
+  return max((photo_score(candidate,{**slot,'visual_target':target},topic) for target in slot.get('visual_targets',[])),default=-1)
+ return photo_score(candidate,slot,topic)
 PIXEL_VERIFIER=None
 def get_pixel_verifier():
  global PIXEL_VERIFIER
@@ -981,8 +1025,11 @@ def get_pixel_verifier():
  return PIXEL_VERIFIER
 def pixel_check(raw,topic,slot,candidate=None):
  if slot.get('visual_target'):
-  target=slot['visual_target'];intent=target.get('intent',{});subject=target['name']+' — '+intent.get('visual',target.get('description',''))
-  audit=get_pixel_verifier().check(raw,subject,set(),'',[],topic,extra_negatives=['A close-up portrait photograph of a person with no visible scene object.','A generic photograph of people at an unrelated meeting.','A standalone corporate logo or wordmark on a plain background.','A screenshot of a website, app interface or social media profile.'])
+  target=slot['visual_target'];intent=target.get('intent',{});display_name=target['name']
+  if len(display_name)<3 and target.get('anchor','').isascii() and len(target.get('anchor',''))>=3:display_name=target['anchor']
+  subject=display_name+' — '+intent.get('visual',target.get('description',''))
+  negatives=intent.get('negative_descriptions',[])+['A close-up portrait photograph of a person with no visible scene object.','A screenshot of a website, app interface or social media profile.','A standalone corporate logo or wordmark on a plain background.','A generic photograph of people at an unrelated meeting.','A flat digital advertisement or promotional text banner.']
+  audit=get_pixel_verifier().check(raw,subject,set(),'',[],topic,extra_negatives=negatives)
   audit['scene_target']=target;return audit
 
  if slot.get('entity_profile',{}).get('kind')=='human':
@@ -1000,7 +1047,7 @@ def pixel_check(raw,topic,slot,candidate=None):
    return get_pixel_verifier().check(raw,name,set(),'',[],name,extra_positives=positive,extra_negatives=['A photograph of a spacecraft being built in a laboratory.','A person wearing an astronaut costume on Earth.','A collage of multiple labeled satellite images.','A topographic map with a color legend.'])
   if slot.get('process_intent'):
    subject=' '.join(dict.fromkeys(topic_terms(topic,'en'))) or topic
-   return get_pixel_verifier().check(raw,subject,{'production'},slot['text'] if slot.get('language')=='en' else '',slot.get('visual_competitors',[]),topic,extra_negatives=['A person writing or drawing on finished '+subject+'.','A typewriter, office printer or a person wrapping a parcel.'],extra_positives=['A photograph taken inside a '+subject+' mill.'] if 'mill' in profile.get('visual_vocabulary',[]) else [])
+   return get_pixel_verifier().check(raw,subject,scene_actions(slot['text']),slot['text'] if slot.get('language')=='en' else '',slot.get('visual_competitors',[]),topic,extra_negatives=['A person writing or drawing on finished '+subject+'.','A typewriter, office printer or a person wrapping a parcel.'],extra_positives=[])
   visual_subject=slot.get('visual_title') or topic
   description=profile.get('visual_description','') if visual_subject.casefold() in {profile.get('name','').casefold(),topic.casefold()} else ''
   subject=visual_subject+(' — '+description if description else '')
@@ -1014,8 +1061,8 @@ def allocate_photos(candidates,slots,topic,shot_count=None,scene_slots=None):
  # Assign the entire storyboard before downloads, preserving scarce assets for scenes that need them.
  subject=set(tokens(topic));edges=[]
  for slot in (scene_slots if scene_slots is not None else [slots[beat] for beat in shot_beats(shot_count if shot_count is not None else len(slots)*2,len(slots))]):
-  eligible=[index for index,p in enumerate(candidates) if photo_score(p,slot,topic)>=0]
-  eligible.sort(key=lambda index:photo_score(candidates[index],slot,topic),reverse=True)
+  eligible=[index for index,p in enumerate(candidates) if scene_photo_score(p,slot,topic)>=0]
+  eligible.sort(key=lambda index:scene_photo_score(candidates[index],slot,topic),reverse=True)
   edges.append(eligible)
  owner={}
  def assign(scene,seen):
@@ -1075,14 +1122,35 @@ def make_card(raw,caption,dest,credit=None):
   y=1545
   for line in lines:d.text((82,y),line,font=face,fill='white');y+=line_height
   Image.alpha_composite(bg.convert('RGBA'),layer).convert('RGB').save(dest,'JPEG',quality=88,optimize=True)
+class ImageServiceError(RuntimeError):
+ def __init__(self,status):
+  super().__init__('Image service returned HTTP '+str(status))
+  self.status=status
+
+IMAGE_SERVICE_RETRIES=0
 def download_photo(c,dest):
- host=(urllib.parse.urlparse(c['url']).hostname or '').lower()
- if urllib.parse.urlparse(c['url']).scheme!='https' or not(host in {'images.pexels.com','pixabay.com'} or host.endswith('.pixabay.com') or host in {'upload.wikimedia.org','thumb.wikimedia.org'}):raise ValueError('photo host not allowed')
- with urllib.request.urlopen(urllib.request.Request(c['url'],headers={'User-Agent':'UniversalShortFactory/1.0 (https://studio.hodor.com.pl/; educational video research)'}),timeout=25) as r:
-  data=r.read(20_000_001);ct=r.headers.get('Content-Type','').split(';')[0].lower()
- if len(data)>20_000_000 or ct not in {'image/jpeg','image/png','image/webp'}:raise ValueError('photo payload invalid')
+ def fetch(url):
+  parsed=urllib.parse.urlparse(url);host=(parsed.hostname or '').lower()
+  if parsed.scheme!='https' or not(host in {'images.pexels.com','pixabay.com'} or host.endswith('.pixabay.com') or host in {'upload.wikimedia.org','thumb.wikimedia.org'}):raise ValueError('photo host not allowed')
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'UniversalShortFactory/1.0 (https://studio.hodor.com.pl/; educational video research)'}),timeout=25) as response:
+   data=response.read(20_000_001);content_type=response.headers.get('Content-Type','').split(';')[0].lower()
+  if len(data)>20_000_000 or content_type not in {'image/jpeg','image/png','image/webp'}:raise ValueError('photo payload invalid')
+  return data
+ try:data=fetch(c['url'])
+ except urllib.error.HTTPError as error:
+  # The original is the same licensed Commons file, not a replacement image.
+  original=c.get('original_url')
+  usable=original and original!=c['url'] and 0<c.get('original_size',0)<=8_000_000 and 0<c.get('original_pixels',0)<=20_000_000
+  if error.code==503 and usable:
+   error.close()
+   try:data=fetch(original)
+   except urllib.error.HTTPError as second:
+    if second.code in {429,503}:raise ImageServiceError(second.code) from second
+    raise
+  elif error.code in {429,503}:raise ImageServiceError(error.code) from error
+  else:raise
  Path(dest).write_bytes(data)
- with Image.open(dest) as im:im.verify()
+ with Image.open(dest) as image:image.verify()
 
 SELECTED_VOICES={'en':('en-US','en-US-Chirp3-HD-Algenib'),'pl':('pl-PL','pl-PL-Chirp3-HD-Enceladus'),'ru':('ru-RU','ru-RU-Wavenet-D'),'uk':('uk-UA','uk-UA-Chirp3-HD-Enceladus')}
 def selected_voice_request(lang,text):
@@ -1217,6 +1285,13 @@ def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots
   try:
    before_send(slots)
    return slots
+  except ImageServiceError as error:
+   global IMAGE_SERVICE_RETRIES
+   if error.status!=503 or IMAGE_SERVICE_RETRIES>=2:raise
+   IMAGE_SERVICE_RETRIES+=1
+   jid=getattr(before_send,'job_id',None)
+   if jid:update(jid,stage='visuals',message='Image service temporarily unavailable; delayed retry '+str(IMAGE_SERVICE_RETRIES)+' of 2')
+   time.sleep(5*IMAGE_SERVICE_RETRIES)
   except SceneUnavailable as error:
    source=sources[error.source_index]
    excluded=source.setdefault('excluded_visual_sentences',[])
@@ -1327,6 +1402,12 @@ def execute_job(jid):
   if job.get('status')!='ready':update(jid,status='failed',stage='failed',progress=100,message='Worker stopped',error=scrub_error(error))
 
 def prepare_visuals(jid,sources,topic,lang,duration,slots):
+ try:return _prepare_visuals(jid,sources,topic,lang,duration,slots)
+ except urllib.error.HTTPError as error:
+  if error.code in {429,503}:raise ImageServiceError(error.code) from error
+  raise
+
+def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  visual_count=duration*2//5
  beat_count=len(slots)
  beat_for_shot=shot_beats(visual_count,beat_count);shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
@@ -1356,42 +1437,81 @@ def prepare_visuals(jid,sources,topic,lang,duration,slots):
  for slot in slots:slot['visual_competitors']=competitors
  get_pixel_verifier()
  allocated=allocate_photos(candidates,slots,media_topic,visual_count,scene_slots=scene_slots)
- eligible_by_shot=[{(p['provider'],p['id']) for p in candidates if photo_score(p,slot,media_topic)>=0} for slot in scene_slots]
+ eligible_by_shot=[{(p['provider'],p['id']) for p in candidates if scene_photo_score(p,slot,media_topic)>=0} for slot in scene_slots]
  topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[];rejected_contexts=set();used_origins=set()
+ raw_cache=ROOT/'tmp'/jid/'scene-photo-cache';raw_cache.mkdir(parents=True,exist_ok=True)
+ from photo_duplicates import fingerprint,duplicate
+ fingerprints=[]
  for i in range(visual_count):
   slot=scene_slots[i]
-  # Reserve scarce images only for a stricter future constraint. Equal
-  # subject constraints share a pool; reserving their unverified assignments
-  # can falsely exhaust today's scene despite usable images in that pool.
-  current_eligible=eligible_by_shot[i]
-  reserved={(p['provider'],p['id']) for future_index,p in enumerate(allocated[i+1:],i+1) if eligible_by_shot[future_index]<current_eligible}
-  ranked=[allocated[i]]+sorted([p for p in candidates if (p['provider'],p['id']) not in reserved and p is not allocated[i]],key=lambda p:photo_score(p,slot,media_topic),reverse=True)
-  found=None;attempts=0;rejection_reasons=[]
-  for p in ranked:
-   key=(p['provider'],p['id'])
-   context=(key,slot.get('visual_target',{}).get('id') or slot.get('visual_title',''),slot['text'] if slot.get('process_intent') else '')
-   if key in used_ids or bool(photo_origins(p)&used_origins) or context in rejected_contexts or photo_score(p,slot,media_topic)<0:continue
-   meta=set(tokens(p['alt']))
-   if not meta:continue
-   if attempts>=24:break
-   attempts+=1
-   shot=str(uuid.uuid4());folder=VISUAL/jid/shot;folder.mkdir(parents=True,exist_ok=False)
-   raw=folder/'source.download';final=folder/'selected.jpg'
-   try:
-    download_photo(p,raw)
-    with Image.open(raw) as im:ph=dhash(im.convert('RGB'))
-    if any((ph^old).bit_count()<=4 for old in hashes):raw.unlink(missing_ok=True);shutil.rmtree(folder);continue
-    pixel_audit=pixel_check(raw,media_topic,slot,p)
-    if not pixel_audit['passed']:raise ValueError('pixel comparison rejected candidate: score='+str(pixel_audit['positive_score'])+' margin='+str(pixel_audit['margin']))
-    make_card(raw,slot['text'],final,p);raw.unlink(missing_ok=True)
-   except Exception as e:
-    rejected_contexts.add(context);rejection_reasons.append(scrub_error(e));shutil.rmtree(folder,ignore_errors=True);continue
-   row=dict(p);row.update({'visual_target':slot.get('visual_target'),'visual_role':slot.get('visual_role'),'pixel_verification':pixel_audit,'caption':slot['text'],'article_title':sources[slot['source_index']]['title'],'article_url':sources[slot['source_index']]['url'],'asset_sha256':hashlib.sha256(final.read_bytes()).hexdigest()})
-   found={'provider':p,'shot':shot,'path':final,'hash':row['asset_sha256'],'phash':ph,'row':row};break
+  choices=[slot]
+  if slot.get('visual_target_optional'):
+   choices.extend({**slot,'visual_target':target} for target in slot.get('visual_targets',[]) if target['id']!=slot['visual_target']['id'])
+  for trial_slot in choices:
+   slot=trial_slot
+   # Reserve scarce images only for a stricter future constraint. Equal
+   # subject constraints share a pool; reserving their unverified assignments
+   # can falsely exhaust today's scene despite usable images in that pool.
+   current_eligible={(p['provider'],p['id']) for p in candidates if photo_score(p,slot,media_topic)>=0}
+   reserved={(p['provider'],p['id']) for future_index,p in enumerate(allocated[i+1:],i+1) if eligible_by_shot[future_index]<current_eligible}
+   ranked=[allocated[i]]+sorted([p for p in candidates if (p['provider'],p['id']) not in reserved and p is not allocated[i]],key=lambda p:photo_score(p,slot,media_topic),reverse=True)
+   found=None;attempts=0;rejection_reasons=[]
+   for p in ranked:
+    key=(p['provider'],p['id'])
+    context=(key,slot.get('visual_target',{}).get('id') or slot.get('visual_title',''),slot['text'] if slot.get('process_intent') else '')
+    if key in used_ids or bool(photo_origins(p)&used_origins) or context in rejected_contexts or photo_score(p,slot,media_topic)<0:continue
+    meta=set(tokens(p['alt']))
+    if not meta:continue
+    if attempts>=24:break
+    attempts+=1
+    shot=str(uuid.uuid4());folder=VISUAL/jid/shot;folder.mkdir(parents=True,exist_ok=False)
+    cache_key=hashlib.sha256(json.dumps([p['provider'],p['id'],p['url']]).encode()).hexdigest()
+    raw=raw_cache/(cache_key+'.source');final=folder/'selected.jpg'
+    try:
+     if not raw.exists():
+      partial=raw.with_suffix('.part')
+      try:download_photo(p,partial);partial.replace(raw)
+      finally:partial.unlink(missing_ok=True)
+     raw.touch()
+     cache_files=sorted(raw_cache.glob('*.source'),key=lambda path:path.stat().st_mtime)
+     cached_bytes=sum(path.stat().st_size for path in cache_files)
+     for old_path in cache_files:
+      if cached_bytes<=64*1024*1024:break
+      if old_path!=raw:cached_bytes-=old_path.stat().st_size;old_path.unlink()
+     with Image.open(raw) as im:ph=dhash(im.convert('RGB'))
+     if any((ph^old).bit_count()<=4 for old in hashes):shutil.rmtree(folder);continue
+     target=slot.get('visual_target') or {}
+     context_key=hashlib.sha256(json.dumps({'topic':media_topic,'subject':{key:target.get(key) for key in ('id','name','description','intent')},'profile':slot.get('entity_profile',{}).get('id'),'visual_title':slot.get('visual_title'),'caption':None if target else slot['text'],'competitors':slot.get('visual_competitors',[]),'language':lang},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+     audit_path=raw_cache/(cache_key+'-'+context_key+'.json');raw_sha=hashlib.sha256(raw.read_bytes()).hexdigest()
+     genre_path=raw_cache/(cache_key+'.photograph.json')
+     genre_saved=json.loads(genre_path.read_text()) if genre_path.exists() else {}
+     if genre_saved.get('raw_sha256')==raw_sha:photographic_audit=genre_saved['audit']
+     else:
+      photographic_audit=get_pixel_verifier().check_photograph(raw)
+      genre_path.write_text(json.dumps({'raw_sha256':raw_sha,'audit':photographic_audit},ensure_ascii=False))
+     if not photographic_audit['passed']:raise ValueError('Asset is not a verified photograph: score='+str(photographic_audit['positive_score'])+' margin='+str(photographic_audit['margin']))
+     saved=json.loads(audit_path.read_text()) if audit_path.exists() else {}
+     if saved.get('raw_sha256')==raw_sha:pixel_audit=saved['audit']
+     else:
+      pixel_audit=pixel_check(raw,media_topic,slot,p)
+      audit_path.write_text(json.dumps({'raw_sha256':raw_sha,'audit':pixel_audit},ensure_ascii=False))
+     if target:pixel_audit['scene_target']=target
+     pixel_audit['photographic_screen']=photographic_audit
+     if not pixel_audit['passed']:raise ValueError('pixel comparison rejected candidate: score='+str(pixel_audit['positive_score'])+' margin='+str(pixel_audit['margin']))
+     source_fingerprint=fingerprint(raw)
+     if any(duplicate(source_fingerprint,previous)['duplicate'] for previous in fingerprints):raise ValueError('Repeated source photograph after crop or resize')
+     make_card(raw,slot['text'],final,p)
+    except ImageServiceError:
+     shutil.rmtree(folder,ignore_errors=True);raise
+    except Exception as e:
+     rejected_contexts.add(context);rejection_reasons.append(scrub_error(e));shutil.rmtree(folder,ignore_errors=True);continue
+    row=dict(p);row.update({'visual_target':slot.get('visual_target'),'visual_role':slot.get('visual_role'),'pixel_verification':pixel_audit,'caption':slot['text'],'article_title':sources[slot['source_index']]['title'],'article_url':sources[slot['source_index']]['url'],'asset_sha256':hashlib.sha256(final.read_bytes()).hexdigest()})
+    found={'provider':p,'shot':shot,'path':final,'hash':row['asset_sha256'],'phash':ph,'fingerprint':source_fingerprint,'row':row};break
+   if found is not None:break
   if found is None:
    from storyboard import SceneUnavailable
    raise SceneUnavailable(slot,'no verified scene-matched image for shot '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
-  used_origins.update(photo_origins(found['provider']));hashes.append(found['phash']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
+  used_origins.update(photo_origins(found['provider']));hashes.append(found['phash']);fingerprints.append(found['fingerprint']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
   update(jid,progress=max(20+int((i+1)*25/visual_count),(get_job(jid) or {}).get('progress',0)),message='Prepared '+str(i+1)+' of '+str(visual_count)+' unique photos')
  return {'selected':selected,'visual_rows':visual_rows,'media_topic':media_topic,'beat_count':beat_count,'beat_for_shot':beat_for_shot,'shots_per_beat':shots_per_beat,'first_shot':first_shot,'script':' '.join(slot['text'] for slot in slots)}
 
@@ -1417,6 +1537,7 @@ def run_job(jid):
    shutil.rmtree(VISUAL/jid,ignore_errors=True)
    prepared=prepare_visuals(jid,sources,topic,lang,duration,planned_slots)
    visual_state.clear();visual_state.update(prepared)
+  before_send.job_id=jid
   slots,mp3,audio_ms,speech_ms,slot_targets,voice_audit=prepare_selected_narration(sources,topic,lang,jid,duration,before_send=before_send)
   if visual_state.get('script')!=' '.join(slot['text'] for slot in slots):raise ValueError('prepared storyboard does not match the final narration')
   selected=visual_state['selected'];visual_rows=visual_state['visual_rows'];media_topic=visual_state['media_topic']
@@ -1433,7 +1554,7 @@ def run_job(jid):
   full=subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(video),'-f','null','-'],capture_output=True,text=True,timeout=150)
   if full.returncode:raise ValueError('full MP4 decode failed')
   if not rendered.get('qa_passed'):raise ValueError('media-worker render QA failed')
-  manifest={'version':'universal-1','job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'script_mode':'source-grounded overview','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note'),'source_type':x.get('source_type','article'),'label':x.get('label'),'description':x.get('description')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_start':s['source_position'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification'],'visual_target':x.get('visual_target'),'visual_role':x.get('visual_role')} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'images_verified_before_voice':True,'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'scene_plan_version':'source-linked-v1','source_linked_shots':sum(bool(x.get('visual_target')) for x in visual_rows),'establishing_shots':sum(x.get('visual_role')=='establishing' for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
+  manifest={'version':'universal-1','implementation_hashes':implementation_hashes(),'job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'script_mode':'source-grounded overview','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note'),'source_type':x.get('source_type','article'),'revision_id':x.get('revision_id'),'revision_url':x.get('revision_url'),'label':x.get('label'),'description':x.get('description')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_start':s['source_position'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification'],'visual_target':x.get('visual_target'),'visual_role':x.get('visual_role')} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'images_verified_before_voice':True,'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'all_images_photographically_screened':all(x['pixel_verification'].get('photographic_screen',{}).get('passed') for x in visual_rows),'scene_plan_version':'source-linked-v2','source_linked_shots':sum(bool(x.get('visual_target')) for x in visual_rows),'establishing_shots':sum(x.get('visual_role')=='establishing' for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
   (RENDER/jid/'universal-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
   shutil.rmtree(VISUAL/jid,ignore_errors=True);shutil.rmtree(VOICE/jid,ignore_errors=True);shutil.rmtree(ROOT/'tmp'/jid,ignore_errors=True)
   update(jid,status='ready',stage='review',progress=100,message='MP4 ready for review; listening approval pending',manifest=json.dumps(manifest,ensure_ascii=False),error=None)

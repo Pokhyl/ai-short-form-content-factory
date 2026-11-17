@@ -56,8 +56,14 @@ class VisualVerifier:
  def check(self, image_path, subject, actions, caption='', competitors=None, competitor_subject='',extra_negatives=None,extra_positives=None):
   positive=[]
   templates={
-   'heat':['Industrial heating and melting of {subject}.','A furnace melting {subject} material during manufacturing.'],
-   'shape':['Industrial machinery forming and molding molten {subject}.','A worker shaping {subject} during its manufacturing process.'],
+   'heat':['Industrial equipment heating {subject}.','A worker heating {subject} during manufacturing.'],
+   'melt':['A furnace melting {subject} material.','Molten {subject} in a manufacturing furnace.'],
+   'drain':['Wet {subject} pulp draining through a mesh screen.','A forming screen removing water from {subject} fibers.'],
+   'press':['Press rollers squeezing water out of wet {subject}.','A hydraulic press compressing {subject} during manufacturing.'],
+   'dry':['Sheets of {subject} drying on racks.','Industrial dryers drying {subject} sheets.'],
+   'cut':['Industrial equipment cutting {subject}.','Slitting blades trimming {subject} sheets.'],
+   'mix':['A vat mixing {subject} raw material.','Industrial mixers blending {subject}.'],
+   'shape':['Industrial machinery forming and molding {subject}.','A worker shaping {subject} during its manufacturing process.'],
    'cool':['An annealing oven cooling {subject} after manufacturing.','Technical illustration of an annealing furnace for {subject}.'],
    'inspect':['A worker inspecting {subject} quality during manufacturing.','A photograph of a worker inspecting the quality of {subject}.','Quality control equipment inspecting {subject}.'],
    'production':['A photograph of industrial {subject} production machinery.','An archival photograph of {subject} manufacturing inside a factory.','A photograph of {subject} being made by hand.']}
@@ -67,8 +73,11 @@ class VisualVerifier:
   if not positive:positive=['A photograph of '+subject]
   positive.extend((extra_positives or [])[:4])
   negative=['A photograph of an unrelated landscape or animal.','A labeled line diagram, graph, chart or schematic.','A hand drawn illustration or painting.','A black and white woodcut engraving or historical line drawing.','A geographic map or a city locator map.','A photograph of a printed document, letter, certificate or text page.']
-  negative.extend((extra_negatives or [])[:4])
-  if actions:negative.append('A product photograph of finished '+subject+' without people or machinery.')
+  negative.extend((extra_negatives or [])[:min(8,max(0,24-len(positive)-len(negative)))])
+  if actions and actions!={'dry'}:negative.append('A product photograph of finished '+subject+' without people or machinery.')
+  if actions and actions!={'production'}:negative.append('An exterior view of a factory building with no visible manufacturing operation.')
+  if 'press' in actions:negative.append('A cutting blade slitting already finished sheets.')
+  if 'dry' in actions:negative.append('A steaming vat cooking or boiling wet pulp.')
   if 'shape' in actions:negative.append('A person attaching a cap or fitting to an already finished '+subject+'.')
   if 'glass' in subject.lower():negative.append('Metalworking, steel bars being heated and forged by a blacksmith.')
   base_count=len(negative);extra=(competitors or [])[:2];negative.extend(extra)
@@ -82,6 +91,13 @@ class VisualVerifier:
    else:negative_indices.append(position)
   positive_score=max(scores[:len(positive)]);negative_score=max(scores[index] for index in negative_indices);margin=positive_score-negative_score
   return {'passed':positive_score>=0.24 and margin>=0.015,'positive_score':round(positive_score,6),'negative_score':round(negative_score,6),'margin':round(margin,6),'model_sha256':MODEL_SHA256,'descriptions':descriptions,'excluded_competitor_aliases':excluded,'scores':[round(x,6) for x in scores]}
+
+ def check_photograph(self,image_path):
+  positive=['A photograph of a building.','A photograph of industrial machinery.','A photograph of a physical object.','A photograph of a landscape.','A photograph of a man.','A photograph of a woman.','A close-up portrait photograph.','A black and white historical photograph.','A scientific microscope photograph.','A photograph of an animal.','An astronomical photograph taken by a telescope.','A photograph of laboratory equipment.']
+  negative=['A digital advertisement, a marketing banner or a promotional graphic.','A screenshot of a computer program or website.','A standalone logo or wordmark on a plain background.','A vector drawing, a diagram, a graph or an illustration.','A text-only document, certificate or handwriting.','A painting, woodcut, engraving or AI-generated illustration.']
+  scores=self.compare(image_path,positive+negative)
+  best=max(scores[:len(positive)]);wrong=max(scores[len(positive):]);margin=best-wrong
+  return {'passed':margin>=.015,'policy':'contrastive photographic genre; independent subject gate requires 0.24 and 0.015','positive_score':round(best,6),'negative_score':round(wrong,6),'margin':round(margin,6),'model_sha256':MODEL_SHA256,'descriptions':positive+negative,'scores':[round(score,6) for score in scores]}
 
  def check_person(self,image_path,identity,description=''):
   if not identity.get('entity_id') or not identity.get('basis'):raise ValueError('source-backed person identity required')

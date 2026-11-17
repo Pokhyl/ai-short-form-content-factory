@@ -151,7 +151,7 @@ def check():
  def profile_fixture(sources,language):
   captured.append(sources[0]['title'])
   return {'id':'Q123','kind':'concept','native_name':'Papermaking','native_description':'process of making paper','source_url':'https://www.wikidata.org/wiki/Q123','labels':{'en':'papermaking'}}
- with patch.object(app,'cache_fetch',lambda key,fetch:list(retrieved)),patch.object(app,'entity_profile',profile_fixture):
+ with patch.object(app,'cache_fetch',lambda key,fetch:list(retrieved)),patch.object(app,'entity_profile',profile_fixture),patch('storyboard.ensure_source',lambda sources,lang,api:None):
   enriched=app.load_sources('How paper is made','en')
  assert captured==['Papermaking']
  assert enriched[-1]['source_type']=='structured definition'
@@ -279,6 +279,149 @@ def check():
  weighted=app.storyboard_beats(12,[{'text':'An introduction.','visual_role':'establishing'},{'text':'A detailed process description. '*5},{'text':'A shorter fact.'}])
  assert weighted.count(0)==2 and weighted.count(1)>weighted.count(2)>=2
 
+
+ # A reusable landing relation must not turn an aircraft into a rocket.
+ plane=storyboard.scene_intent('The aircraft landed.',{'name':'Example Airliner','description':'commercial aircraft'})
+ assert plane['name']=='landing' and 'aircraft' in plane['visual'] and 'rocket' not in plane['visual']
+ water=storyboard.scene_intent('The company treats wastewater.',{'name':'water','description':'chemical substance'})
+ assert water['name']!='medical treatment'
+
+
+ # Exact text and scene links share the existing article parser, including br.
+ snapshot=storyboard.extract_article('<p>A <a href="/wiki/River_One">river</a> flows.<br>Another <a href="/wiki/Lake_One">lake</a> follows.</p>','en',app)
+ assert len(snapshot['visual_links'])==2
+ for row,line in zip(snapshot['visual_links'],snapshot['text'].splitlines()):
+  assert row['paragraph_key']==storyboard.paragraph_key(line)
+
+
+ # Extra shots can use either illustrated subject, while both first appearances
+ # remain mandatory. A scarce subject never forces duplicate photographs.
+ rare={'id':'Q990','name':'Example Rare Material'}
+ rich={'id':'Q991','name':'Example Common Material'}
+ body={'text':'Two explicitly linked materials.','visual_targets':[rare,rich]}
+ expanded=storyboard.shot_slots([body],[0]*6)
+ assert not expanded[0]['visual_target_optional'] and not expanded[1]['visual_target_optional']
+ fixtures=[{'provider':'commons','id':'rare','depiction':'File:Example Rare Material.jpg','alt':'Example Rare Material','width':1000,'height':1000}]+[{'provider':'commons','id':'common'+str(i),'depiction':'File:Example Common Material '+str(i)+'.jpg','alt':'Example Common Material','width':1000,'height':1000} for i in range(5)]
+ assigned=app.allocate_photos(fixtures,[body],'Example',6,scene_slots=expanded)
+ assert len({row['id'] for row in assigned})==6
+ assert assigned[0]['id']=='rare'
+
+
+ # Wikipedia often links a name only at its first mention. Unambiguous aliases
+ # remain usable later; an ambiguous label still requires its local link.
+ only=storyboard.ArticleLinks();only.feed('<p><a href="/wiki/Example_City">Example City</a> is introduced.</p>')
+ alias_sources=[{'text':'Example City is introduced.\nThe scientist was born in Example City.','url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'human','id':'Q123'}}]
+ alias_slots=[{'text':'An introduction.','source_index':0,'source_sentence':'An introduction.'},{'text':'The scientist was born in Example City.','source_index':0,'source_sentence':'The scientist was born in Example City.'}]
+ with patch.object(storyboard,'source_links',return_value=only.links),patch.object(storyboard,'resolve_links',return_value={'Example City':{'id':'Q995','name':'Example City','kind':'entity','description':'city','native_name':'Example City'}}):
+  storyboard.build(alias_slots,alias_sources,'en',app)
+ assert alias_slots[1]['visual_targets'][0]['id']=='Q995'
+ assert alias_slots[1]['visual_targets'][0]['binding']=='unambiguous article alias'
+
+
+ # Metadata may use a sourced former or short organization name.
+ renamed={'id':'Q996','name':'Example Vehicles, Inc.','aliases':['Example Motors'],'description':'automotive manufacturer'}
+ renamed['intent']=storyboard.scene_intent('The founder joined Example Vehicles, Inc.',renamed)
+ vehicle={'provider':'commons','depiction':'File:Example Motors factory.jpg','alt':'Example Motors automotive factory'}
+ assert storyboard.target_score(vehicle,{'visual_target':renamed},app)>0
+
+
+ # An incidental mention in a photographer's description is not object identity.
+ unrelated={'provider':'commons','depiction':'File:Unrelated museum room.jpg','alt':'Unrelated museum room. Originally posted via Example Motors.','categories':['Category:Images from Example Motors']}
+ assert storyboard.target_score(unrelated,{'visual_target':renamed},app)<0
+ assert not app.photographic_metadata({'depiction':'File:Company advertisement.jpg','alt':'A company product'})
+
+
+ # Scene subjects retain astronomical provenance gates.
+ moon={'id':'Q997','kind':'entity','name':'Example Moon','description':'natural satellite'}
+ lunar={'provider':'commons','id':'moon','depiction':'File:Example Moon.jpg','alt':'Example Moon','creator':'Unverified uploader','width':1000,'height':1000}
+ assert app.photo_score(lunar,{'visual_target':moon},'Example planet')<0
+ assert app.photo_score({**lunar,'creator':'NASA'},{'visual_target':moon},'Example planet')>0
+
+
+ # A possessive can have an explicit antecedent in the same complete sentence.
+ assert not app.context_dependent_sentence('У 2002 році Приклад заснував компанію Альфа і став її керівником.')
+ assert app.context_dependent_sentence('Її керівник отримав нагороду.')
+ assert app.context_dependent_sentence('Był on odkrywcą nowego zjawiska.')
+
+
+ # A 503 thumbnail may fall back to the bounded original of that same file.
+ import io,tempfile
+ png=io.BytesIO();app.Image.new('RGB',(2,2),'white').save(png,format='PNG');png_bytes=png.getvalue()
+ class ImageResponse:
+  headers={'Content-Type':'image/png'}
+  def __enter__(self):return self
+  def __exit__(self,*args):pass
+  def read(self,limit):return png_bytes
+ picture={'url':'https://thumb.wikimedia.org/a.jpg','original_url':'https://upload.wikimedia.org/a.jpg','original_size':len(png_bytes),'original_pixels':4}
+ with tempfile.TemporaryDirectory() as folder:
+  error=app.urllib.error.HTTPError(picture['url'],503,'temporary',{},None)
+  with patch.object(app.urllib.request,'urlopen',side_effect=[error,ImageResponse()]) as opening:
+   app.download_photo(picture,app.Path(folder)/'source.png')
+   assert opening.call_count==2
+   assert opening.call_args_list[1].args[0].full_url==picture['original_url']
+  with patch.object(app.urllib.request,'urlopen',side_effect=TimeoutError('read timeout')) as opening:
+   try:app.download_photo(picture,app.Path(folder)/'timeout.png')
+   except TimeoutError:pass
+   else:raise AssertionError('Timeout did not propagate')
+   assert opening.call_count==1
+  rate=app.urllib.error.HTTPError(picture['url'],429,'rate limited',{},None)
+  with patch.object(app.urllib.request,'urlopen',side_effect=rate) as opening:
+   try:app.download_photo(picture,app.Path(folder)/'rate.png')
+   except app.ImageServiceError as error:assert error.status==429
+   else:raise AssertionError('429 did not propagate')
+   assert opening.call_count==1
+
+ # Temporary image-service failures keep the same facts and have a global cap.
+ same_slots=[{'text':'A complete source-backed fact.'}]
+ calls=[]
+ def temporarily_unavailable(slots):
+  calls.append(slots);raise app.ImageServiceError(503)
+ with patch.object(app,'IMAGE_SERVICE_RETRIES',0),patch.object(app.time,'sleep') as delay,patch.object(app,'plan_script',side_effect=AssertionError('Network failures must not discard facts')):
+  try:app.prepare_illustrated_slots([], 'Example','en',15,15,same_slots,temporarily_unavailable)
+  except app.ImageServiceError:pass
+  else:raise AssertionError('Persistent 503 did not stop after the cap')
+  assert len(calls)==3 and delay.call_count==2 and all(row is same_slots for row in calls)
+
+
+ # A search-rate response stops the provider sequence immediately.
+ rate=app.urllib.error.HTTPError('https://images.example/',429,'rate limited',{},None)
+ with patch.object(app,'SEARCH_QUERIES',{'stock':set(),'commons':set()}),patch.object(app,'DISCOVERED_PHOTOS',{}),patch.object(app,'photo_search',side_effect=rate) as search,patch.object(app,'commons_search',side_effect=AssertionError('Do not continue after rate limiting')):
+  try:app.discover_photos('Example topic','en',[{'text':'Example topic','process_intent':False}])
+  except app.urllib.error.HTTPError as error:assert error.code==429
+  else:raise AssertionError('Search rate limit was swallowed')
+  assert search.call_count==1
+
+
+ # Awards use the actual award object, not a similarly named parody or a winner portrait.
+ award={'id':'Q999','name':'Example Prize','description':'international award','aliases':['Example']}
+ award['intent']=storyboard.scene_intent('The scientist won the Example Prize.',award)
+ medal={'provider':'commons','depiction':'File:Example Prize medal.jpg','alt':'A medal','categories':['Category:Example Prize medals']}
+ parody={'provider':'commons','depiction':'File:Parody Example Prize trophy.jpg','alt':'A trophy','categories':['Category:Parody Example Prize trophies']}
+ winner={'provider':'commons','depiction':'File:Example Prize laureate portrait.jpg','alt':'A prize winner'}
+ assert storyboard.target_score(medal,{'visual_target':award},app)>0
+ assert storyboard.target_score(parody,{'visual_target':award},app)<0
+ assert storyboard.target_score(winner,{'visual_target':award},app)<0
+
+ # Texture from the same source remains a duplicate after a crop and resize.
+ import numpy as np
+ from photo_duplicates import fingerprint,duplicate
+ with tempfile.TemporaryDirectory() as folder:
+  rng=np.random.default_rng(42)
+  original=app.Image.fromarray(rng.integers(0,256,(150,200,3),dtype=np.uint8)).resize((800,600))
+  first=app.Path(folder)/'first.png';crop=app.Path(folder)/'crop.png';different=app.Path(folder)/'different.png'
+  original.save(first);original.crop((120,80,700,520)).resize((870,660)).save(crop)
+  app.Image.fromarray(np.random.default_rng(43).integers(0,256,(600,800,3),dtype=np.uint8)).save(different)
+  assert duplicate(fingerprint(first),fingerprint(crop))['duplicate']
+  assert not duplicate(fingerprint(first),fingerprint(different))['duplicate']
+
+ # Generic stage matching must reject a factory exterior and a cutting machine during pressing.
+ slot={'text':'The paper is pressed to remove water, sometimes assisted by heating.','source_driven':True,'process_intent':True}
+ assert app.scene_actions(slot['text'])=={'press'}
+ photo={'provider':'commons','alt':'paper factory machinery','height':800,'width':1200}
+ assert app.photo_score({**photo,'depiction':'Paper mill exterior at night'},slot,'How paper is made')<0
+ assert app.photo_score({**photo,'depiction':'Paper mill cutting and slitting machinery'},slot,'How paper is made')<0
+ assert app.photo_score({**photo,'depiction':'Paper mill pressing machinery'},slot,'How paper is made')>=0
+ assert app.scene_actions('Wet paper fibers drain through a sieve.')=={'drain'}
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 
