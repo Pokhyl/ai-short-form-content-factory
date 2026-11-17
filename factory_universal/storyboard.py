@@ -129,6 +129,17 @@ def resolve_links(links,lang,api):
   return rows
  return api.cache_fetch('scene-linked-entities-v2|'+lang+'|'+'|'.join(titles),fetch)
 
+AWARD_DOMAINS={
+ 'physics':r'\bphysics\b|fizyk|физик|фізик',
+ 'chemistry':r'\bchemistry\b|chemi|хими|хімі',
+ 'medicine':r'\bmedicine\b|medyc|медиц|медич',
+ 'literature':r'literatur|литератур|літератур',
+ 'peace':r'\bpeace\b|pokoju|pokój|\bмир[ау]?\b|\bмиру\b',
+ 'economics':r'econom|ekonom|эконом|економ',
+}
+def award_domains(text):
+ return {name for name,pattern in AWARD_DOMAINS.items() if re.search(pattern,text or '',re.I)}
+
 def scene_intent(text,target):
  description=target.get('description','')
  intents=[
@@ -144,13 +155,13 @@ def scene_intent(text,target):
    if name=='landing':
     kind='rocket' if re.search(r'rocket|launch.?vehicle|spacecraft',description,re.I) else 'aircraft' if re.search(r'aircraft|airplane|airliner|helicopter',description,re.I) else target['name']
     result['visual']='a '+kind+' landing at its landing area or landing platform'
-    result['forbidden_metadata']=r'engine test|landing leg test|ground test|simulation|rendering'
+    result['forbidden_metadata']=r'engine test|landing leg test|ground test|simulation|rendering|museum|exhibit|scale model'
     result['negative_descriptions']=['A rocket or aircraft taking off and ascending.','An engine being tested on the ground or a vehicle inside a factory.']
    if name=='medical treatment':
     result['negative_descriptions']=['An atomic bomb test or a nuclear explosion.','A military weapon, nuclear missile or mushroom cloud.']
    return result
  if re.search(r'\b(?:award|prize|honou?r)\b|of the year',description+' '+target['name'],re.I):
-  return {'name':'physical award','metadata_pattern':r'\b(?:medals?|troph(?:y|ies)|statuettes?|medaille\w*|medalla\w*|медал\w*)\b','visual':'the physical medal, trophy or award statuette','query_suffix':'medal trophy'}
+  return {'name':'physical award','award_domains':sorted(award_domains(text)),'metadata_pattern':r'\b(?:medals?|troph(?:y|ies)|statuettes?|medaille\w*|medalla\w*|медал\w*)\b','visual':'the physical medal, trophy or award statuette','query_suffix':'medal trophy'}
  if re.search(r'company|corporation|manufacturer|business|research organization|social networking service',description,re.I) and any(c.isupper() for c in target['name']):
   objects=['product','production facility','headquarters building']
   subject='its products, production facility or headquarters building'
@@ -225,11 +236,14 @@ def build(slots,sources,lang,api):
    proper=any(character.isupper() for character in entity['name'])
    row['priority']=3 if proper else 1
    if re.search(r'^(?:country|sovereign state|continent|academic discipline|academic(?: or professional)? degree|professional degree|doctorate|field of|any |occupation|profession|official privileged social class|systematic study|relation of|mathematical)',description,re.I):row['priority']=0
-   if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):row['priority']=3
+   if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):row['priority']=5
    if re.search(r'conference|congress|summit|exhibition',description+' '+entity['name'],re.I):row['priority']=4
    if row['priority']==0:continue
    if row['binding']=='explicit paragraph link':row['priority']+=1
    row['intent']=scene_intent(slot['text'],row)
+   if row['intent']['name']!='organization context':
+    if re.search(r'^(?:city|town|village|municipality|capital\b)',description,re.I):row['priority']=1+(row['binding']=='explicit paragraph link')
+    elif re.search(r'rocket|spacecraft|launch.?vehicle|computer|camera|telescope|instrument|aircraft|engine|machine|device|mausoleum|bridge|cathedral|monument|building in',description,re.I):row['priority']+=2
    targets.setdefault(entity['id'],row)
   ranked=sorted(targets.values(),key=lambda row:(-row['priority'],-len(row['anchor']),row['name']))
   chosen=[row for row in ranked if row['priority']==ranked[0]['priority']][:2] if ranked else []
@@ -296,6 +310,9 @@ def target_score(candidate,slot,api):
   return False
  if not any(identity_phrase(name) for name in names if len(name)>=3):return -1
  intent=target.get('intent',{})
+ if intent.get('name')=='physical award':
+  required=set(intent.get('award_domains',[]));depicted=award_domains(identity_text)
+  if required and depicted and not required&depicted:return -1
  if intent.get('metadata_pattern') and not re.search(intent['metadata_pattern'],identity_text if intent.get('name')=='physical award' else text,re.I):return -1
  if intent.get('forbidden_metadata') and re.search(intent['forbidden_metadata'],text,re.I):return -1
  if intent.get('name')=='physical award' and re.search(r'portrait|headshot|laureates?|winners?|recipients?|ceremony|conference|banquet',candidate.get('depiction',''),re.I):return -1

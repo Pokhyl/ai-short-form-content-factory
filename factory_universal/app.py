@@ -247,6 +247,9 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
    for used,(total,chosen) in list(states[selected-1].items()):
     target=used+cost
     if target>budget:continue
+    if process_intent:
+     primary=scene_actions(sentence)-{'production'}
+     if primary and any(primary & (scene_actions(candidates[old][2])-{'production'}) for old in chosen):continue
     if natural:
      current_text=re.sub(r'\W+','',sentence.casefold())
      if any(current_text in re.sub(r'\W+','',candidates[old][2].casefold()) or re.sub(r'\W+','',candidates[old][2].casefold()) in current_text for old in chosen):continue
@@ -473,6 +476,13 @@ def biography_signal(text):
  # Prefer work and achievements over incidental short family anecdotes.
  return int(bool(re.search(r'\b(?:found(?:ed|er)|cofound\w*|establish\w*|invent\w*|discover\w*|research\w*|award\w*|prize|laureate|scientific|published|elected|founded|założy\w*|założyciel\w*|odkry\w*|bada\w*|nobla|nagrod\w*|wynal\w*|wybran\w*|zasnu\w*|засну\w*|основа\w*|винайш\w*|изобр\w*|відкри\w*|откры\w*|дослідж\w*|исслед\w*|нагород\w*|премі\w*|преми\w*|обран\w*)',text,re.I)))
 
+def retain_named_model_asides(text):
+ def retain(match):
+  value=match.group(1)
+  if len(value.split())<=4 and any(c.isupper() for c in value) and any(c.isdigit() for c in value) and any(c.isalpha() for c in value):return ' '+value+' '
+  return match.group(0)
+ return re.sub(r'\(([^()]*)\)',retain,text)
+
 def process_definition(text):
  parts=re.split(r'\s[—–]\s|\b(?:is|are|jest|są|це|это|є)\b',text or '',maxsplit=1,flags=re.I)
  return len(parts)>1 and bool(re.search(r'manufactur|making|made from|made by|process of|wytwarz|produk|виготов|виробниц|изготов|производ',parts[1],re.I))
@@ -520,6 +530,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      connected_block=sentence==paragraph and len(sentences(paragraph))>1
      original_sentence=sentence;source_position=paragraph_start+paragraph.find(original_sentence)
      if any(excluded in original_sentence for excluded in src.get('excluded_visual_sentences',[])):continue
+     if human:sentence=retain_named_model_asides(sentence)
      if human or definition:sentence=omit_parenthetical_asides(sentence)
      if definition and process_intent and lang=='en' and re.search(r',\s+(?:which|while)\b',sentence,re.I):sentence=re.split(r',\s+(?:which|while)\b',sentence,maxsplit=1,flags=re.I)[0].rstrip()+'.'
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
@@ -578,7 +589,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
   if opening is not None and not any(slot['text']==opening[2] for slot in chosen):
    chosen[-1]={'text':opening[2],'language':lang,'process_intent':process_intent,'source_index':opening[1],'source_sentence':opening[2],'score':opening[0]}
   if definition or sum(measured_sentence_ms(slot['text'],lang) for slot in chosen)>target_ms-100:
-   chosen=fit_narration(all_rows,count,lang,process_intent if not definition else False,target_ms,required_sentence=opening[2] if opening else None,natural=bool(definition))
+   chosen=fit_narration(all_rows,count,lang,process_intent,target_ms,required_sentence=opening[2] if opening else None,natural=bool(definition))
    if len(chosen)!=count:return []
    for slot in chosen:slot['process_intent']=process_intent
   for slot in chosen:

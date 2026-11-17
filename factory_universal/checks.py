@@ -483,6 +483,32 @@ def check():
  assert app.process_definition('Papermaking is the process of manufacturing paper and cardboard.')
  assert not app.process_definition('Papermaking — economic sector.')
  assert not app.process_definition('Glass is a non-crystalline solid.')
+ # Duration fitting must preserve different manufacturing stages instead of repeating pressing.
+ stage_rows=[(40,0,'The manufacturing process makes the material.',['lead']),(14,0,'Press rollers squeeze the wet sheet.',['press']),(13,0,'Hydraulic pressing removes the remaining water.',['press']),(12,0,'Fibers drain through a sieve screen.',['drain']),(12,0,'Finished sheets dry on open racks.',['dry'])]
+ with patch.object(app,'measured_sentence_ms',return_value=1000):
+  fitted=app.fit_narration(stage_rows,4,'en',True,5000,required_sentence=stage_rows[0][2])
+ assert len(fitted)==4 and sum(app.scene_actions(slot['text'])=={'press'} for slot in fitted)==1
+ assert any(app.scene_actions(slot['text'])=={'dry'} for slot in fitted)
+ # Keep the named physical model needed for source-to-image binding, while omitting bare date asides.
+ model_sentence='The inventor bought a computer (Example ZX-80) and learned programming (1971).'
+ clean=app.omit_parenthetical_asides(app.retain_named_model_asides(model_sentence))
+ assert 'Example ZX-80' in clean and '1971' not in clean
+ # A scientific award is not illustrated with a different disciplinary prize.
+ field_award={'id':'Q999','name':'Example Prize','description':'international award'}
+ field_award['intent']=storyboard.scene_intent('The scientist received the Example Prize in physics.',field_award)
+ peace_medal={'provider':'commons','depiction':'File:Example Prize peace medal.jpg','alt':'A physical medal'}
+ physics_medal={'provider':'commons','depiction':'File:Example Prize physics medal.jpg','alt':'A physical medal'}
+ assert storyboard.target_score(peace_medal,{'visual_target':field_award},app)<0
+ assert storyboard.target_score(physics_medal,{'visual_target':field_award},app)>0
+ assert storyboard.award_domains('Nagrodę otrzymała z fizyki.')=={'physics'}
+ # A concrete instrument outranks a broad company mentioned in the same factual scene.
+ specificity=storyboard.ArticleLinks();specificity.feed('<p><a href="/wiki/Example_Device">Example Device</a> is introduced.</p><p>The engineer demonstrated Example Device at <a href="/wiki/Example_Corporation">Example Corporation</a>.</p>')
+ specific_sentence='The engineer demonstrated Example Device at Example Corporation.'
+ specific_sources=[{'text':'Example Device is introduced.\n'+specific_sentence,'url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'human','id':'Q123'}}]
+ specific_slots=[{'text':'Introduction.','source_index':0},{'text':specific_sentence,'source_sentence':specific_sentence,'source_index':0}]
+ with patch.object(storyboard,'source_links',return_value=specificity.links),patch.object(storyboard,'resolve_links',return_value={'Example Device':{'id':'Q112','name':'Example Device','kind':'entity','description':'laboratory instrument'},'Example Corporation':{'id':'Q113','name':'Example Corporation','kind':'entity','description':'technology company'}}):
+  storyboard.build(specific_slots,specific_sources,'en',app)
+ assert [target['id'] for target in specific_slots[1]['visual_targets']]==['Q112']
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 
