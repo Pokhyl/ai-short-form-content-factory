@@ -1,0 +1,147 @@
+{
+  "project_ready": false,
+  "deployed": false,
+  "new_voice_sends_since_owner_rejection": 0,
+  "runtime_checks": "passed",
+  "runs": {
+    "9": [
+      {
+        "id": "77ff2880-f38f-43b7-897a-faac1508e752",
+        "topic": "Илон Маск",
+        "status": "failed",
+        "images": null,
+        "error": "No complete source narration with enough scene-matched media",
+        "searches": null,
+        "implementation_hashes": {
+          "app.py": "6d80ab02bd267112a6a8da918dbf5a77650cf62889c20278b9f0c603498b6857",
+          "storyboard.py": "ff14905c1566f7d19f3e3b2ab6e61b1022d974f2bd62f4f7e8c25a62d3203b2b",
+          "visual_verifier.py": "55c3c2f4a5163276db20632efc6b03d91d947efa2df747baff27576b849eeb79",
+          "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+          "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+          "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+        }
+      },
+      {
+        "id": "2d0bd4cb-2e65-4577-b1f5-f37111570c45",
+        "topic": "Marie Curie",
+        "status": "preflight_passed",
+        "images": 12,
+        "error": null,
+        "searches": {
+          "stock": 0,
+          "commons": 17
+        },
+        "implementation_hashes": {
+          "app.py": "6d80ab02bd267112a6a8da918dbf5a77650cf62889c20278b9f0c603498b6857",
+          "storyboard.py": "ff14905c1566f7d19f3e3b2ab6e61b1022d974f2bd62f4f7e8c25a62d3203b2b",
+          "visual_verifier.py": "55c3c2f4a5163276db20632efc6b03d91d947efa2df747baff27576b849eeb79",
+          "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+          "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+          "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+        }
+      },
+      {
+        "id": "f38563ef-d2db-4300-9ffe-1b2cbc742deb",
+        "topic": "How paper is made",
+        "status": "failed",
+        "images": null,
+        "error": "image preflight exceeded its duration-scaled per-case deadline",
+        "searches": null,
+        "implementation_hashes": {
+          "app.py": "6d80ab02bd267112a6a8da918dbf5a77650cf62889c20278b9f0c603498b6857",
+          "storyboard.py": "ff14905c1566f7d19f3e3b2ab6e61b1022d974f2bd62f4f7e8c25a62d3203b2b",
+          "visual_verifier.py": "55c3c2f4a5163276db20632efc6b03d91d947efa2df747baff27576b849eeb79",
+          "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+          "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+          "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+        }
+      }
+    ],
+    "10": [
+      {
+        "id": "59a2d039-91a5-4777-ae6e-b2b4a9f4dbdc",
+        "topic": "Илон Маск",
+        "status": "preflight_passed",
+        "images": 24,
+        "error": null,
+        "searches": {
+          "stock": 0,
+          "commons": 18
+        },
+        "implementation_hashes": {
+          "app.py": "4f3af8d1a3fa4cba0bf14d46f70f0beb28dfe1535866025788863cd4cc1c6952",
+          "storyboard.py": "fdd44a728e579072a7c39d02fe6cb61df69b8a772430b79b67959edcb28c7c9f",
+          "visual_verifier.py": "9604b70c44a7d9400b137f77c6caf4cccbbed501c5fb9ea8f9f958d6f7780637",
+          "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+          "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+          "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+        }
+      },
+      {
+        "id": "fe27856b-3dd5-40f3-a60d-92c4ea05e99b",
+        "topic": "Marie Curie",
+        "status": "preflight_passed",
+        "images": 12,
+        "error": null,
+        "searches": {
+          "stock": 0,
+          "commons": 16
+        },
+        "implementation_hashes": {
+          "app.py": "4f3af8d1a3fa4cba0bf14d46f70f0beb28dfe1535866025788863cd4cc1c6952",
+          "storyboard.py": "fdd44a728e579072a7c39d02fe6cb61df69b8a772430b79b67959edcb28c7c9f",
+          "visual_verifier.py": "9604b70c44a7d9400b137f77c6caf4cccbbed501c5fb9ea8f9f958d6f7780637",
+          "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+          "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+          "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+        }
+      },
+      {
+        "id": "30dda620-efed-41fd-b1c1-88de55604331",
+        "topic": "How paper is made",
+        "status": "failed",
+        "images": null,
+        "error": "image preflight exceeded its duration-scaled per-case deadline",
+        "searches": {
+          "stock": 7,
+          "commons": 7
+        },
+        "implementation_hashes": {
+          "app.py": "4f3af8d1a3fa4cba0bf14d46f70f0beb28dfe1535866025788863cd4cc1c6952",
+          "storyboard.py": "fdd44a728e579072a7c39d02fe6cb61df69b8a772430b79b67959edcb28c7c9f",
+          "visual_verifier.py": "9604b70c44a7d9400b137f77c6caf4cccbbed501c5fb9ea8f9f958d6f7780637",
+          "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+          "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+          "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+        }
+      }
+    ],
+    "11": [
+      {
+        "id": "cbc7d569-c3aa-4b04-afb8-b32ba4a9e157",
+        "topic": "How paper is made",
+        "status": "operator_stopped",
+        "images": null,
+        "error": "Diagnosed procedural opening selected a structured sector label; no narration requested",
+        "searches": null,
+        "implementation_hashes": null
+      }
+    ]
+  },
+  "assistant_review_v10": {
+    "Musk": "rejected: duplicated founding fact, a ceremony photo under a company founding caption, and an unhelpful profile/logo update sentence",
+    "Curie": "all 12 photographed subjects relate to their captions; limited variety includes several views of chemical specimens and the same tomb; image-only, no listening or MP4 approval",
+    "paper": "failed bounded image-only deadline"
+  },
+  "operator_stop_v11": "Stopped only the identified image-only operator container after its procedural opening was diagnosed as a structured economic-sector label. Owned job recorded as stopped, zero voice attempts, exact job temporaries removed.",
+  "general_changes": [
+    "Bounded scene capacity redistribution retains the facts, exact total shot count, and at least two verified photos per beat",
+    "Separate physical-object prompts for organization contexts; genre screens include vehicles, spacecraft, medals and sample vials",
+    "Exclude ceremonies from organization evidence and abstract degree labels from research scenes",
+    "Reject duplicate founding events for the same linked entity and year",
+    "Keep procedural article definitions rather than sparse structured industry labels",
+    "Filter incidental profile/logo maintenance from general biographies",
+    "Source-linked Commons budget is finite at 48 unique queries; stock remains 7; runtime and disk bounds remain intact"
+  ],
+  "next_run": "scene-grounding-preflight-20261117-v12.json; image-only, not MP4 acceptance"
+}

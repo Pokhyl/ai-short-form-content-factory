@@ -327,6 +327,46 @@ def check():
   storyboard.build(scoped_slots,scoped_sources,'en',app)
  assert [target['id'] for target in scoped_slots[1]['visual_targets']]==['Q996']
 
+ # Abstract academic qualifications cannot illustrate a person's research with someone else's graduation.
+ degree_parser=storyboard.ArticleLinks();degree_parser.feed('<p>The scientist researched radiation for a <a href="/wiki/Doctorate">doctorate</a>.</p>')
+ degree_sentence='The scientist researched radiation for a doctorate.'
+ degree_sources=[{'text':degree_sentence,'url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'human','id':'Q123'}}]
+ with patch.object(storyboard,'source_links',return_value=degree_parser.links),patch.object(storyboard,'resolve_links',return_value={'Doctorate':{'id':'Q997','name':'doctorate','kind':'entity','description':'academic or professional degree'}}):
+  try:storyboard.build([{'text':'Introduction.','source_index':0},{'text':degree_sentence,'source_sentence':degree_sentence,'source_index':0}],degree_sources,'en',app)
+  except storyboard.SceneUnavailable:pass
+  else:raise AssertionError('An abstract degree became visual evidence for research')
+
+ # A scarce scene keeps its facts and minimum two photos; surplus shots move to other beats.
+ limited=[{'text':'A long physical process fact. '*5,'visual_shot_cap':3},{'text':'Another physical stage.'},{'text':'A final physical stage.'}]
+ layout=app.storyboard_beats(12,limited)
+ assert len(layout)==12 and layout.count(0)==3 and all(layout.count(i)>=2 for i in range(3))
+ try:app.storyboard_beats(12,[{**slot,'visual_shot_cap':3} for slot in limited])
+ except app.ShotCapacityError:pass
+ else:raise AssertionError('A bounded layout exceeded verified image capacity')
+ scarce=storyboard.SceneUnavailable({'source_index':0,'source_sentence':'A complete fact.'},'No fourth distinct image')
+ scarce.beat_index=0;scarce.verified_in_beat=3
+ with TemporaryDirectory() as folder:
+  test_slots=[{'text':'A complete fact.'},{'text':'Another complete fact.'}]
+  with patch.object(app,'VISUAL',app.Path(folder)),patch.object(app,'_prepare_visuals',side_effect=[scarce,{'complete':True}]) as prepare:
+   assert app.prepare_visuals('owned-test',[],'Example','en',30,test_slots)=={'complete':True}
+   assert prepare.call_count==2 and test_slots[0]['visual_shot_cap']==3
+   assert test_slots[0]['text']=='A complete fact.'
+
+ # Differently worded sentences must not repeat the same founding event.
+ events=storyboard.ArticleLinks();events.feed('<p>In 2002 the founder established <a href="/wiki/Example_Rockets">Example Rockets</a>.</p><p>In June 2002 the founder founded <a href="/wiki/Example_Rockets">Example Rockets</a>.</p>')
+ first_event='In 2002 the founder established Example Rockets.';second_event='In June 2002 the founder founded Example Rockets.'
+ event_sources=[{'text':first_event+'\n'+second_event,'url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'human','id':'Q123'}}]
+ event_slots=[{'text':'Introduction.','source_index':0},{'text':first_event,'source_sentence':first_event,'source_index':0},{'text':second_event,'source_sentence':second_event,'source_index':0}]
+ with patch.object(storyboard,'source_links',return_value=events.links),patch.object(storyboard,'resolve_links',return_value={'Example Rockets':{'id':'Q998','name':'Example Rockets','kind':'entity','description':'aerospace company'}}):
+  try:storyboard.build(event_slots,event_sources,'en',app)
+  except storyboard.SceneUnavailable as error:assert error.source_sentence==second_event and error.visual_target is None
+  else:raise AssertionError('The same founding event was narrated twice')
+ company={'id':'Q998','name':'Example Rockets','description':'spaceflight company'}
+ company['intent']=storyboard.scene_intent('The founder established Example Rockets.',company)
+ assert company['intent']['visual_objects'][0]=='rocket'
+ ceremony={'provider':'commons','depiction':'File:Example Rockets welcome home ceremony.jpg','alt':'Spacecraft returned safely to the factory.'}
+ assert storyboard.target_score(ceremony,{'visual_target':company},app)<0
+
  # Metadata may use a sourced former or short organization name.
  renamed={'id':'Q996','name':'Example Vehicles, Inc.','aliases':['Example Motors'],'description':'automotive manufacturer'}
  renamed['intent']=storyboard.scene_intent('The founder joined Example Vehicles, Inc.',renamed)
@@ -440,6 +480,9 @@ def check():
  assert app.photo_score({**photo,'depiction':'Paper mill pressing machinery'},slot,'How paper is made')>=0
  assert app.scene_actions('Wet paper fibers drain through a sieve.')=={'drain'}
  assert 'drain' not in app.scene_actions('The phone screen is assembled in the factory.')
+ assert app.process_definition('Papermaking is the process of manufacturing paper and cardboard.')
+ assert not app.process_definition('Papermaking — economic sector.')
+ assert not app.process_definition('Glass is a non-crystalline solid.')
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

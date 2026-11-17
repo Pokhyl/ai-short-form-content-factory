@@ -473,6 +473,10 @@ def biography_signal(text):
  # Prefer work and achievements over incidental short family anecdotes.
  return int(bool(re.search(r'\b(?:found(?:ed|er)|cofound\w*|establish\w*|invent\w*|discover\w*|research\w*|award\w*|prize|laureate|scientific|published|elected|founded|założy\w*|założyciel\w*|odkry\w*|bada\w*|nobla|nagrod\w*|wynal\w*|wybran\w*|zasnu\w*|засну\w*|основа\w*|винайш\w*|изобр\w*|відкри\w*|откры\w*|дослідж\w*|исслед\w*|нагород\w*|премі\w*|преми\w*|обран\w*)',text,re.I)))
 
+def process_definition(text):
+ parts=re.split(r'\s[—–]\s|\b(?:is|are|jest|są|це|это|є)\b',text or '',maxsplit=1,flags=re.I)
+ return len(parts)>1 and bool(re.search(r'manufactur|making|made from|made by|process of|wytwarz|produk|виготов|виробниц|изготов|производ',parts[1],re.I))
+
 def source_slots(sources,topic,count,lang='en',duration_s=None):
   target_ms=(duration_s if duration_s is not None else count*5)*1000
   object_terms=grounding_terms(topic,lang)
@@ -543,14 +547,17 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if not process_intent and object_terms and (not direct_topic or (lang=='en' and not definition and not grounding_terms(' '.join(words[:6]),lang)&object_terms)):continue
      if lang=='en' and not human and not definition and not process_intent and unsupported_qualifier(sentence,topic,sources):continue
      if process_intent and not definition and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
-     if process_intent and not (visual_actions(sentence)-{'production'}) and process_overlap<2:continue
+     if process_intent and not (visual_actions(sentence)-{'production'}) and process_overlap<2 and not (si==0 and source_position<4 and process_definition(sentence)):continue
      score=((5 if process_intent else 30)/(1+paragraph_index) if definition else 0)+(8*process_overlap if definition and process_intent else 0)+topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
-     if human:score+=12*biography_signal(sentence)
+     if human:
+      profile_terms=r'profile|account|username|logo|обліков\w* запис|уч[её]тн\w* запис|профил|профіл|логотип|profil\w*|konto'
+      if not biography_signal(sentence) and re.search(profile_terms,sentence,re.I) and not re.search(profile_terms,topic,re.I):continue
+      score+=12*biography_signal(sentence)
      rows.append((score,si,sentence,words));source_positions.setdefault((si,sentence),source_position);source_spans.setdefault((si,sentence),original_sentence)
   rows.sort(key=lambda x:(-x[0],x[1],abs(len(x[3])-13)))
   if definition:
    candidate=next((row for row in rows if row[1]==0 and source_positions[(row[1],row[2])]<4 and re.search(r'—|\b(?:is|are|jest|są|є|это)\b',row[2],re.I) and len(selected_voice_request(lang,row[2])['input']['text'])*natural_char_rate(lang)<=target_ms*.8),None)
-   if process_intent:
+   if process_intent and not (candidate and process_definition(candidate[2])):
     procedural=[row for row in rows if row[1]==0 and process_signal(row[2],lang)>=2 and grounding_terms(row[2],lang)&grounding_terms(sources[0]['title'],lang) and len(selected_voice_request(lang,row[2])['input']['text'])*natural_char_rate(lang)<=target_ms]
     if procedural:candidate=min(procedural,key=lambda row:(source_positions[(0,row[2])],-len(row[2])))
    if candidate and (definition_index!=0 or candidate[2]!=definition):
@@ -658,12 +665,16 @@ def shot_beats(shot_count,beat_count):
  if beat_count<1 or shot_count<2*beat_count:raise ValueError('storyboard requires at least two images per narration beat')
  return [index*beat_count//shot_count for index in range(shot_count)]
 
+class ShotCapacityError(ValueError):pass
+
 def storyboard_beats(shot_count,slots):
  counts=[2]*len(slots)
  if sum(counts)>shot_count:raise ValueError('At least two scene images are required per narration beat')
  weights=[0 if slot.get('visual_role')=='establishing' else max(1,len(slot['text'])) for slot in slots]
  for _ in range(shot_count-sum(counts)):
-  index=max(range(len(slots)),key=lambda i:weights[i]/max(1,counts[i]-1))
+  eligible=[i for i,slot in enumerate(slots) if counts[i]<slot.get('visual_shot_cap',2 if slot.get('visual_role')=='establishing' and slot.get('entity_profile',{}).get('kind')=='human' else shot_count)]
+  if not eligible:raise ShotCapacityError('Verified scene capacity cannot cover all required images')
+  index=max(eligible,key=lambda i:weights[i]/max(1,counts[i]-1))
   counts[index]+=1
  return [i for i,count in enumerate(counts) for _ in range(count)]
 
@@ -884,8 +895,8 @@ def discover_photos(topic,lang,slots):
   queries=[subject,name+' incategory:"CC-BY-2.0"'+exclude,'intitle:"'+name+'" incategory:"CC-BY-4.0"'+exclude]
  from storyboard import query_plan
  scene_queries=query_plan(slots)
- if scene_queries:queries=list(dict.fromkeys(queries[:2]+scene_queries))[:24]
- commons_limit=24 if scene_queries else (7 if slots and slots[0].get('process_intent') else 3)
+ if scene_queries:queries=list(dict.fromkeys(queries[:2]+scene_queries))[:48]
+ commons_limit=48 if scene_queries else (7 if slots and slots[0].get('process_intent') else 3)
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  for query in queries:
   key=query.casefold().strip()
@@ -1031,7 +1042,8 @@ def pixel_check(raw,topic,slot,candidate=None):
   if len(display_name)<3 and target.get('anchor','').isascii() and len(target.get('anchor',''))>=3:display_name=target['anchor']
   subject=display_name+' — '+intent.get('visual',target.get('description',''))
   negatives=intent.get('negative_descriptions',[])+['A close-up portrait photograph of a person with no visible scene object.','A screenshot of a website, app interface or social media profile.','A standalone corporate logo or wordmark on a plain background.','A generic photograph of people at an unrelated meeting.','A flat digital advertisement or promotional text banner.']
-  audit=get_pixel_verifier().check(raw,subject,set(),'',[],topic,extra_negatives=negatives)
+  positives=['A photograph of '+display_name+' '+obj+'.' for obj in intent.get('visual_objects',[])[:3]]
+  audit=get_pixel_verifier().check(raw,subject,set(),'',[],topic,extra_negatives=negatives,extra_positives=positives)
   audit['scene_target']=target;return audit
 
  if slot.get('entity_profile',{}).get('kind')=='human':
@@ -1404,10 +1416,27 @@ def execute_job(jid):
   if job.get('status')!='ready':update(jid,status='failed',stage='failed',progress=100,message='Worker stopped',error=scrub_error(error))
 
 def prepare_visuals(jid,sources,topic,lang,duration,slots):
- try:return _prepare_visuals(jid,sources,topic,lang,duration,slots)
- except urllib.error.HTTPError as error:
-  if error.code in {429,503}:raise ImageServiceError(error.code) from error
-  raise
+ from storyboard import SceneUnavailable
+ last_unavailable=None
+ for _ in range(duration*2//5):
+  try:return _prepare_visuals(jid,sources,topic,lang,duration,slots)
+  except ShotCapacityError:
+   if last_unavailable is not None:raise last_unavailable
+   raise
+  except SceneUnavailable as error:
+   available=getattr(error,'verified_in_beat',0);beat=getattr(error,'beat_index',None)
+   if available<2 or beat is None:raise
+   old_cap=slots[beat].get('visual_shot_cap',duration*2//5)
+   if available>=old_cap:raise
+   slots[beat]['visual_shot_cap']=available;last_unavailable=error
+   # Preserve the facts and total image count. Other beats may supply surplus
+   # shots while this beat retains at least two independently verified photos.
+   shutil.rmtree(VISUAL/jid,ignore_errors=True)
+  except urllib.error.HTTPError as error:
+   if error.code in {429,503}:raise ImageServiceError(error.code) from error
+   raise
+ if last_unavailable is not None:raise last_unavailable
+ raise ValueError('Bounded scene layout did not complete')
 
 def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  visual_count=duration*2//5
@@ -1512,7 +1541,9 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
    if found is not None:break
   if found is None:
    from storyboard import SceneUnavailable
-   raise SceneUnavailable(slot,'no verified scene-matched image for shot '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
+   error=SceneUnavailable(slot,'no verified scene-matched image for shot '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
+   error.beat_index=beat_for_shot[i];error.verified_in_beat=sum(beat_for_shot[j]==error.beat_index for j in range(i))
+   raise error
   used_origins.update(photo_origins(found['provider']));hashes.append(found['phash']);fingerprints.append(found['fingerprint']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
   update(jid,progress=max(20+int((i+1)*25/visual_count),(get_job(jid) or {}).get('progress',0)),message='Prepared '+str(i+1)+' of '+str(visual_count)+' unique photos')
  return {'selected':selected,'visual_rows':visual_rows,'media_topic':media_topic,'beat_count':beat_count,'beat_for_shot':beat_for_shot,'shots_per_beat':shots_per_beat,'first_shot':first_shot,'script':' '.join(slot['text'] for slot in slots)}

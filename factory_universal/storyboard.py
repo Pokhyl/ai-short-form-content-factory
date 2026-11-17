@@ -152,20 +152,26 @@ def scene_intent(text,target):
  if re.search(r'\b(?:award|prize|honou?r)\b|of the year',description+' '+target['name'],re.I):
   return {'name':'physical award','metadata_pattern':r'\b(?:medals?|troph(?:y|ies)|statuettes?|medaille\w*|medalla\w*|медал\w*)\b','visual':'the physical medal, trophy or award statuette','query_suffix':'medal trophy'}
  if re.search(r'company|corporation|manufacturer|business|research organization|social networking service',description,re.I) and any(c.isupper() for c in target['name']):
+  objects=['product','production facility','headquarters building']
   subject='its products, production facility or headquarters building'
   metadata=r'\b(?:products?|devices?|factor\w*|facilit\w*|headquarters|buildings?|offices?|laborator\w*|machines?|equipment|production|stores?|showrooms?)\b'
-  if re.search(r'aerospace|spacecraft|rocket',description,re.I):
+  if re.search(r'aerospace|spaceflight|spacecraft|rocket',description,re.I):
+   objects=['rocket','spacecraft','launch facility']
    subject='a rocket, spacecraft or space launch facility';metadata=r'\b(?:rockets?|spacecraft|launch(?:pad)?|starship|booster|capsules?|factory|facilit\w*|headquarters|buildings?)\b'
   elif re.search(r'vehicle|automotive|car manufacturer',description,re.I):
+   objects=['car','automotive factory','showroom']
    subject='a vehicle, automotive factory or showroom';metadata=r'\b(?:cars?|vehicles?|automotive|sedans?|trucks?|roadsters?|factory|facilit\w*|headquarters|buildings?|offices?|showrooms?|stores?)\b'
   elif re.search(r'tunnel|infrastructure|construction',description,re.I):
+   objects=['tunnel','tunnel boring machine','construction machinery']
    subject='tunnel construction machinery or an underground tunnel';metadata=r'\b(?:tunnels?|boring|excavat\w*|construction|machines?|machinery|headquarters|buildings?)\b'
   elif re.search(r'neurotechnol|brain|implant',description,re.I):
+   objects=['neural implant','brain interface device','laboratory']
    subject='a neural implant, brain interface device or laboratory equipment';metadata=r'\b(?:neural|implants?|brain|interfaces?|devices?|laborator\w*|equipment|headquarters|buildings?)\b'
-  elif re.search(r'social network|software|internet',description,re.I):subject='a photographed device displaying the service or its headquarters building'
-  return {'name':'organization context','metadata_pattern':metadata,'visual':subject,'query_suffix':'headquarters'}
+  elif re.search(r'social network|software|internet',description,re.I):
+   objects=['headquarters building','office building','device'];subject='a photographed device displaying the service or its headquarters building'
+  return {'name':'organization context','metadata_pattern':metadata,'visual':subject,'visual_objects':objects,'query_suffix':objects[0]}
  if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):
-  return {'name':'physical sample','metadata_pattern':r'\b(?:samples?|specimens?|minerals?|elements?|vials?|ampoules?|ampuls?|ampullen?|próbk\w*|образ\w*|зраз\w*)\b','visual':'a physical chemical sample, mineral specimen or laboratory vial containing '+target['name'],'query_suffix':''}
+  return {'name':'physical sample','metadata_pattern':r'\b(?:samples?|specimens?|minerals?|elements?|vials?|sources?|foils?|sheets?|bars?|ribbons?|pellets?|powder|crystals?|ingots?|liquid|ampoules?|ampuls?|ampullen?|próbk\w*|образ\w*|зраз\w*)\b','visual':'a physical chemical sample, mineral specimen or laboratory vial containing '+target['name'],'query_suffix':''}
  return {'name':'linked subject','metadata_pattern':None,'visual':description[:180] or target['name'],'query_suffix':''}
 
 def build(slots,sources,lang,api):
@@ -199,6 +205,7 @@ def build(slots,sources,lang,api):
   return list(found.values())
  matched=list({(link['label'],link['title'],link.get('paragraph_key')):link for slot in slots for link in local_links(slot)}.values())
  resolved=resolve_links(matched,lang,api)
+ seen_events=set()
  for index,slot in enumerate(slots):
   targets={}
   if index==0:
@@ -212,12 +219,12 @@ def build(slots,sources,lang,api):
    if not entity or entity['id']==profile.get('id'):continue
    description=entity.get('description','')
    if entity.get('kind')=='human':continue
-   if re.search(r'^(?:calendar year|year\b|date |month |day |century|decade|Wikimedia|disambiguation|given name|family name|occupation|profession|position|job title|role |term |concept|academic degree)',description,re.I):continue
+   if re.search(r'^(?:calendar year|year\b|date |month |day |century|decade|Wikimedia|disambiguation|given name|family name|occupation|profession|position|job title|role |term |concept|academic(?: or professional)? degree|professional degree|doctorate)',description,re.I):continue
    row={**entity,'anchor':link['label'],'article_url':sources[slot.get('source_index',0)]['url'],'source_sentence':slot.get('source_sentence',slot['text']),'binding':link.get('binding','explicit paragraph link')}
    # Specific objects/institutions outrank broad countries or disciplines.
    proper=any(character.isupper() for character in entity['name'])
    row['priority']=3 if proper else 1
-   if re.search(r'^(?:country|sovereign state|continent|academic discipline|academic degree|field of|any |occupation|profession|official privileged social class|systematic study|relation of|mathematical)',description,re.I):row['priority']=0
+   if re.search(r'^(?:country|sovereign state|continent|academic discipline|academic(?: or professional)? degree|professional degree|doctorate|field of|any |occupation|profession|official privileged social class|systematic study|relation of|mathematical)',description,re.I):row['priority']=0
    if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):row['priority']=3
    if re.search(r'conference|congress|summit|exhibition',description+' '+entity['name'],re.I):row['priority']=4
    if row['priority']==0:continue
@@ -227,6 +234,10 @@ def build(slots,sources,lang,api):
   ranked=sorted(targets.values(),key=lambda row:(-row['priority'],-len(row['anchor']),row['name']))
   chosen=[row for row in ranked if row['priority']==ranked[0]['priority']][:2] if ranked else []
   chosen.sort(key=lambda row:slot['text'].casefold().find(row['anchor'].casefold()))
+  if profile.get('kind')=='human' and re.search(r'\b(?:found(?:ed|ing)?|cofound\w*|establish\w*|за?сну\w*|основа\w*|założy\w*)',slot['text'],re.I):
+   event_keys={(row['id'],year,'founding') for row in chosen for year in re.findall(r'\b(?:1[5-9]|20)\d{2}\b',slot['text'])}
+   if event_keys & seen_events:raise SceneUnavailable(slot,'Duplicate founding fact for the same source-linked subject and year')
+   seen_events.update(event_keys)
   slot['visual_targets']=chosen;slot['visual_role']='scene_evidence'
   if profile.get('kind')=='human' and not chosen:
    raise SceneUnavailable(slot,'No source-linked visual subject for a factual scene; a generic portrait is insufficient')
@@ -242,10 +253,16 @@ def query_plan(slots):
  for target in targets.values():
   name=target['name']
   if len(name)<3 and target.get('anchor','').isascii():name=target.get('anchor') or name
-  suffix=target.get('intent',{}).get('query_suffix','')
-  primary.extend([name+' medal',name+' trophy'] if target.get('intent',{}).get('name')=='physical award' else [name+(' '+suffix if suffix else '')])
-  if target.get('intent',{}).get('name')=='organization context':second.append(name+' '+('rocket' if 'rocket' in target['intent']['visual'] else 'vehicle' if 'vehicle' in target['intent']['visual'] else 'laboratory' if 'laboratory' in target['intent']['visual'] else 'building'))
-  second.append(name+(' '+suffix if suffix else '')+' incategory:"CC-BY-2.0"')
+  intent=target.get('intent',{});suffix=intent.get('query_suffix','')
+  if intent.get('name')=='physical award':
+   primary.append(name+' medal');second.append(name+' trophy')
+  elif intent.get('name')=='physical sample':
+   primary.append(name+' sample');second.append(name)
+  elif intent.get('name')=='organization context':
+   primary.append(name+' '+suffix);second.append(name+' headquarters')
+  else:
+   primary.append(name+(' '+suffix if suffix else ''))
+   second.append(name+(' '+suffix if suffix else '')+' incategory:"CC-BY-2.0"')
  return list(dict.fromkeys(primary+second))
 
 def shot_slots(slots,beat_for_shot):
@@ -283,6 +300,7 @@ def target_score(candidate,slot,api):
  if intent.get('forbidden_metadata') and re.search(intent['forbidden_metadata'],text,re.I):return -1
  if intent.get('name')=='physical award' and re.search(r'portrait|headshot|laureates?|winners?|recipients?|ceremony|conference|banquet',candidate.get('depiction',''),re.I):return -1
  if intent.get('name')=='organization context':
+  if re.search(r'\b(?:ceremon\w*|conferences?|banquets?|summits?|receptions?|celebrat\w*)\b',identity_text,re.I):return -1
   if any('screenshot' in category.lower() for category in candidate.get('categories',[])):return -1
   if re.search(r'\b(?:profiles?|accounts?|homepages?|screenshots?)\b',candidate.get('depiction',''),re.I):return -1
  if intent.get('name')=='organization context' and re.search(r'press.conference|portrait|headshot|interview|speaking at|speaking to|podium|lectern|giving a speech|delivering a speech',candidate.get('depiction','')+' '+candidate.get('alt',''),re.I):return -1

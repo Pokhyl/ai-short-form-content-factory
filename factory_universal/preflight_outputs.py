@@ -61,6 +61,8 @@ def main():
    app.update(jid,status='failed',stage='preflight',progress=100,message='Image-only verification stopped',error=result['error'])
   finally:
    signal.alarm(0)
+   result['searches']={key:len(value) for key,value in app.SEARCH_QUERIES.items()}
+   result['planning_rejections']=[rejection for source in sources for rejection in source.get('visual_planning_rejections',[])]
    for directory in (app.VISUAL/jid,app.VOICE/jid,app.ROOT/'tmp'/jid):shutil.rmtree(directory,ignore_errors=True)
    with app.connect() as db:assert db.execute('SELECT COUNT(*) FROM voice_attempts WHERE job_id=?',(jid,)).fetchone()[0]==0
   app.cleanup()
