@@ -6,6 +6,8 @@ Owner regression, 2026-11-16: Илон Маск / UK60 failed image selection at
 
 Read root AGENTS.md and factory_universal/README.md.
 
+2026-11-17 evidence: `acceptance/factory-universal/2026-11-17/scene-grounding-progress.json`. Image-only v8 passed counts for Curie and paper, but actual frame review rejected both; Musk exceeded its bounded image-only deadline. V9 adds organization/namesake discrimination, explicit paragraph-link precedence and procedural source preservation. Three previously wrong manufacturing images are rejected by the specific-operation pixel checks at the unchanged subject thresholds. New narration sends since the owner rejection: zero.
+
 2026-11-17 work in progress: source-linked targets, award-object identity, photo genre screening, crop/resize deduplication and manufacturing stage matching are implemented. These are general rules, not handpicked topic assets. Runtime checks pass. Image-only v7 passed counts for Curie/paper but assistant review rejected unrelated award photos and manufacturing stages; these are not semantic acceptance. The v8 regression is image-only and does not send narration. Do not claim project readiness from these runs. Running Studio still uses the older release until a verified replacement is deployed.
 
 Direct SSH alias `hodor-vps` works from the Mac. Always give local exec an existing working directory (for example `/`) and `/bin/sh`; the old supplied continuation workspace is absent. SentinelX availability is not a prerequisite for continuing server work. Do not expose SSH key contents or change shared services.

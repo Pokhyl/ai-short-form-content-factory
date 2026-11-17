@@ -543,6 +543,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if not process_intent and object_terms and (not direct_topic or (lang=='en' and not definition and not grounding_terms(' '.join(words[:6]),lang)&object_terms)):continue
      if lang=='en' and not human and not definition and not process_intent and unsupported_qualifier(sentence,topic,sources):continue
      if process_intent and not definition and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
+     if process_intent and not (visual_actions(sentence)-{'production'}) and process_overlap<2:continue
      score=((5 if process_intent else 30)/(1+paragraph_index) if definition else 0)+(8*process_overlap if definition and process_intent else 0)+topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
      if human:score+=12*biography_signal(sentence)
      rows.append((score,si,sentence,words));source_positions.setdefault((si,sentence),source_position);source_spans.setdefault((si,sentence),original_sentence)
@@ -843,7 +844,7 @@ def bind_place_images(candidates,profile):
 
 def photographic_metadata(p):
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
- return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
+ return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|calendars?|scrapbooks?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
 
 def discover_photos(topic,lang,slots):
  pool=dict(DISCOVERED_PHOTOS);errors=[]
@@ -926,7 +927,7 @@ def dhash(im):
 def visual_actions(text):
  patterns={
   'melt':r'\b(?:melt\w*|molten|topi\w*|плав\w*)',
-  'drain':r'\b(?:drain\w*|siev\w*|screen\w*|dewater\w*|odwad\w*|sącz\w*|осуш\w*|сито\w*)',
+  'drain':r'\b(?:drain\w*|siev\w*|(?:mesh|forming|wire|mould|mold|pulp) screens?\b|dewater\w*|odwad\w*|sącz\w*|осуш\w*|сито\w*)',
   'press':r'\b(?:press\w*|squeez\w*|pras\w*|пресс\w*|прес\w*)',
   'dry':r'\b(?:dry\w*|dried|dryer\w*|susz\w*|суш\w*)',
   'cut':r'\b(?:cut\w*|slit\w*|trim\w*|cię\w*|рез\w*|різ\w*)',
@@ -945,7 +946,7 @@ def scene_actions(text):
   if action in actions:return {action}
  return {'production'}
 
-STAGE_QUERIES={'press':'pressing press','drain':'forming screen drainage','cut':'cutting slitting','mix':'mixing pulp','melt':'melting furnace','dry':'drying','inspect':'quality inspection','cool':'annealing','shape':'forming molding','heat':'heating','production':'manufacturing'}
+STAGE_QUERIES={'press':'pressing press','drain':'forming screen drainage','cut':'cutting slitting','mix':'mixing raw materials','melt':'melting furnace','dry':'drying','inspect':'quality inspection','cool':'annealing','shape':'forming molding','heat':'heating','production':'manufacturing'}
 
 def visual_competitors(topic,candidates):
  core=topic_terms(topic,'en');generic={'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
@@ -1011,8 +1012,9 @@ def photo_score(p,slot,topic):
   if qualifiers and not qualifiers&meta:return -1
  required=scene_actions(slot['text']) if process_topic else set();depicted=visual_actions(depiction)
  specific=required-{'production'}
- if specific and not specific&depicted:return -1
- if required and not required&depicted:return -1
+ if specific and depicted-{'production'} and not specific&depicted:return -1
+ if specific and re.search(r'\b(?:exterior|outside|panorama|skyline)\b',depiction,re.I):return -1
+ if required and not required&depicted and 'production' not in depicted:return -1
  return 2*len(terms&meta)+.8*len(set(tokens(topic))&meta)+8*len(required&depicted)+(6 if slot.get('visual_title') and slot['visual_title'].casefold()==p.get('query','').casefold() else 0)+(.5 if p['height']>=p['width'] else 0)
 def scene_photo_score(candidate,slot,topic):
  if slot.get('visual_target_optional'):

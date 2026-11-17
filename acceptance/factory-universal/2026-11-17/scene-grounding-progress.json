@@ -1,0 +1,288 @@
+{
+  "project_ready": false,
+  "deployed": false,
+  "new_voice_sends_since_owner_rejection": 0,
+  "runtime_checks": "passed",
+  "image_only_v8": [
+    {
+      "id": "f8e55cbc-c0cc-40c9-a110-8cc8af0ec740",
+      "topic": "Илон Маск",
+      "language": "uk",
+      "duration": 60,
+      "status": "failed",
+      "images": null,
+      "error": "image preflight exceeded its duration-scaled per-case deadline",
+      "implementation_hashes": {
+        "app.py": "1c69a123590bb5729db8faa6ba85715cbe98fc97a12a0c77afc5851c130e4225",
+        "storyboard.py": "7fdb86afa150ce397338a9807ebb672b04cc96e9a7ef1a8030e25a2c9ed477b9",
+        "visual_verifier.py": "55c3c2f4a5163276db20632efc6b03d91d947efa2df747baff27576b849eeb79",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+        "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+      }
+    },
+    {
+      "id": "4d5a8050-765f-45e2-b908-962ecb3b3382",
+      "topic": "Marie Curie",
+      "language": "pl",
+      "duration": 30,
+      "status": "preflight_passed",
+      "images": 12,
+      "error": null,
+      "implementation_hashes": {
+        "app.py": "1c69a123590bb5729db8faa6ba85715cbe98fc97a12a0c77afc5851c130e4225",
+        "storyboard.py": "7fdb86afa150ce397338a9807ebb672b04cc96e9a7ef1a8030e25a2c9ed477b9",
+        "visual_verifier.py": "55c3c2f4a5163276db20632efc6b03d91d947efa2df747baff27576b849eeb79",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+        "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+      }
+    },
+    {
+      "id": "c75c2d12-eb10-4691-a5bf-7009ee2a8249",
+      "topic": "How paper is made",
+      "language": "en",
+      "duration": 30,
+      "status": "preflight_passed",
+      "images": 12,
+      "error": null,
+      "implementation_hashes": {
+        "app.py": "1c69a123590bb5729db8faa6ba85715cbe98fc97a12a0c77afc5851c130e4225",
+        "storyboard.py": "7fdb86afa150ce397338a9807ebb672b04cc96e9a7ef1a8030e25a2c9ed477b9",
+        "visual_verifier.py": "55c3c2f4a5163276db20632efc6b03d91d947efa2df747baff27576b849eeb79",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+        "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+      }
+    }
+  ],
+  "assistant_visual_review": {
+    "v8_musk": "rejected: partial sheet includes a namesake inventor and a generic podium photograph; job also exceeded the image-only deadline",
+    "v8_curie": "rejected: inferred broad city targets illustrated a specific mausoleum scene with an unrelated university building",
+    "v8_paper": "rejected: source fallback replaced manufacturing steps with properties/environmental facts and admitted unsuitable archival page imagery"
+  },
+  "implemented_after_v8": [
+    "Require organization product/premises context and disambiguate qualified names",
+    "Prefer explicit paragraph links over inferred article aliases",
+    "Preserve procedural source facts for manufacturing topics",
+    "Allow generic machinery metadata to reach the specific operation pixel screen; reject contradictory stages and exterior views"
+  ],
+  "pixel_regression": {
+    "project_ready": false,
+    "voice_sends": 0,
+    "implementation_hashes": {
+      "app.py": "6d80ab02bd267112a6a8da918dbf5a77650cf62889c20278b9f0c603498b6857",
+      "storyboard.py": "ff14905c1566f7d19f3e3b2ab6e61b1022d974f2bd62f4f7e8c25a62d3203b2b",
+      "visual_verifier.py": "55c3c2f4a5163276db20632efc6b03d91d947efa2df747baff27576b849eeb79",
+      "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+      "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+      "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+    },
+    "results": [
+      {
+        "old_shot": 4,
+        "metadata_score": -1,
+        "pixel": {
+          "passed": false,
+          "positive_score": 0.215798,
+          "negative_score": 0.227751,
+          "margin": -0.011953,
+          "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+          "descriptions": [
+            "Wet paper pulp draining through a mesh screen.",
+            "A forming screen removing water from paper fibers.",
+            "An image illustrating: In papermaking, a dilute suspension consisting mostly of separate cellulose fibres in water is drained through a sieve-like screen, so that a mat of randomly interwoven fibres is laid down.",
+            "A photograph of an unrelated landscape or animal.",
+            "A labeled line diagram, graph, chart or schematic.",
+            "A hand drawn illustration or painting.",
+            "A black and white woodcut engraving or historical line drawing.",
+            "A geographic map or a city locator map.",
+            "A photograph of a printed document, letter, certificate or text page.",
+            "A person writing or drawing on finished paper.",
+            "A typewriter, office printer or a person wrapping a parcel.",
+            "A product photograph of finished paper without people or machinery.",
+            "An exterior view of a factory building with no visible manufacturing operation."
+          ],
+          "excluded_competitor_aliases": [],
+          "scores": [
+            0.200807,
+            0.215798,
+            0.204958,
+            0.22288,
+            0.208083,
+            0.201359,
+            0.191151,
+            0.210931,
+            0.217537,
+            0.186478,
+            0.178273,
+            0.227751,
+            0.227028
+          ]
+        },
+        "rejected": true
+      },
+      {
+        "old_shot": 7,
+        "metadata_score": 2.8,
+        "pixel": {
+          "passed": false,
+          "positive_score": 0.273518,
+          "negative_score": 0.270282,
+          "margin": 0.003236,
+          "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+          "descriptions": [
+            "Press rollers squeezing water out of wet paper.",
+            "A hydraulic press compressing paper during manufacturing.",
+            "An image illustrating: Water is further removed from this sheet by pressing, sometimes aided by suction or vacuum, or heating.",
+            "A photograph of an unrelated landscape or animal.",
+            "A labeled line diagram, graph, chart or schematic.",
+            "A hand drawn illustration or painting.",
+            "A black and white woodcut engraving or historical line drawing.",
+            "A geographic map or a city locator map.",
+            "A photograph of a printed document, letter, certificate or text page.",
+            "A person writing or drawing on finished paper.",
+            "A typewriter, office printer or a person wrapping a parcel.",
+            "A product photograph of finished paper without people or machinery.",
+            "An exterior view of a factory building with no visible manufacturing operation.",
+            "A cutting blade slitting already finished sheets."
+          ],
+          "excluded_competitor_aliases": [],
+          "scores": [
+            0.267424,
+            0.273518,
+            0.245665,
+            0.227591,
+            0.217769,
+            0.214394,
+            0.221163,
+            0.202056,
+            0.256059,
+            0.204673,
+            0.256594,
+            0.270282,
+            0.244374,
+            0.233869
+          ]
+        },
+        "rejected": true
+      },
+      {
+        "old_shot": 10,
+        "metadata_score": 3.3,
+        "pixel": {
+          "passed": false,
+          "positive_score": 0.242526,
+          "negative_score": 0.273788,
+          "margin": -0.031261,
+          "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+          "descriptions": [
+            "Sheets of paper drying on racks.",
+            "Industrial dryers drying paper sheets.",
+            "An image illustrating: Once dry, a generally flat, uniform and strong sheet of paper is achieved.",
+            "A photograph of an unrelated landscape or animal.",
+            "A labeled line diagram, graph, chart or schematic.",
+            "A hand drawn illustration or painting.",
+            "A black and white woodcut engraving or historical line drawing.",
+            "A geographic map or a city locator map.",
+            "A photograph of a printed document, letter, certificate or text page.",
+            "A person writing or drawing on finished paper.",
+            "A typewriter, office printer or a person wrapping a parcel.",
+            "An exterior view of a factory building with no visible manufacturing operation.",
+            "A steaming vat cooking or boiling wet pulp."
+          ],
+          "excluded_competitor_aliases": [],
+          "scores": [
+            0.237834,
+            0.242526,
+            0.224054,
+            0.198129,
+            0.186778,
+            0.19108,
+            0.193295,
+            0.182861,
+            0.204541,
+            0.180932,
+            0.215418,
+            0.229324,
+            0.273788
+          ]
+        },
+        "rejected": true
+      }
+    ]
+  },
+  "metadata_regression": {
+    "project_ready": false,
+    "voice_sends": 0,
+    "implementation_hashes": {
+      "app.py": "bfe24253b3cde34e4137360027e52746066d97afcd80900ff2f6e5e6539a652c",
+      "storyboard.py": "d95db651915276ccac66890b96a751fbe7c54094e22740821ca8695fb28f6272",
+      "visual_verifier.py": "55c3c2f4a5163276db20632efc6b03d91d947efa2df747baff27576b849eeb79",
+      "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+      "renderer.py": "2c9ed149822faf7b480c67fd024465c618a86aeadeecc50eb447e95636d62bc6",
+      "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+    },
+    "checks": [
+      {
+        "case": "unrelated award scene",
+        "old_shot": 10,
+        "depiction": "File:36th Ig Nobel Prize Ceremony Zurich 050.jpg",
+        "rejected": true
+      },
+      {
+        "case": "unrelated award scene",
+        "old_shot": 11,
+        "depiction": "File:Martin Karplus Nobel Prize 22 2013.jpg",
+        "rejected": true
+      },
+      {
+        "case": "unrelated award scene",
+        "old_shot": 12,
+        "depiction": "File:Nobel Prize 24 2013 (cropped).jpg",
+        "rejected": true
+      },
+      {
+        "case": "wrong manufacturing stage",
+        "old_shot": 4,
+        "depiction": "pulp and paper mill, nature, finland, night, evening, smoke, lights, water, reflection, reflections, river, panorama, industry, industrial, outside, brown smoke, brown river, brown industry, Oulu, North Ostrobothnia, Finland",
+        "required_actions": [
+          "drain"
+        ],
+        "rejected": true
+      },
+      {
+        "case": "wrong manufacturing stage",
+        "old_shot": 7,
+        "depiction": "paper, roll, newspaper, paper mill, industry, industrial, papermaking, mill, manufacture, manufacturing, production, processing, paper mill, paper mill, paper mill, paper mill, paper mill, papermaking",
+        "required_actions": [
+          "press"
+        ],
+        "rejected": true
+      },
+      {
+        "case": "wrong manufacturing stage",
+        "old_shot": 10,
+        "depiction": "A worker processes paper manually inside a rustic factory filled with steam.",
+        "required_actions": [
+          "dry"
+        ],
+        "rejected": true
+      }
+    ]
+  },
+  "crop_probe": {
+    "same_specimen_pair": {
+      "duplicate": false,
+      "matches": 14,
+      "inliers": 0
+    },
+    "different_element_pair": {
+      "duplicate": false,
+      "matches": 10,
+      "inliers": 0
+    },
+    "voice_sends": 0
+  },
+  "next_run": "scene-grounding-preflight-20261117-v9.json; image-only, not MP4 acceptance"
+}

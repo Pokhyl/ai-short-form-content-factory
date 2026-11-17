@@ -318,6 +318,15 @@ def check():
  assert alias_slots[1]['visual_targets'][0]['binding']=='unambiguous article alias'
 
 
+ # A specifically linked landmark outranks an inferred city elsewhere in the article.
+ scoped=storyboard.ArticleLinks();scoped.feed('<p><a href="/wiki/Example_City">Example City</a> is introduced.</p><p>The scientist rests in the <a href="/wiki/Example_Mausoleum">Example Mausoleum</a> in Example City.</p>')
+ sentence='The scientist rests in the Example Mausoleum in Example City.'
+ scoped_sources=[{'text':'Example City is introduced.\n'+sentence,'url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'human','id':'Q123'}}]
+ scoped_slots=[{'text':'Introduction.','source_index':0},{'text':sentence,'source_sentence':sentence,'source_index':0}]
+ with patch.object(storyboard,'source_links',return_value=scoped.links),patch.object(storyboard,'resolve_links',return_value={'Example City':{'id':'Q995','name':'Example City','kind':'entity','description':'city'},'Example Mausoleum':{'id':'Q996','name':'Example Mausoleum','kind':'entity','description':'mausoleum'}}):
+  storyboard.build(scoped_slots,scoped_sources,'en',app)
+ assert [target['id'] for target in scoped_slots[1]['visual_targets']]==['Q996']
+
  # Metadata may use a sourced former or short organization name.
  renamed={'id':'Q996','name':'Example Vehicles, Inc.','aliases':['Example Motors'],'description':'automotive manufacturer'}
  renamed['intent']=storyboard.scene_intent('The founder joined Example Vehicles, Inc.',renamed)
@@ -402,6 +411,14 @@ def check():
  assert storyboard.target_score(parody,{'visual_target':award},app)<0
  assert storyboard.target_score(winner,{'visual_target':award},app)<0
 
+ # An organization cannot inherit a namesake person's identity or generic podium portrait.
+ company={'id':'Q998','name':'Example, Inc.','aliases':['Example'],'description':'automotive manufacturer'}
+ company['intent']=storyboard.scene_intent('The founder invested in Example, Inc.',company)
+ def org_photo(title,alt=''):return {'provider':'commons','depiction':'File:'+title+'.jpg','alt':alt,'categories':[]}
+ assert storyboard.target_score(org_photo('Inventor Example laboratory'),{'visual_target':company},app)<0
+ assert storyboard.target_score(org_photo('Example automobile factory'),{'visual_target':company},app)>0
+ assert storyboard.target_score(org_photo('Example founder at podium'),{'visual_target':company},app)<0
+
  # Texture from the same source remains a duplicate after a crop and resize.
  import numpy as np
  from photo_duplicates import fingerprint,duplicate
@@ -422,6 +439,7 @@ def check():
  assert app.photo_score({**photo,'depiction':'Paper mill cutting and slitting machinery'},slot,'How paper is made')<0
  assert app.photo_score({**photo,'depiction':'Paper mill pressing machinery'},slot,'How paper is made')>=0
  assert app.scene_actions('Wet paper fibers drain through a sieve.')=={'drain'}
+ assert 'drain' not in app.scene_actions('The phone screen is assembled in the factory.')
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

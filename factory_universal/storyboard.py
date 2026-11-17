@@ -151,16 +151,21 @@ def scene_intent(text,target):
    return result
  if re.search(r'\b(?:award|prize|honou?r)\b|of the year',description+' '+target['name'],re.I):
   return {'name':'physical award','metadata_pattern':r'\b(?:medals?|troph(?:y|ies)|statuettes?|medaille\w*|medalla\w*|медал\w*)\b','visual':'the physical medal, trophy or award statuette','query_suffix':'medal trophy'}
- if re.search(r'company|corporation|manufacturer|business|social networking service',description,re.I) and any(c.isupper() for c in target['name']):
+ if re.search(r'company|corporation|manufacturer|business|research organization|social networking service',description,re.I) and any(c.isupper() for c in target['name']):
   subject='its products, production facility or headquarters building'
-  if re.search(r'aerospace|spacecraft|rocket',description,re.I):subject='a rocket, spacecraft or space launch facility'
-  elif re.search(r'vehicle|automotive|car manufacturer',description,re.I):subject='a vehicle, automotive factory or showroom'
-  elif re.search(r'tunnel|infrastructure|construction',description,re.I):subject='tunnel construction machinery or an underground tunnel'
-  elif re.search(r'neurotechnol|brain|implant',description,re.I):subject='a neural implant, brain interface device or laboratory equipment'
+  metadata=r'\b(?:products?|devices?|factor\w*|facilit\w*|headquarters|buildings?|offices?|laborator\w*|machines?|equipment|production|stores?|showrooms?)\b'
+  if re.search(r'aerospace|spacecraft|rocket',description,re.I):
+   subject='a rocket, spacecraft or space launch facility';metadata=r'\b(?:rockets?|spacecraft|launch(?:pad)?|starship|booster|capsules?|factory|facilit\w*|headquarters|buildings?)\b'
+  elif re.search(r'vehicle|automotive|car manufacturer',description,re.I):
+   subject='a vehicle, automotive factory or showroom';metadata=r'\b(?:cars?|vehicles?|automotive|sedans?|trucks?|roadsters?|factory|facilit\w*|headquarters|buildings?|offices?|showrooms?|stores?)\b'
+  elif re.search(r'tunnel|infrastructure|construction',description,re.I):
+   subject='tunnel construction machinery or an underground tunnel';metadata=r'\b(?:tunnels?|boring|excavat\w*|construction|machines?|machinery|headquarters|buildings?)\b'
+  elif re.search(r'neurotechnol|brain|implant',description,re.I):
+   subject='a neural implant, brain interface device or laboratory equipment';metadata=r'\b(?:neural|implants?|brain|interfaces?|devices?|laborator\w*|equipment|headquarters|buildings?)\b'
   elif re.search(r'social network|software|internet',description,re.I):subject='a photographed device displaying the service or its headquarters building'
-  return {'name':'organization context','metadata_pattern':None,'visual':subject,'query_suffix':''}
+  return {'name':'organization context','metadata_pattern':metadata,'visual':subject,'query_suffix':'headquarters'}
  if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):
-  return {'name':'physical sample','metadata_pattern':None,'visual':'a physical chemical sample, mineral specimen or laboratory vial containing '+target['name'],'query_suffix':''}
+  return {'name':'physical sample','metadata_pattern':r'\b(?:samples?|specimens?|minerals?|elements?|vials?|ampoules?|ampuls?|ampullen?|próbk\w*|образ\w*|зраз\w*)\b','visual':'a physical chemical sample, mineral specimen or laboratory vial containing '+target['name'],'query_suffix':''}
  return {'name':'linked subject','metadata_pattern':None,'visual':description[:180] or target['name'],'query_suffix':''}
 
 def build(slots,sources,lang,api):
@@ -190,7 +195,7 @@ def build(slots,sources,lang,api):
    unambiguous=len(alias_titles[link['label'].casefold()])==1
    if explicit or unambiguous:
     row={**link,'binding':'explicit paragraph link' if explicit else 'unambiguous article alias'}
-    found.setdefault((link['label'],link['title']),row)
+    if explicit or (link['label'],link['title']) not in found:found[(link['label'],link['title'])]=row
   return list(found.values())
  matched=list({(link['label'],link['title'],link.get('paragraph_key')):link for slot in slots for link in local_links(slot)}.values())
  resolved=resolve_links(matched,lang,api)
@@ -216,6 +221,7 @@ def build(slots,sources,lang,api):
    if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):row['priority']=3
    if re.search(r'conference|congress|summit|exhibition',description+' '+entity['name'],re.I):row['priority']=4
    if row['priority']==0:continue
+   if row['binding']=='explicit paragraph link':row['priority']+=1
    row['intent']=scene_intent(slot['text'],row)
    targets.setdefault(entity['id'],row)
   ranked=sorted(targets.values(),key=lambda row:(-row['priority'],-len(row['anchor']),row['name']))
@@ -238,6 +244,7 @@ def query_plan(slots):
   if len(name)<3 and target.get('anchor','').isascii():name=target.get('anchor') or name
   suffix=target.get('intent',{}).get('query_suffix','')
   primary.extend([name+' medal',name+' trophy'] if target.get('intent',{}).get('name')=='physical award' else [name+(' '+suffix if suffix else '')])
+  if target.get('intent',{}).get('name')=='organization context':second.append(name+' '+('rocket' if 'rocket' in target['intent']['visual'] else 'vehicle' if 'vehicle' in target['intent']['visual'] else 'laboratory' if 'laboratory' in target['intent']['visual'] else 'building'))
   second.append(name+(' '+suffix if suffix else '')+' incategory:"CC-BY-2.0"')
  return list(dict.fromkeys(primary+second))
 
@@ -265,9 +272,9 @@ def target_score(candidate,slot,api):
   for field in identity_fragments:
    normalized_text=re.sub(r'[\W_]+',' ',field.casefold()).strip()
    for match in re.finditer(r'(?<!\w)'+re.escape(normalized_name)+r'(?!\w)',normalized_text):
-    if target.get('intent',{}).get('name')=='physical award' and match.start():
+    if target.get('intent',{}).get('name') in {'physical award','organization context'} and match.start():
      prefix=normalized_text[:match.start()].split();last=prefix[-1] if prefix else ''
-     if last not in {'of','the','a','an','in','for','by','at','to','s'} and not last.isdigit():continue
+     if last not in {'of','the','a','an','in','for','by','at','to','s','and','with','outside','inside','new','old'} and not last.isdigit():continue
     return True
   return False
  if not any(identity_phrase(name) for name in names if len(name)>=3):return -1
@@ -278,5 +285,5 @@ def target_score(candidate,slot,api):
  if intent.get('name')=='organization context':
   if any('screenshot' in category.lower() for category in candidate.get('categories',[])):return -1
   if re.search(r'\b(?:profiles?|accounts?|homepages?|screenshots?)\b',candidate.get('depiction',''),re.I):return -1
- if intent.get('name')=='organization context' and re.search(r'press.conference|portrait|headshot|interview|speaking at|speaking to',candidate.get('depiction','')+' '+candidate.get('alt',''),re.I):return -1
+ if intent.get('name')=='organization context' and re.search(r'press.conference|portrait|headshot|interview|speaking at|speaking to|podium|lectern|giving a speech|delivering a speech',candidate.get('depiction','')+' '+candidate.get('alt',''),re.I):return -1
  return 30+len(set(api.tokens(target['name']))&set(api.tokens(text)))
