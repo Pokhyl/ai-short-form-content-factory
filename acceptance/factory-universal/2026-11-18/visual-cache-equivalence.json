@@ -1,0 +1,51 @@
+{
+  "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+  "images": 6,
+  "scores_equivalent": true,
+  "image_cache_limit": 256,
+  "text_batch_cache_limit": 128,
+  "results": [
+    {
+      "image": "/data/renders/f946d557-a5cf-4ab0-9d5b-306e1256ea3e/review/genre-fixtures/143247250.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 4.889366470277309,
+      "cached_seconds": 4.56780743226409,
+      "warm_seconds": 0.05057511478662491
+    },
+    {
+      "image": "/data/renders/f946d557-a5cf-4ab0-9d5b-306e1256ea3e/review/genre-fixtures/117674789.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 4.245523929595947,
+      "cached_seconds": 0.5112471170723438,
+      "warm_seconds": 0.0273679681122303
+    },
+    {
+      "image": "/data/renders/f946d557-a5cf-4ab0-9d5b-306e1256ea3e/review/genre-fixtures/89279174.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 4.138967551290989,
+      "cached_seconds": 0.5202096924185753,
+      "warm_seconds": 0.04431375116109848
+    },
+    {
+      "image": "/data/renders/f946d557-a5cf-4ab0-9d5b-306e1256ea3e/review/genre-fixtures/65645738.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 4.882749892771244,
+      "cached_seconds": 0.5680055841803551,
+      "warm_seconds": 0.049008965492248535
+    },
+    {
+      "image": "/data/renders/f946d557-a5cf-4ab0-9d5b-306e1256ea3e/review/genre-fixtures/52903220.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 4.544584587216377,
+      "cached_seconds": 0.9343718700110912,
+      "warm_seconds": 0.33385226130485535
+    },
+    {
+      "image": "/data/renders/f946d557-a5cf-4ab0-9d5b-306e1256ea3e/review/genre-fixtures/31743510.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 4.5541316494345665,
+      "cached_seconds": 0.49838265776634216,
+      "warm_seconds": 0.04288911074399948
+    }
+  ]
+}

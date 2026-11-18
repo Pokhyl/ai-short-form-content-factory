@@ -1,0 +1,408 @@
+{
+  "project_ready": true,
+  "scope": "Automated identifiable source-grounded topic/language/duration to MP4, with suitable licensed media",
+  "verified_at": "2026-11-18T20:40:49.259105+00:00",
+  "implementation_commit": "1649388963962a85f91ba259525cc914f4176829",
+  "deployed": true,
+  "deployed_image": "sha256:a4808f25ef52341192784a61efd369574ef2f6d346cb3da85746e58a68b1dd96",
+  "deployed_implementation_hashes": {
+    "app.py": "9988e22cb3511fa71c7e15f012a62bb07108309417bf9f82bef945db4813bea8",
+    "storyboard.py": "bafe2e80d0c9d30c8e210b77624f18380b83fc9407f105648c365ae7a01cd89f",
+    "visual_verifier.py": "512d9c40e55688cfe65f93184bbbf61ab15ef16cd013ab5019c59b233146d57f",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+  },
+  "source_version_note": "Core timing/renderer cases v31, v32 landing regression and v32 public API smoke. The verifier cache changes execution only: six real-image score comparisons are bit-identical to full encoder execution.",
+  "owner_listening_approval": false,
+  "assistant_reviewed_shots": 72,
+  "cases": [
+    {
+      "id": "15c51e44-8246-46a9-b160-cfb9675ce595",
+      "topic": "How paper is made",
+      "language": "en",
+      "duration_s": 30,
+      "frames": 900,
+      "exact_frames": true,
+      "exact_duration": true,
+      "unique_images": 12,
+      "minimum_two_images_per_beat": true,
+      "voice": "en-US-Chirp3-HD-Algenib",
+      "audio_duration_ms": 27048,
+      "audio_tempo_factor": 1.0,
+      "alignment_coverage": 0.992084,
+      "video_sha256": "987584c7c1f0c4af22d377d20535c6edd30d44650a13a9d3fbb2891ca19b8b58",
+      "full_decode": true,
+      "renderer_gates": {
+        "exact_frames": true,
+        "exact_duration": true,
+        "portrait_dimensions": true,
+        "h264": true,
+        "aac": true,
+        "yuv420p": true,
+        "fps_30": true,
+        "unique_images": true,
+        "continuous_timeline": true,
+        "unchanged_source_audio": true,
+        "natural_audio_fits": true,
+        "attribution_embedded": true
+      },
+      "assistant_frame_review": {
+        "passed": true,
+        "scope": "all shot midpoint frames and complete captions",
+        "shots_reviewed": 12,
+        "note": "Papermaking: real fibre screens, presses and drying; chronological captions.",
+        "owner_listening_approval": false
+      },
+      "owner_review_status": "pending",
+      "output_license": {
+        "name": "CC BY-SA 4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      },
+      "implementation_hashes": {
+        "app.py": "9988e22cb3511fa71c7e15f012a62bb07108309417bf9f82bef945db4813bea8",
+        "storyboard.py": "23e33eab426bda39c9a905911697d47b104100c56f574c68e7af82e09f2af2e2",
+        "visual_verifier.py": "9a2ebd2c31f7fb98d59948bc023997651185f44f92cc3a4c33fdacadaef6158d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+      },
+      "video_url": "https://studio.hodor.com.pl/api/jobs/15c51e44-8246-46a9-b160-cfb9675ce595/video",
+      "credits_url": "https://studio.hodor.com.pl/api/jobs/15c51e44-8246-46a9-b160-cfb9675ce595/credits",
+      "manifest_url": "https://studio.hodor.com.pl/api/jobs/15c51e44-8246-46a9-b160-cfb9675ce595/manifest"
+    },
+    {
+      "id": "3223bb8a-434c-418c-8c94-18b367008fbd",
+      "topic": "Photosynthesis",
+      "language": "en",
+      "duration_s": 15,
+      "frames": 450,
+      "exact_frames": true,
+      "exact_duration": true,
+      "unique_images": 6,
+      "minimum_two_images_per_beat": true,
+      "voice": "en-US-Chirp3-HD-Algenib",
+      "audio_duration_ms": 14016,
+      "audio_tempo_factor": 1.0,
+      "alignment_coverage": 1.0,
+      "video_sha256": "7411656c4a4ac2f8f6dbd50a070938d24a74530525c9725d1f7dea02c853fa2b",
+      "full_decode": true,
+      "renderer_gates": {
+        "exact_frames": true,
+        "exact_duration": true,
+        "portrait_dimensions": true,
+        "h264": true,
+        "aac": true,
+        "yuv420p": true,
+        "fps_30": true,
+        "unique_images": true,
+        "continuous_timeline": true,
+        "unchanged_source_audio": true,
+        "natural_audio_fits": true,
+        "attribution_embedded": true
+      },
+      "assistant_frame_review": {
+        "passed": true,
+        "scope": "all shot midpoint frames and complete captions",
+        "shots_reviewed": 6,
+        "note": "Photosynthesis: real plants, algae and experimental demonstrations.",
+        "owner_listening_approval": false
+      },
+      "owner_review_status": "pending",
+      "output_license": {
+        "name": "CC BY-SA 4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      },
+      "implementation_hashes": {
+        "app.py": "9988e22cb3511fa71c7e15f012a62bb07108309417bf9f82bef945db4813bea8",
+        "storyboard.py": "23e33eab426bda39c9a905911697d47b104100c56f574c68e7af82e09f2af2e2",
+        "visual_verifier.py": "9a2ebd2c31f7fb98d59948bc023997651185f44f92cc3a4c33fdacadaef6158d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+      },
+      "video_url": "https://studio.hodor.com.pl/api/jobs/3223bb8a-434c-418c-8c94-18b367008fbd/video",
+      "credits_url": "https://studio.hodor.com.pl/api/jobs/3223bb8a-434c-418c-8c94-18b367008fbd/credits",
+      "manifest_url": "https://studio.hodor.com.pl/api/jobs/3223bb8a-434c-418c-8c94-18b367008fbd/manifest"
+    },
+    {
+      "id": "607c6d93-e831-4f09-b6cc-75f14523bf70",
+      "topic": "Maria Skłodowska-Curie",
+      "language": "pl",
+      "duration_s": 30,
+      "frames": 900,
+      "exact_frames": true,
+      "exact_duration": true,
+      "unique_images": 12,
+      "minimum_two_images_per_beat": true,
+      "voice": "pl-PL-Chirp3-HD-Enceladus",
+      "audio_duration_ms": 28776,
+      "audio_tempo_factor": 1.0,
+      "alignment_coverage": 0.98494,
+      "video_sha256": "afd365ce7bbcc9ba07d83ab8a131fcc69388ea17a86380c90d6fada8794f3b54",
+      "full_decode": true,
+      "renderer_gates": {
+        "exact_frames": true,
+        "exact_duration": true,
+        "portrait_dimensions": true,
+        "h264": true,
+        "aac": true,
+        "yuv420p": true,
+        "fps_30": true,
+        "unique_images": true,
+        "continuous_timeline": true,
+        "unchanged_source_audio": true,
+        "natural_audio_fits": true,
+        "attribution_embedded": true
+      },
+      "assistant_frame_review": {
+        "passed": true,
+        "scope": "all shot midpoint frames and complete captions",
+        "shots_reviewed": 12,
+        "note": "Curie: two establishing portraits, Warsaw exteriors and named university.",
+        "owner_listening_approval": false
+      },
+      "owner_review_status": "pending",
+      "output_license": {
+        "name": "CC BY-SA 4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      },
+      "implementation_hashes": {
+        "app.py": "9988e22cb3511fa71c7e15f012a62bb07108309417bf9f82bef945db4813bea8",
+        "storyboard.py": "23e33eab426bda39c9a905911697d47b104100c56f574c68e7af82e09f2af2e2",
+        "visual_verifier.py": "9a2ebd2c31f7fb98d59948bc023997651185f44f92cc3a4c33fdacadaef6158d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+      },
+      "video_url": "https://studio.hodor.com.pl/api/jobs/607c6d93-e831-4f09-b6cc-75f14523bf70/video",
+      "credits_url": "https://studio.hodor.com.pl/api/jobs/607c6d93-e831-4f09-b6cc-75f14523bf70/credits",
+      "manifest_url": "https://studio.hodor.com.pl/api/jobs/607c6d93-e831-4f09-b6cc-75f14523bf70/manifest"
+    },
+    {
+      "id": "18df5cd7-279f-4fb2-ab57-44b65940e62e",
+      "topic": "Марс",
+      "language": "ru",
+      "duration_s": 45,
+      "frames": 1350,
+      "exact_frames": true,
+      "exact_duration": true,
+      "unique_images": 18,
+      "minimum_two_images_per_beat": true,
+      "voice": "ru-RU-Wavenet-D",
+      "audio_duration_ms": 40824,
+      "audio_tempo_factor": 1.0,
+      "alignment_coverage": 0.988909,
+      "video_sha256": "bbea5904e0e2c72ac8360a8a1c49ba17f15fb2c0af02a7334ec48cfffb5d1ca5",
+      "full_decode": true,
+      "renderer_gates": {
+        "exact_frames": true,
+        "exact_duration": true,
+        "portrait_dimensions": true,
+        "h264": true,
+        "aac": true,
+        "yuv420p": true,
+        "fps_30": true,
+        "unique_images": true,
+        "continuous_timeline": true,
+        "unchanged_source_audio": true,
+        "natural_audio_fits": true,
+        "attribution_embedded": true
+      },
+      "assistant_frame_review": {
+        "passed": true,
+        "scope": "all shot midpoint frames and complete captions",
+        "shots_reviewed": 18,
+        "note": "Mars: primary planet/surface photographs; no unrelated satellite simulation.",
+        "owner_listening_approval": false
+      },
+      "owner_review_status": "pending",
+      "output_license": {
+        "name": "CC BY-SA 4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      },
+      "implementation_hashes": {
+        "app.py": "9988e22cb3511fa71c7e15f012a62bb07108309417bf9f82bef945db4813bea8",
+        "storyboard.py": "23e33eab426bda39c9a905911697d47b104100c56f574c68e7af82e09f2af2e2",
+        "visual_verifier.py": "9a2ebd2c31f7fb98d59948bc023997651185f44f92cc3a4c33fdacadaef6158d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+      },
+      "video_url": "https://studio.hodor.com.pl/api/jobs/18df5cd7-279f-4fb2-ab57-44b65940e62e/video",
+      "credits_url": "https://studio.hodor.com.pl/api/jobs/18df5cd7-279f-4fb2-ab57-44b65940e62e/credits",
+      "manifest_url": "https://studio.hodor.com.pl/api/jobs/18df5cd7-279f-4fb2-ab57-44b65940e62e/manifest"
+    },
+    {
+      "id": "1df244b9-31a1-4bfe-8cfd-afa66e3d8afa",
+      "topic": "Илон Маск",
+      "language": "uk",
+      "duration_s": 60,
+      "frames": 1800,
+      "exact_frames": true,
+      "exact_duration": true,
+      "unique_images": 24,
+      "minimum_two_images_per_beat": true,
+      "voice": "uk-UA-Chirp3-HD-Enceladus",
+      "audio_duration_ms": 58344,
+      "audio_tempo_factor": 1.0,
+      "alignment_coverage": 0.961538,
+      "video_sha256": "6e447bf13592ee10e69a598857a4b36fd27dc09c8e676b50b880879ddc658364",
+      "full_decode": true,
+      "renderer_gates": {
+        "exact_frames": true,
+        "exact_duration": true,
+        "portrait_dimensions": true,
+        "h264": true,
+        "aac": true,
+        "yuv420p": true,
+        "fps_30": true,
+        "unique_images": true,
+        "continuous_timeline": true,
+        "unchanged_source_audio": true,
+        "natural_audio_fits": true,
+        "attribution_embedded": true
+      },
+      "assistant_frame_review": {
+        "passed": true,
+        "scope": "all shot midpoint frames and complete captions",
+        "shots_reviewed": 24,
+        "note": "Musk: two establishing portraits, company products/premises, actual landing photos and Roadster; headquarters landing-leg display excluded.",
+        "owner_listening_approval": false
+      },
+      "owner_review_status": "pending",
+      "output_license": {
+        "name": "CC BY-SA 4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+      },
+      "implementation_hashes": {
+        "app.py": "9988e22cb3511fa71c7e15f012a62bb07108309417bf9f82bef945db4813bea8",
+        "storyboard.py": "bafe2e80d0c9d30c8e210b77624f18380b83fc9407f105648c365ae7a01cd89f",
+        "visual_verifier.py": "512d9c40e55688cfe65f93184bbbf61ab15ef16cd013ab5019c59b233146d57f",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+      },
+      "video_url": "https://studio.hodor.com.pl/api/jobs/1df244b9-31a1-4bfe-8cfd-afa66e3d8afa/video",
+      "credits_url": "https://studio.hodor.com.pl/api/jobs/1df244b9-31a1-4bfe-8cfd-afa66e3d8afa/credits",
+      "manifest_url": "https://studio.hodor.com.pl/api/jobs/1df244b9-31a1-4bfe-8cfd-afa66e3d8afa/manifest"
+    }
+  ],
+  "public_creation_smoke": {
+    "sent_at": "2026-11-18T20:33:15.900049+00:00",
+    "payload": {
+      "topic": "Илон Маск",
+      "language": "uk",
+      "duration_s": 60
+    },
+    "state": "verified",
+    "http_status": 202,
+    "id": "7eae7dea-a01c-41de-9851-c5063acd3628",
+    "video_sha256": "6e447bf13592ee10e69a598857a4b36fd27dc09c8e676b50b880879ddc658364",
+    "voice": "uk-UA-Chirp3-HD-Enceladus",
+    "audio_duration_ms": 58344,
+    "implementation_hashes": {
+      "app.py": "9988e22cb3511fa71c7e15f012a62bb07108309417bf9f82bef945db4813bea8",
+      "storyboard.py": "bafe2e80d0c9d30c8e210b77624f18380b83fc9407f105648c365ae7a01cd89f",
+      "visual_verifier.py": "512d9c40e55688cfe65f93184bbbf61ab15ef16cd013ab5019c59b233146d57f",
+      "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+      "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+      "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+    },
+    "full_decode": true,
+    "shots": 24,
+    "verified_at": "2026-11-18T20:39:03.549338+00:00",
+    "public_video_range_status": 206,
+    "public_credits_status": 200,
+    "reviewed_example": "1df244b9-31a1-4bfe-8cfd-afa66e3d8afa",
+    "reviewed_script_images_and_voice_match": true,
+    "video_bit_identical": true,
+    "owner_listening_approval": false
+  },
+  "public_http_checks": {
+    "checked_at": "2026-11-18T20:33:15.898905+00:00",
+    "public_checks_passed": true,
+    "checks": [
+      {
+        "path": "/",
+        "status": 200,
+        "password_required": false
+      },
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/jobs?view=examples",
+        "status": 200,
+        "reviewed_examples": 5
+      },
+      {
+        "id": "15c51e44-8246-46a9-b160-cfb9675ce595",
+        "range_status": 206,
+        "range_bytes": 32,
+        "credits_status": 200,
+        "credits_bytes": 4880
+      },
+      {
+        "id": "3223bb8a-434c-418c-8c94-18b367008fbd",
+        "range_status": 206,
+        "range_bytes": 32,
+        "credits_status": 200,
+        "credits_bytes": 3082
+      },
+      {
+        "id": "607c6d93-e831-4f09-b6cc-75f14523bf70",
+        "range_status": 206,
+        "range_bytes": 32,
+        "credits_status": 200,
+        "credits_bytes": 5090
+      },
+      {
+        "id": "18df5cd7-279f-4fb2-ab57-44b65940e62e",
+        "range_status": 206,
+        "range_bytes": 32,
+        "credits_status": 200,
+        "credits_bytes": 7228
+      },
+      {
+        "id": "1df244b9-31a1-4bfe-8cfd-afa66e3d8afa",
+        "range_status": 206,
+        "range_bytes": 32,
+        "credits_status": 200,
+        "credits_bytes": 9929
+      }
+    ]
+  },
+  "storage": {
+    "outputs_bytes": 223074212,
+    "outputs_limit_bytes": 2147483648,
+    "cache_bytes": 30703497,
+    "cache_limit_bytes": 536870912,
+    "free_disk_bytes": 5870473216,
+    "reserve_bytes": 2147483648,
+    "retention_days": 30,
+    "owned_uuid_only": true,
+    "cleanup_passed": true,
+    "reviewed_outputs_preserved": true
+  },
+  "cache_equivalence": {
+    "images": 6,
+    "scores_equivalent": true,
+    "maximum_score_error": 0.0,
+    "receipt": "visual-cache-equivalence.json"
+  },
+  "verification": {
+    "runtime_checks": "passed v32",
+    "renderer_checks": "passed v22; renderer hash unchanged",
+    "alignment_checks": "passed v24; alignment core unchanged",
+    "javascript_syntax": "passed; index unchanged",
+    "full_normal_pipeline": "5 cases passed plus deployed public POST to ready smoke",
+    "paid_model_calls": 0,
+    "shared_services_modified": false
+  },
+  "limitations": [
+    "Inputs require an identifiable source and enough suitable licensed photographs. Ambiguous or unsupported inputs request context instead of inventing facts or substituting unrelated media.",
+    "Technical and assistant visual checks do not represent owner listening approval."
+  ]
+}
