@@ -12,7 +12,7 @@ Studio: https://studio.hodor.com.pl/ . The site and review API require no passwo
 
 project_ready=false. General scene-grounding corrections are staged and are not yet deployed. The v14 paper and v16 photosynthesis MP4s passed technical checks but failed actual frame review. The v16 Polish duration and Russian foreign-name alignment cases also failed. Historical six-case acceptance is not current readiness.
 
-The v22 normal-pipeline five-topic matrix is recorded under /data/factory-universal/qa/normal-stage-universal-20261118-v22.json. Inspect actual output frames before deployment. Owner listening approval remains separate. See docs/CODEX_START_HERE.md for current work and operational limits.
+The v26 normal-pipeline five-topic matrix is recorded under /data/factory-universal/qa/normal-stage-universal-20261118-v26.json. Inspect actual output frames before deployment. Owner listening approval remains separate. See docs/CODEX_START_HERE.md for current work and operational limits.
 
 Inputs require an identifiable source and enough suitable licensed photographs. Ambiguous or unsupported inputs stop instead of inventing facts or inserting unrelated media.
 

@@ -945,14 +945,16 @@ def discover_photos(topic,lang,slots):
  if slots and slots[0].get('source_driven') and slots[0].get('process_intent'):
   category=profile.get('commons_category')
   queries=([('incategory:"'+category+'"')] if category else [])+[topic+' machinery',' '.join(core_terms)+(' mill interior' if 'mill' in profile.get('visual_vocabulary',[]) else ' handmade')]
-  stages=[subject+' '+STAGE_QUERIES[next(iter(scene_actions(slot['text'])))] for slot in slots if scene_actions(slot['text'])!={'production'} for subject in dict.fromkeys([profile.get('name') or ' '.join(core_terms),' '.join(core_terms)])]
+  stages=[(profile.get('name') or ' '.join(core_terms))+' '+STAGE_QUERIES[next(iter(scene_actions(slot['text'])))] for slot in slots if scene_actions(slot['text'])!={'production'}]
   actions_needed=list(dict.fromkeys(next(iter(scene_actions(slot['text']))) for slot in slots if scene_actions(slot['text'])!={'production'}))
   stages += [' '.join(core_terms)+' '+STAGE_QUERY_TOOLS[action][index] for index in range(2) for action in actions_needed]
-  queries=list(dict.fromkeys(stages+queries))[:12]
+  queries=list(dict.fromkeys(queries[:3]+stages))[:12]
  if named_place_subject(profile):
   name=profile['name'];native=profile.get('native_name') or name;category=profile.get('commons_category') or name
   details=list(dict.fromkeys(slot.get('place_detail_query') for slot in slots if slot.get('place_detail_query')))
   queries=([name+' panorama incategory:"CC-BY-3.0"']+details+[name+' panorama incategory:"CC-BY-4.0"'])[:3]
+ if profile.get('kind')=='concept' and slots and not slots[0].get('process_intent'):
+  queries=([('incategory:"'+profile['commons_category']+'"')] if profile.get('commons_category') else [])+[topic+' photograph',topic]
  if profile.get('kind')=='human':
   name=profile['name'];category=profile.get('commons_category') or name
   exclude=' -intitle:Caricature -intitle:graph'
@@ -1082,10 +1084,10 @@ def photo_score(p,slot,topic):
  work_context=r'\b(?:factor(?:y|ies)|mill(?:ing)?|refiner\w*|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|\w{3,}making|handmade|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
  if process_topic and not re.search(work_context,depiction,re.I) and not (visual_actions(depiction+' '+p.get('alt','')[:300])-{'production'}):return -1
  if process_topic:
-  if re.search(r'press.conference|news.conference',depiction,re.I) and not re.search(r'press.conference|news.conference',topic,re.I):return -1
+  if re.search(r'press.conference|news.conference|press[ _-]photo(?:graph)?|publicity[ _-]photo',depiction,re.I) and not re.search(r'press.conference|news.conference',topic,re.I):return -1
   food=r'\b(?:food|rice paper|rice flour|spring rolls?|edible|pancakes?|tortillas?|noodles?|chocolate|cakes?|bread|potato)\b'
   if re.search(food,p.get('alt','')+' '+' '.join(p.get('categories',[])),re.I) and not re.search(food,topic,re.I):return -1
-  uses=set(re.findall(r'\b(?:printing press|paper printing|book printing|printing machine|dressmaking|origami|wrapping|writing|drawing|typewriter|paper bags|paper sacks)\b',depiction,re.I))
+  uses=set(re.findall(r'\b(?:printing press|letter press|letterpress|paper printing|book printing|printing machine|dressmaking|origami|wrapping|writing|drawing|typewriter|paper bags|paper sacks)\b',depiction,re.I))
   if any(use.casefold() not in topic.casefold() for use in uses):return -1
   compounds=[word[:-6] for word in meta if len(word)>8 and word.endswith('making')]
   if compounds and not any(root in anchors for root in compounds):return -1
@@ -1385,6 +1387,10 @@ def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots
    source=sources[error.source_index]
    excluded=source.setdefault('excluded_visual_sentences',[])
    source.setdefault('visual_planning_rejections',[]).append({'source_sentence':error.source_sentence,'reason':str(error),'visual_target':error.visual_target})
+   jid=getattr(before_send,'job_id',None)
+   if jid:
+    folder=RENDER/jid;folder.mkdir(parents=True,exist_ok=True)
+    draft=folder/'planning-rejections.tmp';draft.write_text(json.dumps({'implementation_hashes':implementation_hashes(),'rejections':[row for item in sources for row in item.get('visual_planning_rejections',[])]},ensure_ascii=False));draft.replace(folder/'planning-rejections.json')
    if error.source_sentence in excluded:raise
    excluded.append(error.source_sentence)
    # If a linked subject has no suitable media, do not repeatedly choose
@@ -1532,7 +1538,9 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
   if named_place_subject(slot['entity_profile']):slot['place_detail_query']=place_detail_query(slot,slot['entity_profile'])
   source=sources[slot['source_index']]
   slot['visual_title']=source.get('visual_title') or (source['title'] if lang=='en' else '')
-  if not slot.get('process_intent'):slot['visual_title']=scoped_visual_title(slot,sources,lang) if slot.get('source_driven') else visual_context_title(slot,sources,lang)
+  if not slot.get('process_intent'):
+   primary_context=slot.get('source_driven') and slot['entity_profile'].get('kind')!='human'
+   slot['visual_title']=(sources[0].get('visual_title') or sources[0]['title']) if primary_context else scoped_visual_title(slot,sources,lang) if slot.get('source_driven') else visual_context_title(slot,sources,lang)
  media_topic=media_search_topic(topic,lang,sources)
  update(jid,stage='visuals',progress=max(20,(get_job(jid) or {}).get('progress',0)),message='Searching a bounded photo pool; requiring unique relevant assets')
  aliases=[media_topic] if slots[0].get('process_intent') else media_aliases(media_topic)

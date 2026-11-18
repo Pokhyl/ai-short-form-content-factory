@@ -174,13 +174,15 @@ def scene_intent(text,target):
    subject='a vehicle, automotive factory or showroom';metadata=r'\b(?:cars?|vehicles?|automotive|sedans?|trucks?|roadsters?|factory|facilit\w*|headquarters|buildings?|offices?|showrooms?|stores?)\b'
   elif re.search(r'tunnel|infrastructure|construction',description,re.I):
    objects=['tunnel','tunnel boring machine','construction machinery']
-   subject='tunnel construction machinery or an underground tunnel';metadata=r'\b(?:tunnels?|boring|excavat\w*|construction|machines?|machinery|headquarters|buildings?)\b'
+   subject='tunnel construction machinery or an underground tunnel';metadata=r'\b(?:tunnels?|tunnel[ -]boring|excavat\w*|construction|machines?|machinery|headquarters)\b'
   elif re.search(r'neurotechnol|brain|implant',description,re.I):
    objects=['neural implant','brain interface device','laboratory']
    subject='a neural implant, brain interface device or laboratory equipment';metadata=r'\b(?:neural|implants?|brain|interfaces?|devices?|laborator\w*|equipment|headquarters|buildings?)\b'
   elif re.search(r'social network|software|internet',description,re.I):
    objects=['headquarters building','office building','device'];subject='a photographed device displaying the service or its headquarters building'
   return {'name':'organization context','metadata_pattern':metadata,'visual':subject,'visual_objects':objects,'query_suffix':objects[0]}
+ if re.search(r'^(?:city|town|village|municipality|capital\b)',description,re.I):
+  return {'name':'city context','metadata_pattern':r'\b(?:skyline|panorama|panoramic|cityscape|old town|central square|main square|market square|historic cent(?:er|re))\b','visual':'the city skyline, old town or central square','visual_objects':['city skyline','old town','central square'],'query_suffix':'panorama'}
  if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):
   return {'name':'physical sample','metadata_pattern':r'\b(?:samples?|specimens?|minerals?|elements?|vials?|sources?|foils?|sheets?|bars?|ribbons?|pellets?|powder|crystals?|ingots?|liquid|ampoules?|ampuls?|ampullen?|próbk\w*|образ\w*|зраз\w*)\b','visual':'a physical chemical sample, mineral specimen or laboratory vial containing '+target['name'],'query_suffix':''}
  return {'name':'linked subject','metadata_pattern':None,'visual':description[:180] or target['name'],'query_suffix':''}
@@ -323,10 +325,12 @@ def target_score(candidate,slot,api):
  if intent.get('name')=='physical award':
   required=set(intent.get('award_domains',[]));depicted=award_domains(identity_text)
   if required and depicted and not required&depicted:return -1
- if intent.get('metadata_pattern') and not re.search(intent['metadata_pattern'],identity_text if intent.get('name')=='physical award' else text,re.I):return -1
+ if intent.get('metadata_pattern') and not re.search(intent['metadata_pattern'],identity_text if intent.get('name') in {'physical award','city context'} else text,re.I):return -1
  if intent.get('forbidden_metadata') and re.search(intent['forbidden_metadata'],text,re.I):return -1
  if intent.get('name')=='physical award' and re.search(r'portrait|headshot|laureates?|winners?|recipients?|ceremony|conference|banquet',candidate.get('depiction',''),re.I):return -1
  if intent.get('name')=='organization context':
+  # A company's name alone is not evidence that a party prop depicts its work.
+  if re.search(r'\b(?:props?|watchtowers?|sentry tower|shrubbery|costumes?|mascots?)\b',candidate.get('depiction','')+' '+candidate.get('alt',''),re.I):return -1
   if re.search(r'\b(?:ceremon\w*|conferences?|banquets?|summits?|receptions?|celebrat\w*)\b',identity_text,re.I):return -1
   if any('screenshot' in category.lower() for category in candidate.get('categories',[])):return -1
   if re.search(r'\b(?:profiles?|accounts?|homepages?|screenshots?)\b',candidate.get('depiction',''),re.I):return -1

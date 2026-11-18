@@ -565,6 +565,26 @@ def check():
  assert app.scene_actions('Смесь расплавляют в печи.')=={'melt'}
  conference={'provider':'commons','depiction':'File:White paper press conference.jpg','alt':'A press conference about a white paper','categories':['Category:Paper industry'],'height':1000,'width':1400}
  assert app.photo_score(conference,{'text':'The paper is pressed.','process_intent':True},'Paper manufacturing')<0
+ # Scene identity must also retain the stated place or physical work context.
+ city={'id':'Q991','name':'Sample City','description':'city in Europe'}
+ city['intent']=storyboard.scene_intent('The scientist was born in Sample City.',city)
+ school={'provider':'commons','depiction':'File:Sample City school.jpg','alt':'A school in Sample City','categories':['Category:Sample City']}
+ panorama={**school,'depiction':'File:Sample City panorama.jpg'}
+ assert storyboard.target_score(school,{'visual_target':city},app)<0
+ assert storyboard.target_score(panorama,{'visual_target':city},app)>0
+ tunnel={'id':'Q992','name':'Sample Construction','description':'infrastructure and tunneling company'}
+ tunnel['intent']=storyboard.scene_intent('The founder established Sample Construction.',tunnel)
+ prop={'provider':'commons','depiction':'File:Sample Construction watchtower.jpg','alt':'A sentry tower at the tunnel opening event'}
+ assert storyboard.target_score(prop,{'visual_target':tunnel},app)<0
+ press_photo={**conference,'depiction':'File:Paper Dolls press photo.jpg','alt':'Publicity photograph from a television series'}
+ assert app.photo_score(press_photo,{'text':'The paper is pressed.','process_intent':True},'Paper manufacturing')<0
+ # Reserve broad process discovery: stage refinements must not evict it.
+ process_slots=[{'text':text,'source_driven':True,'process_intent':True,'entity_profile':{'name':'Papermaking','commons_category':'Papermaking'}} for text in ['Water drains through a paper screen.','Paper is pressed.','Paper dries.']]
+ with patch.object(app,'SEARCH_QUERIES',{'stock':set(),'commons':set()}),patch.object(app,'DISCOVERED_PHOTOS',{}),patch.object(app,'commons_search',return_value=[{'provider':'commons','id':'1'}]) as search:
+  app.discover_photos('paper manufacturing','en',process_slots)
+  queries=[call.args[0] for call in search.call_args_list]
+  assert len(queries)<=12 and 'incategory:"Papermaking"' in queries
+  assert 'paper handmade' in queries and 'paper mould' in queries
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 
