@@ -181,8 +181,10 @@ def scene_intent(text,target):
   elif re.search(r'social network|software|internet',description,re.I):
    objects=['headquarters building','office building','device'];subject='a photographed device displaying the service or its headquarters building'
   return {'name':'organization context','metadata_pattern':metadata,'visual':subject,'visual_objects':objects,'query_suffix':objects[0]}
- if re.search(r'^(?:city|town|village|municipality|capital\b)',description,re.I):
-  return {'name':'city context','metadata_pattern':r'\b(?:skyline|panorama|panoramic|cityscape|old town|central square|main square|market square|historic cent(?:er|re))\b','visual':'the city skyline, old town or central square','visual_objects':['city skyline','old town','central square'],'query_suffix':'panorama'}
+ if re.search(r'^(?:city|town|village|municipality|(?:(?:administrative|national|federal) )?capital\b)',description,re.I):
+  return {'name':'city context','metadata_pattern':r'\b(?:skyline|panorama|panoramic|cityscape|old town|central square|main square|market square|historic cent(?:er|re))\b','visual':'the city skyline, old town or central square','visual_objects':['city skyline','old town','central square'],'query_suffix':'skyline','forbidden_metadata':r'interior|spherical|fisheye|fish.eye|panorama building|former panorama|sentry|bunker','negative_descriptions':['An indoor room photographed with a fisheye lens.','A close-up photograph of an isolated shed, bunker or small ruin.']}
+ if re.search(r'brain[–— -]computer interface|neural interface|connection between brain and computer',target['name']+' '+description,re.I):
+  return {'name':'physical interface','metadata_pattern':r'\b(?:electrodes?|sensors?|headsets?|implants?|EEG|ECoG|hardware)\b','forbidden_metadata':r'glial cells|tissue construct|blood vessels growing|cultured cells','visual':'electrodes or an electronic neural interface device','visual_objects':['electrode headset','neural implant hardware','electrodes connected to a computer'],'negative_descriptions':['A microscope image of isolated cells or tissue.','An anatomical drawing or model of a brain without electronic interface hardware.'],'query_suffix':'electrodes'}
  if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):
   return {'name':'physical sample','metadata_pattern':r'\b(?:samples?|specimens?|minerals?|elements?|vials?|sources?|foils?|sheets?|bars?|ribbons?|pellets?|powder|crystals?|ingots?|liquid|ampoules?|ampuls?|ampullen?|próbk\w*|образ\w*|зраз\w*)\b','visual':'a physical chemical sample, mineral specimen or laboratory vial containing '+target['name'],'query_suffix':''}
  return {'name':'linked subject','metadata_pattern':None,'visual':description[:180] or target['name'],'query_suffix':''}
@@ -254,7 +256,7 @@ def build(slots,sources,lang,api):
    if row['binding']=='explicit paragraph link':row['priority']+=1
    row['intent']=scene_intent(slot['text'],row)
    if row['intent']['name']!='organization context':
-    if re.search(r'^(?:city|town|village|municipality|capital\b)',description,re.I):row['priority']=1+(row['binding']=='explicit paragraph link')
+    if re.search(r'^(?:city|town|village|municipality|(?:(?:administrative|national|federal) )?capital\b)',description,re.I):row['priority']=1+(row['binding']=='explicit paragraph link')
     elif re.search(r'rocket|spacecraft|launch.?vehicle|computer|camera|telescope|instrument|aircraft|engine|machine|device|mausoleum|bridge|cathedral|monument|building in',description,re.I):row['priority']+=2
    targets.setdefault(entity['id'],row)
   ranked=sorted(targets.values(),key=lambda row:(-row['priority'],-len(row['anchor']),row['name']))
@@ -325,7 +327,7 @@ def target_score(candidate,slot,api):
  if intent.get('name')=='physical award':
   required=set(intent.get('award_domains',[]));depicted=award_domains(identity_text)
   if required and depicted and not required&depicted:return -1
- if intent.get('metadata_pattern') and not re.search(intent['metadata_pattern'],identity_text if intent.get('name') in {'physical award','city context'} else text,re.I):return -1
+ if intent.get('metadata_pattern') and not re.search(intent['metadata_pattern'],identity_text if intent.get('name') in {'physical award','city context','physical interface'} else text,re.I):return -1
  if intent.get('forbidden_metadata') and re.search(intent['forbidden_metadata'],text,re.I):return -1
  if intent.get('name')=='physical award' and re.search(r'portrait|headshot|laureates?|winners?|recipients?|ceremony|conference|banquet',candidate.get('depiction',''),re.I):return -1
  if intent.get('name')=='organization context':

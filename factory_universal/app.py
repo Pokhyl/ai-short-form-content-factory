@@ -1133,7 +1133,7 @@ def pixel_check(raw,topic,slot,candidate=None):
    positive=['A photograph of '+name+' in space.']
    if re.search(r'\b(?:planet|moon|satellite)\b',profile.get('visual_description',''),re.I):
     positive+=['A photograph of the rocky surface of '+name+' taken by a rover.','An orbital photograph of the surface of '+name+'.']
-   return get_pixel_verifier().check(raw,name,set(),'',[],name,extra_positives=positive,extra_negatives=['A photograph of a spacecraft being built in a laboratory.','A person wearing an astronaut costume on Earth.','A collage of multiple labeled satellite images.','A topographic map with a color legend.'])
+   return get_pixel_verifier().check(raw,name,set(),'',[],name,extra_positives=positive,extra_negatives=['A photograph of a spacecraft being built in a laboratory.','A person wearing an astronaut costume on Earth.','A collage of multiple labeled satellite images.','A topographic map with a color legend.','A small irregular moon or asteroid above a planet.','An artists concept or simulated view of a planet.'])
   if slot.get('process_intent'):
    subject=' '.join(dict.fromkeys(topic_terms(topic,'en'))) or topic
    return get_pixel_verifier().check(raw,subject,scene_actions(slot['text']),slot['text'] if slot.get('language')=='en' else '',slot.get('visual_competitors',[]),topic,extra_negatives=['A person writing or drawing on finished '+subject+'.','A typewriter, office printer or a person wrapping a parcel.'],extra_positives=[])

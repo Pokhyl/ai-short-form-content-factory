@@ -585,6 +585,18 @@ def check():
   queries=[call.args[0] for call in search.call_args_list]
   assert len(queries)<=12 and 'incategory:"Papermaking"' in queries
   assert 'paper handmade' in queries and 'paper mould' in queries
+ capital={**city,'description':'administrative capital of a country'}
+ assert storyboard.scene_intent('Born in the capital.',capital)['name']=='city context'
+ ruin={**panorama,'alt':'A ruin of the former Panorama building','depiction':'File:Sample City panorama building.jpg'}
+ assert storyboard.target_score(ruin,{'visual_target':city},app)<0
+ interior={**panorama,'depiction':'File:Sample City spherical interior panorama.jpg'}
+ assert storyboard.target_score(interior,{'visual_target':city},app)<0
+ interface={'id':'Q993','name':'brain-computer interface','description':'connection between brain and computer'}
+ interface['intent']=storyboard.scene_intent('Research on a brain-computer interface.',interface)
+ tissue={'provider':'commons','depiction':'File:Brain computer interface tissue construct.jpg','alt':'A microscope view of glial cells','categories':[]}
+ headset={'provider':'commons','depiction':'File:Brain computer interface electrode headset.jpg','alt':'An electrode headset connected to a computer','categories':[]}
+ assert storyboard.target_score(tissue,{'visual_target':interface},app)<0
+ assert storyboard.target_score(headset,{'visual_target':interface},app)>0
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 
