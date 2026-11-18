@@ -187,6 +187,14 @@ def scene_intent(text,target):
 
 def build(slots,sources,lang,api):
  profile=sources[0].get('entity_profile',{})
+ # Associated entities explain a person's life. Other topic categories retain
+ # the primary subject and their existing place/astronomy/process validators.
+ if profile.get('kind')!='human':
+  for index,slot in enumerate(slots):
+   if slot.get('process_intent') and api.scene_actions(slot['text'])=={'production'} and not api.process_definition(slot['text']):raise SceneUnavailable(slot,'No evidenced physical operation for this process scene')
+   slot['visual_targets']=[]
+   slot['visual_role']='establishing' if index==0 else 'process_evidence' if slot.get('process_intent') else 'topic_evidence'
+  return
  links=source_links(sources,lang,api)
  alias_titles={}
  for link in links:alias_titles.setdefault(link['label'].casefold(),set()).add(link['title'])
@@ -219,6 +227,8 @@ def build(slots,sources,lang,api):
  seen_events=set()
  for index,slot in enumerate(slots):
   targets={}
+  if slot.get('process_intent') and api.scene_actions(slot['text'])=={'production'} and not api.process_definition(slot['text']):
+   raise SceneUnavailable(slot,'No evidenced physical operation for this process scene')
   if index==0:
    # The establishing scene may show the main subject. Subsequent factual
    # scenes must establish their own objects, places, institutions or events.
@@ -293,7 +303,7 @@ def shot_slots(slots,beat_for_shot):
 def target_score(candidate,slot,api):
  target=slot['visual_target']
  if candidate.get('provider')!='commons':return -1
- categories=[category for category in candidate.get('categories',[]) if not re.search(r'\b(?:from|via|uploaded|taken with|photographs by|images by|files by)\b',category,re.I)]
+ categories=api.semantic_categories(candidate)
  identity_fragments=[re.sub(r'^(?:File|Category):','',field,flags=re.I) for field in [candidate.get('depiction','')]+categories]
  identity_text=' '.join(identity_fragments)
  text=identity_text+' '+candidate.get('alt','')

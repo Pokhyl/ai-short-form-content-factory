@@ -41,7 +41,8 @@ def main():
   row['status']='submitted';receipt.write_text(json.dumps(result,ensure_ascii=False,indent=2))
   # execute_job is the same 900-second process-group supervisor used by Studio.
   app.execute_job(jid)
-  job=app.get_job(jid);manifest=json.loads(job.get('manifest') or '{}')
+  job=app.get_job(jid);manifest=job.get('manifest') or {}
+  if isinstance(manifest,str):manifest=json.loads(manifest)
   row.update(status=job['status'],error=job.get('error'),manifest_path=str(app.RENDER/jid/'universal-manifest.json'))
   row['narration']=manifest.get('narration',{})
   row['render']=manifest.get('render',{})

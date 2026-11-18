@@ -40,6 +40,10 @@ def render(jid,payload,data=Path('/data')):
  timeline=directory/'timeline.ffconcat';timeline.write_text('\n'.join(lines)+'\n')
  output=directory/'final.mp4';draft=directory/'rendering.mp4'
  command=['ffmpeg','-nostdin','-y','-v','error','-f','concat','-safe','0','-i',str(timeline),'-i',str(audio),'-map','0:v:0','-map','1:a:0','-vf','fps=30,scale=in_range=full:out_range=tv,format=yuv420p','-af','apad=whole_dur='+str(requested/1000),'-c:v','libx264','-pix_fmt','yuv420p','-color_range','tv','-threads','2','-preset','veryfast','-crf','20','-c:a','aac','-b:a','192k','-t',str(requested/1000),'-frames:v',str(requested*30//1000),'-movflags','+faststart',str(draft)]
+ attribution=payload.get('attribution');credits_text=json.dumps(attribution,ensure_ascii=False,indent=2) if attribution else ''
+ if attribution:
+  if len(credits_text.encode())>60000:raise ValueError('Attribution metadata exceeds the bounded size')
+  command[-1:-1]=['-metadata','copyright=CC BY-SA 4.0 | https://creativecommons.org/licenses/by-sa/4.0/','-metadata','comment='+credits_text]
  try:
   result=subprocess.run(command,capture_output=True,text=True,timeout=240)
   if result.returncode:raise ValueError('FFmpeg render failed: '+result.stderr[-600:])
@@ -47,8 +51,12 @@ def render(jid,payload,data=Path('/data')):
   if len(videos)!=1 or len(audios)!=1:raise ValueError('render stream count is invalid')
   video=videos[0];sound=audios[0];duration=round(float(video['duration'])*1000)
   gates={'exact_frames':int(video.get('nb_frames',0))==requested*30//1000,'exact_duration':duration==requested,'portrait_dimensions':(video['width'],video['height'])==(1080,1920),'h264':video['codec_name']=='h264','aac':sound['codec_name']=='aac','yuv420p':video['pix_fmt']=='yuv420p','fps_30':video['r_frame_rate']=='30/1','unique_images':len(hashes)==len(scenes),'continuous_timeline':cursor==requested,'unchanged_source_audio':digest(audio)==payload['input_audio_sha256'],'natural_audio_fits':requested*.90<=actual<=requested}
+  if attribution:gates['attribution_embedded']=meta.get('format',{}).get('tags',{}).get('comment')==credits_text and 'CC BY-SA 4.0' in meta.get('format',{}).get('tags',{}).get('copyright','')
   if not all(gates.values()):raise ValueError('render QA failed: '+','.join(k for k,v in gates.items() if not v))
   draft.replace(output)
+  if attribution:
+   (directory/'credits.txt').write_text(credits_text)
+   (directory/'credits.json').write_text(credits_text)
   receipt={'status':'ready','job_id':jid,'engine':'project FFmpeg renderer','storage_path':str(output),'manifest_path':str(directory/'manifest.json'),'sha256':digest(output),'bytes':output.stat().st_size,'width':video['width'],'height':video['height'],'video_codec':video['codec_name'],'audio_codec':sound['codec_name'],'pix_fmt':video['pix_fmt'],'fps_num':30,'fps_den':1,'duration_ms':duration,'muxed_audio_duration_ms':round(float(sound['duration'])*1000),'video_stream_count':1,'audio_stream_count':1,'frame_count':int(video['nb_frames']),'audio_duration_ms':actual,'requested_duration_ms':requested,'target_duration_ms':target,'duration_delta_ms':duration-requested,'input_audio_sha256':payload['input_audio_sha256'],'segments':segments,'qa_passed':True,'qa_gates':gates}
   (directory/'manifest.json').write_text(json.dumps(receipt,indent=2))
   return receipt

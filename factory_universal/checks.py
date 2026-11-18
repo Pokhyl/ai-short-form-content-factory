@@ -257,7 +257,7 @@ def check():
  parser=storyboard.ArticleLinks()
  parser.feed('<p>A <a href="/wiki/River_One">river</a> feeds the lake.</p><p>The <a href="/wiki/Unrelated_Fiction">river</a> is a fictional character.</p>')
  first='A river feeds the lake.'
- local_sources=[{'text':first+'\nThe river is a fictional character.','url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'concept','id':'Q123'}}]
+ local_sources=[{'text':first+'\nThe river is a fictional character.','url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'human','id':'Q123'}}]
  local_slots=[{'text':'An introduction.','source_index':0,'source_sentence':'An introduction.'},{'text':first,'source_index':0,'source_sentence':first}]
  entities={'River One':{'id':'Q901','name':'River One','kind':'entity','description':'river','native_name':'River One'},'Unrelated Fiction':{'id':'Q902','name':'Unrelated Fiction','kind':'entity','description':'fictional character','native_name':'Unrelated Fiction'}}
  with patch.object(storyboard,'source_links',return_value=parser.links),patch.object(storyboard,'resolve_links',return_value=entities):
@@ -434,7 +434,7 @@ def check():
 
  # A search-rate response stops the provider sequence immediately.
  rate=app.urllib.error.HTTPError('https://images.example/',429,'rate limited',{},None)
- with patch.object(app,'SEARCH_QUERIES',{'stock':set(),'commons':set()}),patch.object(app,'DISCOVERED_PHOTOS',{}),patch.object(app,'photo_search',side_effect=rate) as search,patch.object(app,'commons_search',side_effect=AssertionError('Do not continue after rate limiting')):
+ with patch.object(app,'SEARCH_QUERIES',{'stock':set(),'commons':set()}),patch.object(app,'DISCOVERED_PHOTOS',{}),patch.object(app,'media_aliases',return_value=['Example topic']),patch.object(app,'photo_search',side_effect=AssertionError('Stock sources must not be mixed into the share-alike adaptation')),patch.object(app,'commons_search',side_effect=rate) as search:
   try:app.discover_photos('Example topic','en',[{'text':'Example topic','process_intent':False}])
   except app.urllib.error.HTTPError as error:assert error.code==429
   else:raise AssertionError('Search rate limit was swallowed')
@@ -509,6 +509,62 @@ def check():
  with patch.object(storyboard,'source_links',return_value=specificity.links),patch.object(storyboard,'resolve_links',return_value={'Example Device':{'id':'Q112','name':'Example Device','kind':'entity','description':'laboratory instrument'},'Example Corporation':{'id':'Q113','name':'Example Corporation','kind':'entity','description':'technology company'}}):
   storyboard.build(specific_slots,specific_sources,'en',app)
  assert [target['id'] for target in specific_slots[1]['visual_targets']]==['Q112']
+ # Establishing views cannot consume the only photos that verify a later physical stage.
+ beat_map=[0,0,0,1,1,1,2,2,2]
+ scene_rows=[{'text':'Factory production overview.','process_intent':True}]*3+[{'text':'Wet fibres drain through a sieve.','process_intent':True}]*3+[{'text':'Rollers press the sheet.','process_intent':True}]*3
+ eligible=[set(range(10))]*3+[set(range(3))]*3+[set(range(5))]*3
+ ordering=app.photo_selection_order(beat_map,scene_rows,eligible)
+ assert sorted(ordering)==list(range(9))
+ assert ordering[:2]==[3,4] and ordering.index(0)>ordering.index(6)
+ assert max(ordering.index(i) for i in (0,1,3,4,6,7))<min(ordering.index(i) for i in (2,5,8))
+ # A matching head noun does not turn food into a cellulose manufacturing image.
+ food_photo={'provider':'pexels','alt':'Vietnamese food production, rice paper drying on woven mats','height':1000,'width':1500}
+ assert app.photo_score(food_photo,{'text':'The paper dries on racks.','process_intent':True,'source_driven':True},'Paper')<0
+ wet_mesh={'provider':'pixabay','alt':'paper manufacturing, paper mesh, papermaking mould','height':1000,'width':1500}
+ assert app.photo_score(wet_mesh,{'text':'The paper dries on racks.','process_intent':True,'source_driven':True},'How paper is made')<0
+ assert 'drain' in app.visual_actions('papermaking paper mesh')
+ # Share-alike material is admitted with explicit author/licence data; NC/ND remain excluded.
+ assert app.COMMONS_ONLY
+ assert app.supported_commons_license('CC BY-SA 4.0','https://creativecommons.org/licenses/by-sa/4.0/','Example Author')
+ assert app.supported_commons_license('CC BY-SA 3.0','https://creativecommons.org/licenses/by-sa/3.0/','Example Author')
+ assert not app.supported_commons_license('CC BY-SA 4.0','https://example.org/wrong-license','Example Author')
+ assert not app.supported_commons_license('CC BY-SA 4.0','https://creativecommons.org/licenses/by-sa/4.0/','')
+ assert not app.supported_commons_license('CC BY-NC 4.0','https://creativecommons.org/licenses/by-nc/4.0/','Example Author')
+ assert not app.supported_commons_license('CC BY-ND 4.0','https://creativecommons.org/licenses/by-nd/4.0/','Example Author')
+ # Commons publishes official licence URIs both with and without the trailing slash.
+ assert app.supported_commons_license('CC BY-SA 4.0','https://creativecommons.org/licenses/by-sa/4.0','Example Author')
+ assert app.supported_commons_license('CC BY-SA 3.0','http://creativecommons.org/licenses/by-sa/3.0/','Example Author')
+ assert not app.supported_commons_license('CC BY-SA 4.0','https://creativecommons.org.evil.example/licenses/by-sa/4.0','Example Author')
+ # General Cyrillic overviews avoid foreign-name catalogues the selected native voice cannot align reliably.
+ catalogue='Исследователи используют Alpha Mission, Beta Orbiter, Gamma Explorer, Delta Probe и другие аппараты.'
+ assert app.foreign_name_catalogue(catalogue,'ru','Планета')
+ assert app.foreign_name_catalogue(catalogue,'uk','Планета')
+ assert not app.foreign_name_catalogue(catalogue,'ru','Список аппаратов')
+ assert not app.foreign_name_catalogue('Он приобрёл компьютер Example ZX-80, и научился программировать.','ru','Учёный')
+ assert not app.foreign_name_catalogue('A long, complete, ordinary, English sentence.','en','Science')
+ # Duration correction chooses complete supported clauses, never noun fragments.
+ long_fact='Water is further removed from the wet sheet by pressing, sometimes aided by suction or heating.'
+ assert 'Water is further removed from the wet sheet by pressing.' in app.complete_clause_variants(long_fact,'en')
+ assert app.complete_clause_variants('Photosynthesis, which is a biological process, converts energy.','en')==['Photosynthesis, which is a biological process, converts energy.']
+ polish='Badacz Jan Kowalski otrzymał międzynarodową nagrodę za badania nad roślinami.'
+ assert 'Badacz Jan Kowalski otrzymał międzynarodową nagrodę.' in app.complete_clause_variants(polish,'pl')
+ assert app.semantic_categories({'categories':['Category:Press photographs','Category:Paper presses']})==['Category:Paper presses']
+ mould={'provider':'commons','depiction':'File:Paper mould.jpg','alt':'A wooden paper mould with mesh','categories':['Category:Paper moulds'],'height':900,'width':1200}
+ assert app.photo_score(mould,{'text':'Wet paper drains through a sieve.','process_intent':True},'Paper manufacturing')>=0
+ assert app.photo_score(mould,{'text':'The paper dries on racks.','process_intent':True},'Paper manufacturing')<0
+ # A material's industrial production is not a substitute for a biological phenomenon.
+ concept_slots=[{'text':'Photosynthesis converts light energy.','source_index':0},{'text':'Photosynthesis releases oxygen.','source_index':0}]
+ with patch.object(storyboard,'source_links',side_effect=AssertionError('Do not substitute associated ingredients for a concept')):
+  storyboard.build(concept_slots,[{'entity_profile':{'kind':'concept','name':'Photosynthesis'}}],'en',app)
+ assert all(not slot['visual_targets'] for slot in concept_slots)
+ # Native inflections identify the same physical stage in all supported narration languages.
+ assert app.scene_actions('Papier jest wysuszany na stojakach.')=={'dry'}
+ assert app.scene_actions('Бумагу высушивают на стеллажах.')=={'dry'}
+ assert app.scene_actions('Папір висушують на стелажах.')=={'dry'}
+ assert app.scene_actions('Волокна зневоднюють через сито.')=={'drain'}
+ assert app.scene_actions('Смесь расплавляют в печи.')=={'melt'}
+ conference={'provider':'commons','depiction':'File:White paper press conference.jpg','alt':'A press conference about a white paper','categories':['Category:Paper industry'],'height':1000,'width':1400}
+ assert app.photo_score(conference,{'text':'The paper is pressed.','process_intent':True},'Paper manufacturing')<0
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

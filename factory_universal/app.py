@@ -487,6 +487,33 @@ def process_definition(text):
  parts=re.split(r'\s[—–]\s|\b(?:is|are|jest|są|це|это|є)\b',text or '',maxsplit=1,flags=re.I)
  return len(parts)>1 and bool(re.search(r'manufactur|making|made from|made by|process of|wytwarz|produk|виготов|виробниц|изготов|производ',parts[1],re.I))
 
+def foreign_name_catalogue(text,lang,topic):
+ if lang not in {'ru','uk'} or re.search(r'list|catalog|список|перелік|каталог',topic,re.I):return False
+ return len(re.findall(r'[A-Za-z]{2,}',text))>=3 and len(re.findall(r'[,;]',text))>=3
+
+def complete_clause_variants(text,lang):
+ variants=[text]
+ separators={
+  'en':r',\s+(?:which|while|sometimes|such as|for example)\b|:',
+  'pl':r',\s+(?:który|która|które|którzy)\b|\s+za\s+(?:badani\w*|odkry\w*|prac\w*)|:',
+  'ru':r',\s+(?:который|которая|которое|которые)\b|\s+за\s+(?:исследован\w*|открыти\w*|работ\w*)|:',
+  'uk':r',\s+(?:який|яка|яке|які)\b|\s+за\s+(?:дослідженн\w*|відкритт\w*|прац\w*)|:',
+ }
+ verbs={
+  'en':r'\b(?:is|are|was|were|has|have|had|can|may|involves|consists|received|won|founded|discovered)\b',
+  'pl':r'\b(?:jest|są|był|była|byli|były|został|została|otrzymał|otrzymała|otrzymali|odkrył|odkryła)\b',
+  'ru':r'\b(?:является|имеет|составляет|насчитывает|получил|получила|получили|открыл|открыла|основал|основала|был|была|были)\b',
+  'uk':r'\b(?:є|має|становить|налічує|отримав|отримала|отримали|відкрив|відкрила|заснував|заснувала|був|була|були)\b',
+ }
+ for match in re.finditer(separators.get(lang,r'(?!)'),text,re.I):
+  prefix=text[:match.start()].strip().rstrip(',;: .')
+  if len(prefix.split())<6 or not re.search(verbs.get(lang,r'(?!)'),prefix,re.I):continue
+  if re.match(r'^(?:while|although|because|when|if|after|before|whereas|gdy|kiedy|chociaż|ponieważ|jeśli|aby|когда|хотя|поскольку|если|чтобы|коли|хоча|оскільки|якщо|щоб)\b',prefix,re.I):continue
+  if re.search(r'following|следующ|наступн|następując',prefix,re.I):continue
+  if prefix.count('(')!=prefix.count(')'):continue
+  variants.append(prefix+'.')
+ return list(dict.fromkeys(variants))[:4]
+
 def source_slots(sources,topic,count,lang='en',duration_s=None):
   target_ms=(duration_s if duration_s is not None else count*5)*1000
   object_terms=grounding_terms(topic,lang)
@@ -498,6 +525,9 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
   rows=[];source_positions={};source_spans={}
   definition_index=next((i for i,source in enumerate(sources) if source.get('source_type')=='structured definition'),None)
   definition=sources[definition_index]['text'] if definition_index is not None else None
+  if human and definition:
+   original_definition=definition;definition=omit_parenthetical_asides(retain_named_model_asides(definition))
+   source_positions[(definition_index,definition)]=0;source_spans[(definition_index,definition)]=original_definition
   vernacular=lang in {'ru','uk'} and bool(sources) and bool(re.search(r'\b(?:insects?|animals?|plants?|birds?|mammals?|fish)\b',sources[0].get('entity_profile',{}).get('visual_description',''),re.I))
   if vernacular and definition and re.search(r'\b[A-Z][a-z]{2,}\b',definition):
    safe_lead=next((sentence for paragraph in sources[0]['text'].splitlines()[:5] for sentence in sentences(paragraph) if sentence.endswith(('.', '!', '?')) and 5<=len(sentence.split())<=60 and not re.search(r'[A-Za-z]{3,}',sentence) and not context_dependent_sentence(sentence)),None)
@@ -519,20 +549,20 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    if definition and si!=0:continue
    title_terms=grounding_terms(src['title'],lang)
    for paragraph_index,paragraph in enumerate(src['text'].splitlines()):
-    if definition and paragraph_index>(31 if process_intent or human else 11):continue
+    if definition and paragraph_index>31:continue
     if human and (si>0 or paragraph_index>31):continue
     if human and not re.search(r'critic|scandal|controvers|corrupt|критик|скандал|корупц|коррупц|kryty|afer',topic,re.I) and re.search(r'critic|scandal|controvers|corrupt|критик|скандал|корупц|коррупц|kryty|afer',paragraph,re.I):continue
     if definition and process_intent and not re.search(r'histor|ancient|истори|істор|dziej|handmade|manual|traditional|ручн|ręczn|традиц',topic,re.I) and re.search(r'ancient|centur|etymolog|invention|invented|traditional|originally|истори|древн|стародав|wynalezion|starożytn',paragraph,re.I):continue
     paragraph_start=src['text'].find(paragraph)
     units=sentences(paragraph)
     if definition and len(units)>1 and (process_signal(paragraph,lang)>=2 or any(context_dependent_sentence(unit) for unit in units[1:])):units=units+[paragraph]
-    for sentence in units:
-     connected_block=sentence==paragraph and len(sentences(paragraph))>1
-     original_sentence=sentence;source_position=paragraph_start+paragraph.find(original_sentence)
+    for original_sentence,sentence in [(original,variant) for original in units for variant in complete_clause_variants(original,lang)]:
+     connected_block=original_sentence==paragraph and len(sentences(paragraph))>1
+     source_position=paragraph_start+paragraph.find(original_sentence)
+     if foreign_name_catalogue(sentence,lang,topic):continue
      if any(excluded in original_sentence for excluded in src.get('excluded_visual_sentences',[])):continue
      if human:sentence=retain_named_model_asides(sentence)
      if human or definition:sentence=omit_parenthetical_asides(sentence)
-     if definition and process_intent and lang=='en' and re.search(r',\s+(?:which|while)\b',sentence,re.I):sentence=re.split(r',\s+(?:which|while)\b',sentence,maxsplit=1,flags=re.I)[0].rstrip()+'.'
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
      if vernacular and re.search(r'[A-Za-z]{3,}',sentence):continue
      first=re.search(r'[^\W_]',sentence,re.UNICODE)
@@ -558,7 +588,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if not process_intent and object_terms and (not direct_topic or (lang=='en' and not definition and not grounding_terms(' '.join(words[:6]),lang)&object_terms)):continue
      if lang=='en' and not human and not definition and not process_intent and unsupported_qualifier(sentence,topic,sources):continue
      if process_intent and not definition and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
-     if process_intent and not (visual_actions(sentence)-{'production'}) and process_overlap<2 and not (si==0 and source_position<4 and process_definition(sentence)):continue
+     if process_intent and not (visual_actions(sentence)-{'production'}) and not (si==0 and source_position<4 and process_definition(sentence)):continue
      score=((5 if process_intent else 30)/(1+paragraph_index) if definition else 0)+(8*process_overlap if definition and process_intent else 0)+topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
      if human:
       profile_terms=r'profile|account|username|logo|обліков\w* запис|уч[её]тн\w* запис|профил|профіл|логотип|profil\w*|konto'
@@ -720,6 +750,26 @@ def photo_search(topic,lang):
 def plain_metadata(value):
  parser=WikiHTML();parser.feed(str(value or ''))
  return re.sub(r'\s+',' ',parser.text()).strip()
+OUTPUT_LICENSE={'name':'CC BY-SA 4.0','url':'https://creativecommons.org/licenses/by-sa/4.0/'}
+COMMONS_ONLY=True
+
+def supported_commons_license(name,url,artist):
+ allowed={'Public domain','CC0','CC BY 2.0','CC BY 2.5','CC BY 3.0','CC BY 4.0','CC BY-SA 3.0','CC BY-SA 4.0'}
+ if name not in allowed:return False
+ if name.startswith('CC BY') and (not url or not artist):return False
+ if name.startswith('CC BY-SA'):
+  parsed=urllib.parse.urlsplit(url);expected='/licenses/by-sa/'+name.rsplit(' ',1)[-1]
+  if parsed.scheme not in {'http','https'} or parsed.hostname!='creativecommons.org' or not (parsed.path.rstrip('/')==expected or parsed.path.startswith(expected+'/')):return False
+ return True
+
+def output_credits(sources,visuals):
+ text=[]
+ for source in sources:
+  structured=source.get('source_type')=='structured definition'
+  text.append({'title':source['title'],'source_url':source.get('revision_url') or source['url'],'authors':'Wikidata contributors' if structured else 'Wikipedia contributors','license':'CC0' if structured else 'CC BY-SA 4.0','license_url':'https://creativecommons.org/publicdomain/zero/1.0/' if structured else OUTPUT_LICENSE['url'],'changes':'Selected source excerpts; parentheses and punctuation may be normalized; narrated and captioned.'})
+ media=[{'title':row.get('depiction') or row['alt'],'author':row['creator'],'source_url':row['source_url'],'license':row['license'],'license_url':row.get('license_url'),'changes':row.get('changes','Resized and captioned.')} for row in visuals]
+ return {'adaptation_license':OUTPUT_LICENSE,'text':text,'media':media,'scope':'Factory contributions to this video adaptation; original component licence notices remain applicable.'}
+
 def commons_search(query,limit=20):
  params=urllib.parse.urlencode({'action':'query','generator':'search','gsrsearch':query+' filetype:bitmap','gsrnamespace':6,'gsrlimit':max(1,min(50,int(limit))),'prop':'imageinfo|categories','cllimit':'50','iiprop':'url|size|extmetadata','iiurlwidth':1280,'format':'json'})
  data=cache_fetch('commons-v4|'+str(limit)+'|'+query,lambda:http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=25))
@@ -729,10 +779,9 @@ def commons_search(query,limit=20):
    meta=im.get('extmetadata') or {}
    get=lambda key:plain_metadata((meta.get(key) or {}).get('value',''))
    license_name=get('LicenseShortName');license_url=get('LicenseUrl')
-   if license_name not in {'Public domain','CC0','CC BY 2.0','CC BY 2.5','CC BY 3.0','CC BY 4.0'}:continue
-   if license_name.startswith('CC BY') and (not license_url or not get('Artist')):continue
+   if not supported_commons_license(license_name,license_url,get('Artist')):continue
    original_url=im.get('url','');original_size=int(im.get('size') or 0);pixels=int(im.get('width') or 0)*int(im.get('height') or 0)
-   prefer_original=0<original_size<=4_000_000 and 0<pixels<=20_000_000
+   prefer_original=0<original_size<=4_000_000 and 0<pixels<=20_000_000 and urllib.parse.urlsplit(original_url).path.lower().endswith(('.jpg','.jpeg','.png','.webp'))
    url=original_url if prefer_original else im.get('thumburl') or original_url;host=urllib.parse.urlparse(url).hostname
    if host not in {'upload.wikimedia.org','thumb.wikimedia.org'}:continue
    width=int(im.get('thumbwidth') or im.get('width') or 0);height=int(im.get('thumbheight') or im.get('height') or 0)
@@ -788,7 +837,7 @@ def visual_queries(topic,lang,slots):
  if slots and slots[0].get('source_driven'):
   titles=[slot.get('visual_title') for slot in slots if slot.get('visual_title')]
   if slots[0].get('process_intent'):
-   subject=' '.join(core)
+   subject=slots[0].get('entity_profile',{}).get('name') or ' '.join(core)
    industry=[subject+' mill'] if 'mill' in slots[0].get('entity_profile',{}).get('visual_vocabulary',[]) else []
    stages=[subject+' '+STAGE_QUERIES[next(iter(scene_actions(slot['text'])))] for slot in slots if scene_actions(slot['text'])!={'production'}]
    return list(dict.fromkeys(stages+[topic]+titles+industry+[subject+' '+term for term in ['factory','manufacturing','handmade','workshop','production machinery']]))[:7]
@@ -864,6 +913,9 @@ def bind_place_images(candidates,profile):
   for p in batch:p['categories']=list(dict.fromkeys(p.get('categories',[])+categories.get(p['id'],[])))
  return candidates
 
+def semantic_categories(candidate):
+ return [category for category in candidate.get('categories',[]) if not re.search(r'\b(?:from|via|uploaded|taken with|photographs by|images by|files by|press photographs?|press photos?|published in)\b',category,re.I)]
+
 def photographic_metadata(p):
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
  return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|calendars?|scrapbooks?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
@@ -872,7 +924,7 @@ def discover_photos(topic,lang,slots):
  pool=dict(DISCOVERED_PHOTOS);errors=[]
  profile=slots[0].get('entity_profile',{}) if slots else {}
  aliases=list(dict.fromkeys(alias for slot in slots for alias in slot.get('topic_aliases',[])))
- for query in ([] if profile.get('kind')=='human' or named_astronomical_subject(profile) or named_place_subject(profile) else list(dict.fromkeys(visual_queries(topic,lang,slots)+aliases))[:7]):
+ for query in ([] if COMMONS_ONLY or profile.get('kind')=='human' or named_astronomical_subject(profile) or named_place_subject(profile) else list(dict.fromkeys(visual_queries(topic,lang,slots)+aliases))[:7]):
   key=query.casefold().strip()
   if key not in SEARCH_QUERIES['stock'] and len(SEARCH_QUERIES['stock'])>=7:continue
   SEARCH_QUERIES['stock'].add(key)
@@ -893,8 +945,10 @@ def discover_photos(topic,lang,slots):
  if slots and slots[0].get('source_driven') and slots[0].get('process_intent'):
   category=profile.get('commons_category')
   queries=([('incategory:"'+category+'"')] if category else [])+[topic+' machinery',' '.join(core_terms)+(' mill interior' if 'mill' in profile.get('visual_vocabulary',[]) else ' handmade')]
-  stages=[' '.join(core_terms)+' '+STAGE_QUERIES[next(iter(scene_actions(slot['text'])))] for slot in slots if scene_actions(slot['text'])!={'production'}]
-  queries=list(dict.fromkeys(stages+queries))[:7]
+  stages=[subject+' '+STAGE_QUERIES[next(iter(scene_actions(slot['text'])))] for slot in slots if scene_actions(slot['text'])!={'production'} for subject in dict.fromkeys([profile.get('name') or ' '.join(core_terms),' '.join(core_terms)])]
+  actions_needed=list(dict.fromkeys(next(iter(scene_actions(slot['text']))) for slot in slots if scene_actions(slot['text'])!={'production'}))
+  stages += [' '.join(core_terms)+' '+STAGE_QUERY_TOOLS[action][index] for index in range(2) for action in actions_needed]
+  queries=list(dict.fromkeys(stages+queries))[:12]
  if named_place_subject(profile):
   name=profile['name'];native=profile.get('native_name') or name;category=profile.get('commons_category') or name
   details=list(dict.fromkeys(slot.get('place_detail_query') for slot in slots if slot.get('place_detail_query')))
@@ -907,7 +961,7 @@ def discover_photos(topic,lang,slots):
  from storyboard import query_plan
  scene_queries=query_plan(slots)
  if scene_queries:queries=list(dict.fromkeys(queries[:2]+scene_queries))[:48]
- commons_limit=48 if scene_queries else (7 if slots and slots[0].get('process_intent') else 3)
+ commons_limit=48 if scene_queries else (12 if slots and slots[0].get('process_intent') else 3)
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  for query in queries:
   key=query.casefold().strip()
@@ -948,10 +1002,10 @@ def dhash(im):
  return n
 def visual_actions(text):
  patterns={
-  'melt':r'\b(?:melt\w*|molten|topi\w*|плав\w*)',
-  'drain':r'\b(?:drain\w*|siev\w*|(?:mesh|forming|wire|mould|mold|pulp) screens?\b|dewater\w*|odwad\w*|sącz\w*|осуш\w*|сито\w*)',
-  'press':r'\b(?:press\w*|squeez\w*|pras\w*|пресс\w*|прес\w*)',
-  'dry':r'\b(?:dry\w*|dried|dryer\w*|susz\w*|суш\w*)',
+  'melt':r'\b(?:melt\w*|molten|(?:roz|s)?topi\w*|(?:с|рас|пере|роз)?плав\w*)',
+  'drain':r'\b(?:drain\w*|siev\w*|deckle\w*|paper mesh|paper mou?lds?|papermaking mou?lds?|wire mesh|(?:mesh|forming|wire|mould|mold|pulp) screens?\b|dewater\w*|odwad\w*|(?:od|prze)?sącz\w*|осуш\w*|обезвож\w*|зневод\w*|процідж\w*|відцідж\w*|сито\w*)',
+  'press':r'\b(?:press\w*|squeez\w*|(?:s|wy)?pras\w*|(?:с|пере)?пресс\w*|(?:с|пере)?прес\w*)',
+  'dry':r'\b(?:dry\w*|dried|dries|dryer\w*|(?:wy|do|po)?susz\w*|(?:вы|ви|по|під|до)?суш\w*)',
   'cut':r'\b(?:cut\w*|slit\w*|trim\w*|cię\w*|рез\w*|різ\w*)',
   'mix':r'\b(?:mix\w*|stirr\w*|blend\w*|miesz\w*|смеш\w*|зміш\w*)',
   'heat':r'\b(?:furnace\w*|heat(?:ed|ing)|kiln\w*|topi\w*|piec\w*|плав\w*|печ\w*|нагр\w*)',
@@ -968,7 +1022,9 @@ def scene_actions(text):
   if action in actions:return {action}
  return {'production'}
 
-STAGE_QUERIES={'press':'pressing press','drain':'forming screen drainage','cut':'cutting slitting','mix':'mixing raw materials','melt':'melting furnace','dry':'drying','inspect':'quality inspection','cool':'annealing','shape':'forming molding','heat':'heating','production':'manufacturing'}
+STAGE_QUERIES={'press':'press','drain':'screen','cut':'cutting slitting','mix':'mixing raw materials','melt':'melting furnace','dry':'drying','inspect':'quality inspection','cool':'annealing','shape':'forming molding','heat':'heating','production':'manufacturing'}
+STAGE_QUERY_TOOLS={'drain':['mould','sieve'],'press':['pulp press','hydraulic press'],'dry':['drying sheets','drying racks'],'shape':['mould','forming'],'heat':['furnace','kiln'],'melt':['furnace','molten'],'cool':['annealing','cooling'],'inspect':['inspection','quality control'],'mix':['mixer','mixing'],'cut':['cutter','slitting'],'production':['machinery','factory']}
+
 
 def visual_competitors(topic,candidates):
  core=topic_terms(topic,'en');generic={'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
@@ -1008,10 +1064,11 @@ def photo_score(p,slot,topic):
   if re.search(r'\b(?:signature|autograph|letter|document|certificate|poster|propaganda|graffiti|mural|banner|caricature|billboard|stamp|statue|bust|sculpture)\b',p.get('depiction') or p['alt'],re.I):return -1
   return (20+(10 if re.search(r'portrait|cropped',p['alt'],re.I) else 0)+(3 if p['height']>=p['width'] else 0)) if p.get('identity_verification',{}).get('entity_id')==slot['entity_profile']['id'] else -1
  depiction=p.get('depiction') or p['alt']
+ if slot.get('process_intent'):depiction+=' '+' '.join(semantic_categories(p))
  terms=set(tokens(topic+' '+slot['text']+' '+slot.get('visual_title','')));meta=set(tokens(depiction))
  for word in list(meta):
   if len(word)>8 and word.endswith('making'):meta.add(word[:-6])
- process_topic=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
+ process_topic=bool(slot.get('process_intent') or re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  anchors=set(topic_terms(topic,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
  if process_topic and anchors and not anchors&meta:return -1
  if not process_topic and anchors:
@@ -1023,18 +1080,23 @@ def photo_score(p,slot,topic):
  if not process_topic and not slot.get('source_driven') and p.get('provider')=='pixabay' and len(anchors)>1 and not any(group and group<=set(tokens(tag)) for group in groups for tag in depiction.split(',')):return -1
  if p.get('provider') in {'pixabay','pexels'} and re.search(r'\b(?:fantasy|sci[ -]?fi|digital art|3d render|ai[ -]generated)\b',depiction,re.I):return -1
  work_context=r'\b(?:factor(?:y|ies)|mill(?:ing)?|refiner\w*|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|\w{3,}making|handmade|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
- if process_topic and not re.search(work_context,depiction,re.I):return -1
+ if process_topic and not re.search(work_context,depiction,re.I) and not (visual_actions(depiction+' '+p.get('alt','')[:300])-{'production'}):return -1
  if process_topic:
-  uses=set(re.findall(r'\b(?:printing|dressmaking|origami|wrapping|writing|drawing|typewriter|paper bags|paper sacks)\b',depiction,re.I))
+  if re.search(r'press.conference|news.conference',depiction,re.I) and not re.search(r'press.conference|news.conference',topic,re.I):return -1
+  food=r'\b(?:food|rice paper|rice flour|spring rolls?|edible|pancakes?|tortillas?|noodles?|chocolate|cakes?|bread|potato)\b'
+  if re.search(food,p.get('alt','')+' '+' '.join(p.get('categories',[])),re.I) and not re.search(food,topic,re.I):return -1
+  uses=set(re.findall(r'\b(?:printing press|paper printing|book printing|printing machine|dressmaking|origami|wrapping|writing|drawing|typewriter|paper bags|paper sacks)\b',depiction,re.I))
   if any(use.casefold() not in topic.casefold() for use in uses):return -1
   compounds=[word[:-6] for word in meta if len(word)>8 and word.endswith('making')]
   if compounds and not any(root in anchors for root in compounds):return -1
  if not process_topic:
   qualifiers={term for term in tokens(slot.get('visual_title','')) if term not in tokens(topic) and term.isalpha() and len(term)>=3}-{'energy','power','system','plant','factory','production','manufacturing','process','industry','technology','list','century'}
   if qualifiers and not qualifiers&meta:return -1
- required=scene_actions(slot['text']) if process_topic else set();depicted=visual_actions(depiction)
+ required=scene_actions(slot['text']) if process_topic else set()
+ action_description=(p.get('alt','').removeprefix(p.get('depiction','')) or '')[:300]
+ depicted=visual_actions(depiction+' '+action_description)
  specific=required-{'production'}
- if specific and depicted-{'production'} and not specific&depicted:return -1
+ if specific and not specific&depicted:return -1
  if specific and re.search(r'\b(?:exterior|outside|panorama|skyline)\b',depiction,re.I):return -1
  if required and not required&depicted and 'production' not in depicted:return -1
  return 2*len(terms&meta)+.8*len(set(tokens(topic))&meta)+8*len(required&depicted)+(6 if slot.get('visual_title') and slot['visual_title'].casefold()==p.get('query','').casefold() else 0)+(.5 if p['height']>=p['width'] else 0)
@@ -1128,8 +1190,8 @@ def make_card(raw,caption,dest,credit=None):
   im=ImageOps.exif_transpose(src).convert('RGB')
   if min(im.size)<320:raise ValueError('photo resolution too small')
   bg=Image.new('RGB',(1080,1920),(7,13,23))
-  fg=ImageOps.contain(im,(1040,1420),method=Image.Resampling.LANCZOS)
-  bg.paste(fg,((1080-fg.width)//2,95+(1420-fg.height)//2))
+  fg=ImageOps.contain(im,(1040,1400),method=Image.Resampling.LANCZOS)
+  bg.paste(fg,((1080-fg.width)//2,95+(1400-fg.height)//2))
   layer=Image.new('RGBA',(1080,1920),(0,0,0,0));d=ImageDraw.Draw(layer)
   if credit and credit.get('provider')=='commons':
    attribution='Media: '+credit['creator']+' | '+credit['license']+' | '+credit['source_url']
@@ -1146,6 +1208,8 @@ def make_card(raw,caption,dest,credit=None):
   else:raise ValueError('complete caption cannot fit in the readable caption area')
   y=1545
   for line in lines:d.text((82,y),line,font=face,fill='white');y+=line_height
+  d.text((42,1882),'Adaptation: CC BY-SA 4.0 | https://creativecommons.org/licenses/by-sa/4.0/',font=font(15),fill='white')
+  d.text((42,1900),'Text: Wikimedia contributors. Full authors, sources and changes are embedded in MP4 credits.',font=font(15),fill='white')
   Image.alpha_composite(bg.convert('RGBA'),layer).convert('RGB').save(dest,'JPEG',quality=88,optimize=True)
 class ImageServiceError(RuntimeError):
  def __init__(self,status):
@@ -1449,6 +1513,16 @@ def prepare_visuals(jid,sources,topic,lang,duration,slots):
  if last_unavailable is not None:raise last_unavailable
  raise ValueError('Bounded scene layout did not complete')
 
+def photo_selection_order(beat_for_shot,scene_slots,eligible_by_shot):
+ ordinals=[];seen={}
+ for beat in beat_for_shot:
+  ordinals.append(seen.get(beat,0));seen[beat]=seen.get(beat,0)+1
+ def priority(index):
+  slot=scene_slots[index]
+  specific=bool(slot.get('visual_target')) or (slot.get('process_intent') and scene_actions(slot['text'])!={'production'})
+  return (ordinals[index]>=2,not specific,len(eligible_by_shot[index]),ordinals[index],index)
+ return sorted(range(len(beat_for_shot)),key=priority)
+
 def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  visual_count=duration*2//5
  beat_count=len(slots)
@@ -1473,7 +1547,7 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
   profile=sources[0]['entity_profile']
   portrait_queries={'haswbstatement:P180='+profile['id'],profile['name']+' incategory:"CC-BY-2.0" -intitle:Caricature -intitle:graph','intitle:"'+profile['name']+'" incategory:"CC-BY-4.0" -intitle:Caricature -intitle:graph'}
   bind_human_images([candidate for candidate in candidates if candidate.get('query') in portrait_queries],profile)
- if named_place_subject(sources[0].get('entity_profile',{})):candidates=bind_place_images(candidates,sources[0]['entity_profile'])
+ if named_place_subject(sources[0].get('entity_profile',{})) or slots[0].get('process_intent'):candidates=bind_place_images(candidates,sources[0]['entity_profile'])
  if len(candidates)<visual_count:raise ValueError('photo search found '+str(len(candidates))+' distinct candidates; '+str(visual_count)+' are required')
  competitors=[] if slots[0].get('process_intent') else visual_competitors(media_topic,candidates)
  for slot in slots:slot['visual_competitors']=competitors
@@ -1483,8 +1557,8 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[];rejected_contexts=set();used_origins=set()
  raw_cache=ROOT/'tmp'/jid/'scene-photo-cache';raw_cache.mkdir(parents=True,exist_ok=True)
  from photo_duplicates import fingerprint,duplicate
- fingerprints=[]
- for i in range(visual_count):
+ fingerprints=[];selected_positions={}
+ for i in photo_selection_order(beat_for_shot,scene_slots,eligible_by_shot):
   slot=scene_slots[i]
   choices=[slot]
   if slot.get('visual_target_optional'):
@@ -1553,10 +1627,12 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
   if found is None:
    from storyboard import SceneUnavailable
    error=SceneUnavailable(slot,'no verified scene-matched image for shot '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
-   error.beat_index=beat_for_shot[i];error.verified_in_beat=sum(beat_for_shot[j]==error.beat_index for j in range(i))
+   error.beat_index=beat_for_shot[i];error.verified_in_beat=sum(beat_for_shot[j]==error.beat_index for j in selected_positions)
    raise error
-  used_origins.update(photo_origins(found['provider']));hashes.append(found['phash']);fingerprints.append(found['fingerprint']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);visual_rows.append(found['row'])
-  update(jid,progress=max(20+int((i+1)*25/visual_count),(get_job(jid) or {}).get('progress',0)),message='Prepared '+str(i+1)+' of '+str(visual_count)+' unique photos')
+  used_origins.update(photo_origins(found['provider']));hashes.append(found['phash']);fingerprints.append(found['fingerprint']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);selected_positions[i]=found;visual_rows.append(found['row'])
+  update(jid,progress=max(20+int(len(selected)*25/visual_count),(get_job(jid) or {}).get('progress',0)),message='Prepared '+str(len(selected))+' of '+str(visual_count)+' unique photos')
+ selected=[selected_positions[index] for index in range(visual_count)]
+ visual_rows=[item['row'] for item in selected]
  return {'selected':selected,'visual_rows':visual_rows,'media_topic':media_topic,'beat_count':beat_count,'beat_for_shot':beat_for_shot,'shots_per_beat':shots_per_beat,'first_shot':first_shot,'script':' '.join(slot['text'] for slot in slots)}
 
 def run_job(jid):
@@ -1581,6 +1657,11 @@ def run_job(jid):
    shutil.rmtree(VISUAL/jid,ignore_errors=True)
    prepared=prepare_visuals(jid,sources,topic,lang,duration,planned_slots)
    visual_state.clear();visual_state.update(prepared)
+   spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in planned_slots))['input']['text'];text_hash=hashlib.sha256(spoken.encode()).hexdigest()
+   evidence={'phase':'images verified before synthesis','job_id':jid,'voice':SELECTED_VOICES[lang][1],'spoken_text':spoken,'text_sha256':text_hash,'beats':[{key:slot.get(key) for key in ('text','source_index','source_sentence','source_position','visual_targets')} for slot in planned_slots],'visuals':prepared['visual_rows'],'sources':[{'title':source['title'],'url':source['url'],'revision_url':source.get('revision_url')} for source in sources],'implementation_hashes':implementation_hashes()}
+   evidence_dir=RENDER/jid;evidence_dir.mkdir(parents=True,exist_ok=True)
+   evidence_path=evidence_dir/('verified-input-'+text_hash[:16]+'.json')
+   temporary=evidence_path.with_suffix('.tmp');temporary.write_text(json.dumps(evidence,ensure_ascii=False,indent=2));temporary.replace(evidence_path)
   before_send.job_id=jid
   slots,mp3,audio_ms,speech_ms,slot_targets,voice_audit=prepare_selected_narration(sources,topic,lang,jid,duration,before_send=before_send)
   if visual_state.get('script')!=' '.join(slot['text'] for slot in slots):raise ValueError('prepared storyboard does not match the final narration')
@@ -1593,12 +1674,13 @@ def run_job(jid):
    scenes.append({'scene_uuid':str(uuid.uuid4()),'shot_uuid':item['shot'],'visual_asset_id':str(uuid.uuid4()),'media_type':'photo','asset_sha256':item['hash'],'asset_path':str(item['path']),'asset_width':1080,'asset_height':1920,'scene_order':i+1,'segment_start_ms':cursor,'segment_end_ms':end,'speech_start_ms':speech_start,'speech_end_ms':speech_end})
    cursor=end
   update(jid,stage='render',progress=80,message='Rendering 1080×1920 MP4 and decoding the complete file')
-  rendered=post_render(jid,{'input_audio_sha256':audio_sha,'audio_duration_ms':audio_ms,'target_duration_ms':target,'requested_duration_ms':duration*1000,'scenes':scenes})
+  attribution=output_credits([sources[index] for index in sorted({slot['source_index'] for slot in slots})],visual_rows)
+  rendered=post_render(jid,{'attribution':attribution,'input_audio_sha256':audio_sha,'audio_duration_ms':audio_ms,'target_duration_ms':target,'requested_duration_ms':duration*1000,'scenes':scenes})
   video=Path(rendered['storage_path'])
   full=subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(video),'-f','null','-'],capture_output=True,text=True,timeout=150)
   if full.returncode:raise ValueError('full MP4 decode failed')
   if not rendered.get('qa_passed'):raise ValueError('media-worker render QA failed')
-  manifest={'version':'universal-1','implementation_hashes':implementation_hashes(),'job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'script_mode':'source-grounded overview','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note'),'source_type':x.get('source_type','article'),'revision_id':x.get('revision_id'),'revision_url':x.get('revision_url'),'label':x.get('label'),'description':x.get('description')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_start':s['source_position'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification'],'visual_target':x.get('visual_target'),'visual_role':x.get('visual_role')} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'images_verified_before_voice':True,'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'all_images_photographically_screened':all(x['pixel_verification'].get('photographic_screen',{}).get('passed') for x in visual_rows),'scene_plan_version':'source-linked-v2','source_linked_shots':sum(bool(x.get('visual_target')) for x in visual_rows),'establishing_shots':sum(x.get('visual_role')=='establishing' for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
+  manifest={'version':'universal-1','output_license':OUTPUT_LICENSE,'attribution':attribution,'implementation_hashes':implementation_hashes(),'job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'script_mode':'source-grounded overview','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note'),'source_type':x.get('source_type','article'),'revision_id':x.get('revision_id'),'revision_url':x.get('revision_url'),'label':x.get('label'),'description':x.get('description')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_start':s['source_position'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification'],'visual_target':x.get('visual_target'),'visual_role':x.get('visual_role')} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'images_verified_before_voice':True,'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'all_images_photographically_screened':all(x['pixel_verification'].get('photographic_screen',{}).get('passed') for x in visual_rows),'scene_plan_version':'source-linked-v2','source_linked_shots':sum(bool(x.get('visual_target')) for x in visual_rows),'establishing_shots':sum(x.get('visual_role')=='establishing' for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
   (RENDER/jid/'universal-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
   shutil.rmtree(VISUAL/jid,ignore_errors=True);shutil.rmtree(VOICE/jid,ignore_errors=True);shutil.rmtree(ROOT/'tmp'/jid,ignore_errors=True)
   update(jid,status='ready',stage='review',progress=100,message='MP4 ready for review; listening approval pending',manifest=json.dumps(manifest,ensure_ascii=False),error=None)
@@ -1697,7 +1779,7 @@ class Handler(BaseHTTPRequestHandler):
    for job in jobs:
     if job['manifest']:job['manifest']={key:job['manifest'][key] for key in ('script','sources','resolved_topic','resolved_entity_id','input_needed') if key in job['manifest']}
    return self.json_out(200,{'jobs':jobs,'view':view})
-  m=re.fullmatch(r'/api/jobs/([0-9a-fA-F-]{36})(?:/(video|manifest))?',p)
+  m=re.fullmatch(r'/api/jobs/([0-9a-fA-F-]{36})(?:/(video|manifest|credits))?',p)
   if m:
    jid=safe_id(m.group(1));j=get_job(jid) if jid else None
    if not j:return self.json_out(404,{'error':'job_not_found'})
@@ -1721,10 +1803,10 @@ class Handler(BaseHTTPRequestHandler):
       if not b:break
       self.wfile.write(b);remaining-=len(b)
     return
-   if m.group(2)=='manifest':
-    f=RENDER/jid/'universal-manifest.json'
+   if m.group(2) in {'manifest','credits'}:
+    f=RENDER/jid/('credits.txt' if m.group(2)=='credits' else 'universal-manifest.json')
     if not f.is_file():return self.json_out(404,{'error':'manifest_not_found'})
-    b=f.read_bytes();self.send_response(200);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(b)));self.end_headers();self.wfile.write(b);return
+    b=f.read_bytes();self.send_response(200);self.send_header('Content-Type','text/plain; charset=utf-8' if m.group(2)=='credits' else 'application/json');self.send_header('Content-Length',str(len(b)));self.end_headers();self.wfile.write(b);return
    return self.json_out(200,public_job(j))
   return self.json_out(404,{'error':'not_found'})
  def do_POST(self):
