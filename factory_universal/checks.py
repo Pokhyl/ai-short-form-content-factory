@@ -597,6 +597,28 @@ def check():
  headset={'provider':'commons','depiction':'File:Brain computer interface electrode headset.jpg','alt':'An electrode headset connected to a computer','categories':[]}
  assert storyboard.target_score(tissue,{'visual_target':interface},app)<0
  assert storyboard.target_score(headset,{'visual_target':interface},app)>0
+ # A high-scoring short source pair must not defeat the native duration window.
+ facts=[(100,0,'The instrument records a complete measurement each morning with its original source clock.',[]),(100,0,'The recorded measurements are stored in the laboratory with their original source dates.',[]),(10,0,'The instrument measures the material with a calibrated sensor before every experimental session begins.',[]),(10,0,'The laboratory stores each complete measurement with its original date and its source instrument identifier.',[])]
+ with patch.object(app,'natural_char_rate',return_value=140):
+  selected=app.fit_narration(facts,2,'en',duration_ms=30000,natural=True)
+  predicted=sum((len(app.selected_voice_request('en',row['text'])['input']['text'])+1)*140 for row in selected)
+  assert 27000<=predicted<=30000,predicted
+ # Feasible fact counts compete on measured duration; the preferred count is a tie-breaker.
+ short=' '.join(['word']*81)+'.'
+ fitted=' '.join(['word']*89)+'.'
+ def count_plan(sources,topic,count,lang,duration_s):
+  text=short if count==3 else fitted
+  return [{'text':text,'score':100 if count==3 else 1}]+[{'text':'','score':0} for _ in range(count-1)] if count in {2,3} else []
+ with patch.object(app,'source_overview_mode',return_value=True),patch.object(app,'source_slots',side_effect=count_plan),patch.object(app,'expand_source_blocks',side_effect=lambda rows,limit:rows),patch.object(app,'natural_char_rate',return_value=64):
+  selected=app.plan_script([{}],'A process','en',30,max_beats=6)
+  assert len(selected)==2
+ # Expanding a multi-stage source block must not repeat its physical stages.
+ block='The pulp drains through a screen and then the sheet is pressed.'
+ repeat='A screen drains additional water from the pulp.'
+ with patch.object(app,'natural_char_rate',return_value=100):
+  assert not app.fit_narration([(100,0,block,[]),(100,0,repeat,[])],2,'en',process_intent=True,duration_ms=12000,natural=True)
+ ordered=app.order_process_slots([{'text':'The sheet is pressed.'},{'text':'Wet pulp drains through a screen.'},{'text':'The sheet dries on racks.'},{'text':'Papermaking is a manufacturing process.'}])
+ assert [next(iter(app.scene_actions(row['text']))) for row in ordered]==['production','drain','press','dry']
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

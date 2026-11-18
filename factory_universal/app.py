@@ -248,8 +248,8 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
     target=used+cost
     if target>budget:continue
     if process_intent:
-     primary=scene_actions(sentence)-{'production'}
-     if primary and any(primary & (scene_actions(candidates[old][2])-{'production'}) for old in chosen):continue
+     primary=visual_actions(sentence)-{'production'}
+     if primary and any(primary & (visual_actions(candidates[old][2])-{'production'}) for old in chosen):continue
     if natural:
      current_text=re.sub(r'\W+','',sentence.casefold())
      if any(current_text in re.sub(r'\W+','',candidates[old][2].casefold()) or re.sub(r'\W+','',candidates[old][2].casefold()) in current_text for old in chosen):continue
@@ -258,7 +258,11 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
  if not states[count]:return []
  options=[(used,value) for used,value in states[count].items() if not natural or used*step >= (duration_ms or count*5000)*.85]
  if not options:return []
- chosen=max(options,key=lambda item:(item[1][0],item[0]))[1][1]
+ # Natural speech must occupy the requested window; relevance breaks timing ties.
+ if natural:
+  target=(duration_ms or count*5000)*.95
+  chosen=max(options,key=lambda item:(-abs(item[0]*step-target),item[1][0]))[1][1]
+ else:chosen=max(options,key=lambda item:(item[1][0],item[0]))[1][1]
  return [{'text':candidates[index][2],'language':lang,'source_index':candidates[index][1],'source_sentence':candidates[index][2],'score':candidates[index][0]} for index in chosen]
 
 def wikipedia(topic,lang):
@@ -681,19 +685,30 @@ def expand_source_blocks(slots,max_beats):
    row=dict(slot);row['text']=text;expanded.append(row)
  return expanded if len(expanded)<=max_beats else []
 
+def order_process_slots(slots):
+ # Preserve source claims while presenting physical stages in their causal order.
+ stages={'production':-1,'mix':0,'heat':1,'melt':1,'shape':2,'drain':3,'press':4,'dry':5,'cool':6,'cut':7,'inspect':8}
+ return sorted(slots,key=lambda slot:(min((stages[action] for action in scene_actions(slot['text'])),default=99),slot.get('source_index',0),slot.get('source_position',0)))
+
 def plan_script(sources,topic,lang,duration,max_beats=None):
  process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  structured=source_overview_mode(sources)
  limit=int(min(max_beats or 100,max(2,duration//5)))
  preferred=min(limit,max(2,int((max_beats*5 if max_beats else duration)//10)))
  counts=list(range(preferred,0,-1))+list(range(preferred+1,limit+1)) if structured else range(int(min(max_beats or 100,max(2,duration//(5 if process_intent else 7)))),1,-1)
+ plans=[]
  for count in counts:
   slots=source_slots(sources,topic,count,lang,duration_s=duration)
   if len(slots)==count:
    if structured:
     expanded=expand_source_blocks(slots,int(max_beats or duration//5))
-    if expanded:return expanded
+    if process_intent:expanded=order_process_slots(expanded)
+    if expanded:
+     spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in expanded))['input']['text']
+     predicted=len(spoken)*natural_char_rate(lang)
+     plans.append((abs(predicted-duration*950),abs(count-preferred),-sum(slot.get('score',0) for slot in expanded),expanded))
    else:return slots
+ if plans:return min(plans,key=lambda row:row[:3])[3]
  if sources and not process_intent:
   canonical=sources[0]['title']
   if canonical.casefold()!=topic.casefold():
@@ -1434,7 +1449,13 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
   path,measured=google_voice_once(lang,script,jid,attempt);attempts.append(measured);actual=measured['duration_ms']
   low,high=natural_voice_window(duration)
   if low<=actual<=high:break
-  planning_seconds=max(5,min(90,planning_seconds*(duration*1000-350)/max(actual,1))) if source_overview_mode(sources) else max(10,min(90,round(planning_seconds*(duration*1000-500)/max(actual,1))))
+  if source_overview_mode(sources):
+   from statistics import median
+   # Calibrate the text budget once using this job's completed native recordings.
+   # Scaling the old seconds budget as well would apply the correction twice.
+   NATURAL_RATE_CACHE[lang]=median(item['duration_ms']/item['characters'] for item in attempts if item.get('characters'))
+   planning_seconds=duration
+  else:planning_seconds=max(10,min(90,round(planning_seconds*(duration*1000-500)/max(actual,1))))
  else:raise ValueError('three distinct natural narration texts did not fit; no speed change or voice substitution')
  # Align the exact, unmodified natural audio through the existing media worker.
  final=VOICE/jid/'final.mp3';final.parent.mkdir(parents=True,exist_ok=True)
