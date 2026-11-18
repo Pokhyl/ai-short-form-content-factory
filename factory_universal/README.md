@@ -12,7 +12,7 @@ Studio: https://studio.hodor.com.pl/ . The site and review API require no passwo
 
 project_ready=false. General scene-grounding corrections are staged and are not yet deployed. The v14 paper and v16 photosynthesis MP4s passed technical checks but failed actual frame review. The v16 Polish duration and Russian foreign-name alignment cases also failed. Historical six-case acceptance is not current readiness.
 
-The v28 normal-pipeline five-topic matrix is recorded under /data/factory-universal/qa/normal-stage-universal-20261118-v28.json. Inspect actual output frames before deployment. Owner listening approval remains separate. See docs/CODEX_START_HERE.md for current work and operational limits.
+The v31 normal-pipeline five-topic matrix is recorded under /data/factory-universal/qa/normal-stage-universal-20261118-v31.json. Inspect actual output frames before deployment. Owner listening approval remains separate. See docs/CODEX_START_HERE.md for current work and operational limits.
 
 Inputs require an identifiable source and enough suitable licensed photographs. Ambiguous or unsupported inputs stop instead of inventing facts or inserting unrelated media.
 
@@ -77,3 +77,5 @@ The UI is index.html. It preserves playback during polling. Source clarification
 2026-11-17 verification checkpoint (not a release): images are screened for photographic genre and scene identity before narration. Physical awards must show the award object rather than unrelated laureates; process scenes require the narrated operation instead of generic factory imagery. Crop/resize duplicate detection uses bounded in-memory OpenCV features. `preflight_outputs.py` remains image-only with a duration-scaled 300–480 second per-case deadline, no synthesis. Failed or semantically rejected image tests are not successful MP4 acceptance. No new production deployment is implied by an image build.
 
 Process searches use bounded canonical/material alternatives (12 Commons queries) and complete category metadata for stage evidence. Source-linked named subjects retain the 48-query cap. Stage-specific photos are reserved before establishing views, at least two per beat; final narration/scene order stays unchanged.
+
+The staged verifier uses bounded image/text-batch vector caches (256 images, 128 full batches). visual_cache_checks.py compares cached and full encoder scores on supplied local real images; six-image verification found zero score difference. Source-backed native timing now compares complete fact counts and calibrates from measured recordings without changing the voice. Final v32 landing-event regression remains under verification.

@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import threading
+from collections import OrderedDict
 import numpy as np
 import onnxruntime as ort
 from PIL import Image, ImageOps
@@ -27,7 +28,8 @@ class VisualVerifier:
   options.execution_mode=ort.ExecutionMode.ORT_SEQUENTIAL
   self.session=ort.InferenceSession(str(path),sess_options=options,providers=['CPUExecutionProvider'])
   self.lock=threading.Lock()
- def compare(self, image_path, descriptions):
+  self.image_vectors=OrderedDict();self.description_vectors=OrderedDict()
+ def compare(self, image_path, descriptions, use_cache=True):
   if not descriptions or len(descriptions)>32:raise ValueError('visual comparison requires 1-32 descriptions')
   crop=self.config.get('crop_size',{'height':224,'width':224})
   size=self.config.get('size',{'shortest_edge':224});short=size.get('shortest_edge',224) if isinstance(size,dict) else size
@@ -41,17 +43,28 @@ class VisualVerifier:
   mean=np.asarray(self.config['image_mean'],dtype=np.float32)
   std=np.asarray(self.config['image_std'],dtype=np.float32)
   pixels=np.transpose((pixels-mean)/std,(2,0,1))[None,...].astype(np.float32)
+  image_key=hashlib.sha256(Path(image_path).read_bytes()).hexdigest();text_key=tuple(descriptions)
   with self.lock:
-   encoded=self.tokenizer.encode_batch(descriptions)
-   values={'input_ids':np.asarray([x.ids for x in encoded],dtype=np.int64),'attention_mask':np.asarray([x.attention_mask for x in encoded],dtype=np.int64),'pixel_values':pixels}
-   feed={input.name:values[input.name] for input in self.session.get_inputs()}
-   results=dict(zip([output.name for output in self.session.get_outputs()],self.session.run(None,feed)))
-  if 'image_embeds' not in results or 'text_embeds' not in results:raise ValueError('visual model lacks required embedding outputs')
-  images=results['image_embeds'];texts=results['text_embeds']
-  images=images/np.maximum(np.linalg.norm(images,axis=-1,keepdims=True),1e-12)
-  texts=texts/np.maximum(np.linalg.norm(texts,axis=-1,keepdims=True),1e-12)
-  self.text_vectors=texts
-  return [float(score) for score in (images@texts.T)[0]]
+   images=self.image_vectors.get(image_key) if use_cache else None;texts=self.description_vectors.get(text_key) if use_cache else None
+   if images is None or texts is None:
+    # CLIP has independent encoders. Keep each full text batch unchanged;
+    # when its vectors are cached, one dummy text suffices to encode a new image.
+    encoded=self.tokenizer.encode_batch(descriptions if texts is None else descriptions[:1])
+    values={'input_ids':np.asarray([x.ids for x in encoded],dtype=np.int64),'attention_mask':np.asarray([x.attention_mask for x in encoded],dtype=np.int64),'pixel_values':pixels}
+    feed={input.name:values[input.name] for input in self.session.get_inputs()}
+    results=dict(zip([output.name for output in self.session.get_outputs()],self.session.run(None,feed)))
+    if 'image_embeds' not in results or 'text_embeds' not in results:raise ValueError('visual model lacks required embedding outputs')
+    if images is None:
+     images=results['image_embeds'];images=images/np.maximum(np.linalg.norm(images,axis=-1,keepdims=True),1e-12)
+     if use_cache:self.image_vectors[image_key]=images
+    if texts is None:
+     texts=results['text_embeds'];texts=texts/np.maximum(np.linalg.norm(texts,axis=-1,keepdims=True),1e-12)
+     if use_cache:self.description_vectors[text_key]=texts
+   if use_cache:self.image_vectors.move_to_end(image_key);self.description_vectors.move_to_end(text_key)
+   while len(self.image_vectors)>256:self.image_vectors.popitem(last=False)
+   while len(self.description_vectors)>128:self.description_vectors.popitem(last=False)
+   self.text_vectors=texts
+   return [float(score) for score in (images@texts.T)[0]]
 
  def check(self, image_path, subject, actions, caption='', competitors=None, competitor_subject='',extra_negatives=None,extra_positives=None):
   positive=[]

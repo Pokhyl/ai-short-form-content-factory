@@ -155,8 +155,8 @@ def scene_intent(text,target):
    if name=='landing':
     kind='rocket' if re.search(r'rocket|launch.?vehicle|spacecraft',description,re.I) else 'aircraft' if re.search(r'aircraft|airplane|airliner|helicopter',description,re.I) else target['name']
     result['visual']='a '+kind+' landing at its landing area or landing platform'
-    result['forbidden_metadata']=r'engine test|landing leg test|ground test|simulation|rendering|museum|exhibit|scale model'
-    result['negative_descriptions']=['A rocket or aircraft taking off and ascending.','An engine being tested on the ground or a vehicle inside a factory.']
+    result['forbidden_metadata']=r'engine test|landing leg test|ground test|simulation|rendering|museum|exhibit|scale model|headquarters|visitor cent(?:er|re)|indoors|indoor display'
+    result['negative_descriptions']=['A rocket or aircraft taking off and ascending.','An engine being tested on the ground or a vehicle inside a factory.','A spacecraft component or landing gear displayed indoors.','A rocket in an exhibition hall or company headquarters.']
    if name=='medical treatment':
     result['negative_descriptions']=['An atomic bomb test or a nuclear explosion.','A military weapon, nuclear missile or mushroom cloud.']
    return result
@@ -329,6 +329,7 @@ def target_score(candidate,slot,api):
   if required and depicted and not required&depicted:return -1
  if intent.get('metadata_pattern') and not re.search(intent['metadata_pattern'],identity_text if intent.get('name') in {'physical award','city context','physical interface'} else text,re.I):return -1
  if intent.get('forbidden_metadata') and re.search(intent['forbidden_metadata'],text,re.I):return -1
+ if intent.get('name')=='landing' and re.search(r'landing (?:legs?|gear)\b',candidate.get('depiction',''),re.I) and not re.search(r'(?:deploy|extend)\w*',candidate.get('depiction',''),re.I):return -1
  if intent.get('name')=='physical award' and re.search(r'portrait|headshot|laureates?|winners?|recipients?|ceremony|conference|banquet',candidate.get('depiction',''),re.I):return -1
  if intent.get('name')=='organization context':
   # A company's name alone is not evidence that a party prop depicts its work.

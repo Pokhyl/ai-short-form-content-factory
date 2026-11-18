@@ -619,6 +619,12 @@ def check():
   assert not app.fit_narration([(100,0,block,[]),(100,0,repeat,[])],2,'en',process_intent=True,duration_ms=12000,natural=True)
  ordered=app.order_process_slots([{'text':'The sheet is pressed.'},{'text':'Wet pulp drains through a screen.'},{'text':'The sheet dries on racks.'},{'text':'Papermaking is a manufacturing process.'}])
  assert [next(iter(app.scene_actions(row['text']))) for row in ordered]==['production','drain','press','dry']
+ landing_target={'id':'Q994','name':'Example Rocket','description':'partially reusable orbital launch vehicle'}
+ landing_target['intent']=storyboard.scene_intent('The Example Rocket landed on its landing pad.',landing_target)
+ leg={'provider':'commons','depiction':'File:Example Rocket landing leg in headquarters.jpg','alt':'A displayed component at company headquarters'}
+ descent={**leg,'depiction':'File:Example Rocket landing.jpg','alt':'The rocket lands on its launch landing pad'}
+ assert storyboard.target_score(leg,{'visual_target':landing_target},app)<0
+ assert storyboard.target_score(descent,{'visual_target':landing_target},app)>0
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 
