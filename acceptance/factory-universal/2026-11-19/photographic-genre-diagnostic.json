@@ -1,0 +1,363 @@
+{
+  "extra_descriptions": [
+    "A photograph of people casting votes at a polling station.",
+    "A photograph of people at a public ceremony.",
+    "A photograph of a politician speaking at a lectern.",
+    "A photograph of actors performing on a stage.",
+    "A photograph of a crowd at a public event.",
+    "A photograph of two people shaking hands.",
+    "A photograph of a person signing a document."
+  ],
+  "rows": [
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/0df40b5ece34bb42465da63a1fc381db83ff6eff92d93e25ff9b86a0c0f32b59.source",
+      "old_passed": false,
+      "old_margin": 0.014511,
+      "new_margin": 0.028432,
+      "new_passed": true,
+      "best_extra": "A photograph of two people shaking hands."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/f25d1fdb3589abf41177eaf79db6951fddcf571e5f69bf3448e12be8e89cba43.source",
+      "old_passed": false,
+      "old_margin": 0.008531,
+      "new_margin": 0.008531,
+      "new_passed": false,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/2a657701025ba1fdb31536ed6275eb4912223a0bced02df858cb49568aab93aa.source",
+      "old_passed": true,
+      "old_margin": 0.021866,
+      "new_margin": 0.021866,
+      "new_passed": true,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/07b9dae0b0432af288424a59aff912301bbf1e8789171bf7a00825abe9f2b503.source",
+      "old_passed": false,
+      "old_margin": 0.006517,
+      "new_margin": 0.024116,
+      "new_passed": true,
+      "best_extra": "A photograph of people at a public ceremony."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/b47cebeed8be5a2e214720c2f1f61ccebc80e32b808aab16ad27b08d9d73e002.source",
+      "old_passed": true,
+      "old_margin": 0.02832,
+      "new_margin": 0.050424,
+      "new_passed": true,
+      "best_extra": "A photograph of people casting votes at a polling station."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/8d6ca3d1f5455a821d6c894a7996d4204e73a2c04e708476d0402c8b1ef3ca79.source",
+      "old_passed": false,
+      "old_margin": -0.005482,
+      "new_margin": -0.005483,
+      "new_passed": false,
+      "best_extra": "A photograph of a person signing a document."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/264530db02ed36947e9a8203e38c6539c3261fa223b085819f9958bfd858daa1.source",
+      "old_passed": false,
+      "old_margin": 0.000897,
+      "new_margin": 0.034831,
+      "new_passed": true,
+      "best_extra": "A photograph of people casting votes at a polling station."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/e4598d8d6c5988db08dabd54893c453a43291017c4cdef1ba44a456de149677d.source",
+      "old_passed": false,
+      "old_margin": 0.011659,
+      "new_margin": 0.013168,
+      "new_passed": false,
+      "best_extra": "A photograph of two people shaking hands."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/713c8d78c2931a57e09e31e6f69fb2041388c1f1bcb52c12180a07261403a096.source",
+      "old_passed": false,
+      "old_margin": -0.009244,
+      "new_margin": -0.009243,
+      "new_passed": false,
+      "best_extra": "A photograph of people casting votes at a polling station."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/5a81e64104b61275fd0107a48db55caae75480f41ae66f6f8ff24efcbf35ca5c.source",
+      "old_passed": true,
+      "old_margin": 0.044556,
+      "new_margin": 0.044556,
+      "new_passed": true,
+      "best_extra": "A photograph of actors performing on a stage."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/59d46f82baa4f7df8795e09b354de794d868033cc91b0a029dc1a3e19e2ddfb2.source",
+      "old_passed": true,
+      "old_margin": 0.018741,
+      "new_margin": 0.018741,
+      "new_passed": true,
+      "best_extra": "A photograph of a crowd at a public event."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/1204331512ce75833b8fb9278886cfed89abe95be33d888ff9f2fb2fe1253233.source",
+      "old_passed": false,
+      "old_margin": -0.032783,
+      "new_margin": -0.01461,
+      "new_passed": false,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/630f0670e85b2baf6fc7552ac6c42b669bc29e7231bb21681011b0171b5830d0.source",
+      "old_passed": true,
+      "old_margin": 0.031922,
+      "new_margin": 0.050214,
+      "new_passed": true,
+      "best_extra": "A photograph of people at a public ceremony."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/36a73f315fb3d08ec840899cf59ce07cd71ee73a9a469976bfb9164d37cd7a1a.source",
+      "old_passed": true,
+      "old_margin": 0.030142,
+      "new_margin": 0.030142,
+      "new_passed": true,
+      "best_extra": "A photograph of a crowd at a public event."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/cf6bf1b7a14caa92c8b52dc8d22f6018f1794259fafab714defb730cc07d9736.source",
+      "old_passed": true,
+      "old_margin": 0.021921,
+      "new_margin": 0.021921,
+      "new_passed": true,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/1e1459adb3d226f56c0f0a53f7e8379af076f425e7287560c96adb207131d52f.source",
+      "old_passed": true,
+      "old_margin": 0.029616,
+      "new_margin": 0.061786,
+      "new_passed": true,
+      "best_extra": "A photograph of people at a public ceremony."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/6781bd87c6585a8a4df774a1fcf6dee5f4ab72a9aa68eef5d8f243fba5c7e187.source",
+      "old_passed": false,
+      "old_margin": -0.036046,
+      "new_margin": -0.036045,
+      "new_passed": false,
+      "best_extra": "A photograph of a person signing a document."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/204cf6e63d3b78cc70a10af8767a05da8e00b9e8d0899233f4079ecff65cf326.source",
+      "old_passed": true,
+      "old_margin": 0.04542,
+      "new_margin": 0.04542,
+      "new_passed": true,
+      "best_extra": "A photograph of actors performing on a stage."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/7b6f7a470a29af47f297eeb9f222f368900760f402902f1bdfb395b0de640560.source",
+      "old_passed": true,
+      "old_margin": 0.026796,
+      "new_margin": 0.026797,
+      "new_passed": true,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/8ff02379d22e56113c68d6289b8e0b3614b806e28f4a19b36172c23b91424a21.source",
+      "old_passed": false,
+      "old_margin": 0.007092,
+      "new_margin": 0.010169,
+      "new_passed": false,
+      "best_extra": "A photograph of people at a public ceremony."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/315f48c6b3792c2e3d95245bcfe21f3998f2b50c7a0d9fdb52a3088208935416.source",
+      "old_passed": true,
+      "old_margin": 0.026779,
+      "new_margin": 0.026778,
+      "new_passed": true,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/fa28fcd342004268115d39f311b506f28564ba69e860ed58837852af1accff92.source",
+      "old_passed": false,
+      "old_margin": -0.00117,
+      "new_margin": 0.018555,
+      "new_passed": true,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/0c844544829d341e24d2d36f6cdc32d9bc4b48bfdfbf66b2f70459beb6f7e260.source",
+      "old_passed": false,
+      "old_margin": -0.018521,
+      "new_margin": 0.00212,
+      "new_passed": false,
+      "best_extra": "A photograph of a person signing a document."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/7aa959699658df32aa925ad98278bf216dd8e99e488a26ca1a6b5ba9395217ad.source",
+      "old_passed": false,
+      "old_margin": -0.037873,
+      "new_margin": -0.037874,
+      "new_passed": false,
+      "best_extra": "A photograph of a person signing a document."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/465e0ddc991553edf1969c141059ba1d7e99ba37369b83f792c0a4f0f03dfebc.source",
+      "old_passed": false,
+      "old_margin": -0.055573,
+      "new_margin": -0.055572,
+      "new_passed": false,
+      "best_extra": "A photograph of a person signing a document."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/6d89b4cfd201312c2bbfc3ff89e2741356b4f4f1fb09c6e8f7c48a1bb9b580c5.source",
+      "old_passed": true,
+      "old_margin": 0.028176,
+      "new_margin": 0.072605,
+      "new_passed": true,
+      "best_extra": "A photograph of actors performing on a stage."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/278208d47c18f7dbd8ca8805c6c6973d9a9d07154b264c020f8d2f2ae326e044.source",
+      "old_passed": true,
+      "old_margin": 0.040786,
+      "new_margin": 0.040787,
+      "new_passed": true,
+      "best_extra": "A photograph of a crowd at a public event."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/120bb90719397d46949c6a25dbf6b38ebfe20351a4297540e9947caea42b2e8b.source",
+      "old_passed": false,
+      "old_margin": 0.005763,
+      "new_margin": 0.006476,
+      "new_passed": false,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/5ba2c2e1c9e343fc1108aafc9a7cd5841459773d3be0edb8c0486e8fe004a618.source",
+      "old_passed": true,
+      "old_margin": 0.038735,
+      "new_margin": 0.049083,
+      "new_passed": true,
+      "best_extra": "A photograph of a crowd at a public event."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/ff12aa7a72adafdbf86bb9f5bea15af9ead4a28b66fe74b6e1fbea1a474872ab.source",
+      "old_passed": true,
+      "old_margin": 0.02753,
+      "new_margin": 0.040929,
+      "new_passed": true,
+      "best_extra": "A photograph of two people shaking hands."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/7162bab39cb9552d545eddd82f831236d40d68aa87db67514296a2f4c9d03416.source",
+      "old_passed": true,
+      "old_margin": 0.016196,
+      "new_margin": 0.037342,
+      "new_passed": true,
+      "best_extra": "A photograph of a crowd at a public event."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/d11a0e926ac7ff7819de63c74ffcb1d6e07ab818dfae283901dff8e9bc377caf.source",
+      "old_passed": true,
+      "old_margin": 0.028111,
+      "new_margin": 0.028111,
+      "new_passed": true,
+      "best_extra": "A photograph of actors performing on a stage."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/d273c47895210de56831c655931f5f69a4b843acbfc4d49a8f5e2a3d0481513c.source",
+      "old_passed": false,
+      "old_margin": 0.001758,
+      "new_margin": 0.030441,
+      "new_passed": true,
+      "best_extra": "A photograph of people casting votes at a polling station."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/c32db8dc673ba6b498f3cbf916cf2ffe4a66f8f47c3277af228ad8e68ab8db27.source",
+      "old_passed": true,
+      "old_margin": 0.046694,
+      "new_margin": 0.072482,
+      "new_passed": true,
+      "best_extra": "A photograph of two people shaking hands."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/f03fd894f1efdbef042da88afe8d56f36c6da6c1cc072cf47c0acfdb4034d411.source",
+      "old_passed": false,
+      "old_margin": 0.009964,
+      "new_margin": 0.019453,
+      "new_passed": true,
+      "best_extra": "A photograph of a crowd at a public event."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/f8b62f2c6f05295c9e4e0b3787dcae4c61c42a08e54a286a47d6416f2729659b.source",
+      "old_passed": true,
+      "old_margin": 0.029046,
+      "new_margin": 0.029046,
+      "new_passed": true,
+      "best_extra": "A photograph of a crowd at a public event."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/f769967784751e9e09c9b4118ae01e45151747321a3f62bc9eff269ddf6b2ade.source",
+      "old_passed": false,
+      "old_margin": -0.008415,
+      "new_margin": 0.028555,
+      "new_passed": true,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/b37151cc555a54b710cc56d5b959b7df257b89c3a6399bbb4cd130590742a65a.source",
+      "old_passed": true,
+      "old_margin": 0.017811,
+      "new_margin": 0.017811,
+      "new_passed": true,
+      "best_extra": "A photograph of actors performing on a stage."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/0b76d7428591d24579b77ed91b2e428643bdf58295ed8ac63f83c8f689946eaf.source",
+      "old_passed": true,
+      "old_margin": 0.020086,
+      "new_margin": 0.045405,
+      "new_passed": true,
+      "best_extra": "A photograph of two people shaking hands."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/ee031a11682b7e772c4bf42f44c4c8617b1a2aa45c59e0794c4e643917a2dbc7.source",
+      "old_passed": false,
+      "old_margin": -0.016629,
+      "new_margin": -0.016629,
+      "new_passed": false,
+      "best_extra": "A photograph of a person signing a document."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/3f71ffcf60576220e7375e1318f153b66e171e1c109d968b26619e7ac4b98d26.source",
+      "old_passed": false,
+      "old_margin": 0.010228,
+      "new_margin": 0.010229,
+      "new_passed": false,
+      "best_extra": "A photograph of a politician speaking at a lectern."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/6a407c9805f6cc59731477c6653b638703a749659eae9413c9e6428b5ad6272b.source",
+      "old_passed": true,
+      "old_margin": 0.015113,
+      "new_margin": 0.043307,
+      "new_passed": true,
+      "best_extra": "A photograph of people at a public ceremony."
+    },
+    {
+      "image": "/data/factory-universal/tmp/9914a9b0-5b2a-4649-9b90-1148c2980188/scene-photo-cache/3f6610f56d4691eca9220ffb2b4da79a9d656c10187fdd37d2bf5b0fdb819749.source",
+      "old_passed": true,
+      "old_margin": 0.026302,
+      "new_margin": 0.052756,
+      "new_passed": true,
+      "best_extra": "A photograph of actors performing on a stage."
+    }
+  ],
+  "review": {
+    "assistant_visual_review": "Inspected the seven changed decisions and a contact sheet of 34 available inputs. All seven changes accept actual photographs. Drawings, newspaper scans and the two-person composite remain rejected in the reviewed sample. This is a genre screen only: portraits, billboards and unrelated photographs must still pass independent identity and scene gates.",
+    "thresholds": "genre margin .015 unchanged; independent subject score .24/margin .015 unchanged",
+    "project_ready": false,
+    "owner_listening_approval": false
+  }
+}

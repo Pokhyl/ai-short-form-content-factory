@@ -1,0 +1,56 @@
+{
+  "profile": {
+    "id": "Q3874799",
+    "name": "Volodymyr Zelenskyy",
+    "native_name": "Володимир Олександрович Зеленський",
+    "commons_category": "Volodymyr Zelenskyy"
+  },
+  "queries": [
+    {
+      "query": "Volodymyr Zelenskyy campaign",
+      "count": 49,
+      "identified": 34,
+      "campaign_eligible": 2,
+      "sample_titles": [
+        "File:Volodymyr Zelenskyy at the 2023 Vilnius NATO summit (329736361).jpg",
+        "File:Volodymyr Zelenskyy at the 2023 Vilnius NATO summit (4717925549).jpg",
+        "File:Sand Sculpture of President Volodymyr Zelenskyy in Tõrva, Estonia.jpg",
+        "File:Volodymyr Zelenskyy held a meeting on the development of the Ukrainian economy in wartime. (51978052036).jpg",
+        "File:Volodymyr Zelenskyy held a meeting on the development of the Ukrainian economy in wartime. (51978052096).jpg"
+      ]
+    },
+    {
+      "query": "Volodymyr Zelenskyy election",
+      "count": 38,
+      "identified": 20,
+      "campaign_eligible": 19,
+      "sample_titles": [
+        "File:Volodymyr Zelenskyy voted in parliamentary elections (2019-07-21) 02.jpg",
+        "File:Volodymyr Zelenskyy voted in parliamentary elections (2019-07-21) 04.jpg",
+        "File:Volodymyr Zelenskyy voted in parliamentary elections (2019-07-21) 05.jpg",
+        "File:Volodymyr Zelenskyy voted in parliamentary elections (2019-07-21) 07.jpg",
+        "File:Volodymyr Zelenskyy voted in parliamentary elections (2019-07-21) 03.jpg"
+      ]
+    },
+    {
+      "query": "Volodymyr Zelenskyy inauguration",
+      "count": 50,
+      "identified": 12,
+      "campaign_eligible": 0,
+      "sample_titles": [
+        "File:Volodymyr Zelensky 2019 presidential inauguration 04.jpg",
+        "File:Volodymyr Zelensky 2019 presidential inauguration 01.jpg",
+        "File:Volodymyr Zelensky 2019 presidential inauguration 23.jpg",
+        "File:Volodymyr Zelensky 2019 presidential inauguration 02.jpg",
+        "File:Volodymyr Zelensky 2019 presidential inauguration 17.jpg"
+      ]
+    },
+    {
+      "query": "Volodymyr Zelenskyy concert",
+      "count": 0,
+      "identified": 0,
+      "campaign_eligible": 0,
+      "sample_titles": []
+    }
+  ]
+}
