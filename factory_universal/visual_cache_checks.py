@@ -22,10 +22,10 @@ for path in images:
  assert error<1e-6,(str(path),error)
  # A second, distinct text context reuses the image encoder but retains its full text batch.
  other=['A photograph of physical manufacturing tools.','A scientific diagram.','A photograph of growing plants.']
- human=verifier.check_person(path,{'entity_id':'diagnostic','basis':'content-only encoder equivalence check'})['descriptions']
+ human=verifier.check_person(path,{'entity_id':'diagnostic','basis':'content-only encoder equivalence check'},'a public official')['descriptions']
  for context in (other,human):
-  expected=verifier.compare(path,context,use_cache=False)
-  actual=verifier.compare(path,context)
+  expected=verifier.compare_batches(path,context,use_cache=False)
+  actual=verifier.compare_batches(path,context)
   assert np.allclose(expected,actual,rtol=0,atol=1e-6),str(path)
  start=time.monotonic();again=verifier.compare_batches(path,descriptions);warm=time.monotonic()-start
  assert np.allclose(reference,again,rtol=0,atol=1e-6)

@@ -190,6 +190,11 @@ def scene_intent(text,target):
   return {'name':'physical sample','metadata_pattern':r'\b(?:samples?|specimens?|minerals?|elements?|vials?|sources?|foils?|sheets?|bars?|ribbons?|pellets?|powder|crystals?|ingots?|liquid|ampoules?|ampuls?|ampullen?|próbk\w*|образ\w*|зраз\w*)\b','visual':'a physical chemical sample, mineral specimen or laboratory vial containing '+target['name'],'query_suffix':''}
  return {'name':'linked subject','metadata_pattern':None,'visual':description[:180] or target['name'],'query_suffix':''}
 
+def abstract_visual_subject(entity):
+ # A discipline names an area of knowledge, not an institution that happens to collect it.
+ description=entity.get('description','')
+ return bool(re.search(r'^(?:the )?(?:(?:scientific|systematic|scholarly) study of|(?:academic|scientific|scholarly|interdisciplinary) (?:field|discipline)|(?:branch|field|discipline) of (?:science|study|research)|(?:social|natural|formal|applied) science\b)',description,re.I))
+
 def person_event_target(target,profile,text):
  # A public office is a role of the named person, not a photographable object.
  description=target.get('description','')
@@ -259,6 +264,7 @@ def build(slots,sources,lang,api):
    if not entity or entity['id']==profile.get('id'):continue
    description=entity.get('description','')
    if entity.get('kind')=='human':continue
+   if abstract_visual_subject(entity):continue
    if re.search(r'\b(?:doctoral|academic|professional) degree\b|doctorate',description,re.I):continue
    if re.search(r'^(?:calendar year|year\b|date |month |day |century|decade|Wikimedia|disambiguation|given name|family name|occupation|profession|position|job title|role |term |concept|academic(?: or professional)? degree|professional degree|doctorate)',description,re.I):continue
    row={**entity,'anchor':link['label'],'article_url':sources[slot.get('source_index',0)]['url'],'source_sentence':slot.get('source_sentence',slot['text']),'binding':link.get('binding','explicit paragraph link')}

@@ -8,30 +8,30 @@
     {
       "image": "/data/factory-universal/qa/event-pixel-diagnostic/80620651.source",
       "maximum_score_error": 0.0,
-      "full_encoder_seconds": 7.229663494974375,
-      "cached_seconds": 7.424603447318077,
-      "warm_seconds": 0.8877725005149841
+      "full_encoder_seconds": 4.087683141231537,
+      "cached_seconds": 3.7101058810949326,
+      "warm_seconds": 0.8176183737814426
     },
     {
       "image": "/data/factory-universal/qa/event-pixel-diagnostic/80620653.source",
       "maximum_score_error": 0.0,
-      "full_encoder_seconds": 6.120910119265318,
-      "cached_seconds": 0.7750272005796432,
-      "warm_seconds": 0.2865819223225117
+      "full_encoder_seconds": 2.4625769145786762,
+      "cached_seconds": 0.3471144735813141,
+      "warm_seconds": 0.2073998674750328
     },
     {
       "image": "/data/factory-universal/qa/event-pixel-diagnostic/78139518.source",
       "maximum_score_error": 0.0,
-      "full_encoder_seconds": 4.870670545846224,
-      "cached_seconds": 0.6644800864160061,
-      "warm_seconds": 0.15074897930026054
+      "full_encoder_seconds": 2.8943099193274975,
+      "cached_seconds": 0.4310687892138958,
+      "warm_seconds": 0.15577730536460876
     },
     {
       "image": "/data/factory-universal/qa/event-pixel-diagnostic/186272536.source",
       "maximum_score_error": 0.0,
-      "full_encoder_seconds": 2.7258224487304688,
-      "cached_seconds": 0.2138967029750347,
-      "warm_seconds": 0.07626054435968399
+      "full_encoder_seconds": 2.663565371185541,
+      "cached_seconds": 0.18834862112998962,
+      "warm_seconds": 0.08186208829283714
     }
   ]
 }

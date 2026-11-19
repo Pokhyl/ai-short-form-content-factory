@@ -127,7 +127,7 @@ class VisualVerifier:
   positive=content+['A portrait photograph of a person.','A photograph of people at an official meeting.','A photograph of politicians at an international summit.','A photograph of a public official speaking in front of flags.','A photograph of a person wearing a suit.']
   if description:positive.append('A photograph of '+description+'.')
   negative=['A photograph of an unrelated landscape or animal.','A drawing, poster or painting of a person.','An empty room or a flag with no people.','A photograph of a printed document, letter or certificate.','A photograph of a street billboard or propaganda poster.','A photograph of a billboard with a politician on it.','A screenshot of a website, app interface or social media post.','A statue or sculpture of a person.']
-  descriptions=positive+negative;scores=self.compare(image_path,descriptions)
+  descriptions=positive+negative;scores=self.compare_batches(image_path,descriptions)
   positive_score=max(scores[:len(positive)]);negative_score=max(scores[len(positive):]);margin=positive_score-negative_score
   human_content_score=max(scores[:len(content)])
   return {'passed':positive_score>=.24 and human_content_score>=.24 and margin>=.015,'human_content_score':round(human_content_score,6),'positive_score':round(positive_score,6),'negative_score':round(negative_score,6),'margin':round(margin,6),'model_sha256':MODEL_SHA256,'descriptions':descriptions,'scores':[round(score,6) for score in scores],'identity_verification':identity,'pixel_check_scope':'photographic human content; subject identity comes from linked Commons metadata'}

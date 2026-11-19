@@ -1,0 +1,25 @@
+{
+  "implementation_hashes": {
+    "app.py": "61bae571a4cc12614c6401b740e56106c232608d86b285d6fb83e6a07173ae48",
+    "storyboard.py": "ea6535bd0c25cb097a8891dc36196c893e2f7b4faab5d14e3d0ec09fbf421d9d",
+    "visual_verifier.py": "6255ca4912c82a009d908b72bc7864c9ca5dcc999d85b0034b4c89c5b0740b65",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+  },
+  "project_ready": false,
+  "mode": "normal worker in staged image",
+  "cases": [
+    {
+      "topic": "Владимир зеленский",
+      "language": "uk",
+      "duration_s": 45,
+      "regression_of": "acfbd2ea-ee67-4115-9ed1-05e6624c7bb2",
+      "id": "190424fb-a212-4151-a132-b086f9a6fbbf",
+      "status": "failed",
+      "error": "Operator stopped obsolete image-only stage before native synthesis: optional sourced human description exceeded the 32-description encoder batch. Fixed bounded batching for person verification; use fresh IDs, retain this trace.",
+      "voice_attempts": 0
+    }
+  ],
+  "operator_note": "Operator stopped obsolete image-only stage before native synthesis: optional sourced human description exceeded the 32-description encoder batch. Fixed bounded batching for person verification; use fresh IDs, retain this trace."
+}

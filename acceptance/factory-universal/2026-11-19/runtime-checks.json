@@ -1,0 +1,14 @@
+{
+  "runtime_checks": "passed",
+  "command": "docker compose -f factory_universal/compose.yaml run --rm --no-deps -T app python3 - <factory_universal/checks.py",
+  "source_hashes": {
+    "app.py": "61bae571a4cc12614c6401b740e56106c232608d86b285d6fb83e6a07173ae48",
+    "storyboard.py": "40bb7a43f42ef1bd1d17bcb6cbcd7a632a8d75aa0f096d8380cbddefb914728c",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "checks.py": "9ab80ad1eef23ae198003a423788efce1294ac8217905c751d9422fa8ae66f47",
+    "visual_cache_checks.py": "439303fee565413f3869dce5e15a645d49a08ee88097e50bbafd021e5e2f3383"
+  },
+  "model_and_thresholds": "unchanged",
+  "project_ready": false,
+  "owner_listening_approval": false
+}

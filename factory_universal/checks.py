@@ -139,7 +139,7 @@ def check():
  # A role-related document cannot pass the separate photographic human-content gate.
  from visual_verifier import VisualVerifier
  verifier=VisualVerifier.__new__(VisualVerifier)
- def role_only(image,descriptions):
+ def role_only(image,descriptions,use_cache=True):
   return [.19 if 'President of' not in label else .9 for label in descriptions]
  with patch.object(verifier,'compare',role_only):
   assert not verifier.check_person('unused',{'entity_id':'Q123','basis':'fixture'},'President of Example')['passed']
@@ -664,6 +664,19 @@ def check():
  with patch.object(app,'plan_script',return_value=[good_slot]):
   assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign)==[good_slot]
  assert event_source[0]['excluded_visual_sentences']==[bad_text]
+ # A biography's academic field cannot select arbitrary museums bearing that field's name.
+ field_sentence='The mother began anthropology field work.'
+ field_parser=storyboard.ArticleLinks();field_parser.feed('<p>The mother began <a href="/wiki/Anthropology">anthropology</a> field work.</p>')
+ field_entity={'id':'Q23404','name':'anthropology','kind':'entity','description':'scientific study of humans, human behavior, and societies'}
+ field_sources=[{'text':field_sentence,'url':'https://en.wikipedia.org/wiki/Example','entity_profile':{'kind':'human','id':'Q123'}}]
+ with patch.object(storyboard,'source_links',return_value=field_parser.links),patch.object(storyboard,'resolve_links',return_value={'Anthropology':field_entity}):
+  try:storyboard.build([{'text':'Introduction.','source_index':0},{'text':field_sentence,'source_sentence':field_sentence,'source_index':0}],field_sources,'en',app)
+  except storyboard.SceneUnavailable:pass
+  else:raise AssertionError('Abstract discipline selected as a physical scene subject')
+ for description in ['scientific study of life','academic discipline','branch of science','social science']:
+  assert storyboard.abstract_visual_subject({'description':description})
+ for description in ['anthropology museum','scientific instrument used to study humans','university in Canada','city in Ukraine']:
+  assert not storyboard.abstract_visual_subject({'description':description})
  # The complete genre vocabulary exceeds one encoder batch; tail negatives still veto.
  from visual_verifier import VisualVerifier
  verifier=VisualVerifier.__new__(VisualVerifier);genre_batches=[]
@@ -679,6 +692,13 @@ def check():
   return [.8 if 'casting votes' in text else .1 for text in descriptions]
  with patch.object(verifier,'compare',side_effect=photo_scores):
   assert verifier.check_photograph('unused')['passed']
+ # Adding a sourced person description must not overflow the encoder batch.
+ def person_scores(path,descriptions,use_cache=True):
+  assert 0<len(descriptions)<=32
+  return [.8 if text=='A photograph of a man.' else .1 for text in descriptions]
+ with patch.object(verifier,'compare',side_effect=person_scores):
+  human=verifier.check_person('unused',{'entity_id':'Q123','basis':'fixture'},'a public official')
+  assert human['passed'] and len(human['descriptions'])>32
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 
