@@ -664,6 +664,14 @@ def check():
  with patch.object(app,'plan_script',return_value=[good_slot]):
   assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign)==[good_slot]
  assert event_source[0]['excluded_visual_sentences']==[bad_text]
+ # Historical event photos must depict the event, not later anniversary exhibitions.
+ revolution={'id':'Q9003','name':'Example Revolution','description':'2014 revolution in Example','commons_category':'Example protests'}
+ revolution['intent']=storyboard.scene_intent('The election followed the Example Revolution.',revolution)
+ actual={'provider':'commons','depiction':'File:Example Revolution 2014 street protest.jpg','alt':'Protesters at the Example Revolution in 2014'}
+ assert storyboard.target_score(actual,{'visual_target':revolution},app)>0
+ for title,description in [('Example Revolution anniversary 2022','A commemoration of the 2014 revolution'),('Example Revolution photoexhibition 2019','Відкриття фотовиставки до п’ятої річниці подій 2014 року'),('Example Revolution 2016','Вшанування загиблих у 2014 році')]:
+  assert storyboard.target_score({**actual,'depiction':'File:'+title+'.jpg','alt':description},{'visual_target':revolution},app)<0
+ assert any('2014' in query for query in storyboard.query_plan([{'visual_targets':[revolution]}]))
  # A completed recording from a failed downstream stage needs exact source/text/voice binding.
  first='Перший повний факт.';second='Другий повний факт.';spoken=first+' '+second
  evidence={'voice':app.SELECTED_VOICES['uk'][1],'spoken_text':spoken,'sources':[{'url':'https://uk.wikipedia.org/wiki/Example'}],'beats':[{'text':first,'source_index':0,'source_sentence':first,'source_position':0},{'text':second,'source_index':0,'source_sentence':second,'source_position':len(first)+1}]}

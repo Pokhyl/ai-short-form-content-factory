@@ -144,6 +144,8 @@ def scene_intent(text,target):
  description=target.get('description','')
  if re.search(r'^(?:first family|royal family|noble family|family of|family\b)',description,re.I):
   return {'name':'family group','metadata_pattern':r'family|families|household|spouse|children|daughters?|sons?|семь\w*|сім[’’\']?\w*|rodzin\w*','visual':'members of a family photographed together','visual_objects':['family members posing together in a family group photograph','parents standing or walking with their children'],'query_suffix':'','negative_descriptions':['A single public official speaking or standing alone without family members.','A wide view of a large crowd at an inauguration or political rally.','An empty house or a building without a family group.']}
+ if re.search(r'\b(?:revolution|uprising|protests?|demonstrations?)\b',description,re.I) and not re.search(r'industrial|scientific|technological',description,re.I):
+  return {'name':'historical protest','event_years':re.findall(r'\b(?:1[5-9]|20)\d{2}\b',description),'metadata_pattern':r'protest|demonstration|revolution|uprising|революц|революці|повстан|протест|демонстрац|rewoluc|powstan','forbidden_metadata':r'anniversary|commemorat|photoexhib|exhibition|exhibit|museum|gallery|book launch|presentation|річниц|роковин|вшанув|пам.ятн|фотовистав|виставк|музей|годовщин|выставк|rocznic|wystaw','visual':'people participating in a political street protest or uprising','visual_objects':['people demonstrating in a street protest','protesters gathered in a public square'],'negative_descriptions':['A museum exhibition, photograph display or book presentation about a past event.','An anniversary ceremony commemorating a past protest.'],'query_suffix':''}
  intents=[
   ('medical treatment',r'treat\w*|therap\w*|lecze\w*|лікува\w*|лечен\w*',r'therap\w*|treat\w*|cancer|carcinoma|medical|clinic\w*|hospital|oncolog\w*|radiolog\w*|лечен\w*|лікува\w*|terapi\w*','medical treatment, radiotherapy equipment or clinical laboratory research'),
   ('landing',r'landing|landed|touchdown|посад\w*|спуск\w*|lądowa\w*',r'landing|landed|touchdown|drone ship|drone.ship|ASDS|посад\w*|lądowa\w*','a rocket landing on its landing pad or landing platform'),
@@ -322,6 +324,8 @@ def query_plan(slots):
     primary.append(context+' performance');second.append(context)
    else:
     primary.append(name+' '+term);second.append(name+' '+suffix if term!=suffix else 'haswbstatement:P180='+target['id']+' '+term)
+  elif intent.get('name')=='historical protest':
+   years=' '.join(intent.get('event_years',[]));primary.append((name+' '+years).strip());second.append(((target.get('commons_category') or name)+' '+years).strip())
   elif intent.get('name')=='city context':
    primary.append(name+' skyline');second.append(name+' panorama')
   elif intent.get('name')=='organization context':
@@ -369,6 +373,8 @@ def target_score(candidate,slot,api):
   return False
  if not any(identity_phrase(name) for name in names if len(name)>=3):return -1
  intent=target.get('intent',{})
+ if intent.get('name')=='historical protest' and intent.get('event_years'):
+  if not any(re.search(r'(?<!\d)'+year+r'(?!\d)',text) for year in intent['event_years']):return -1
  if intent.get('name')=='physical award':
   required=set(intent.get('award_domains',[]));depicted=award_domains(identity_text)
   if required and depicted and not required&depicted:return -1

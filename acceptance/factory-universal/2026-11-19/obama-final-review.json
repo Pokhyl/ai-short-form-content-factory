@@ -1,0 +1,246 @@
+{
+  "project_ready": false,
+  "cases": [
+    {
+      "id": "0d220203-4ec4-47de-b1da-787cb7101818",
+      "topic": "Barack Obama",
+      "language": "en",
+      "duration_s": 30
+    }
+  ],
+  "results": [
+    {
+      "id": "0d220203-4ec4-47de-b1da-787cb7101818",
+      "topic": "Barack Obama",
+      "language": "en",
+      "duration_s": 30,
+      "status": "ready",
+      "stage": "review",
+      "error": null,
+      "script": "Barack Hussein Obama II born August 4, 1961 is an American retired politician who was the 44th president of the United States from 2009 to 2017. In 1991, Obama accepted a two-year position as Visiting Law and Government Fellow at the University of Chicago Law School to work on his first book. In a 2006 interview, Obama highlighted the diversity of his extended family: \"It's like a little mini-United Nations,\" he said.",
+      "audit": {
+        "shots_required": 12,
+        "narration_beats": 3,
+        "unique_assets": 12,
+        "images_per_narration_beat": [
+          2,
+          5,
+          5
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 7,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "all_images_photographically_screened": true,
+        "scene_plan_version": "source-linked-v2",
+        "source_linked_shots": 10,
+        "establishing_shots": 2,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "render": {
+        "status": "ready",
+        "job_id": "0d220203-4ec4-47de-b1da-787cb7101818",
+        "engine": "project FFmpeg renderer",
+        "storage_path": "/data/renders/0d220203-4ec4-47de-b1da-787cb7101818/final.mp4",
+        "manifest_path": "/data/renders/0d220203-4ec4-47de-b1da-787cb7101818/manifest.json",
+        "sha256": "5dbc184bead1684243843e33d8d276de5684ee3ad499451ad4df4076b8437f46",
+        "bytes": 2589889,
+        "width": 1080,
+        "height": 1920,
+        "video_codec": "h264",
+        "audio_codec": "aac",
+        "pix_fmt": "yuv420p",
+        "fps_num": 30,
+        "fps_den": 1,
+        "duration_ms": 30000,
+        "muxed_audio_duration_ms": 30000,
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "frame_count": 900,
+        "audio_duration_ms": 29304,
+        "requested_duration_ms": 30000,
+        "target_duration_ms": 30000,
+        "duration_delta_ms": 0,
+        "input_audio_sha256": "03a5edaec6319075ab9eee4dddea98103bb9b54ff78c9329b814e67412ea03b9",
+        "segments": [
+          {
+            "scene_uuid": "5653d17d-d776-4d5f-92e3-d2e7121149eb",
+            "shot_uuid": "057dd48e-3a9f-4b6f-8e7d-d3066bea1322",
+            "visual_asset_id": "fe731b07-216e-45b8-8fa4-018401be7c6b",
+            "segment_order": 1,
+            "start_ms": 0,
+            "end_ms": 5800,
+            "duration_ms": 5800,
+            "asset_sha256": "04669a008cfd92769e6bfb8897a2f569ca3f9e855a3f3bb340981224ccbc92b7",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "58a0eb6d-1780-4ebc-8397-d45c9b64ff4c",
+            "shot_uuid": "f72a32bf-ff98-4643-b0d1-80c99364c708",
+            "visual_asset_id": "c66b7cd8-3365-4677-8762-610d7cf28af8",
+            "segment_order": 2,
+            "start_ms": 5800,
+            "end_ms": 11600,
+            "duration_ms": 5800,
+            "asset_sha256": "3bc63b8770645cfc794c7b42b14570d4cb706195ccae4743aef1c99ce676841f",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "559779d0-004f-4d45-8612-e3c732926bc4",
+            "shot_uuid": "06d16b43-f66d-4922-8811-dda6f0632cc9",
+            "visual_asset_id": "cb1a8f73-0acc-4440-91b1-bae04c48c2b3",
+            "segment_order": 3,
+            "start_ms": 11600,
+            "end_ms": 13400,
+            "duration_ms": 1800,
+            "asset_sha256": "6432f23bdc36ee77346c60a3076260ef391282e01d31f42ff2a044a93de58aaa",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "47644943-3563-4f6f-baa9-569e6d47eff5",
+            "shot_uuid": "ac99d2dd-149c-4e65-b36e-7ec828774633",
+            "visual_asset_id": "d65599cd-5133-4b74-9e37-a0fe3ea986a3",
+            "segment_order": 4,
+            "start_ms": 13400,
+            "end_ms": 15200,
+            "duration_ms": 1800,
+            "asset_sha256": "4bd8c41e62b70b8b6bc19d30b1718592735ac20c02f6a7220d6458ff7d13dcbd",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "5799fa8c-3ef7-4a1b-a14f-4fe58c379559",
+            "shot_uuid": "dc74237a-a302-4e14-aa9d-08063423399e",
+            "visual_asset_id": "4289e2fe-51af-446d-8f6e-b043b5cb481d",
+            "segment_order": 5,
+            "start_ms": 15200,
+            "end_ms": 17100,
+            "duration_ms": 1900,
+            "asset_sha256": "397e8d363225e0b045b45a738bf477c946bbf8bed3b2568cfa26e360c6365e29",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "75c372c7-7baf-4579-8bce-0f33b64f9c7f",
+            "shot_uuid": "e911dd9b-163f-4a54-8528-6474ad548e1f",
+            "visual_asset_id": "00563a10-16cb-483b-8a4b-57de878df2a1",
+            "segment_order": 6,
+            "start_ms": 17100,
+            "end_ms": 18900,
+            "duration_ms": 1800,
+            "asset_sha256": "aceba10e0ea650c56bcb932a472a68647d0bcd4f3c0d3139b85f174481e11383",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "c4a179cb-0811-433c-a361-e5548f4ee39c",
+            "shot_uuid": "8be0805f-c18e-4c1b-8c68-0f603c5a25f7",
+            "visual_asset_id": "b1cce167-dadd-434a-9414-d61bfc39912e",
+            "segment_order": 7,
+            "start_ms": 18900,
+            "end_ms": 20700,
+            "duration_ms": 1800,
+            "asset_sha256": "fb744e7629f9a0f369e863c1b28bcd28fca6bfeeba282c0b9ee049387eba0945",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "5872947c-93fc-47e3-bc61-8fe40f10618a",
+            "shot_uuid": "708c91de-6e61-48dd-9ef2-0b3ab87e207d",
+            "visual_asset_id": "f060f10c-3287-4ac1-a9e8-ce8187e32dff",
+            "segment_order": 8,
+            "start_ms": 20700,
+            "end_ms": 22600,
+            "duration_ms": 1900,
+            "asset_sha256": "a03107fc2370f1508c5b6ceeb307963d3a794f16e98ba6f097d45aba2d6a01a2",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "77e6d6d8-99f0-4ac7-94e5-a98e281ce617",
+            "shot_uuid": "f91ab51d-bcc0-4d06-b065-42e1708ca97b",
+            "visual_asset_id": "19c67842-69a8-49ac-ad3c-b431c6c05441",
+            "segment_order": 9,
+            "start_ms": 22600,
+            "end_ms": 24400,
+            "duration_ms": 1800,
+            "asset_sha256": "2b564bf3e7758ed8462e9f758d35b93d8bceebd8292f074a1824780c72145722",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "7554e959-9049-4636-9333-f66fd5686d07",
+            "shot_uuid": "edbad863-8c02-4c2f-b716-a92363e2fd96",
+            "visual_asset_id": "3b540d10-eed5-4286-9ccf-b4336d9327fc",
+            "segment_order": 10,
+            "start_ms": 24400,
+            "end_ms": 26300,
+            "duration_ms": 1900,
+            "asset_sha256": "980973590425c553cfb2ab4cf7a97b30b386831af7069c8d573188abf361e539",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "da7cf327-69cb-440f-bcc1-12bea8c1e99a",
+            "shot_uuid": "57199d51-ce55-457f-a352-305a7b1d501e",
+            "visual_asset_id": "38ffe9b7-098d-4c66-b7ca-0026c566cade",
+            "segment_order": 11,
+            "start_ms": 26300,
+            "end_ms": 28100,
+            "duration_ms": 1800,
+            "asset_sha256": "5f16b965271bfa876ecfeef3db8b4c8b6b25fec86f10b11ca16ca8933a28390d",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "ede62a6d-5140-4b47-9fdf-9040e93c96e8",
+            "shot_uuid": "3ad1e14b-e0bc-444e-a901-1bcb567dfebb",
+            "visual_asset_id": "9f33583a-84cd-4b6e-a059-90b35b827ed3",
+            "segment_order": 12,
+            "start_ms": 28100,
+            "end_ms": 30000,
+            "duration_ms": 1900,
+            "asset_sha256": "ae8b770497e169a6e89adf8a512d93be75339bd63c8f5bb3f92569128dd1ec2d",
+            "media_type": "photo"
+          }
+        ],
+        "qa_passed": true,
+        "qa_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "frame_count": 900,
+      "exact_frames": true,
+      "exact_duration": true,
+      "llm_calls": 0,
+      "speech_voice": "en-US-Chirp3-HD-Algenib",
+      "hash_matches": true
+    }
+  ],
+  "technical_pass": true,
+  "assistant_visual_review": {
+    "passed": true,
+    "reviewed_shots": 12,
+    "scope": "Correct named subject portraits, exact University of Chicago Law School, visible family groups; complete captions and whole photographs.",
+    "owner_listening_approval": false
+  }
+}

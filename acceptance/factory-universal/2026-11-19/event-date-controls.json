@@ -1,0 +1,125 @@
+{
+  "target": {
+    "id": "Q15733401",
+    "name": "Revolution of Dignity",
+    "native_name": "Революція гідності",
+    "kind": "entity",
+    "description": "2014 revolution in Ukraine",
+    "aliases": [
+      "Maidan Revolution",
+      "2014 Ukrainian Revolution"
+    ],
+    "commons_category": "Euromaidan",
+    "source_url": "https://www.wikidata.org/wiki/Q15733401",
+    "anchor": "Революції гідності",
+    "article_url": "https://uk.wikipedia.org/wiki/%D0%97%D0%B5%D0%BB%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%92%D0%BE%D0%BB%D0%BE%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9E%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87",
+    "source_sentence": "Багато в чому висока підтримка його кандидатури зумовлювалася невдоволеністю виборців поточним станом справ у державі — розчаруванням у фігурах політичної еліти, що були при владі майже 30 років, а також переважним переконанням виборців, що після 5 років, що минули з часу Революції гідності , країна рухається у, на їхню думку, неправильному напрямку.",
+    "binding": "explicit paragraph link",
+    "priority": 4,
+    "intent": {
+      "name": "historical protest",
+      "event_years": [
+        "2014"
+      ],
+      "metadata_pattern": "protest|demonstration|revolution|uprising|революц|революці|повстан|протест|демонстрац|rewoluc|powstan",
+      "forbidden_metadata": "anniversary|commemorat|photoexhib|exhibition|exhibit|museum|gallery|book launch|presentation|річниц|роковин|вшанув|пам.ятн|фотовистав|виставк|музей|годовщин|выставк|rocznic|wystaw",
+      "visual": "people participating in a political street protest or uprising",
+      "visual_objects": [
+        "people demonstrating in a street protest",
+        "protesters gathered in a public square"
+      ],
+      "negative_descriptions": [
+        "A museum exhibition, photograph display or book presentation about a past event.",
+        "An anniversary ceremony commemorating a past protest."
+      ],
+      "query_suffix": ""
+    }
+  },
+  "results": [
+    {
+      "id": "31248925",
+      "title": "File:Euromaidan in Kiev 2014-02-19 12-06.jpg",
+      "description": "File:Euromaidan in Kiev 2014-02-19 12-06.jpg Euromaidan in Kiev, 19 February 2014. Labor Unions' House on fire. It was reportedly set afire by policemen[1] as it was a protesters' headquarters.",
+      "score": 30,
+      "attribution": {
+        "creator": "Amakuha",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:Euromaidan_in_Kiev_2014-02-19_12-06.jpg",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=31248925",
+        "license": "CC BY-SA 3.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+        "changes": "resized and composited with narration captions"
+      }
+    },
+    {
+      "id": "76585547",
+      "title": "File:5 Years of the Revolution of Dignity photoexhibition in Kyiv 12.jpg",
+      "description": "File:5 Years of the Revolution of Dignity photoexhibition in Kyiv 12.jpg Фотовиставка до п'ятої річниці Революції Гідності \"Пам'ять серця\". Церемонія відкриття.",
+      "score": -1,
+      "attribution": {
+        "creator": "Visem",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:5_Years_of_the_Revolution_of_Dignity_photoexhibition_in_Kyiv_12.jpg",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=76585547",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "changes": "resized and composited with narration captions"
+      }
+    },
+    {
+      "id": "170488458",
+      "title": "File:SHUMEI The ninth anniversary of the Revolution of Dignity 2022.webp",
+      "description": "File:SHUMEI The ninth anniversary of the Revolution of Dignity 2022.webp У Львові до дев’ятої річниці подій на Майдані Незалежності відбулась пам’ятна мистецька акція",
+      "score": -1,
+      "attribution": {
+        "creator": "Львівська ОВА",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:SHUMEI_The_ninth_anniversary_of_the_Revolution_of_Dignity_2022.webp",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=170488458",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0",
+        "changes": "resized and composited with narration captions"
+      }
+    },
+    {
+      "id": "47083946",
+      "title": "File:Майдан Незалежності 20.02.2016 02.JPG",
+      "description": "File:Майдан Незалежності 20.02.2016 02.JPG Вшанування загиблих героїв Євромайдану. Київ 20 лютого 2016",
+      "score": -1,
+      "attribution": {
+        "creator": "A1",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%B0%D0%B9%D0%B4%D0%B0%D0%BD_%D0%9D%D0%B5%D0%B7%D0%B0%D0%BB%D0%B5%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D1%96_20.02.2016_02.JPG",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=47083946",
+        "license": "CC0",
+        "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "changes": "resized and composited with narration captions"
+      }
+    },
+    {
+      "id": "47083945",
+      "title": "File:Майдан Незалежності 20.02.2016 03.JPG",
+      "description": "File:Майдан Незалежності 20.02.2016 03.JPG Вшанування загиблих героїв Євромайдану. Київ 20 лютого 2016",
+      "score": -1,
+      "attribution": {
+        "creator": "A1",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%B0%D0%B9%D0%B4%D0%B0%D0%BD_%D0%9D%D0%B5%D0%B7%D0%B0%D0%BB%D0%B5%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D1%96_20.02.2016_03.JPG",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=47083945",
+        "license": "CC0",
+        "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "changes": "resized and composited with narration captions"
+      }
+    },
+    {
+      "id": "38502118",
+      "title": "File:Роковини розстрілу Майдану 11.JPG",
+      "description": "File:Роковини розстрілу Майдану 11.JPG Роковини розстрілу Євромайдану, Київ, 20 лютого 2015. Вид на Майдан Незалежності",
+      "score": -1,
+      "attribution": {
+        "creator": "A1",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:%D0%A0%D0%BE%D0%BA%D0%BE%D0%B2%D0%B8%D0%BD%D0%B8_%D1%80%D0%BE%D0%B7%D1%81%D1%82%D1%80%D1%96%D0%BB%D1%83_%D0%9C%D0%B0%D0%B9%D0%B4%D0%B0%D0%BD%D1%83_11.JPG",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=38502118",
+        "license": "CC0",
+        "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "changes": "resized and composited with narration captions"
+      }
+    }
+  ],
+  "passed": true
+}
