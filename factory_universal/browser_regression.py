@@ -1,5 +1,5 @@
 """Check Studio in isolated Chrome; default is read-only, submission is explicit and recorded."""
-import argparse,json
+import argparse,json,datetime
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -50,7 +50,7 @@ try:
   page.select_option('#historyView','user');page.wait_for_function('!document.querySelector("article:not([data-origin=user])")')
   if args.submit_topic:
    page.fill('input[name="topic"]',args.submit_topic);page.select_option('[name="language"]',args.language);page.select_option('[name="duration_s"]',str(args.duration))
-   receipt['submission_attempted']=True;receipt['request']={'topic':args.submit_topic,'language':args.language,'duration_s':args.duration};save()
+   receipt['submission_attempted']=True;receipt['submission_started_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();receipt['request']={'topic':args.submit_topic,'language':args.language,'duration_s':args.duration};save()
    with page.expect_response(lambda response:response.request.method=='POST' and response.url.endswith('/api/jobs')) as pending:
     page.click('#new button')
    result=pending.value;data=result.json();receipt['submission_http_status']=result.status;receipt['submitted_job']=data.get('id');save();assert result.status==202,data

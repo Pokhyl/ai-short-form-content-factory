@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "implementation_hashes": {
+    "app.py": "82e5d10801ee9be89eee4cee0714af30e291983fe00a129a711fec186da94815",
+    "storyboard.py": "717cdcd0b580144b0c22926dd4d127b61b10692de04c859644d6b31dd2268759",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463"
+  },
+  "controls": [
+    {
+      "id": "31248925",
+      "title": "File:Euromaidan in Kiev 2014-02-19 12-06.jpg",
+      "score": 30
+    },
+    {
+      "id": "76585547",
+      "title": "File:5 Years of the Revolution of Dignity photoexhibition in Kyiv 12.jpg",
+      "score": -1
+    },
+    {
+      "id": "170488458",
+      "title": "File:SHUMEI The ninth anniversary of the Revolution of Dignity 2022.webp",
+      "score": -1
+    },
+    {
+      "id": "47083946",
+      "title": "File:Майдан Незалежності 20.02.2016 02.JPG",
+      "score": -1
+    },
+    {
+      "id": "47083945",
+      "title": "File:Майдан Незалежності 20.02.2016 03.JPG",
+      "score": -1
+    },
+    {
+      "id": "38502118",
+      "title": "File:Роковини розстрілу Майдану 11.JPG",
+      "score": -1
+    }
+  ],
+  "queries": [
+    {
+      "query": "Revolution of Dignity 2014",
+      "candidates": 45,
+      "previous_keyword_condition": 2,
+      "current_identity_date_and_content_policy": 3
+    },
+    {
+      "query": "Euromaidan 2014",
+      "candidates": 47,
+      "previous_keyword_condition": 4,
+      "current_identity_date_and_content_policy": 43
+    }
+  ],
+  "pixel_quality_thresholds": "unchanged"
+}

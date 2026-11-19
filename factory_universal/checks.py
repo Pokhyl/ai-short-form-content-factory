@@ -672,6 +672,9 @@ def check():
  for title,description in [('Example Revolution anniversary 2022','A commemoration of the 2014 revolution'),('Example Revolution photoexhibition 2019','Відкриття фотовиставки до п’ятої річниці подій 2014 року'),('Example Revolution 2016','Вшанування загиблих у 2014 році')]:
   assert storyboard.target_score({**actual,'depiction':'File:'+title+'.jpg','alt':description},{'visual_target':revolution},app)<0
  assert any('2014' in query for query in storyboard.query_plan([{'visual_targets':[revolution]}]))
+ named_event={'id':'Q9004','name':'The Assembly','commons_category':'The Assembly','description':'2014 mass protest in Example'}
+ named_event['intent']=storyboard.scene_intent('The Assembly followed the election.',named_event)
+ assert storyboard.target_score({'provider':'commons','depiction':'File:The Assembly 2014 public square.jpg','alt':'The Assembly in 2014'},{'visual_target':named_event},app)>0
  # A completed recording from a failed downstream stage needs exact source/text/voice binding.
  first='Перший повний факт.';second='Другий повний факт.';spoken=first+' '+second
  evidence={'voice':app.SELECTED_VOICES['uk'][1],'spoken_text':spoken,'sources':[{'url':'https://uk.wikipedia.org/wiki/Example'}],'beats':[{'text':first,'source_index':0,'source_sentence':first,'source_position':0},{'text':second,'source_index':0,'source_sentence':second,'source_position':len(first)+1}]}

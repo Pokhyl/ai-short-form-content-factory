@@ -1,0 +1,25 @@
+{
+  "implementation_hashes": {
+    "app.py": "82e5d10801ee9be89eee4cee0714af30e291983fe00a129a711fec186da94815",
+    "storyboard.py": "b805ea4321947df50c37079c3b74559fca278867f7d482c3e83352b9d51332b5",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463"
+  },
+  "project_ready": false,
+  "mode": "normal worker in staged image",
+  "cases": [
+    {
+      "topic": "Владимир зеленский",
+      "language": "uk",
+      "duration_s": 45,
+      "regression_of": "acfbd2ea-ee67-4115-9ed1-05e6624c7bb2",
+      "id": "85f29873-8e11-491b-b518-97b04691cffd",
+      "status": "failed",
+      "error": "Operator stopped obsolete image-only stage before synthesis: a redundant generic action-word requirement rejected source-identified event names (4 versus 43 dated candidates). Preserve event identity/year/commemoration exclusions and pixel action checks; remove only the redundant keyword. Fresh IDs required.",
+      "voice_attempts": 0
+    }
+  ],
+  "operator_note": "Operator stopped obsolete image-only stage before synthesis: a redundant generic action-word requirement rejected source-identified event names (4 versus 43 dated candidates). Preserve event identity/year/commemoration exclusions and pixel action checks; remove only the redundant keyword. Fresh IDs required."
+}

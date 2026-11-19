@@ -1,0 +1,17 @@
+{
+  "selection": "Only explicit SQLite-owned failed staged UUIDs with zero native attempts; render evidence preserved",
+  "removed": [
+    {
+      "job_id": "190424fb-a212-4151-a132-b086f9a6fbbf",
+      "path": "factory-universal/tmp/190424fb-a212-4151-a132-b086f9a6fbbf",
+      "removed_bytes": 48000819
+    },
+    {
+      "job_id": "85f29873-8e11-491b-b518-97b04691cffd",
+      "path": "factory-universal/tmp/85f29873-8e11-491b-b518-97b04691cffd",
+      "removed_bytes": 67102955
+    }
+  ],
+  "total_removed_bytes": 115103774,
+  "free_bytes_after": 5784772608
+}
