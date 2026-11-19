@@ -48,6 +48,9 @@ ALIGNMENT_NUMBER_VALUES = {
     "дев'яносто":90,"сто":100,"тисяча":1000,"тисяч":1000,
 }
 
+# Lexemes remove apostrophes; number dictionary keys must use the same spelling.
+ALIGNMENT_NUMBER_VALUES = {re.sub(r"['’ʼ‘]", "", word):value for word,value in ALIGNMENT_NUMBER_VALUES.items()}
+
 ALIGNMENT_ORDINAL_PREFIX_VALUES = {
     # English 11th-20th
     "eleventh":11,"twelfth":12,"thirteenth":13,"fourteenth":14,"fifteenth":15,
@@ -177,7 +180,8 @@ def _lexical_tokens(whisper_payload):
 
             lexemes = _alignment_lexemes(token_text)
             if not lexemes:
-                if stripped:
+                # An apostrophe emitted as its own token remains inside a word.
+                if stripped and not re.fullmatch(r"['’ʼ‘]+", stripped):
                     pending_boundary = True
                 continue
 

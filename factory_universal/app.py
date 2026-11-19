@@ -1394,6 +1394,22 @@ def initial_natural_budget(sources,topic,lang,duration):
   budget=max(10,min(90,round(budget*target/max(predicted,1))))
  return min(options)[1] if options else duration
 
+def source_verified_native_plan(evidence,receipt,sources,topic,lang,duration):
+ low,high=natural_voice_window(duration);voice=SELECTED_VOICES[lang][1]
+ if receipt.get('voice')!=voice or evidence.get('voice')!=voice or not low<=receipt.get('duration_ms',0)<=high:return None
+ slots=[]
+ for beat in evidence.get('beats',[]):
+  old_index=beat.get('source_index',-1)
+  if not 0<=old_index<len(evidence.get('sources',[])):return None
+  url=evidence['sources'][old_index]['url'];index=next((i for i,source in enumerate(sources) if source['url']==url),None)
+  span=beat.get('source_sentence','');start=beat.get('source_position',-1)
+  if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:return None
+  slots.append({'text':beat['text'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
+ if not slots or len(slots)>duration//5:return None
+ spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
+ if spoken!=evidence.get('spoken_text') or hashlib.sha256(spoken.encode()).hexdigest()!=receipt.get('text_sha256'):return None
+ return slots
+
 def completed_narration_plan(sources,topic,lang,duration):
  entity=sources[0].get('entity_profile',{}).get('id') if sources else None
  if not entity:return None
@@ -1416,6 +1432,18 @@ def completed_narration_plan(sources,topic,lang,duration):
   digest=hashlib.sha256(spoken.encode()).hexdigest()
   cache=ROOT/'cache'/(hashlib.sha256(('selected-voice-audio-v1|'+SELECTED_VOICES[lang][1]+'|'+digest).encode()).hexdigest()+'.json')
   if cache.is_file() and time.time()-cache.stat().st_mtime<86400:return slots
+ # A later alignment/render failure does not invalidate a completed native recording.
+ # Reuse it only in a fresh job, with exact source spans and all downstream gates rerun.
+ with connect() as db:rows=db.execute("SELECT v.job_id,v.receipt FROM voice_attempts v JOIN jobs j ON j.id=v.job_id WHERE j.topic=? AND j.language=? AND j.duration_s=? AND j.status='failed' AND COALESCE(j.review_status,'pending')!='changes_requested' AND v.voice=? AND v.state='measured' ORDER BY j.created_at DESC,v.attempt DESC LIMIT 12",(topic,lang,duration,SELECTED_VOICES[lang][1])).fetchall()
+ for row in rows:
+  try:
+   receipt=json.loads(row['receipt']);digest=receipt.get('text_sha256','')
+   if not safe_id(row['job_id']) or not re.fullmatch('[a-f0-9]{64}',digest):continue
+   evidence=json.loads((RENDER/row['job_id']/('verified-input-'+digest[:16]+'.json')).read_text())
+   slots=source_verified_native_plan(evidence,receipt,sources,topic,lang,duration)
+   cache=ROOT/'cache'/(hashlib.sha256(('selected-voice-audio-v1|'+SELECTED_VOICES[lang][1]+'|'+digest).encode()).hexdigest()+'.json')
+   if slots and cache.is_file() and time.time()-cache.stat().st_mtime<86400:return slots
+  except (OSError,ValueError,KeyError,TypeError):continue
  return None
 
 def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots,before_send):

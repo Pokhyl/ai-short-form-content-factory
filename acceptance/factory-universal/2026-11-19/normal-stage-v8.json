@@ -1,0 +1,28 @@
+{
+  "implementation_hashes": {
+    "app.py": "3485d5b5a0329c3f55f826fc132b401a31d3aa0f81f19fd00fa80ffbe87b2b63",
+    "storyboard.py": "40bb7a43f42ef1bd1d17bcb6cbcd7a632a8d75aa0f096d8380cbddefb914728c",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+  },
+  "project_ready": false,
+  "mode": "normal worker in staged image",
+  "cases": [
+    {
+      "topic": "Владимир зеленский",
+      "language": "uk",
+      "duration_s": 45,
+      "regression_of": "acfbd2ea-ee67-4115-9ed1-05e6624c7bb2",
+      "id": "3cbf55ee-d01c-443e-bcf9-a34260345dad",
+      "status": "failed",
+      "error": "whisper lexical tokens do not reconstruct the normalized transcript",
+      "manifest_path": "/data/renders/3cbf55ee-d01c-443e-bcf9-a34260345dad/universal-manifest.json",
+      "narration": {},
+      "render": {},
+      "audit": {},
+      "voice_attempts": 2
+    }
+  ]
+}

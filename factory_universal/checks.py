@@ -664,6 +664,16 @@ def check():
  with patch.object(app,'plan_script',return_value=[good_slot]):
   assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign)==[good_slot]
  assert event_source[0]['excluded_visual_sentences']==[bad_text]
+ # A completed recording from a failed downstream stage needs exact source/text/voice binding.
+ first='Перший повний факт.';second='Другий повний факт.';spoken=first+' '+second
+ evidence={'voice':app.SELECTED_VOICES['uk'][1],'spoken_text':spoken,'sources':[{'url':'https://uk.wikipedia.org/wiki/Example'}],'beats':[{'text':first,'source_index':0,'source_sentence':first,'source_position':0},{'text':second,'source_index':0,'source_sentence':second,'source_position':len(first)+1}]}
+ receipt={'voice':evidence['voice'],'duration_ms':28000,'text_sha256':hashlib.sha256(spoken.encode()).hexdigest()}
+ source=[{'url':evidence['sources'][0]['url'],'text':spoken}]
+ assert len(app.source_verified_native_plan(evidence,receipt,source,'Example','uk',30))==2
+ assert app.source_verified_native_plan(evidence,{**receipt,'voice':'unselected'},source,'Example','uk',30) is None
+ assert app.source_verified_native_plan(evidence,{**receipt,'text_sha256':'0'*64},source,'Example','uk',30) is None
+ assert app.source_verified_native_plan(evidence,receipt,[{**source[0],'text':'Changed '+spoken}],'Example','uk',30) is None
+ assert app.source_verified_native_plan(evidence,{**receipt,'duration_ms':32000},source,'Example','uk',30) is None
  # A named family requires a visible family group, not any image of its famous member.
  family_target={'id':'Q9002','name':'family of Example Person','description':'First Family of Example from 2009 to 2017'}
  family_intent=storyboard.scene_intent('The official spoke about the extended family.',family_target)
