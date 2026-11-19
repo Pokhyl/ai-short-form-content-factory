@@ -16,8 +16,8 @@ descriptions=verifier.check_photograph(images[0])['descriptions']
 verifier.image_vectors.clear();verifier.description_vectors.clear()
 rows=[]
 for path in images:
- start=time.monotonic();reference=verifier.compare(path,descriptions,use_cache=False);baseline=time.monotonic()-start
- start=time.monotonic();observed=verifier.compare(path,descriptions);cached=time.monotonic()-start
+ start=time.monotonic();reference=verifier.compare_batches(path,descriptions,use_cache=False);baseline=time.monotonic()-start
+ start=time.monotonic();observed=verifier.compare_batches(path,descriptions);cached=time.monotonic()-start
  error=float(np.max(np.abs(np.asarray(reference)-np.asarray(observed))))
  assert error<1e-6,(str(path),error)
  # A second, distinct text context reuses the image encoder but retains its full text batch.
@@ -25,7 +25,7 @@ for path in images:
  expected=verifier.compare(path,other,use_cache=False)
  actual=verifier.compare(path,other)
  assert np.allclose(expected,actual,rtol=0,atol=1e-6),str(path)
- start=time.monotonic();again=verifier.compare(path,descriptions);warm=time.monotonic()-start
+ start=time.monotonic();again=verifier.compare_batches(path,descriptions);warm=time.monotonic()-start
  assert np.allclose(reference,again,rtol=0,atol=1e-6)
  rows.append({'image':str(path),'maximum_score_error':error,'full_encoder_seconds':baseline,'cached_seconds':cached,'warm_seconds':warm})
 result={'model_sha256':MODEL_SHA256,'images':len(images),'scores_equivalent':True,'image_cache_limit':256,'text_batch_cache_limit':128,'results':rows}

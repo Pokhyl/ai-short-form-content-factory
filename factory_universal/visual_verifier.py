@@ -66,6 +66,11 @@ class VisualVerifier:
    self.text_vectors=texts
    return [float(score) for score in (images@texts.T)[0]]
 
+ def compare_batches(self,image_path,descriptions,use_cache=True):
+  # Preserve every positive and negative description within the encoder's batch bound.
+  if not descriptions:raise ValueError('visual comparison requires descriptions')
+  return [score for start in range(0,len(descriptions),32) for score in self.compare(image_path,descriptions[start:start+32],use_cache=use_cache)]
+
  def check(self, image_path, subject, actions, caption='', competitors=None, competitor_subject='',extra_negatives=None,extra_positives=None):
   positive=[]
   templates={
@@ -111,7 +116,7 @@ class VisualVerifier:
   # Identity and scene relevance remain independent gates; the genre margin stays .015.
   positive+=['A photograph of people casting votes at a polling station.','A photograph of people at a public ceremony.','A photograph of a politician speaking at a lectern.','A photograph of actors performing on a stage.','A photograph of a crowd at a public event.','A photograph of two people shaking hands.','A photograph of a person signing a document.']
   negative=['A digital advertisement, a marketing banner or a promotional graphic.','A screenshot of a computer program or website.','A standalone logo or wordmark on a plain background.','A vector drawing, a diagram, a graph or an illustration.','An anatomical illustration with arrows and text labels.','A scientific schematic of parts and connections.','A scientific chart on a white background with lines and numeric axes.','A colorful educational diagram with arrows and labels.','A scientific flowchart or infographic explaining a process.','A document, certificate or handwriting.','A scanned book or calendar page containing a printed photograph and surrounding text.','A painting, woodcut, engraving or AI-generated illustration.']
-  scores=self.compare(image_path,positive+negative)
+  scores=self.compare_batches(image_path,positive+negative)
   best=max(scores[:len(positive)]);wrong=max(scores[len(positive):]);margin=best-wrong
   return {'passed':margin>=.015,'policy':'contrastive photographic genre; independent subject gate requires 0.24 and 0.015','positive_score':round(best,6),'negative_score':round(wrong,6),'margin':round(margin,6),'model_sha256':MODEL_SHA256,'descriptions':positive+negative,'scores':[round(score,6) for score in scores]}
 

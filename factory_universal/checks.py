@@ -664,6 +664,21 @@ def check():
  with patch.object(app,'plan_script',return_value=[good_slot]):
   assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign)==[good_slot]
  assert event_source[0]['excluded_visual_sentences']==[bad_text]
+ # The complete genre vocabulary exceeds one encoder batch; tail negatives still veto.
+ from visual_verifier import VisualVerifier
+ verifier=VisualVerifier.__new__(VisualVerifier);genre_batches=[]
+ def genre_scores(path,descriptions,use_cache=True):
+  assert 0<len(descriptions)<=32
+  genre_batches.append(descriptions)
+  return [.9 if 'painting, woodcut' in text else .8 if 'casting votes' in text else .1 for text in descriptions]
+ with patch.object(verifier,'compare',side_effect=genre_scores):
+  assert not verifier.check_photograph('unused')['passed']
+ assert len(genre_batches)==2 and any('painting, woodcut' in text for text in genre_batches[-1])
+ def photo_scores(path,descriptions,use_cache=True):
+  assert 0<len(descriptions)<=32
+  return [.8 if 'casting votes' in text else .1 for text in descriptions]
+ with patch.object(verifier,'compare',side_effect=photo_scores):
+  assert verifier.check_photograph('unused')['passed']
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 
