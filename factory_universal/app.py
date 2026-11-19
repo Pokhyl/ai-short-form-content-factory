@@ -208,10 +208,37 @@ def natural_char_rate(lang):
  NATURAL_RATE_CACHE[lang]={'en':65.0,'pl':65.0,'ru':70.0,'uk':70.0}[lang]
  return NATURAL_RATE_CACHE[lang]
 
+NATURAL_INTERNAL_RATE_CACHE={}
+def natural_internal_rate(lang):
+ if lang in NATURAL_INTERNAL_RATE_CACHE:return NATURAL_INTERNAL_RATE_CACHE[lang]
+ from statistics import median
+ values=[]
+ with connect() as db:rows=db.execute("SELECT job_id,receipt FROM voice_attempts WHERE voice=? AND state='measured' AND receipt IS NOT NULL ORDER BY rowid DESC LIMIT 12",(SELECTED_VOICES[lang][1],)).fetchall()
+ for row in rows:
+  try:
+   receipt=json.loads(row['receipt']);digest=receipt['text_sha256']
+   if not safe_id(row['job_id']) or not re.fullmatch('[a-f0-9]{64}',digest):continue
+   evidence=json.loads((RENDER/row['job_id']/('verified-input-'+digest[:16]+'.json')).read_text())
+   text=evidence['spoken_text']
+   if hashlib.sha256(text.encode()).hexdigest()!=digest or evidence['voice']!=SELECTED_VOICES[lang][1]:continue
+   estimate=measured_sentence_ms(text,lang)
+   if estimate>0:values.append(receipt['duration_ms']/estimate)
+  except (OSError,ValueError,KeyError):continue
+ NATURAL_INTERNAL_RATE_CACHE[lang]=median(values) if values else None
+ return NATURAL_INTERNAL_RATE_CACHE[lang]
+
+def natural_duration_ms(text,lang):
+ # Characters miss spoken numbers and punctuation. Blend two independently calibrated
+ # estimates; eSpeak remains a silent internal measurement, never output audio.
+ spoken=selected_voice_request(lang,text)['input']['text']
+ characters=len(spoken)*natural_char_rate(lang);internal_rate=natural_internal_rate(lang)
+ if internal_rate is None:return round(characters)
+ return round((characters+measured_sentence_ms(spoken,lang)*internal_rate)/2)
+
 def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required_sentence=None,natural=False):
  # Exact-count duration-constrained selection over source sentences, measured in the selected voice.
  rate=natural_char_rate(lang) if natural else None
- cost_ms=lambda text:round((len(selected_voice_request(lang,text)['input']['text'])+1)*rate) if natural else measured_sentence_ms(text,lang)
+ cost_ms=lambda text:natural_duration_ms(text,lang)+round(rate) if natural else measured_sentence_ms(text,lang)
  step=10 if natural else 25
  budget=((duration_ms if duration_ms is not None else count*5000)-(0 if natural else 100))//step;states=[{} for _ in range(count+1)];states[0][0]=(0.0,())
  seen=set();candidates=[]
@@ -601,9 +628,9 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      rows.append((score,si,sentence,words));source_positions.setdefault((si,sentence),source_position);source_spans.setdefault((si,sentence),original_sentence)
   rows.sort(key=lambda x:(-x[0],x[1],abs(len(x[3])-13)))
   if definition:
-   candidate=next((row for row in rows if row[1]==0 and source_positions[(row[1],row[2])]<4 and re.search(r'—|\b(?:is|are|jest|są|є|это)\b',row[2],re.I) and len(selected_voice_request(lang,row[2])['input']['text'])*natural_char_rate(lang)<=target_ms*.8),None)
+   candidate=next((row for row in rows if row[1]==0 and source_positions[(row[1],row[2])]<4 and re.search(r'—|\b(?:is|are|jest|są|є|это)\b',row[2],re.I) and natural_duration_ms(row[2],lang)<=target_ms*.8),None)
    if process_intent and not (candidate and process_definition(candidate[2])):
-    procedural=[row for row in rows if row[1]==0 and process_signal(row[2],lang)>=2 and grounding_terms(row[2],lang)&grounding_terms(sources[0]['title'],lang) and len(selected_voice_request(lang,row[2])['input']['text'])*natural_char_rate(lang)<=target_ms]
+    procedural=[row for row in rows if row[1]==0 and process_signal(row[2],lang)>=2 and grounding_terms(row[2],lang)&grounding_terms(sources[0]['title'],lang) and natural_duration_ms(row[2],lang)<=target_ms]
     if procedural:candidate=min(procedural,key=lambda row:(source_positions[(0,row[2])],-len(row[2])))
    if candidate and (definition_index!=0 or candidate[2]!=definition):
     rows=[row for row in rows if not (row[1]==definition_index and row[2]==definition)]
@@ -705,7 +732,7 @@ def plan_script(sources,topic,lang,duration,max_beats=None):
     if process_intent:expanded=order_process_slots(expanded)
     if expanded:
      spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in expanded))['input']['text']
-     predicted=len(spoken)*natural_char_rate(lang)
+     predicted=natural_duration_ms(spoken,lang)
      plans.append((abs(predicted-duration*950),abs(count-preferred),-sum(slot.get('score',0) for slot in expanded),expanded))
    else:return slots
  if plans:return min(plans,key=lambda row:row[:3])[3]
@@ -1137,6 +1164,10 @@ def pixel_check(raw,topic,slot,candidate=None):
   if intent.get('name')=='person event':
    human=get_pixel_verifier().check_person(raw,(candidate or {}).get('identity_verification') or {})
    audit['human_content_verification']=human; audit['passed']=audit['passed'] and human['passed']
+  if intent.get('name')=='family group':
+   # A famous surname must not make a solo portrait or distant crowd a family scene.
+   group=get_pixel_verifier().check(raw,'members of a family photographed together',set(),extra_positives=['A photograph of a family posing together.','A photograph of parents with their children.','A photograph of several family members walking together.'],extra_negatives=['A photograph of a man standing alone.','A photograph of a woman standing alone.','A photograph of only one person.','A wide view of a large crowd at a rally.'])
+   audit['family_group_verification']=group;audit['passed']=audit['passed'] and group['passed']
   audit['scene_target']=target;return audit
 
  if slot.get('entity_profile',{}).get('kind')=='human':
@@ -1449,7 +1480,7 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
    if identity in seen:raise ValueError('Scene re-planning returned a previously synthesized text; no duplicate send')
   seen.add(identity)
   update(jid,stage='voice',progress=50,message='Creating narration with your selected '+lang.upper()+' voice; attempt '+str(attempt))
-  path,measured=google_voice_once(lang,script,jid,attempt);attempts.append(measured);actual=measured['duration_ms']
+  path,measured=google_voice_once(lang,script,jid,attempt);measured={**measured,'internal_duration_estimate_ms':measured_sentence_ms(spoken,lang)};attempts.append(measured);actual=measured['duration_ms']
   low,high=natural_voice_window(duration)
   if low<=actual<=high:break
   if source_overview_mode(sources):
@@ -1457,6 +1488,7 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
    # Calibrate the text budget once using this job's completed native recordings.
    # Scaling the old seconds budget as well would apply the correction twice.
    NATURAL_RATE_CACHE[lang]=median(item['duration_ms']/item['characters'] for item in attempts if item.get('characters'))
+   NATURAL_INTERNAL_RATE_CACHE[lang]=median(item['duration_ms']/item['internal_duration_estimate_ms'] for item in attempts if item.get('internal_duration_estimate_ms'))
    planning_seconds=duration
   else:planning_seconds=max(10,min(90,round(planning_seconds*(duration*1000-500)/max(actual,1))))
  else:raise ValueError('three distinct natural narration texts did not fit; no speed change or voice substitution')

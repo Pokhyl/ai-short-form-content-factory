@@ -599,7 +599,7 @@ def check():
  assert storyboard.target_score(headset,{'visual_target':interface},app)>0
  # A high-scoring short source pair must not defeat the native duration window.
  facts=[(100,0,'The instrument records a complete measurement each morning with its original source clock.',[]),(100,0,'The recorded measurements are stored in the laboratory with their original source dates.',[]),(10,0,'The instrument measures the material with a calibrated sensor before every experimental session begins.',[]),(10,0,'The laboratory stores each complete measurement with its original date and its source instrument identifier.',[])]
- with patch.object(app,'natural_char_rate',return_value=140):
+ with patch.object(app,'natural_char_rate',return_value=140),patch.object(app,'natural_internal_rate',return_value=None):
   selected=app.fit_narration(facts,2,'en',duration_ms=30000,natural=True)
   predicted=sum((len(app.selected_voice_request('en',row['text'])['input']['text'])+1)*140 for row in selected)
   assert 27000<=predicted<=30000,predicted
@@ -609,13 +609,13 @@ def check():
  def count_plan(sources,topic,count,lang,duration_s):
   text=short if count==3 else fitted
   return [{'text':text,'score':100 if count==3 else 1}]+[{'text':'','score':0} for _ in range(count-1)] if count in {2,3} else []
- with patch.object(app,'source_overview_mode',return_value=True),patch.object(app,'source_slots',side_effect=count_plan),patch.object(app,'expand_source_blocks',side_effect=lambda rows,limit:rows),patch.object(app,'natural_char_rate',return_value=64):
+ with patch.object(app,'source_overview_mode',return_value=True),patch.object(app,'source_slots',side_effect=count_plan),patch.object(app,'expand_source_blocks',side_effect=lambda rows,limit:rows),patch.object(app,'natural_char_rate',return_value=64),patch.object(app,'natural_internal_rate',return_value=None):
   selected=app.plan_script([{}],'A process','en',30,max_beats=6)
   assert len(selected)==2
  # Expanding a multi-stage source block must not repeat its physical stages.
  block='The pulp drains through a screen and then the sheet is pressed.'
  repeat='A screen drains additional water from the pulp.'
- with patch.object(app,'natural_char_rate',return_value=100):
+ with patch.object(app,'natural_char_rate',return_value=100),patch.object(app,'natural_internal_rate',return_value=None):
   assert not app.fit_narration([(100,0,block,[]),(100,0,repeat,[])],2,'en',process_intent=True,duration_ms=12000,natural=True)
  ordered=app.order_process_slots([{'text':'The sheet is pressed.'},{'text':'Wet pulp drains through a screen.'},{'text':'The sheet dries on racks.'},{'text':'Papermaking is a manufacturing process.'}])
  assert [next(iter(app.scene_actions(row['text']))) for row in ordered]==['production','drain','press','dry']
@@ -664,6 +664,24 @@ def check():
  with patch.object(app,'plan_script',return_value=[good_slot]):
   assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign)==[good_slot]
  assert event_source[0]['excluded_visual_sentences']==[bad_text]
+ # A named family requires a visible family group, not any image of its famous member.
+ family_target={'id':'Q9002','name':'family of Example Person','description':'First Family of Example from 2009 to 2017'}
+ family_intent=storyboard.scene_intent('The official spoke about the extended family.',family_target)
+ assert family_intent['name']=='family group'
+ assert 'alone' in ' '.join(family_intent['negative_descriptions'])
+ assert 'large crowd' in ' '.join(family_intent['negative_descriptions'])
+ with patch.object(app,'get_pixel_verifier') as factory:
+  factory.return_value.check.side_effect=[{'passed':True},{'passed':False}]
+  audit=app.pixel_check('unused','Example Person',{'visual_target':{**family_target,'intent':family_intent}})
+  assert not audit['passed'] and not audit['family_group_verification']['passed']
+  assert factory.return_value.check.call_args_list[1].args[1]=='members of a family photographed together'
+ # Recorded native UK timings: character-only calibration misses number-rich text.
+ # Predict two held-out complete recordings using only the first completed sample.
+ calibration=(526,51025,35136)
+ for characters,internal_ms,actual_ms in [(639,72530,46728),(610,58067,39984)]:
+  with patch.object(app,'selected_voice_request',return_value={'input':{'text':'x'*characters}}),patch.object(app,'natural_char_rate',return_value=calibration[2]/calibration[0]),patch.object(app,'natural_internal_rate',return_value=calibration[2]/calibration[1]),patch.object(app,'measured_sentence_ms',return_value=internal_ms):
+   predicted=app.natural_duration_ms('source sentence','uk')
+  assert abs(predicted-actual_ms)/actual_ms<.025,(predicted,actual_ms)
  # A biography's academic field cannot select arbitrary museums bearing that field's name.
  field_sentence='The mother began anthropology field work.'
  field_parser=storyboard.ArticleLinks();field_parser.feed('<p>The mother began <a href="/wiki/Anthropology">anthropology</a> field work.</p>')

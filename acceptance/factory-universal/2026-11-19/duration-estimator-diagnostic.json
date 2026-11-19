@@ -1,0 +1,42 @@
+{
+  "training": "First completed native recording only; two other completed recordings held out",
+  "voice": "uk-UA-Chirp3-HD-Enceladus",
+  "provider_calls_for_diagnostic": 0,
+  "audio_transformation": false,
+  "natural_window_90_to_100_percent_unchanged": true,
+  "rows": [
+    {
+      "attempt": 1,
+      "characters": 526,
+      "native_ms": 35136,
+      "espeak_complete_ms": 51025,
+      "espeak_beats_ms": 51028,
+      "native_per_espeak": 0.6886036256736894,
+      "text_sha256": "af45b8513ac265fcfdb9a18c5e0c150a61a0a76e6d0417a8cb01ab70c664790e"
+    },
+    {
+      "attempt": 2,
+      "characters": 639,
+      "native_ms": 46728,
+      "espeak_complete_ms": 72530,
+      "espeak_beats_ms": 72493,
+      "native_per_espeak": 0.644257548600579,
+      "text_sha256": "9aaf861c88908858a34c5e7e90d42191d46011fd9fe440043af21b4ad30c2562",
+      "character_prediction_ms": 42684,
+      "blended_prediction_ms": 46314,
+      "blended_relative_error": 0.008859784283513097
+    },
+    {
+      "attempt": 3,
+      "characters": 610,
+      "native_ms": 39984,
+      "espeak_complete_ms": 58067,
+      "espeak_beats_ms": 58050,
+      "native_per_espeak": 0.6885838772452512,
+      "text_sha256": "ff8d85b80fe06107af39f54ae2d161405949bb27c0b9dc2eee0381a302dc636d",
+      "character_prediction_ms": 40747,
+      "blended_prediction_ms": 40366,
+      "blended_relative_error": 0.009553821528611445
+    }
+  ]
+}

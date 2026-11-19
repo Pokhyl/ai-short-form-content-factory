@@ -1,0 +1,705 @@
+{
+  "implementation_hashes": {
+    "app.py": "45be172f7bf1a4f1689bc0e2d7c6bf4e4c04fded949b387cc5239a385cf12147",
+    "storyboard.py": "9368550f31aa0b8cd5cb291aee983a99b56885626864892e01e0851fd0b1e4fe",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+  },
+  "target": {
+    "id": "Q643049",
+    "name": "family of Barack Obama",
+    "native_name": "Family of Barack Obama",
+    "kind": "entity",
+    "description": "First Family of the United States from 2009 to 2017",
+    "aliases": [
+      "Obama family",
+      "Family of Barack Obama"
+    ],
+    "commons_category": "Obama family",
+    "source_url": "https://www.wikidata.org/wiki/Q643049",
+    "anchor": "his extended family",
+    "article_url": "https://en.wikipedia.org/wiki/Barack_Obama",
+    "source_sentence": "In a 2006 interview, Obama highlighted the diversity of his extended family : \"It's like a little mini-United Nations,\" he said.",
+    "binding": "explicit paragraph link",
+    "priority": 4,
+    "intent": {
+      "name": "family group",
+      "metadata_pattern": "family|families|household|spouse|children|daughters?|sons?|семь\\w*|сім[’’\\']?\\w*|rodzin\\w*",
+      "visual": "members of a family photographed together",
+      "visual_objects": [
+        "family members posing together in a family group photograph",
+        "parents standing or walking with their children"
+      ],
+      "query_suffix": "",
+      "negative_descriptions": [
+        "A single public official speaking or standing alone without family members.",
+        "A wide view of a large crowd at an inauguration or political rally.",
+        "An empty house or a building without a family group."
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "17779257",
+      "title": "File:Barack Obama family portrait 2011.jpg",
+      "image": "/data/renders/89c38472-7992-466f-8229-240b8ec8c928/diagnostics/family/17779257.source",
+      "attribution": {
+        "creator": "Pete Souza",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:Barack_Obama_family_portrait_2011.jpg",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=17779257",
+        "license": "Public domain",
+        "license_url": "",
+        "changes": "resized and composited with narration captions"
+      },
+      "audit": {
+        "passed": true,
+        "positive_score": 0.344024,
+        "negative_score": 0.247373,
+        "margin": 0.096652,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of family of Barack Obama — members of a family photographed together",
+          "A photograph of family of Barack Obama family members posing together in a family group photograph.",
+          "A photograph of family of Barack Obama parents standing or walking with their children.",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting.",
+          "A black and white woodcut engraving or historical line drawing.",
+          "A geographic map or a city locator map.",
+          "A photograph of a printed document, letter, certificate or text page.",
+          "A single public official speaking or standing alone without family members.",
+          "A wide view of a large crowd at an inauguration or political rally.",
+          "An empty house or a building without a family group.",
+          "A close-up portrait photograph of a person with no visible scene object.",
+          "A screenshot of a website, app interface or social media profile.",
+          "A standalone corporate logo or wordmark on a plain background.",
+          "A generic photograph of people at an unrelated meeting.",
+          "A flat digital advertisement or promotional text banner."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.344024,
+          0.340014,
+          0.317183,
+          0.195708,
+          0.214216,
+          0.161398,
+          0.199923,
+          0.186434,
+          0.204297,
+          0.247373,
+          0.224594,
+          0.23412,
+          0.207516,
+          0.190425,
+          0.171518,
+          0.224219,
+          0.199859
+        ],
+        "family_group_verification": {
+          "passed": true,
+          "positive_score": 0.277826,
+          "negative_score": 0.226489,
+          "margin": 0.051337,
+          "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+          "descriptions": [
+            "A photograph of members of a family photographed together",
+            "A photograph of a family posing together.",
+            "A photograph of parents with their children.",
+            "A photograph of several family members walking together.",
+            "A photograph of an unrelated landscape or animal.",
+            "A labeled line diagram, graph, chart or schematic.",
+            "A hand drawn illustration or painting.",
+            "A black and white woodcut engraving or historical line drawing.",
+            "A geographic map or a city locator map.",
+            "A photograph of a printed document, letter, certificate or text page.",
+            "A photograph of a man standing alone.",
+            "A photograph of a woman standing alone.",
+            "A photograph of only one person.",
+            "A wide view of a large crowd at a rally."
+          ],
+          "excluded_competitor_aliases": [],
+          "scores": [
+            0.271448,
+            0.272353,
+            0.277826,
+            0.247115,
+            0.194199,
+            0.21238,
+            0.159181,
+            0.201843,
+            0.186108,
+            0.204451,
+            0.203345,
+            0.207533,
+            0.226489,
+            0.199656
+          ]
+        },
+        "scene_target": {
+          "id": "Q643049",
+          "name": "family of Barack Obama",
+          "native_name": "Family of Barack Obama",
+          "kind": "entity",
+          "description": "First Family of the United States from 2009 to 2017",
+          "aliases": [
+            "Obama family",
+            "Family of Barack Obama"
+          ],
+          "commons_category": "Obama family",
+          "source_url": "https://www.wikidata.org/wiki/Q643049",
+          "anchor": "his extended family",
+          "article_url": "https://en.wikipedia.org/wiki/Barack_Obama",
+          "source_sentence": "In a 2006 interview, Obama highlighted the diversity of his extended family : \"It's like a little mini-United Nations,\" he said.",
+          "binding": "explicit paragraph link",
+          "priority": 4,
+          "intent": {
+            "name": "family group",
+            "metadata_pattern": "family|families|household|spouse|children|daughters?|sons?|семь\\w*|сім[’’\\']?\\w*|rodzin\\w*",
+            "visual": "members of a family photographed together",
+            "visual_objects": [
+              "family members posing together in a family group photograph",
+              "parents standing or walking with their children"
+            ],
+            "query_suffix": "",
+            "negative_descriptions": [
+              "A single public official speaking or standing alone without family members.",
+              "A wide view of a large crowd at an inauguration or political rally.",
+              "An empty house or a building without a family group."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "53169324",
+      "title": "File:Barack Obama election night victory 2012 (Obama family).jpg",
+      "image": "/data/renders/89c38472-7992-466f-8229-240b8ec8c928/diagnostics/family/53169324.source",
+      "attribution": {
+        "creator": "White House/Chuck Kennedy",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:Barack_Obama_election_night_victory_2012_(Obama_family).jpg",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=53169324",
+        "license": "Public domain",
+        "license_url": "",
+        "changes": "resized and composited with narration captions"
+      },
+      "audit": {
+        "passed": true,
+        "positive_score": 0.322574,
+        "negative_score": 0.242732,
+        "margin": 0.079842,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of family of Barack Obama — members of a family photographed together",
+          "A photograph of family of Barack Obama family members posing together in a family group photograph.",
+          "A photograph of family of Barack Obama parents standing or walking with their children.",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting.",
+          "A black and white woodcut engraving or historical line drawing.",
+          "A geographic map or a city locator map.",
+          "A photograph of a printed document, letter, certificate or text page.",
+          "A single public official speaking or standing alone without family members.",
+          "A wide view of a large crowd at an inauguration or political rally.",
+          "An empty house or a building without a family group.",
+          "A close-up portrait photograph of a person with no visible scene object.",
+          "A screenshot of a website, app interface or social media profile.",
+          "A standalone corporate logo or wordmark on a plain background.",
+          "A generic photograph of people at an unrelated meeting.",
+          "A flat digital advertisement or promotional text banner."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.299106,
+          0.306348,
+          0.322574,
+          0.18756,
+          0.219123,
+          0.18132,
+          0.19689,
+          0.195725,
+          0.2049,
+          0.242732,
+          0.238459,
+          0.214666,
+          0.216156,
+          0.19027,
+          0.18651,
+          0.231212,
+          0.20109
+        ],
+        "family_group_verification": {
+          "passed": true,
+          "positive_score": 0.256491,
+          "negative_score": 0.236342,
+          "margin": 0.020149,
+          "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+          "descriptions": [
+            "A photograph of members of a family photographed together",
+            "A photograph of a family posing together.",
+            "A photograph of parents with their children.",
+            "A photograph of several family members walking together.",
+            "A photograph of an unrelated landscape or animal.",
+            "A labeled line diagram, graph, chart or schematic.",
+            "A hand drawn illustration or painting.",
+            "A black and white woodcut engraving or historical line drawing.",
+            "A geographic map or a city locator map.",
+            "A photograph of a printed document, letter, certificate or text page.",
+            "A photograph of a man standing alone.",
+            "A photograph of a woman standing alone.",
+            "A photograph of only one person.",
+            "A wide view of a large crowd at a rally."
+          ],
+          "excluded_competitor_aliases": [],
+          "scores": [
+            0.238553,
+            0.242295,
+            0.245421,
+            0.256491,
+            0.187964,
+            0.217167,
+            0.180912,
+            0.198427,
+            0.194884,
+            0.205861,
+            0.223839,
+            0.236342,
+            0.220311,
+            0.212646
+          ]
+        },
+        "scene_target": {
+          "id": "Q643049",
+          "name": "family of Barack Obama",
+          "native_name": "Family of Barack Obama",
+          "kind": "entity",
+          "description": "First Family of the United States from 2009 to 2017",
+          "aliases": [
+            "Obama family",
+            "Family of Barack Obama"
+          ],
+          "commons_category": "Obama family",
+          "source_url": "https://www.wikidata.org/wiki/Q643049",
+          "anchor": "his extended family",
+          "article_url": "https://en.wikipedia.org/wiki/Barack_Obama",
+          "source_sentence": "In a 2006 interview, Obama highlighted the diversity of his extended family : \"It's like a little mini-United Nations,\" he said.",
+          "binding": "explicit paragraph link",
+          "priority": 4,
+          "intent": {
+            "name": "family group",
+            "metadata_pattern": "family|families|household|spouse|children|daughters?|sons?|семь\\w*|сім[’’\\']?\\w*|rodzin\\w*",
+            "visual": "members of a family photographed together",
+            "visual_objects": [
+              "family members posing together in a family group photograph",
+              "parents standing or walking with their children"
+            ],
+            "query_suffix": "",
+            "negative_descriptions": [
+              "A single public official speaking or standing alone without family members.",
+              "A wide view of a large crowd at an inauguration or political rally.",
+              "An empty house or a building without a family group."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "7374911",
+      "title": "File:Obama family departure from Ghana.jpg",
+      "image": "/data/renders/89c38472-7992-466f-8229-240b8ec8c928/diagnostics/family/7374911.source",
+      "attribution": {
+        "creator": "White House (Pete Souza ) / Maison Blanche (Pete Souza )",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:Obama_family_departure_from_Ghana.jpg",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=7374911",
+        "license": "Public domain",
+        "license_url": "",
+        "changes": "resized and composited with narration captions"
+      },
+      "audit": {
+        "passed": true,
+        "positive_score": 0.304929,
+        "negative_score": 0.233382,
+        "margin": 0.071547,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of family of Barack Obama — members of a family photographed together",
+          "A photograph of family of Barack Obama family members posing together in a family group photograph.",
+          "A photograph of family of Barack Obama parents standing or walking with their children.",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting.",
+          "A black and white woodcut engraving or historical line drawing.",
+          "A geographic map or a city locator map.",
+          "A photograph of a printed document, letter, certificate or text page.",
+          "A single public official speaking or standing alone without family members.",
+          "A wide view of a large crowd at an inauguration or political rally.",
+          "An empty house or a building without a family group.",
+          "A close-up portrait photograph of a person with no visible scene object.",
+          "A screenshot of a website, app interface or social media profile.",
+          "A standalone corporate logo or wordmark on a plain background.",
+          "A generic photograph of people at an unrelated meeting.",
+          "A flat digital advertisement or promotional text banner."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.257391,
+          0.261712,
+          0.304929,
+          0.202524,
+          0.204153,
+          0.165415,
+          0.169275,
+          0.182419,
+          0.197879,
+          0.223441,
+          0.233382,
+          0.189457,
+          0.20166,
+          0.196041,
+          0.175073,
+          0.222599,
+          0.194566
+        ],
+        "family_group_verification": {
+          "passed": true,
+          "positive_score": 0.248527,
+          "negative_score": 0.231692,
+          "margin": 0.016836,
+          "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+          "descriptions": [
+            "A photograph of members of a family photographed together",
+            "A photograph of a family posing together.",
+            "A photograph of parents with their children.",
+            "A photograph of several family members walking together.",
+            "A photograph of an unrelated landscape or animal.",
+            "A labeled line diagram, graph, chart or schematic.",
+            "A hand drawn illustration or painting.",
+            "A black and white woodcut engraving or historical line drawing.",
+            "A geographic map or a city locator map.",
+            "A photograph of a printed document, letter, certificate or text page.",
+            "A photograph of a man standing alone.",
+            "A photograph of a woman standing alone.",
+            "A photograph of only one person.",
+            "A wide view of a large crowd at a rally."
+          ],
+          "excluded_competitor_aliases": [],
+          "scores": [
+            0.203706,
+            0.203111,
+            0.218341,
+            0.248527,
+            0.203035,
+            0.203361,
+            0.164625,
+            0.172793,
+            0.180334,
+            0.198806,
+            0.231692,
+            0.230375,
+            0.219432,
+            0.219877
+          ]
+        },
+        "scene_target": {
+          "id": "Q643049",
+          "name": "family of Barack Obama",
+          "native_name": "Family of Barack Obama",
+          "kind": "entity",
+          "description": "First Family of the United States from 2009 to 2017",
+          "aliases": [
+            "Obama family",
+            "Family of Barack Obama"
+          ],
+          "commons_category": "Obama family",
+          "source_url": "https://www.wikidata.org/wiki/Q643049",
+          "anchor": "his extended family",
+          "article_url": "https://en.wikipedia.org/wiki/Barack_Obama",
+          "source_sentence": "In a 2006 interview, Obama highlighted the diversity of his extended family : \"It's like a little mini-United Nations,\" he said.",
+          "binding": "explicit paragraph link",
+          "priority": 4,
+          "intent": {
+            "name": "family group",
+            "metadata_pattern": "family|families|household|spouse|children|daughters?|sons?|семь\\w*|сім[’’\\']?\\w*|rodzin\\w*",
+            "visual": "members of a family photographed together",
+            "visual_objects": [
+              "family members posing together in a family group photograph",
+              "parents standing or walking with their children"
+            ],
+            "query_suffix": "",
+            "negative_descriptions": [
+              "A single public official speaking or standing alone without family members.",
+              "A wide view of a large crowd at an inauguration or political rally.",
+              "An empty house or a building without a family group."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "5756033",
+      "title": "File:Barack Obama Inauguration.jpg",
+      "image": "/data/renders/89c38472-7992-466f-8229-240b8ec8c928/diagnostics/family/5756033.source",
+      "attribution": {
+        "creator": "Steve Jurvetson from Menlo Park, USA",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:Barack_Obama_Inauguration.jpg",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=5756033",
+        "license": "CC BY 2.0",
+        "license_url": "https://creativecommons.org/licenses/by/2.0",
+        "changes": "resized and composited with narration captions"
+      },
+      "audit": {
+        "passed": false,
+        "positive_score": 0.25464,
+        "negative_score": 0.289881,
+        "margin": -0.035241,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of family of Barack Obama — members of a family photographed together",
+          "A photograph of family of Barack Obama family members posing together in a family group photograph.",
+          "A photograph of family of Barack Obama parents standing or walking with their children.",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting.",
+          "A black and white woodcut engraving or historical line drawing.",
+          "A geographic map or a city locator map.",
+          "A photograph of a printed document, letter, certificate or text page.",
+          "A single public official speaking or standing alone without family members.",
+          "A wide view of a large crowd at an inauguration or political rally.",
+          "An empty house or a building without a family group.",
+          "A close-up portrait photograph of a person with no visible scene object.",
+          "A screenshot of a website, app interface or social media profile.",
+          "A standalone corporate logo or wordmark on a plain background.",
+          "A generic photograph of people at an unrelated meeting.",
+          "A flat digital advertisement or promotional text banner."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.252419,
+          0.25464,
+          0.252567,
+          0.178968,
+          0.189813,
+          0.14408,
+          0.144577,
+          0.18315,
+          0.185674,
+          0.211655,
+          0.289881,
+          0.196505,
+          0.189709,
+          0.193076,
+          0.166006,
+          0.214845,
+          0.20157
+        ],
+        "family_group_verification": {
+          "passed": false,
+          "positive_score": 0.228695,
+          "negative_score": 0.2691,
+          "margin": -0.040405,
+          "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+          "descriptions": [
+            "A photograph of members of a family photographed together",
+            "A photograph of a family posing together.",
+            "A photograph of parents with their children.",
+            "A photograph of several family members walking together.",
+            "A photograph of an unrelated landscape or animal.",
+            "A labeled line diagram, graph, chart or schematic.",
+            "A hand drawn illustration or painting.",
+            "A black and white woodcut engraving or historical line drawing.",
+            "A geographic map or a city locator map.",
+            "A photograph of a printed document, letter, certificate or text page.",
+            "A photograph of a man standing alone.",
+            "A photograph of a woman standing alone.",
+            "A photograph of only one person.",
+            "A wide view of a large crowd at a rally."
+          ],
+          "excluded_competitor_aliases": [],
+          "scores": [
+            0.210973,
+            0.195085,
+            0.200948,
+            0.228695,
+            0.179435,
+            0.188982,
+            0.143817,
+            0.148439,
+            0.181315,
+            0.187108,
+            0.218549,
+            0.213476,
+            0.209644,
+            0.2691
+          ]
+        },
+        "scene_target": {
+          "id": "Q643049",
+          "name": "family of Barack Obama",
+          "native_name": "Family of Barack Obama",
+          "kind": "entity",
+          "description": "First Family of the United States from 2009 to 2017",
+          "aliases": [
+            "Obama family",
+            "Family of Barack Obama"
+          ],
+          "commons_category": "Obama family",
+          "source_url": "https://www.wikidata.org/wiki/Q643049",
+          "anchor": "his extended family",
+          "article_url": "https://en.wikipedia.org/wiki/Barack_Obama",
+          "source_sentence": "In a 2006 interview, Obama highlighted the diversity of his extended family : \"It's like a little mini-United Nations,\" he said.",
+          "binding": "explicit paragraph link",
+          "priority": 4,
+          "intent": {
+            "name": "family group",
+            "metadata_pattern": "family|families|household|spouse|children|daughters?|sons?|семь\\w*|сім[’’\\']?\\w*|rodzin\\w*",
+            "visual": "members of a family photographed together",
+            "visual_objects": [
+              "family members posing together in a family group photograph",
+              "parents standing or walking with their children"
+            ],
+            "query_suffix": "",
+            "negative_descriptions": [
+              "A single public official speaking or standing alone without family members.",
+              "A wide view of a large crowd at an inauguration or political rally.",
+              "An empty house or a building without a family group."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "20986110",
+      "title": "File:Barack Obama at his Chicago Home.jpg",
+      "image": "/data/renders/89c38472-7992-466f-8229-240b8ec8c928/diagnostics/family/20986110.source",
+      "attribution": {
+        "creator": "Steve Jurvetson from Menlo Park, USA",
+        "creator_url": "https://commons.wikimedia.org/wiki/File:Barack_Obama_at_his_Chicago_Home.jpg",
+        "source_url": "https://commons.wikimedia.org/w/index.php?curid=20986110",
+        "license": "CC BY 2.0",
+        "license_url": "https://creativecommons.org/licenses/by/2.0",
+        "changes": "resized and composited with narration captions"
+      },
+      "audit": {
+        "passed": false,
+        "positive_score": 0.256002,
+        "negative_score": 0.230114,
+        "margin": 0.025888,
+        "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+        "descriptions": [
+          "A photograph of family of Barack Obama — members of a family photographed together",
+          "A photograph of family of Barack Obama family members posing together in a family group photograph.",
+          "A photograph of family of Barack Obama parents standing or walking with their children.",
+          "A photograph of an unrelated landscape or animal.",
+          "A labeled line diagram, graph, chart or schematic.",
+          "A hand drawn illustration or painting.",
+          "A black and white woodcut engraving or historical line drawing.",
+          "A geographic map or a city locator map.",
+          "A photograph of a printed document, letter, certificate or text page.",
+          "A single public official speaking or standing alone without family members.",
+          "A wide view of a large crowd at an inauguration or political rally.",
+          "An empty house or a building without a family group.",
+          "A close-up portrait photograph of a person with no visible scene object.",
+          "A screenshot of a website, app interface or social media profile.",
+          "A standalone corporate logo or wordmark on a plain background.",
+          "A generic photograph of people at an unrelated meeting.",
+          "A flat digital advertisement or promotional text banner."
+        ],
+        "excluded_competitor_aliases": [],
+        "scores": [
+          0.244085,
+          0.256002,
+          0.244642,
+          0.208411,
+          0.219906,
+          0.173303,
+          0.18605,
+          0.203103,
+          0.22098,
+          0.230114,
+          0.223445,
+          0.189443,
+          0.218367,
+          0.207341,
+          0.201631,
+          0.209487,
+          0.216884
+        ],
+        "family_group_verification": {
+          "passed": false,
+          "positive_score": 0.190616,
+          "negative_score": 0.22734,
+          "margin": -0.036724,
+          "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+          "descriptions": [
+            "A photograph of members of a family photographed together",
+            "A photograph of a family posing together.",
+            "A photograph of parents with their children.",
+            "A photograph of several family members walking together.",
+            "A photograph of an unrelated landscape or animal.",
+            "A labeled line diagram, graph, chart or schematic.",
+            "A hand drawn illustration or painting.",
+            "A black and white woodcut engraving or historical line drawing.",
+            "A geographic map or a city locator map.",
+            "A photograph of a printed document, letter, certificate or text page.",
+            "A photograph of a man standing alone.",
+            "A photograph of a woman standing alone.",
+            "A photograph of only one person.",
+            "A wide view of a large crowd at a rally."
+          ],
+          "excluded_competitor_aliases": [],
+          "scores": [
+            0.190616,
+            0.18235,
+            0.189366,
+            0.184162,
+            0.208997,
+            0.220891,
+            0.1716,
+            0.188301,
+            0.201499,
+            0.222222,
+            0.22734,
+            0.193828,
+            0.224137,
+            0.200735
+          ]
+        },
+        "scene_target": {
+          "id": "Q643049",
+          "name": "family of Barack Obama",
+          "native_name": "Family of Barack Obama",
+          "kind": "entity",
+          "description": "First Family of the United States from 2009 to 2017",
+          "aliases": [
+            "Obama family",
+            "Family of Barack Obama"
+          ],
+          "commons_category": "Obama family",
+          "source_url": "https://www.wikidata.org/wiki/Q643049",
+          "anchor": "his extended family",
+          "article_url": "https://en.wikipedia.org/wiki/Barack_Obama",
+          "source_sentence": "In a 2006 interview, Obama highlighted the diversity of his extended family : \"It's like a little mini-United Nations,\" he said.",
+          "binding": "explicit paragraph link",
+          "priority": 4,
+          "intent": {
+            "name": "family group",
+            "metadata_pattern": "family|families|household|spouse|children|daughters?|sons?|семь\\w*|сім[’’\\']?\\w*|rodzin\\w*",
+            "visual": "members of a family photographed together",
+            "visual_objects": [
+              "family members posing together in a family group photograph",
+              "parents standing or walking with their children"
+            ],
+            "query_suffix": "",
+            "negative_descriptions": [
+              "A single public official speaking or standing alone without family members.",
+              "A wide view of a large crowd at an inauguration or political rally.",
+              "An empty house or a building without a family group."
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

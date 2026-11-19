@@ -1,0 +1,278 @@
+{
+  "implementation_hashes": {
+    "app.py": "61bae571a4cc12614c6401b740e56106c232608d86b285d6fb83e6a07173ae48",
+    "storyboard.py": "40bb7a43f42ef1bd1d17bcb6cbcd7a632a8d75aa0f096d8380cbddefb914728c",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "68bb254e52cf557a47e8e961e9089ced7f49f8d26a8140827d7948d63211e0ec"
+  },
+  "project_ready": false,
+  "mode": "normal worker in staged image",
+  "cases": [
+    {
+      "topic": "Владимир зеленский",
+      "language": "uk",
+      "duration_s": 45,
+      "regression_of": "acfbd2ea-ee67-4115-9ed1-05e6624c7bb2",
+      "id": "d845a00c-9a99-494e-80ea-077f0d0a513a",
+      "status": "failed",
+      "error": "three distinct natural narration texts did not fit; no speed change or voice substitution",
+      "manifest_path": "/data/renders/d845a00c-9a99-494e-80ea-077f0d0a513a/universal-manifest.json",
+      "narration": {},
+      "render": {},
+      "audit": {},
+      "voice_attempts": 3
+    },
+    {
+      "topic": "Barack Obama",
+      "language": "en",
+      "duration_s": 30,
+      "regression_of": "db684e42-ce42-4bad-8742-7098326956a1",
+      "id": "89c38472-7992-466f-8229-240b8ec8c928",
+      "status": "ready",
+      "error": null,
+      "manifest_path": "/data/renders/89c38472-7992-466f-8229-240b8ec8c928/universal-manifest.json",
+      "narration": {
+        "engine": "Google Cloud Text-to-Speech",
+        "voice": "en-US-Chirp3-HD-Algenib",
+        "audio_duration_ms": 29304,
+        "speech_duration_ms": [
+          11150,
+          8630,
+          8070
+        ],
+        "beat_duration_ms": [
+          11600,
+          9100,
+          9300
+        ],
+        "sha256": "03a5edaec6319075ab9eee4dddea98103bb9b54ff78c9329b814e67412ea03b9",
+        "audio_tempo_factor": 1.0,
+        "attempts": [
+          {
+            "attempt": 1,
+            "voice": "en-US-Chirp3-HD-Algenib",
+            "characters": 421,
+            "text_sha256": "2c8d163f6fa190579ed0f55e73bd51631cf28dade910c8b0050472d08d3daade",
+            "audio_sha256": "03a5edaec6319075ab9eee4dddea98103bb9b54ff78c9329b814e67412ea03b9",
+            "duration_ms": 29304,
+            "quota_key": "universal:89c38472-7992-466f-8229-240b8ec8c928:voice:1"
+          }
+        ],
+        "alignment_coverage": 1.0
+      },
+      "render": {
+        "status": "ready",
+        "job_id": "89c38472-7992-466f-8229-240b8ec8c928",
+        "engine": "project FFmpeg renderer",
+        "storage_path": "/data/renders/89c38472-7992-466f-8229-240b8ec8c928/final.mp4",
+        "manifest_path": "/data/renders/89c38472-7992-466f-8229-240b8ec8c928/manifest.json",
+        "sha256": "4152089cd82a5052e7f353eb00f6519e56b0c97891f60fe8ba9a195e727f4b39",
+        "bytes": 2772881,
+        "width": 1080,
+        "height": 1920,
+        "video_codec": "h264",
+        "audio_codec": "aac",
+        "pix_fmt": "yuv420p",
+        "fps_num": 30,
+        "fps_den": 1,
+        "duration_ms": 30000,
+        "muxed_audio_duration_ms": 30000,
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "frame_count": 900,
+        "audio_duration_ms": 29304,
+        "requested_duration_ms": 30000,
+        "target_duration_ms": 30000,
+        "duration_delta_ms": 0,
+        "input_audio_sha256": "03a5edaec6319075ab9eee4dddea98103bb9b54ff78c9329b814e67412ea03b9",
+        "segments": [
+          {
+            "scene_uuid": "63f55155-3473-498a-a699-18f7fdaefd64",
+            "shot_uuid": "ee6b411b-f758-4071-8904-6dabd28dd1b8",
+            "visual_asset_id": "fe8a4cb4-7a54-46e7-910e-51f570c9ffa0",
+            "segment_order": 1,
+            "start_ms": 0,
+            "end_ms": 5800,
+            "duration_ms": 5800,
+            "asset_sha256": "04669a008cfd92769e6bfb8897a2f569ca3f9e855a3f3bb340981224ccbc92b7",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "9dcebc28-7e8a-4099-a25c-710fa9cce019",
+            "shot_uuid": "31536f28-0afd-4935-9898-a10964ce1f09",
+            "visual_asset_id": "719300a2-5007-4e5e-b1c7-a6bdb45cba96",
+            "segment_order": 2,
+            "start_ms": 5800,
+            "end_ms": 11600,
+            "duration_ms": 5800,
+            "asset_sha256": "3bc63b8770645cfc794c7b42b14570d4cb706195ccae4743aef1c99ce676841f",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "1a124fad-94c2-4ab0-8071-3884db22dc74",
+            "shot_uuid": "aa6fe97b-8c87-4b41-a22b-e48c5705ade4",
+            "visual_asset_id": "40e29435-0b60-4e10-9d86-8fd829e52174",
+            "segment_order": 3,
+            "start_ms": 11600,
+            "end_ms": 13400,
+            "duration_ms": 1800,
+            "asset_sha256": "6432f23bdc36ee77346c60a3076260ef391282e01d31f42ff2a044a93de58aaa",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "dfd789f9-6f68-4226-bf12-b98ced92144b",
+            "shot_uuid": "40682899-b833-4caf-bdc0-f480b4e9c64c",
+            "visual_asset_id": "255308a9-5a76-44e2-81f6-ebc71acbe37a",
+            "segment_order": 4,
+            "start_ms": 13400,
+            "end_ms": 15200,
+            "duration_ms": 1800,
+            "asset_sha256": "4bd8c41e62b70b8b6bc19d30b1718592735ac20c02f6a7220d6458ff7d13dcbd",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "a6cec596-36f5-460b-af48-d272210ce92b",
+            "shot_uuid": "52761b3f-b128-46a5-a203-bd6f58869363",
+            "visual_asset_id": "bf766e7a-a48c-472f-95d0-63b9c5455329",
+            "segment_order": 5,
+            "start_ms": 15200,
+            "end_ms": 17100,
+            "duration_ms": 1900,
+            "asset_sha256": "397e8d363225e0b045b45a738bf477c946bbf8bed3b2568cfa26e360c6365e29",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "fd2a92cf-05ac-47c2-a5df-bd4a814476a6",
+            "shot_uuid": "7e5d459c-bf94-4bea-ab90-3d5947eefcf5",
+            "visual_asset_id": "ea089d56-cbab-44b9-af09-21de6246db5b",
+            "segment_order": 6,
+            "start_ms": 17100,
+            "end_ms": 18900,
+            "duration_ms": 1800,
+            "asset_sha256": "aceba10e0ea650c56bcb932a472a68647d0bcd4f3c0d3139b85f174481e11383",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "6bbfe5a5-a363-4743-a8e9-b0900db101d9",
+            "shot_uuid": "f1a699b3-6639-4e56-b958-d0e9650e9a9b",
+            "visual_asset_id": "e2d42f24-9848-407b-ac90-3d488a1e7be6",
+            "segment_order": 7,
+            "start_ms": 18900,
+            "end_ms": 20700,
+            "duration_ms": 1800,
+            "asset_sha256": "fb744e7629f9a0f369e863c1b28bcd28fca6bfeeba282c0b9ee049387eba0945",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "1253b571-6ed4-4404-b6fe-71525026b965",
+            "shot_uuid": "9c6af957-90f2-4d25-8d04-015d4ad945aa",
+            "visual_asset_id": "850589cb-401f-4bdb-a8ae-bb80e20e5093",
+            "segment_order": 8,
+            "start_ms": 20700,
+            "end_ms": 22600,
+            "duration_ms": 1900,
+            "asset_sha256": "a03107fc2370f1508c5b6ceeb307963d3a794f16e98ba6f097d45aba2d6a01a2",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "434cce32-2f09-4fe4-93d7-6194b2043325",
+            "shot_uuid": "8c85d79a-83a4-447a-8a75-65b210722ef1",
+            "visual_asset_id": "b6bc7c5d-183a-4d27-97db-3a4d03cd3eb0",
+            "segment_order": 9,
+            "start_ms": 22600,
+            "end_ms": 24400,
+            "duration_ms": 1800,
+            "asset_sha256": "b7923f1f2ab3c6287f4e68d3f9bffe2bd5303bb9ac50100bc3bd4fad95cb44ea",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "93427473-80a9-4051-846b-b2a9c1b7dcc6",
+            "shot_uuid": "6f5dd148-80da-4f92-95d0-5a77ed250daa",
+            "visual_asset_id": "c22c8d03-3e60-4b9b-b639-5cbf8af4e659",
+            "segment_order": 10,
+            "start_ms": 24400,
+            "end_ms": 26300,
+            "duration_ms": 1900,
+            "asset_sha256": "a4c10908a94984e6d6688dc3cde670f30ad2d0e4702f73a4ea08ea30b7b5b9d5",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "8092e82a-e62b-49b7-9511-40d904c26c30",
+            "shot_uuid": "9b5d737b-c9f6-4901-b45e-8c97816d66f5",
+            "visual_asset_id": "ba6f72bd-382e-4afd-ae40-8ac2445eb3bf",
+            "segment_order": 11,
+            "start_ms": 26300,
+            "end_ms": 28100,
+            "duration_ms": 1800,
+            "asset_sha256": "2b564bf3e7758ed8462e9f758d35b93d8bceebd8292f074a1824780c72145722",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "7f58c664-ea87-4570-bdcb-00a88d019e01",
+            "shot_uuid": "a16d823a-a794-4fbd-98a5-9b2f39be3158",
+            "visual_asset_id": "000256bb-e172-489e-ad8a-2d52b2a50f47",
+            "segment_order": 12,
+            "start_ms": 28100,
+            "end_ms": 30000,
+            "duration_ms": 1900,
+            "asset_sha256": "980973590425c553cfb2ab4cf7a97b30b386831af7069c8d573188abf361e539",
+            "media_type": "photo"
+          }
+        ],
+        "qa_passed": true,
+        "qa_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "audit": {
+        "shots_required": 12,
+        "narration_beats": 3,
+        "unique_assets": 12,
+        "images_per_narration_beat": [
+          2,
+          5,
+          5
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 7,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "all_images_photographically_screened": true,
+        "scene_plan_version": "source-linked-v2",
+        "source_linked_shots": 10,
+        "establishing_shots": 2,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "voice_attempts": 1
+    }
+  ]
+}
