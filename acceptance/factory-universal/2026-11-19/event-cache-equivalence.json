@@ -1,0 +1,37 @@
+{
+  "model_sha256": "0898a3facfdb27f0a041e57649b4989cfd094e4a0040d6ae75ed69917dfc7328",
+  "images": 4,
+  "scores_equivalent": true,
+  "image_cache_limit": 256,
+  "text_batch_cache_limit": 128,
+  "results": [
+    {
+      "image": "/data/factory-universal/qa/event-pixel-diagnostic/80620651.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 7.229663494974375,
+      "cached_seconds": 7.424603447318077,
+      "warm_seconds": 0.8877725005149841
+    },
+    {
+      "image": "/data/factory-universal/qa/event-pixel-diagnostic/80620653.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 6.120910119265318,
+      "cached_seconds": 0.7750272005796432,
+      "warm_seconds": 0.2865819223225117
+    },
+    {
+      "image": "/data/factory-universal/qa/event-pixel-diagnostic/78139518.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 4.870670545846224,
+      "cached_seconds": 0.6644800864160061,
+      "warm_seconds": 0.15074897930026054
+    },
+    {
+      "image": "/data/factory-universal/qa/event-pixel-diagnostic/186272536.source",
+      "maximum_score_error": 0.0,
+      "full_encoder_seconds": 2.7258224487304688,
+      "cached_seconds": 0.2138967029750347,
+      "warm_seconds": 0.07626054435968399
+    }
+  ]
+}
