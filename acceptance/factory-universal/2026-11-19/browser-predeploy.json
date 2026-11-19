@@ -1,0 +1,25 @@
+{
+  "page_errors": [],
+  "authenticated": false,
+  "submission_attempted": false,
+  "passed": true,
+  "default_user_only": true,
+  "ready_examples": 5,
+  "continuous_playback": {
+    "before": {
+      "time": 5.147191,
+      "width": 1080,
+      "error": null
+    },
+    "after_refresh": {
+      "same": true,
+      "time": 6.480516,
+      "width": 1080
+    }
+  },
+  "mobile_dimensions": {
+    "viewport": 390,
+    "content": 390
+  },
+  "diagnostics_accessible": true
+}
