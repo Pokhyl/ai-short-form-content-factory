@@ -625,6 +625,45 @@ def check():
  descent={**leg,'depiction':'File:Example Rocket landing.jpg','alt':'The rocket lands on its launch landing pad'}
  assert storyboard.target_score(leg,{'visual_target':landing_target},app)<0
  assert storyboard.target_score(descent,{'visual_target':landing_target},app)>0
+ # Homonyms are typed: an appointment to office is never a vehicle landing.
+ office={'id':'Q9001','name':'President of Example','description':'head of state of Example'}
+ for sentence in ['Обраний на посаду президента.','Избран на пост президента.','Elected to the office of president.','Wybrany na urząd prezydenta.']:
+  assert storyboard.scene_intent(sentence,office)['name']!='landing'
+ profile={'id':'Q9002','name':'Example Person','native_name':'Приклад','commons_category':'Example Person'}
+ event=storyboard.person_event_target(office,profile,'Обраний на посаду президента.')
+ assert event['intent']['event']=='inauguration' and event['linked_context']['id']==office['id']
+ inauguration={'provider':'commons','depiction':'File:Example Person inauguration.jpg','alt':'Taking the oath of office','identity_verification':{'entity_id':profile['id']}}
+ portrait={**inauguration,'depiction':'File:Example Person portrait.jpg'}
+ other={**inauguration,'identity_verification':{'entity_id':'Q9999'}}
+ assert storyboard.target_score(inauguration,{'visual_target':event},app)>0
+ assert storyboard.target_score(portrait,{'visual_target':event},app)<0
+ assert storyboard.target_score(other,{'visual_target':event},app)<0
+ assert any('inauguration' in query for query in storyboard.query_plan([{'visual_targets':[event]}]))
+ studio={'id':'Q9003','name':'Example Studio','description':'television production company'}
+ performance=storyboard.person_event_target(studio,profile,'An actor and comedian performed with Example Studio.')
+ assert performance['intent']['event']=='performance'
+ assert storyboard.person_event_target(studio,profile,'The company was acquired.')==studio
+ assert storyboard.person_event_target({'description':'automotive manufacturer'},profile,'The founder established a company.')=={'description':'automotive manufacturer'}
+ # Explicit campaign context also works without a linked physical object.
+ direct=storyboard.person_event_target(profile,profile,'Під час передвиборчої кампанії кандидат представив програму.')
+ assert direct['intent']['event']=='campaign'
+ assert storyboard.person_event_target(profile,profile,'Виступив проти наміру міністерства змінити правила.')==profile
+ query_variants=storyboard.query_plan([{'visual_targets':[direct]}])
+ assert any('election' in query for query in query_variants) and any('campaign' in query for query in query_variants)
+ assert any('Example Studio' in query for query in storyboard.query_plan([{'visual_targets':[performance]}]))
+ # Missing photos for one event must not blacklist the person's entire biography.
+ bad_text='Example Person took part in an election campaign.'
+ good_text='Example Person took the oath of office at the inauguration.'
+ event_source=[{'text':bad_text+'\n'+good_text}]
+ bad_slot={'text':bad_text,'source_sentence':bad_text,'source_index':0,'visual_target':event}
+ good_slot={'text':good_text,'source_sentence':good_text,'source_index':0}
+ calls=[]
+ def missing_campaign(rows):
+  calls.append(rows)
+  if len(calls)==1:raise storyboard.SceneUnavailable(bad_slot,'No verified campaign photographs')
+ with patch.object(app,'plan_script',return_value=[good_slot]):
+  assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign)==[good_slot]
+ assert event_source[0]['excluded_visual_sentences']==[bad_text]
  assert app.safe_id('../unrelated') is None
  print('PASS: plural normalization, paragraph extraction, complete abbreviations, five shot layouts, homonym exclusion, owned UUID validation')
 

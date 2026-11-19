@@ -1134,6 +1134,9 @@ def pixel_check(raw,topic,slot,candidate=None):
   negatives=intent.get('negative_descriptions',[])+['A close-up portrait photograph of a person with no visible scene object.','A screenshot of a website, app interface or social media profile.','A standalone corporate logo or wordmark on a plain background.','A generic photograph of people at an unrelated meeting.','A flat digital advertisement or promotional text banner.']
   positives=['A photograph of '+display_name+' '+obj+'.' for obj in intent.get('visual_objects',[])[:3]]
   audit=get_pixel_verifier().check(raw,subject,set(),'',[],topic,extra_negatives=negatives,extra_positives=positives)
+  if intent.get('name')=='person event':
+   human=get_pixel_verifier().check_person(raw,(candidate or {}).get('identity_verification') or {})
+   audit['human_content_verification']=human; audit['passed']=audit['passed'] and human['passed']
   audit['scene_target']=target;return audit
 
  if slot.get('entity_profile',{}).get('kind')=='human':
@@ -1410,7 +1413,7 @@ def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots
    excluded.append(error.source_sentence)
    # If a linked subject has no suitable media, do not repeatedly choose
    # equivalent facts about the same unavailable subject.
-   if error.visual_target:
+   if error.visual_target and error.visual_target.get('intent',{}).get('name')!='person event':
     target=error.visual_target
     names=[target.get(key,'') for key in ('name','native_name','anchor')]
     for paragraph in source['text'].splitlines():
@@ -1575,7 +1578,9 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  if sources[0].get('entity_profile',{}).get('kind')=='human':
   profile=sources[0]['entity_profile']
   portrait_queries={'haswbstatement:P180='+profile['id'],profile['name']+' incategory:"CC-BY-2.0" -intitle:Caricature -intitle:graph','intitle:"'+profile['name']+'" incategory:"CC-BY-4.0" -intitle:Caricature -intitle:graph'}
-  bind_human_images([candidate for candidate in candidates if candidate.get('query') in portrait_queries],profile)
+  from storyboard import query_plan
+  event_queries=set(query_plan([{**slot,'visual_targets':[target for target in slot.get('visual_targets',[]) if target.get('intent',{}).get('name')=='person event']} for slot in slots]))
+  bind_human_images([candidate for candidate in candidates if candidate.get('query') in portrait_queries|event_queries],profile)
  if named_place_subject(sources[0].get('entity_profile',{})) or slots[0].get('process_intent'):candidates=bind_place_images(candidates,sources[0]['entity_profile'])
  if len(candidates)<visual_count:raise ValueError('photo search found '+str(len(candidates))+' distinct candidates; '+str(visual_count)+' are required')
  competitors=[] if slots[0].get('process_intent') else visual_competitors(media_topic,candidates)

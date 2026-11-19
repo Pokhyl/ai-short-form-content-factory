@@ -1,6 +1,10 @@
-# Universal Video Factory — deployed and verified, 2026-11-18
+# Current regression — 2026-11-19
 
-The source-grounded topic/language/duration-to-MP4 factory is deployed at https://studio.hodor.com.pl/ without a password. project_ready=true for the implemented automatic MP4 workflow. Read root AGENTS.md and factory_universal/README.md. No subagents.
+project_ready=false pending correction of failed user job acfbd2ea-ee67-4115-9ed1-05e6624c7bb2 (Владимир зеленский / UK45). Its planning trace misclassified Ukrainian office appointment «посаду» as vehicle landing; public roles, elections and entertainment organizations also lacked appropriate event contexts. Typed person/event verification is staged, not deployed. Preserve the failed ID. Verify the actual normal pipeline and frames before claiming readiness. The 2026-11-18 evidence below is historical and does not establish general readiness.
+
+# Historical release evidence — 2026-11-18
+
+The previous release is deployed at https://studio.hodor.com.pl/ without a password. Its successful examples are historical evidence, not a current general readiness claim. Read root AGENTS.md and factory_universal/README.md. No subagents.
 
 Authoritative evidence: acceptance/factory-universal/2026-11-18/acceptance.json. Five normal pipeline outputs passed exact frame/duration checks, full decoding, selected native voice validation, source/media provenance and assistant review of every shot (72 photographs):
 

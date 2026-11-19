@@ -150,6 +150,7 @@ def scene_intent(text,target):
  for name,pattern,metadata,visual in intents:
   context=target.get('anchor','') if name=='first conference' else text
   if re.search(pattern,context,re.I):
+   if name=='landing' and not re.search(r'rocket|launch.?vehicle|spacecraft|aircraft|airplane|airliner|helicopter',description,re.I):continue
    if name=='medical treatment' and not re.search(r'cancer|carcinoma|tumou?r|patient|medical|illness|disease|\brak\w*|\bрак\w*|nowotw\w*|хвор\w*|болез\w*',text+' '+description,re.I):continue
    result={'name':name,'metadata_pattern':metadata,'visual':visual,'query_suffix':name}
    if name=='landing':
@@ -188,6 +189,20 @@ def scene_intent(text,target):
  if re.search(r'chemical element.*atomic number|element with atomic number',description,re.I):
   return {'name':'physical sample','metadata_pattern':r'\b(?:samples?|specimens?|minerals?|elements?|vials?|sources?|foils?|sheets?|bars?|ribbons?|pellets?|powder|crystals?|ingots?|liquid|ampoules?|ampuls?|ampullen?|próbk\w*|образ\w*|зраз\w*)\b','visual':'a physical chemical sample, mineral specimen or laboratory vial containing '+target['name'],'query_suffix':''}
  return {'name':'linked subject','metadata_pattern':None,'visual':description[:180] or target['name'],'query_suffix':''}
+
+def person_event_target(target,profile,text):
+ # A public office is a role of the named person, not a photographable object.
+ description=target.get('description','')
+ event=None
+ if re.search(r'head of state|head of government|political office|president of|prime minister|mayor of|elected office',description,re.I) or re.search(r'inaugurat\w*|took (?:the )?oath|присяг\w*|інавгурац\w*|инаугурац\w*|zaprzysięż\w*',text,re.I):
+  event=('inauguration',r'inaugurat\w*|swearing.in|taking (?:the )?oath|oath of office|присяг\w*|інавгурац\w*|инаугурац\w*|zaprzysięż\w*','a public official taking the oath of office at an inauguration ceremony')
+ elif re.search(r'presidential election|parliamentary election|political party',description,re.I) or re.search(r'election campaign|campaign(?:ing)?|передвибор\w*|виборч\w*|передвыбор\w*|избирательн\w*|kampani\w* wybor\w*',text,re.I):
+  event=('campaign',r'election|campaign|voting|ballot|debate|congress|вибор\w*|выбор\w*|кампан\w*|дебат\w*|wybor\w*','a politician campaigning, voting or debating during an election')
+ elif (re.search(r'production company|film studio|entertainment company|theatre company',description,re.I) and re.search(r'actor|perform|comed|актор|актёр|артист|шоумен|комік|актр|komik',text,re.I)) or re.search(r'perform\w* on (?:a |the )?stage|на сцен[іеу]|на концерт\w*',text,re.I):
+  event=('performance',r'concert|performance|performing|on stage|comedy|festival|концерт|виступ|вистава|сцен[аіуы]|концерт|występ|wystep|scen[aiy]','an actor or comedian performing on a stage in front of an audience')
+ if not event:return target
+ key,pattern,visual=event
+ return {**target,'id':profile['id'],'name':profile['name'],'native_name':profile.get('native_name',profile['name']),'kind':'human','aliases':profile.get('aliases',[]),'commons_category':profile.get('commons_category',''),'linked_context':{k:target.get(k) for k in ('id','name','description','source_url')},'intent':{'name':'person event','event':key,'metadata_pattern':pattern,'visual':visual,'visual_objects':[visual],'query_suffix':key,'negative_descriptions':['A studio portrait or close-up headshot without any visible public event.']}}
 
 def build(slots,sources,lang,api):
  profile=sources[0].get('entity_profile',{})
@@ -244,6 +259,7 @@ def build(slots,sources,lang,api):
    if not entity or entity['id']==profile.get('id'):continue
    description=entity.get('description','')
    if entity.get('kind')=='human':continue
+   if re.search(r'\b(?:doctoral|academic|professional) degree\b|doctorate',description,re.I):continue
    if re.search(r'^(?:calendar year|year\b|date |month |day |century|decade|Wikimedia|disambiguation|given name|family name|occupation|profession|position|job title|role |term |concept|academic(?: or professional)? degree|professional degree|doctorate)',description,re.I):continue
    row={**entity,'anchor':link['label'],'article_url':sources[slot.get('source_index',0)]['url'],'source_sentence':slot.get('source_sentence',slot['text']),'binding':link.get('binding','explicit paragraph link')}
    # Specific objects/institutions outrank broad countries or disciplines.
@@ -255,6 +271,7 @@ def build(slots,sources,lang,api):
    if row['priority']==0:continue
    if row['binding']=='explicit paragraph link':row['priority']+=1
    row['intent']=scene_intent(slot['text'],row)
+   row=person_event_target(row,profile,slot['text'])
    if row['intent']['name']!='organization context':
     if re.search(r'^(?:city|town|village|municipality|(?:(?:administrative|national|federal) )?capital\b)',description,re.I):row['priority']=1+(row['binding']=='explicit paragraph link')
     elif re.search(r'rocket|spacecraft|launch.?vehicle|computer|camera|telescope|instrument|aircraft|engine|machine|device|mausoleum|bridge|cathedral|monument|building in',description,re.I):row['priority']+=2
@@ -266,6 +283,10 @@ def build(slots,sources,lang,api):
    event_keys={(row['id'],year,'founding') for row in chosen for year in re.findall(r'\b(?:1[5-9]|20)\d{2}\b',slot['text'])}
    if event_keys & seen_events:raise SceneUnavailable(slot,'Duplicate founding fact for the same source-linked subject and year')
    seen_events.update(event_keys)
+  if not chosen:
+   context={**profile,'anchor':'','article_url':sources[slot.get('source_index',0)]['url'],'source_sentence':slot.get('source_sentence',slot['text']),'binding':'explicit action in primary biography source'}
+   event=person_event_target(context,profile,slot['text'])
+   if event.get('intent',{}).get('name')=='person event':chosen=[event]
   slot['visual_targets']=chosen;slot['visual_role']='scene_evidence'
   if profile.get('kind')=='human' and not chosen:
    raise SceneUnavailable(slot,'No source-linked visual subject for a factual scene; a generic portrait is insufficient')
@@ -276,7 +297,7 @@ def query_plan(slots):
  for slot in slots:
   for target in slot.get('visual_targets',[]):
    intent=target.get('intent',{})
-   targets.setdefault((target['id'],intent.get('name','')),target)
+   targets.setdefault((target['id'],intent.get('name',''),intent.get('query_suffix','')),target)
  primary=[];second=[]
  for target in targets.values():
   name=target['name']
@@ -286,6 +307,15 @@ def query_plan(slots):
    primary.append(name+' medal');second.append(name+' trophy')
   elif intent.get('name')=='physical sample':
    primary.append(name+' sample');second.append(name)
+  elif intent.get('name')=='person event':
+   term='election' if intent.get('event')=='campaign' else suffix
+   context=target.get('linked_context',{}).get('name','')
+   if intent.get('event')=='performance' and context and context!=name:
+    primary.append(context+' performance');second.append(context)
+   else:
+    primary.append(name+' '+term);second.append(name+' '+suffix if term!=suffix else 'haswbstatement:P180='+target['id']+' '+term)
+  elif intent.get('name')=='city context':
+   primary.append(name+' skyline');second.append(name+' panorama')
   elif intent.get('name')=='organization context':
    primary.append(name+' '+suffix);second.append(name+' headquarters')
   else:
@@ -307,6 +337,13 @@ def shot_slots(slots,beat_for_shot):
 def target_score(candidate,slot,api):
  target=slot['visual_target']
  if candidate.get('provider')!='commons':return -1
+ intent=target.get('intent',{})
+ if intent.get('name')=='person event':
+  if candidate.get('identity_verification',{}).get('entity_id')!=target['id']:return -1
+  event_text=candidate.get('depiction','')+' '+' '.join(api.semantic_categories(candidate))+' '+candidate.get('alt','')[:500]
+  if not re.search(intent['metadata_pattern'],event_text,re.I):return -1
+  if re.search(r'portrait|headshot|official photograph',candidate.get('depiction',''),re.I):return -1
+  return 40
  categories=api.semantic_categories(candidate)
  identity_fragments=[re.sub(r'^(?:File|Category):','',field,flags=re.I) for field in [candidate.get('depiction','')]+categories]
  identity_text=' '.join(identity_fragments)
