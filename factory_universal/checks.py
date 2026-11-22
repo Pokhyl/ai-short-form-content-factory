@@ -148,6 +148,13 @@ def check():
  with patch.object(app,'http_json',split_title_fixture):
   split_retrieved=app.wikipedia('супер нова','uk')
  assert app.relevant_sources(split_retrieved,'супер нова','uk')[0]['title']=='Наднова'
+ # Specific catalog designations need that object, not generic space photography.
+ astro={'entity_profile':{'kind':'concept','visual_description':'an astronomical explosion of a star'},'text':'У 1987 році спостерігали SN 1987A.','source_driven':True,'visual_title':'Supernova'}
+ sky={'provider':'commons','alt':'Supernova photograph','depiction':'File:Supernova SN1987A.jpg','height':1280,'width':1280}
+ assert app.photo_score(sky,astro,'Supernova')>=0
+ assert app.photo_score({**sky,'depiction':'File:Supernova SN 1006.jpg'},astro,'Supernova')<0
+ assert not app.photographic_metadata({**sky,'depiction':'File:Supernova (CGI).jpg'})
+ assert app.astronomical_identifiers('NGC 224 and SN 1987A')=={'NGC 224','SN 1987A'}
  # A verified spelling repair never outranks an exact requested title.
  exact={'title':'Супер Нова','text':'Independent exact match.'}
  assert app.relevant_sources(split_retrieved+[exact],'супер нова','uk')[0]==exact

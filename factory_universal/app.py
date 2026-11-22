@@ -251,15 +251,21 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
   mandatory=next((row for row in candidates if row[2]==required_sentence),None)
   candidates=candidates[:40]+sorted(candidates[40:],key=lambda row:cost_ms(row[2]))[:20]
   if mandatory is not None and mandatory not in candidates:candidates[-1]=mandatory
+ normalized=[re.sub(r'\W+','',row[2].casefold()) for row in candidates] if natural else []
  actions=[visual_actions(row[2])-{'production'} for row in candidates]
  terms=[set(topic_terms(row[2],lang)) for row in candidates]
  penalties=[]
+ conflicts=[]
  for i in range(len(candidates)):
   pair=[]
+  blocked=set()
   for j in range(len(candidates)):
+   if (process_intent and actions[i]&actions[j]) or (natural and (normalized[i] in normalized[j] or normalized[j] in normalized[i])):
+    blocked.add(j)
    overlap=len(terms[i]&terms[j])/max(1,len(terms[i]|terms[j]))
    pair.append((8*len(actions[i]&actions[j]) if process_intent else 0)+(10*overlap if overlap>.35 else 0))
   penalties.append(pair)
+  conflicts.append(blocked)
  required=next((i for i,row in enumerate(candidates) if row[2]==required_sentence),None)
  if required_sentence and required is None:return []
  if required is not None:
@@ -274,12 +280,7 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
    for used,(total,chosen) in list(states[selected-1].items()):
     target=used+cost
     if target>budget:continue
-    if process_intent:
-     primary=visual_actions(sentence)-{'production'}
-     if primary and any(primary & (visual_actions(candidates[old][2])-{'production'}) for old in chosen):continue
-    if natural:
-     current_text=re.sub(r'\W+','',sentence.casefold())
-     if any(current_text in re.sub(r'\W+','',candidates[old][2].casefold()) or re.sub(r'\W+','',candidates[old][2].casefold()) in current_text for old in chosen):continue
+    if not conflicts[index].isdisjoint(chosen):continue
     candidate=(total+score-sum(penalties[index][old] for old in chosen),chosen+(index,))
     if target not in states[selected] or candidate[0]>states[selected][target][0]:states[selected][target]=candidate
  if not states[count]:return []
@@ -950,6 +951,19 @@ def named_astronomical_subject(profile):
  pattern=r'^(?:(?:the|a|an|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|dwarf|minor|terrestrial|spiral|barred|elliptical|binary|variable|red|blue|yellow|white|giant|natural|main-sequence)\s+){0,5}(?:planet|star|galaxy|moon|satellite|nebula|asteroid|comet)\b'
  return bool(re.search(pattern,description) or re.match(r"^[\w-]+['’]s (?:only )?natural satellite\b",description))
 
+def astronomical_identifiers(text):
+ # Catalog designations are language-independent and can identify the
+ # particular object discussed in an otherwise broad astronomy overview.
+ pattern=r'(?<!\w)(SN)[ -]?(\d{4}[a-z]{1,3})(?!\w)|(?<!\w)(NGC|IC|Messier)[ -]?(\d{1,5})(?!\w)'
+ return {' '.join(part.upper() for part in match.groups() if part) for match in re.finditer(pattern,text,re.I)}
+
+def scene_astronomical_identifiers(slot):
+ profile=slot.get('entity_profile',{})
+ description=profile.get('visual_description','')
+ if named_astronomical_subject(profile) or re.search(r'\b(?:astronomical|stellar|galax(?:y|ies)|star|nebula|supernova|constellation)\b',description,re.I):
+  return astronomical_identifiers(slot.get('text',''))
+ return set()
+
 def named_place_subject(profile):
  return profile.get('kind')=='entity' and bool(re.search(r'\b(?:city|town|village|capital|municipality|country|island|mountain|national park|palace|castle|cathedral|monument)\b',profile.get('visual_description',''),re.I))
 
@@ -992,7 +1006,7 @@ def semantic_categories(candidate):
 
 def photographic_metadata(p):
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
- return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|calendars?|scrapbooks?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
+ return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|calendars?|scrapbooks?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|CGI|artist[’\x27]?s? (?:impression|concept|rendering)|3d render\w*|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
 
 def discover_photos(topic,lang,slots):
  pool=dict(DISCOVERED_PHOTOS);errors=[]
@@ -1039,6 +1053,9 @@ def discover_photos(topic,lang,slots):
  if scene_queries:queries=list(dict.fromkeys(queries[:2]+scene_queries))[:48]
  commons_limit=48 if scene_queries else (12 if slots and slots[0].get('process_intent') else 3)
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
+ catalog_queries=list(dict.fromkeys(name for slot in slots for name in sorted(scene_astronomical_identifiers(slot))))
+ if catalog_queries and not (scene_queries or slots[0].get('process_intent')):
+  queries=list(dict.fromkeys(queries[:1]+catalog_queries+queries[1:]))[:commons_limit]
  for query in queries:
   key=query.casefold().strip()
   if key not in SEARCH_QUERIES['commons'] and len(SEARCH_QUERIES['commons'])>=commons_limit:continue
@@ -1121,6 +1138,10 @@ def institutional_astronomical_photo(candidate):
 
 def photo_score(p,slot,topic):
  if not photographic_metadata(p):return -1
+ identifiers=scene_astronomical_identifiers(slot)
+ if identifiers:
+  observed=astronomical_identifiers(p.get('depiction','')+' '+' '.join(semantic_categories(p)))
+  if not observed&identifiers:return -1
  if slot.get('visual_target'):
   target=slot['visual_target']
   if named_astronomical_subject({'kind':target.get('kind'),'visual_description':target.get('description','')}) and not institutional_astronomical_photo(p):return -1
