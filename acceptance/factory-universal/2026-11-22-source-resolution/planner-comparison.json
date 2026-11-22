@@ -1,0 +1,14 @@
+[
+  {
+    "topic": "супер нова",
+    "old_seconds": 104.11319424211979,
+    "new_seconds": 5.446198705583811,
+    "identical": true
+  },
+  {
+    "topic": "mikro skop",
+    "old_seconds": 0.969994556158781,
+    "new_seconds": 0.5012597069144249,
+    "identical": true
+  }
+]

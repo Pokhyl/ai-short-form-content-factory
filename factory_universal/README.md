@@ -6,7 +6,7 @@ Studio: https://studio.hodor.com.pl/ — no password.
 
 ## Delivery
 
-Studio runs the November 22 repair for dated and undated civic scenes, historical event imagery and source-verified narration planning. The browser-submitted UK45 regression reached ready with 18 distinct photographs, readable captions, exactly 1,350 frames and the selected Ukrainian voice. Its MP4 is byte-identical to the staged output reviewed shot by shot. Evidence: acceptance/factory-universal/2026-11-22/. The November 18 evidence separately covers reviewed manufacturing, biology, astronomy and biography examples across EN/PL/RU/UK and 15/30/45/60 seconds.
+The current release resolves verified split-title spellings and checks historical dates and catalog identifiers when the narration names them. The unauthenticated browser request «супер нова» completed a 45-second Ukrainian MP4. Frame and caption review accepted astronomy and English plant-biology outputs. The Polish microscope result requires stronger visual grounding for named historical facts and remains outside accepted examples. See acceptance/factory-universal/2026-11-22-source-resolution/.
 
 Owner listening approval remains separate and pending. Inputs require an identifiable source and enough suitable licensed photos; ambiguous or unsupported requests ask for context.
 

@@ -1,0 +1,13 @@
+{
+  "job_id": "4dbe70b6-8173-491b-8f37-6fbd29e552cc",
+  "http_video_range": 206,
+  "http_credits": 200,
+  "resolved_entity": "Q3937",
+  "chrome_video": {
+    "duration": 45,
+    "width": 1080,
+    "height": 1920,
+    "time": 1.012352,
+    "error": null
+  }
+}

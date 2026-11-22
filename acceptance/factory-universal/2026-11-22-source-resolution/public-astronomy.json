@@ -1,0 +1,58 @@
+{
+  "stage_job": "582a74f6-dcae-4973-b70e-c74988e8539c",
+  "public_job": "4dbe70b6-8173-491b-8f37-6fbd29e552cc",
+  "same_mp4": true,
+  "same_shots_and_captions": true,
+  "same_video_timing": true,
+  "same_audio": true,
+  "voice": "uk-UA-Chirp3-HD-Enceladus",
+  "audio_ms": 42816,
+  "new_google_sends": 0,
+  "render_sha256": "575564289099fdb886b0159d1ffd4888199fa09b0c1f02875e42b1b70991b79f",
+  "audit": {
+    "shots_required": 18,
+    "narration_beats": 4,
+    "unique_assets": 18,
+    "images_per_narration_beat": [
+      2,
+      10,
+      3,
+      3
+    ],
+    "minimum_two_images_per_beat": true,
+    "average_shot_duration_ms": 2500.0,
+    "source_count": 6,
+    "all_visuals_have_provenance": true,
+    "images_verified_before_voice": true,
+    "all_images_pixel_checked": true,
+    "all_images_photographically_screened": true,
+    "scene_plan_version": "source-linked-v2",
+    "source_linked_shots": 0,
+    "establishing_shots": 2,
+    "full_decode": true,
+    "renderer_gates": {
+      "exact_frames": true,
+      "exact_duration": true,
+      "portrait_dimensions": true,
+      "h264": true,
+      "aac": true,
+      "yuv420p": true,
+      "fps_30": true,
+      "unique_images": true,
+      "continuous_timeline": true,
+      "unchanged_source_audio": true,
+      "natural_audio_fits": true,
+      "attribution_embedded": true
+    }
+  },
+  "implementation_hashes": {
+    "app.py": "3f25d4cffd0a27f11b535efd983719366f3c167cd5f09e6734960e1de7ed8290",
+    "storyboard.py": "798f70589e0aa3ecc1e9203cf3fda085b818dd12438fad64b7e0c91611e39787",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463"
+  },
+  "disk_free_bytes": 5708165120,
+  "owner_listening_approval": false
+}

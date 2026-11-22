@@ -1,0 +1,278 @@
+{
+  "implementation_hashes": {
+    "app.py": "3f25d4cffd0a27f11b535efd983719366f3c167cd5f09e6734960e1de7ed8290",
+    "storyboard.py": "798f70589e0aa3ecc1e9203cf3fda085b818dd12438fad64b7e0c91611e39787",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463"
+  },
+  "project_ready": false,
+  "mode": "normal worker in staged image",
+  "cases": [
+    {
+      "topic": "mikro skop",
+      "language": "pl",
+      "duration_s": 30,
+      "id": "92ac7dc1-a818-4ebb-aec5-db510309bfff",
+      "status": "ready",
+      "error": null,
+      "manifest_path": "/data/renders/92ac7dc1-a818-4ebb-aec5-db510309bfff/universal-manifest.json",
+      "narration": {
+        "engine": "Google Cloud Text-to-Speech",
+        "voice": "pl-PL-Chirp3-HD-Enceladus",
+        "audio_duration_ms": 27936,
+        "speech_duration_ms": [
+          4770,
+          10600,
+          8690
+        ],
+        "beat_duration_ms": [
+          5400,
+          11900,
+          12700
+        ],
+        "sha256": "d75643e403eb5ac0d32617eae57a729ba13722f6ee89062e6bf1f9f93d56f461",
+        "audio_tempo_factor": 1.0,
+        "attempts": [
+          {
+            "attempt": 1,
+            "voice": "pl-PL-Chirp3-HD-Enceladus",
+            "characters": 385,
+            "text_sha256": "6cbe8a87254a3164431cdc8ffb169090713d834ab231cfb7053efe0506160ed4",
+            "audio_sha256": "2b50d4c2cd5a8f43378f5fa1915222240bab75388d462386f14bce104620b018",
+            "duration_ms": 26664,
+            "quota_key": "universal:92ac7dc1-a818-4ebb-aec5-db510309bfff:voice:1",
+            "internal_duration_estimate_ms": 30531
+          },
+          {
+            "attempt": 2,
+            "voice": "pl-PL-Chirp3-HD-Enceladus",
+            "characters": 414,
+            "text_sha256": "96dc204a8910cd609700fd32e4bc1e6613fbaadcfda683fdb075056d68b06e79",
+            "audio_sha256": "d75643e403eb5ac0d32617eae57a729ba13722f6ee89062e6bf1f9f93d56f461",
+            "duration_ms": 27936,
+            "quota_key": "universal:92ac7dc1-a818-4ebb-aec5-db510309bfff:voice:2",
+            "internal_duration_estimate_ms": 32243
+          }
+        ],
+        "alignment_coverage": 0.974432
+      },
+      "render": {
+        "status": "ready",
+        "job_id": "92ac7dc1-a818-4ebb-aec5-db510309bfff",
+        "engine": "project FFmpeg renderer",
+        "storage_path": "/data/renders/92ac7dc1-a818-4ebb-aec5-db510309bfff/final.mp4",
+        "manifest_path": "/data/renders/92ac7dc1-a818-4ebb-aec5-db510309bfff/manifest.json",
+        "sha256": "579fcd3fbe08289286ed2e47ba253bab47bc29de55f69badf3db1739fb024e81",
+        "bytes": 3089183,
+        "width": 1080,
+        "height": 1920,
+        "video_codec": "h264",
+        "audio_codec": "aac",
+        "pix_fmt": "yuv420p",
+        "fps_num": 30,
+        "fps_den": 1,
+        "duration_ms": 30000,
+        "muxed_audio_duration_ms": 30000,
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "frame_count": 900,
+        "audio_duration_ms": 27936,
+        "requested_duration_ms": 30000,
+        "target_duration_ms": 30000,
+        "duration_delta_ms": 0,
+        "input_audio_sha256": "d75643e403eb5ac0d32617eae57a729ba13722f6ee89062e6bf1f9f93d56f461",
+        "segments": [
+          {
+            "scene_uuid": "45178354-89f0-471c-abb3-1eb581861ae8",
+            "shot_uuid": "189a6560-356a-4b91-a8e1-904be25a0ae1",
+            "visual_asset_id": "81abb18d-f92b-4bcc-b81a-2674b5d43c60",
+            "segment_order": 1,
+            "start_ms": 0,
+            "end_ms": 2700,
+            "duration_ms": 2700,
+            "asset_sha256": "0295138de83d1645f02f196207ebad0cacf162ff18f6e8c811ed0fd6aa7ab9da",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "efc0ce38-4db1-4ff2-b5de-c312d29ae5b2",
+            "shot_uuid": "3228359e-edca-4f08-acac-a5aafbec91f6",
+            "visual_asset_id": "2f457084-48b3-479a-a48e-de84951967b1",
+            "segment_order": 2,
+            "start_ms": 2700,
+            "end_ms": 5400,
+            "duration_ms": 2700,
+            "asset_sha256": "96a201b566d66987577f13d5c662f7bce78a870cda39c585f09d772ded303509",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "e1599b2d-91cb-4613-b8c8-9f20cdf7b769",
+            "shot_uuid": "3cd990bb-0949-4bde-becc-6be56993ce6e",
+            "visual_asset_id": "80f85940-5748-421d-a1cf-cd9d981c53e3",
+            "segment_order": 3,
+            "start_ms": 5400,
+            "end_ms": 7800,
+            "duration_ms": 2400,
+            "asset_sha256": "f0e4788763e1b19b29770cdae7fdfddf0def8b7fea334cbf9968d55d707c55cf",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "5928e68f-8488-41a5-b33d-c0612261a4cf",
+            "shot_uuid": "3a11a284-6e12-4431-a283-2bfb75a824c4",
+            "visual_asset_id": "c7ae7ec5-d4e2-4a35-be97-c6dfa719e6ff",
+            "segment_order": 4,
+            "start_ms": 7800,
+            "end_ms": 10200,
+            "duration_ms": 2400,
+            "asset_sha256": "e04f5552d1bdad49542dc0a7c84fe3f89c67e4899c0f4de10cc60ced8ffc81c0",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "75a144ba-7ea1-4f5f-a9af-c3942ab2b363",
+            "shot_uuid": "5c3a707b-5b22-47f3-86b3-5f24ec3a880b",
+            "visual_asset_id": "f79b6f40-8d36-45df-bbf5-270e6e90750a",
+            "segment_order": 5,
+            "start_ms": 10200,
+            "end_ms": 12500,
+            "duration_ms": 2300,
+            "asset_sha256": "27c1cc441fc2934bcd09a85366de4dd5c38622e4a051cb39c735a89cbebab7b9",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "8685b87c-564e-456a-8ad8-eb440e5b621d",
+            "shot_uuid": "9e24e9ed-2566-453c-bbf3-839e3c8cbb87",
+            "visual_asset_id": "8e45d110-a572-467c-8351-8fae7111223e",
+            "segment_order": 6,
+            "start_ms": 12500,
+            "end_ms": 14900,
+            "duration_ms": 2400,
+            "asset_sha256": "bfa4bf66e662ca864d1718930ad8b9e7ea1489fe3794d1eeafd47e5027cc532d",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "98761b03-6960-4c99-b0ce-cb39e2b0ca73",
+            "shot_uuid": "41979266-a2d1-42c4-841d-c4f93a7ce4ff",
+            "visual_asset_id": "5a1708a1-4773-4450-9cb8-a6824002d2ca",
+            "segment_order": 7,
+            "start_ms": 14900,
+            "end_ms": 17300,
+            "duration_ms": 2400,
+            "asset_sha256": "e10b661c1c50ca151fc0b4d98284cde84962fd14a7f1d00ab99509167d1c5106",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "001d7f4e-b15a-486c-a812-90afc7404a71",
+            "shot_uuid": "779a38ec-ac3e-4262-aa27-bd050e051256",
+            "visual_asset_id": "a08465d6-ecc6-438a-a6cf-8e5b0fb28469",
+            "segment_order": 8,
+            "start_ms": 17300,
+            "end_ms": 19800,
+            "duration_ms": 2500,
+            "asset_sha256": "7edbc14a1560c2d9b82a1b8b2b00dd37a4e5d6c58bd3b03b310340c9bbfa8c6e",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "06f8db46-1284-443d-a3ed-2d873e292f53",
+            "shot_uuid": "2d7d07fd-b37e-4ebf-9e9c-80c84cdfd493",
+            "visual_asset_id": "ce5df120-a1a2-4f42-b7c2-d105ac3fc19d",
+            "segment_order": 9,
+            "start_ms": 19800,
+            "end_ms": 22400,
+            "duration_ms": 2600,
+            "asset_sha256": "0205c531c657e53ad4e8ce88d816bfd511771e79693cd14c35d65a17235f332e",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "4b97b643-db9f-4a31-b1b1-4856849150f1",
+            "shot_uuid": "33414c6d-5d54-43f8-a7fc-1195eea80340",
+            "visual_asset_id": "917874a7-bb5c-47f1-bb99-c0ef64ec5605",
+            "segment_order": 10,
+            "start_ms": 22400,
+            "end_ms": 24900,
+            "duration_ms": 2500,
+            "asset_sha256": "6494cfffb8fea35efdd5f4796e589c860eb8ab094ed4f533e55aa883a10f5d8c",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "acfb6c07-2d9f-4417-a171-8dcf39bf805c",
+            "shot_uuid": "c66bbaa2-0efa-4f7d-9490-0184e3a13ab7",
+            "visual_asset_id": "b11056db-1ba7-4b16-84ee-525593ae101b",
+            "segment_order": 11,
+            "start_ms": 24900,
+            "end_ms": 27500,
+            "duration_ms": 2600,
+            "asset_sha256": "95d9c90b2cc6189bbf88f660d48df862502ad27aafbbe20979e39fd688ee9e62",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "76ea3293-43dd-4c2b-a1f0-036bc488fb77",
+            "shot_uuid": "81cdfe46-9fe8-453e-ac28-99d0b8a02203",
+            "visual_asset_id": "a49a322e-a38a-496a-9da9-109b14ffe5e1",
+            "segment_order": 12,
+            "start_ms": 27500,
+            "end_ms": 30000,
+            "duration_ms": 2500,
+            "asset_sha256": "99b9918d3e32ecc8244382aadcb77092fc34c9f53be629d1b6412a8139b436c8",
+            "media_type": "photo"
+          }
+        ],
+        "qa_passed": true,
+        "qa_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "audit": {
+        "shots_required": 12,
+        "narration_beats": 3,
+        "unique_assets": 12,
+        "images_per_narration_beat": [
+          2,
+          5,
+          5
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 2,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "all_images_photographically_screened": true,
+        "scene_plan_version": "source-linked-v2",
+        "source_linked_shots": 0,
+        "establishing_shots": 2,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "voice_attempts": 2
+    }
+  ],
+  "assistant_review": {
+    "accepted": false,
+    "finding": "The rejected seventeenth-century scene was removed. The next sourced script still matched some named historical facts to broader instrument photos. This job stays out of curated examples."
+  }
+}
