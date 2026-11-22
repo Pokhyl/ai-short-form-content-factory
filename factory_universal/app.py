@@ -1001,7 +1001,9 @@ def artifact_photo_centuries(photo):
  description=photo.get('alt','').removeprefix(title).strip()
  # Prefer the file title when it dates the object. The first caption sentence
  # is the archival description rather than an arbitrary year elsewhere.
- context=title if century_labels(title) or re.search(r'\b[12]\d{3}\b',title) else ' '.join(sentences(description)[:1])
+ first=next(iter(sentences(description)),'')
+ dated_description=re.search(r'\b(?:made|built|manufactured|crafted|produced|constructed|dates?) (?:in|to|from) (.{1,32})',first,re.I)
+ context=title if century_labels(title) or re.search(r'\b[12]\d{3}\b',title) else dated_description.group(1) if dated_description else ''
  return century_labels(context)|{(int(year)-1)//100+1 for year in re.findall(r'\b[12]\d{3}\b',context)}
 
 def named_place_subject(profile):

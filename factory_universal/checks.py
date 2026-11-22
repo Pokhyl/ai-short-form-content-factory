@@ -183,6 +183,8 @@ def check():
  historical={**sky,'depiction':'File:Microscope from 1670.jpg','alt':'Microscope from 1670'}
  assert app.photo_score(historical,instrument_history,'Microscope')>=0
  assert app.photo_score({**historical,'depiction':'File:Microscope 1870.jpg'},instrument_history,'Microscope')<0
+ assert app.photo_score({**historical,'depiction':'File:Modern Microscope.jpg','alt':'The microscope, invented in the 17th century, has evolved considerably today.'},instrument_history,'Microscope')<0
+
  assert app.century_labels('XVII столітті and 18th century')=={17,18}
 
 
