@@ -1428,10 +1428,13 @@ def completed_narration_plan(sources,topic,lang,duration):
    if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:valid=False;break
    slots.append({'text':beat['caption'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
   if not valid or not slots or len(slots)>duration//5:continue
+  # A previously measured, source-verified script remains useful after its
+  # audio cache expires. The normal worker still rechecks images before
+  # synthesizing and validates the new recording against the natural window.
   spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
   digest=hashlib.sha256(spoken.encode()).hexdigest()
-  cache=ROOT/'cache'/(hashlib.sha256(('selected-voice-audio-v1|'+SELECTED_VOICES[lang][1]+'|'+digest).encode()).hexdigest()+'.json')
-  if cache.is_file() and time.time()-cache.stat().st_mtime<86400:return slots
+  if any(item.get('text_sha256')==digest and item.get('audio_sha256')==voice.get('sha256') for item in voice.get('attempts',[])):
+   return slots
  # A later alignment/render failure does not invalidate a completed native recording.
  # Reuse it only in a fresh job, with exact source spans and all downstream gates rerun.
  with connect() as db:rows=db.execute("SELECT v.job_id,v.receipt FROM voice_attempts v JOIN jobs j ON j.id=v.job_id WHERE j.topic=? AND j.language=? AND j.duration_s=? AND j.status='failed' AND COALESCE(j.review_status,'pending')!='changes_requested' AND v.voice=? AND v.state='measured' ORDER BY j.created_at DESC,v.attempt DESC LIMIT 12",(topic,lang,duration,SELECTED_VOICES[lang][1])).fetchall()
