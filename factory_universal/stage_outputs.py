@@ -50,6 +50,10 @@ def main():
   with app.connect() as db:row['voice_attempts']=db.execute('SELECT COUNT(*) FROM voice_attempts WHERE job_id=?',(jid,)).fetchone()[0]
   receipt.write_text(json.dumps(result,ensure_ascii=False,indent=2))
   print(json.dumps({key:row.get(key) for key in ('id','topic','status','error','voice_attempts')},ensure_ascii=False),flush=True)
+  if row.get('error') and 'HTTP 429' in row['error']:
+   result['stop_reason']='Media/source rate limit; remaining cases were not submitted'
+   receipt.write_text(json.dumps(result,ensure_ascii=False,indent=2))
+   break
  print('NORMAL_PIPELINE_RESULTS',len(rows),'READY',sum(row['status']=='ready' for row in rows),flush=True)
 
 
