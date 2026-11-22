@@ -359,7 +359,13 @@ def target_score(candidate,slot,api):
  intent=target.get('intent',{})
  if intent.get('name')=='person event':
   if candidate.get('identity_verification',{}).get('entity_id')!=target['id']:return -1
-  event_text=candidate.get('depiction','')+' '+' '.join(api.semantic_categories(candidate))+' '+candidate.get('alt','')[:500]
+  title=candidate.get('depiction','')
+  event_text=title+' '+' '.join(api.semantic_categories(candidate))+' '+candidate.get('alt','')[:500]
+  if intent.get('event')=='campaign':
+   # The image title can identify a specific unrelated occasion even when a
+   # broad category or caption mentions a past election.
+   unrelated=r'\bsummit\b|state visit|diplomatic visit|bilateral meeting|сам[іи]т|szczyt'
+   if re.search(unrelated,title,re.I) and not re.search(intent['metadata_pattern'],title,re.I):return -1
   required_years=set(intent.get('event_years',[]))
   if required_years:
    # A dated filename takes precedence over incidental years elsewhere in the metadata.

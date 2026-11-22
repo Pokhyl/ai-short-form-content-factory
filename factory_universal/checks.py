@@ -652,6 +652,8 @@ def check():
  assert storyboard.target_score(photo,{'visual_target':dated},app)>0
  summit={**photo,'depiction':'File:Candidate at 2023 summit.jpg','alt':'Previously won the 2019 election'}
  assert storyboard.target_score(summit,{'visual_target':dated},app)<0
+ assert storyboard.target_score(summit,{'visual_target':direct},app)<0
+ assert storyboard.target_score(photo,{'visual_target':direct},app)>0
  assert all('2019' in query for query in storyboard.query_plan([{'visual_targets':[dated]}]))
 
  assert storyboard.person_event_target(profile,profile,'Виступив проти наміру міністерства змінити правила.')==profile
