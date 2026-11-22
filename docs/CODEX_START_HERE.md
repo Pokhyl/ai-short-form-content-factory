@@ -1,8 +1,12 @@
-# Current delivery check — 2026-11-22
+# Studio delivery — 2026-11-22
 
-The November 19 v13 run produced a valid UK45 MP4 and replaced later commemorations with original historical footage. Review of all 18 shots found a 2023 summit photo in the 2019 election scene. Keep that recording out of the curated examples. Dated civic scenes now filter and search by the source year. A filename date takes precedence over incidental years elsewhere in image metadata. An undated campaign scene exposed the same summit leak. The updated gate rejects a confirmed unrelated occasion in the filename, while both voting photo controls still pass. The first November 22 run timed out during visual replanning after one 36.144 s recording. The next run starts with the earlier source-verified script and documented in-window duration, independently of the audio cache. Fresh image, synthesis, alignment and render checks still apply. Runtime and alignment checks passed. The normal pipeline receipt is under `/data/factory-universal/qa/source-measured-20261122.json`. Studio remains on the previous release pending frame review.
+Studio at https://studio.hodor.com.pl/ runs the implementation from a5375ce. Runtime hashes match the image that produced stage output 4293d960-bd9a-41d3-a13d-c54f37539b96. Runtime and alignment checks passed. Assistant inspected all 18 photographs and complete captions in the UK45 output. The earlier EN30 biography passed all 12 shots on November 19. Owner listening remains pending.
 
-# Current regression — 2026-11-19
+Chrome submitted the original UK45 request from the unauthenticated form. Public job b076f01f-80a2-4680-b6db-ed5b99ede7a7 reached ready and produced a byte-identical MP4 to the reviewed stage, with exactly 1,350 frames and 42.624 s of the selected native voice. This public run reused the cached audio and made zero new synthesis sends. Studio playback, video ranges, credits and manifest routes were verified. Evidence: acceptance/factory-universal/2026-11-22/.
+
+These checks establish delivery of the diagnosed repairs. New topics still depend on an identifiable source and a viable set of correctly licensed photographs.
+
+# Repair history — 2026-11-19 to 2026-11-22
 
 project_ready=false pending correction of failed user job acfbd2ea-ee67-4115-9ed1-05e6624c7bb2 (Владимир зеленский / UK45). Its planning trace misclassified Ukrainian office appointment «посаду» as vehicle landing; public roles, elections and entertainment organizations also lacked appropriate event contexts. Typed person/event verification is staged, not deployed. Preserve the failed ID. Verify the actual normal pipeline and frames before claiming readiness. The 2026-11-18 evidence below is historical and does not establish general readiness.
 

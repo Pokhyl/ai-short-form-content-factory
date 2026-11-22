@@ -6,7 +6,7 @@ Studio: https://studio.hodor.com.pl/ — no password.
 
 ## Delivery
 
-A user political-biography request failed image planning on 2026-11-19; general readiness is withdrawn pending correction and actual output review. The previous automatic MP4 release is deployed. Evidence: acceptance/factory-universal/2026-11-18/acceptance.json. Five normal outputs cover manufacturing, biology, astronomy and biographies across EN/PL/RU/UK and 15/30/45/60 seconds. All 72 photographs and complete captions were inspected. A further public API create-to-ready run produced a byte-identical copy of a reviewed output. Page/health, video ranges and credits downloads pass.
+Studio runs the November 22 repair for dated and undated civic scenes, historical event imagery and source-verified narration planning. The browser-submitted UK45 regression reached ready with 18 distinct photographs, readable captions, exactly 1,350 frames and the selected Ukrainian voice. Its MP4 is byte-identical to the staged output reviewed shot by shot. Evidence: acceptance/factory-universal/2026-11-22/. The November 18 evidence separately covers reviewed manufacturing, biology, astronomy and biography examples across EN/PL/RU/UK and 15/30/45/60 seconds.
 
 Owner listening approval remains separate and pending. Inputs require an identifiable source and enough suitable licensed photos; ambiguous or unsupported requests ask for context.
 

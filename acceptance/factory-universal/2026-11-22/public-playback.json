@@ -1,0 +1,13 @@
+{
+  "job_id": "b076f01f-80a2-4680-b6db-ed5b99ede7a7",
+  "http_video_range": 206,
+  "http_credits": 200,
+  "http_manifest": 200,
+  "chrome_video": {
+    "duration": 45,
+    "width": 1080,
+    "height": 1920,
+    "time": 1.019464,
+    "error": null
+  }
+}

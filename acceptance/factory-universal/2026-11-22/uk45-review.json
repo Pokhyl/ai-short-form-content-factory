@@ -1,0 +1,313 @@
+{
+  "project_ready": false,
+  "cases": [
+    {
+      "id": "4293d960-bd9a-41d3-a13d-c54f37539b96",
+      "topic": "Владимир зеленский",
+      "language": "uk",
+      "duration_s": 45
+    }
+  ],
+  "results": [
+    {
+      "id": "4293d960-bd9a-41d3-a13d-c54f37539b96",
+      "topic": "Владимир зеленский",
+      "language": "uk",
+      "duration_s": 45,
+      "status": "ready",
+      "stage": "review",
+      "error": null,
+      "script": "Володи́мир Олекса́ндрович Зеле́нський — український державний і політичний діяч, 6-й Президент України. З виборів 2019 року розпочав політичну діяльність, за підтримки політичної партії Слуга народу. Після перемоги в другому турі виборів обраний на посаду Президента України. Багато в чому висока підтримка його кандидатури зумовлювалася невдоволеністю виборців поточним станом справ у державі — розчаруванням у фігурах політичної еліти, що були при владі майже 30 років, а також переважним переконанням виборців, що після 5 років, що минули з часу Революції гідності, країна рухається у, на їхню думку, неправильному напрямку.",
+      "audit": {
+        "shots_required": 18,
+        "narration_beats": 4,
+        "unique_assets": 18,
+        "images_per_narration_beat": [
+          2,
+          2,
+          3,
+          11
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 2,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "all_images_photographically_screened": true,
+        "scene_plan_version": "source-linked-v2",
+        "source_linked_shots": 16,
+        "establishing_shots": 2,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "render": {
+        "status": "ready",
+        "job_id": "4293d960-bd9a-41d3-a13d-c54f37539b96",
+        "engine": "project FFmpeg renderer",
+        "storage_path": "/data/renders/4293d960-bd9a-41d3-a13d-c54f37539b96/final.mp4",
+        "manifest_path": "/data/renders/4293d960-bd9a-41d3-a13d-c54f37539b96/manifest.json",
+        "sha256": "45e9a6ee4af5d2ddc8a887887e403d29d9df29f679fe9a0a825e881646bd246a",
+        "bytes": 5261356,
+        "width": 1080,
+        "height": 1920,
+        "video_codec": "h264",
+        "audio_codec": "aac",
+        "pix_fmt": "yuv420p",
+        "fps_num": 30,
+        "fps_den": 1,
+        "duration_ms": 45000,
+        "muxed_audio_duration_ms": 45000,
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "frame_count": 1350,
+        "audio_duration_ms": 42624,
+        "requested_duration_ms": 45000,
+        "target_duration_ms": 45000,
+        "duration_delta_ms": 0,
+        "input_audio_sha256": "c7b9cb3886c5846a9a4c70d70d80c723312ded2ba8088638ae5909c34719c638",
+        "segments": [
+          {
+            "scene_uuid": "dafd24ab-32c4-4892-9e93-d11276d6466e",
+            "shot_uuid": "eba1cc53-53bb-4c5d-a9a7-ba360b418a03",
+            "visual_asset_id": "f746ec7f-c1aa-4d6b-9230-0b71ccfeaf7b",
+            "segment_order": 1,
+            "start_ms": 0,
+            "end_ms": 3500,
+            "duration_ms": 3500,
+            "asset_sha256": "d48cde8c21d5b00ab37e7f17f3bd22821941ebfc17c87d502bdb5e80c822702f",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "0eb21fc1-40aa-4b56-ad0b-300f3358f72a",
+            "shot_uuid": "c8ce2462-be0b-4325-a687-ddb47e2b3a08",
+            "visual_asset_id": "c65b1d7d-28c7-4de2-b411-9806bc8bd3db",
+            "segment_order": 2,
+            "start_ms": 3500,
+            "end_ms": 7000,
+            "duration_ms": 3500,
+            "asset_sha256": "6fd2f82869fea6fb0953b5c7e3bd9cdfb5d5c9a2b5939a11b0e19f977b864776",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "8a4b25e8-abaa-44dd-8a9a-b7836d1ebd86",
+            "shot_uuid": "96756139-904f-4b0e-9658-cdb40e0e98de",
+            "visual_asset_id": "aa71fe6e-1281-4a1c-a501-1878b0dafe62",
+            "segment_order": 3,
+            "start_ms": 7000,
+            "end_ms": 10400,
+            "duration_ms": 3400,
+            "asset_sha256": "07225f6d3d86b59ebd185d59a2226b6be0a47e222f760eaf9c514b79415d92ff",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "62f09634-2e6d-4949-a416-a998636fd6d9",
+            "shot_uuid": "d037113f-112c-4be3-8d1d-f09d830f9db2",
+            "visual_asset_id": "0ce2e10a-afce-4183-93fd-76560ff0af07",
+            "segment_order": 4,
+            "start_ms": 10400,
+            "end_ms": 13800,
+            "duration_ms": 3400,
+            "asset_sha256": "d6b87d3cdd4a1835527dde244fe8e36c0e7bdf5351857bd7da3aa8c357f0f2ae",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "ca41dae4-2967-4119-93d0-1e7393ee9f0b",
+            "shot_uuid": "5a88c3fe-eeea-4374-9ace-85528d0d0e1f",
+            "visual_asset_id": "2396165c-1173-4263-bb63-d27bed96f11f",
+            "segment_order": 5,
+            "start_ms": 13800,
+            "end_ms": 15500,
+            "duration_ms": 1700,
+            "asset_sha256": "edf79322c7b482af92e4c587a0f3b50581f77a4d0cbcbeaa255248786f56ece1",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "2526eace-fc6d-4cbd-bccf-a3b8f1a51ee0",
+            "shot_uuid": "b12dfc98-188e-4286-9663-a5f3b93500d2",
+            "visual_asset_id": "a7424dc3-7a28-4508-af22-1a020dc8f81b",
+            "segment_order": 6,
+            "start_ms": 15500,
+            "end_ms": 17100,
+            "duration_ms": 1600,
+            "asset_sha256": "01443f521d9f3769b4f500172b26c955b25a7eb0e68ab86a7ff05fc8ba5a2598",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "5f2f1195-0e9b-4393-bef1-65f9ba045642",
+            "shot_uuid": "bfa2ac57-1021-4a2f-9dcd-aa177f0e35ef",
+            "visual_asset_id": "2c566733-4dc0-4542-bdd6-40ec6eb66ff2",
+            "segment_order": 7,
+            "start_ms": 17100,
+            "end_ms": 18800,
+            "duration_ms": 1700,
+            "asset_sha256": "63412380da530a3a2a0d6de0a4f3df9996e728766dfd2b20f1567be2f41b2f08",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "43cf892c-8964-4bf7-aed0-4cd2657fae9e",
+            "shot_uuid": "3b116090-f97b-4f56-a906-7f563b83e6ae",
+            "visual_asset_id": "184998fd-d283-4a5b-a504-18500d12458b",
+            "segment_order": 8,
+            "start_ms": 18800,
+            "end_ms": 21200,
+            "duration_ms": 2400,
+            "asset_sha256": "88d58601cfda62a5021c8e61976a13abf297d76b17fc2b81ce23b2693232312f",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "c5ea303e-5f3f-4126-be98-7287f37464b7",
+            "shot_uuid": "e00246be-77ae-4d50-b163-3a6968b4ed05",
+            "visual_asset_id": "ce9ca0cc-2a31-42d6-a66d-5b6f075c3649",
+            "segment_order": 9,
+            "start_ms": 21200,
+            "end_ms": 23600,
+            "duration_ms": 2400,
+            "asset_sha256": "c992c106fa4ecedf7e55ba07a22edd2b91c6ba2cc2622bb757440a7c39facdc1",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "f864e880-0be0-45e5-aebb-c62fb391c053",
+            "shot_uuid": "fc94a6d9-1904-47c2-b996-c76ba91ed874",
+            "visual_asset_id": "037be8b5-f2af-44cf-bbf1-955a192076ef",
+            "segment_order": 10,
+            "start_ms": 23600,
+            "end_ms": 25900,
+            "duration_ms": 2300,
+            "asset_sha256": "e0228116ad42b6b87b0dc857cd006b2f17a7033284257d99148c2969e6adb9d5",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "5bb4cc4e-ab3d-4b7a-ac92-b723de2379dc",
+            "shot_uuid": "e3ba3983-bdf6-4c57-a457-0d169a7fc189",
+            "visual_asset_id": "6aeb7147-b18c-4ddb-8ed7-8aa3d250f539",
+            "segment_order": 11,
+            "start_ms": 25900,
+            "end_ms": 28300,
+            "duration_ms": 2400,
+            "asset_sha256": "7db22f759d9ad47e225e89cceb46d52ed36e96f895d6b9acb1d7479b44859002",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "3f2a2a32-cd02-4419-9433-fa2e7dc25f4b",
+            "shot_uuid": "44090b74-030b-4076-a3eb-ce48d7d06170",
+            "visual_asset_id": "a56b7e79-2ca8-49ab-8fce-13b202c7e683",
+            "segment_order": 12,
+            "start_ms": 28300,
+            "end_ms": 30700,
+            "duration_ms": 2400,
+            "asset_sha256": "1cda50c094d94d3c8150e0663d6ee2cba0ee8d99f048ff12f4ee6c80c62d3aa8",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "f4ca656c-a80f-4996-9832-bb1abec3f7c8",
+            "shot_uuid": "34c081dd-8b7d-4277-abd7-3412f3c8b151",
+            "visual_asset_id": "00060a1d-c70e-4321-bf2c-93cc6a9abb07",
+            "segment_order": 13,
+            "start_ms": 30700,
+            "end_ms": 33100,
+            "duration_ms": 2400,
+            "asset_sha256": "83a3f8d011a67c6c219445fa00f8e7fc34e051221b218f7ddaba2819ef93f179",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "6c40704e-5e1d-4955-a2bb-ebfda91943e7",
+            "shot_uuid": "3c54661b-ad99-432c-b60c-0059ee11ebfe",
+            "visual_asset_id": "b38b0b4a-24ee-4889-96cb-36e47ad70ba8",
+            "segment_order": 14,
+            "start_ms": 33100,
+            "end_ms": 35500,
+            "duration_ms": 2400,
+            "asset_sha256": "181c17725bd8660e1743c73cca32e84509207c84f2593d8e0fe47c2a3004f2c7",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "fbbdd47f-b757-488f-8dfa-6a5c99acb1ed",
+            "shot_uuid": "ce8b9550-6c57-4c49-a0d7-6bebce436278",
+            "visual_asset_id": "1441aa64-ffa5-42ba-9572-c5ea542d79de",
+            "segment_order": 15,
+            "start_ms": 35500,
+            "end_ms": 37900,
+            "duration_ms": 2400,
+            "asset_sha256": "3e221e54281d61b8cb3567dbd7f80c7ef57c2b1f72ec4c21b23e3c47d7331def",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "fced5ae0-bea5-469d-a307-19b1178b968b",
+            "shot_uuid": "219e0989-81f0-4e5b-a99d-36634c3cfa72",
+            "visual_asset_id": "0c15cf84-5a8c-41c1-a409-ae29b3168b82",
+            "segment_order": 16,
+            "start_ms": 37900,
+            "end_ms": 40200,
+            "duration_ms": 2300,
+            "asset_sha256": "1c9f62d3a123ae0eb3e60804f5f6aa0774afd99573566d754978056dbc1d9526",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "871d2d5a-02e0-4e91-8b4f-46e4c3eade5c",
+            "shot_uuid": "42fbcad8-6622-4783-aa2f-db2567f5ca93",
+            "visual_asset_id": "ab2b914d-9e2b-4e7a-bda1-082ebad1239b",
+            "segment_order": 17,
+            "start_ms": 40200,
+            "end_ms": 42600,
+            "duration_ms": 2400,
+            "asset_sha256": "10fa1df5d93e9569b9c848bc46ded4f5770ecadc62566b4c45f55c371c62e94a",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "ffac64b2-4eb1-4ba0-a14c-3fe0aaace102",
+            "shot_uuid": "014490a1-7369-4a7f-b77d-3f8c27614087",
+            "visual_asset_id": "bfd45a89-d66f-4683-9505-0d4ab72bbf80",
+            "segment_order": 18,
+            "start_ms": 42600,
+            "end_ms": 45000,
+            "duration_ms": 2400,
+            "asset_sha256": "5c0ceffa81c9c98921205904c0baf82dff06a09e906c8691c4c4d164f3980e51",
+            "media_type": "photo"
+          }
+        ],
+        "qa_passed": true,
+        "qa_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "frame_count": 1350,
+      "exact_frames": true,
+      "exact_duration": true,
+      "llm_calls": 0,
+      "speech_voice": "uk-UA-Chirp3-HD-Enceladus",
+      "hash_matches": true
+    }
+  ],
+  "technical_pass": true,
+  "assistant_visual_review": {
+    "passed": true,
+    "reviewed_shots": 18,
+    "scope": "Portraits, two 2019 voting photographs, 2019 inauguration, original 2014 historical photos and complete captions.",
+    "owner_listening_approval": false
+  }
+}
