@@ -148,6 +148,37 @@ def check():
  with patch.object(app,'http_json',split_title_fixture):
   split_retrieved=app.wikipedia('супер нова','uk')
  assert app.relevant_sources(split_retrieved,'супер нова','uk')[0]['title']=='Наднова'
+ # Match a verified product in a multilingual brief without substituting an unrelated source.
+ assert app.topic_identifier('7-Zip для архівів')=='7-Zip'
+ assert app.topic_identifier('1987 спостереження')==''
+ assert app.topic_identifier('Made with 7-Zip')==''
+ def identifier_fixture(url,**kwargs):
+  parsed=app.urllib.parse.urlsplit(url)
+  query=app.urllib.parse.parse_qs(parsed.query)
+  if query.get('action')==['parse']:
+   assert query['page']==['Архіватор H44']
+   return {'parse':{'title':'Архіватор H44','text':{'*':'<p>'+('Архіватор H44 пакує файли. '*20)+'</p>'}}}
+  assert query['titles']==['H44'] and query['redirects']==['1']
+  page={'title':'H44','missing':True} if parsed.hostname.startswith('uk.') else {'title':'H44 Archiver','pageid':1}
+  return {'query':{'pages':[page]}}
+ brief='H44 для резервних копій'
+ with patch.object(app,'http_json',identifier_fixture),patch.object(app,'cache_fetch',lambda key,fetch:fetch()):
+  assert app.wikipedia(brief,'uk')==[]
+  reference=app.identifier_article('H44','uk')
+  assert reference['language']=='en' and reference['native_title']==''
+  writes=[]
+  with patch.object(app,'get_job',return_value={'topic':brief,'language':'uk','duration_s':45}),patch.object(app,'update',side_effect=lambda jid,**values:writes.append(values)),patch.object(app,'google_connection_status',return_value={'ready':True}):
+   app.run_job('fixture')
+  assert writes[-1]['status']=='needs_input'
+  assert app.json.loads(writes[-1]['manifest'])['input_reason']=='source_language_unavailable'
+ native_reference={**reference,'native_title':'Архіватор H44'}
+ with patch.object(app,'http_json',identifier_fixture),patch.object(app,'identifier_article',return_value=native_reference):
+  native=app.wikipedia(brief,'uk')
+ assert native[0]['scoped_identifier']=='H44'
+ with patch.object(app,'source_slots',side_effect=lambda sources,topic,count,lang,**kwargs:[{'text':'Архіватор пакує файли.'}]*count):
+  assert app.plan_script(native,brief,'uk',45)==[]
+ with patch.object(app,'source_slots',side_effect=lambda sources,topic,count,lang,**kwargs:[{'text':'Архіватор створює архіви резервних копій.'}]*count):
+  assert app.plan_script(native,brief,'uk',45)
  # A cut before an example list must preserve the following predicate.
  complete='This is a method by which several workers, such as librarians, preserve old records.'
  assert app.complete_clause_variants(complete,'en')==[complete]
