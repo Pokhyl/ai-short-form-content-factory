@@ -22,7 +22,7 @@ POOL=ThreadPoolExecutor(max_workers=1)
 
 def implementation_hashes():
  base=Path(__file__).parent
- return {name:hashlib.sha256((base/name).read_bytes()).hexdigest() for name in ('app.py','storyboard.py','visual_verifier.py','photo_duplicates.py','renderer.py','alignment_core.py')}
+ return {name:hashlib.sha256((base/name).read_bytes()).hexdigest() for name in ('app.py','storyboard.py','visual_verifier.py','photo_duplicates.py','renderer.py','alignment_core.py','source_translation.py')}
 
 def now(): return datetime.now(timezone.utc).isoformat()
 def connect():
@@ -666,8 +666,9 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
     if definition and process_intent and not re.search(r'histor|ancient|истори|істор|dziej|handmade|manual|traditional|ручн|ręczn|традиц',topic,re.I) and re.search(r'ancient|centur|etymolog|invention|invented|traditional|originally|истори|древн|стародав|wynalezion|starożytn',paragraph,re.I):continue
     paragraph_start=src['text'].find(paragraph)
     units=sentences(paragraph)
-    if definition and len(units)>1 and (process_signal(paragraph,lang)>=2 or any(context_dependent_sentence(unit) for unit in units[1:])):units=units+[paragraph]
-    for original_sentence,sentence in [(original,variant) for original in units for variant in complete_clause_variants(original,lang)]:
+    if definition and not src.get('translation_model') and len(units)>1 and (process_signal(paragraph,lang)>=2 or any(context_dependent_sentence(unit) for unit in units[1:])):units=units+[paragraph]
+    variants=[(paragraph,paragraph)] if src.get('translation_model') else [(original,variant) for original in units for variant in complete_clause_variants(original,lang)]
+    for original_sentence,sentence in variants:
      connected_block=original_sentence==paragraph and len(sentences(paragraph))>1
      source_position=paragraph_start+paragraph.find(original_sentence)
      if foreign_name_catalogue(sentence,lang,topic):continue
@@ -677,7 +678,8 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
      if vernacular and re.search(r'[A-Za-z]{3,}',sentence):continue
      first=re.search(r'[^\W_]',sentence,re.UNICODE)
-     if not first or not (first.group().isupper() or first.group().isdigit()):continue
+     named_lead=bool(src.get('translation_model') and src.get('scoped_identifier') and re.match(re.escape(src['scoped_identifier'])+r'\b',sentence,re.I))
+     if not first or not (first.group().isupper() or first.group().isdigit() or named_lead):continue
      context_text=sentences(sentence)[0] if connected_block else sentence
      if context_dependent_sentence(context_text):continue
      if not sentence.endswith(('.', '!', '?')) or not (5 if process_intent else 8)<=len(words)<=(90 if definition and process_intent else 60 if definition else 24 if process_intent else 36):continue
@@ -742,10 +744,33 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
 def source_cache_key(topic,lang):
  version='v13' if topic_identifier(topic) else 'v12'
  return 'wikipedia-'+version+'|'+lang+'|'+topic
+
+def translated_identifier_source(topic,lang):
+ from source_translation import MODEL,article_view,configured_for
+ identifier=topic_identifier(topic)
+ if not identifier or not configured_for(lang):return []
+ reference=identifier_article(identifier,lang)
+ if reference.get('language')!='en' or reference.get('native_title'):return []
+ from storyboard import ensure_source
+ title=reference['title']
+ source={'title':title,'visual_title':title,'url':reference['url'],'scoped_identifier':identifier}
+ ensure_source([source],'en',sys.modules[__name__])
+ profile=entity_profile([source],'en')
+ # Translated personal names need the native biography link resolver.
+ if not profile.get('id') or profile.get('kind')=='human':return []
+ source['entity_profile']=profile
+ key='article-translation-v1|'+MODEL+'|'+lang+'|'+source['revision_url']
+ def translate():
+  view=article_view(source,lang,sentences)
+  return {name:view[name] for name in ('text','source_language','translation_model','translated_spans')} if view else {}
+ view=cache_fetch(key,translate)
+ return [source|view] if view else []
+
 def load_sources(topic,lang):
  current=ROOT/'cache'/(hashlib.sha256(source_cache_key(topic,lang).encode()).hexdigest()+'.json')
  try:
   sources=attach_native_aliases(relevant_sources(cache_fetch(source_cache_key(topic,lang),lambda:wikipedia(topic,lang)),topic,lang),lang)
+  if not sources:return translated_identifier_source(topic,lang)
   if sources:
    from storyboard import ensure_source
    ensure_source(sources,lang,sys.modules[__name__])
@@ -899,6 +924,7 @@ def output_credits(sources,visuals):
  for source in sources:
   structured=source.get('source_type')=='structured definition'
   text.append({'title':source['title'],'source_url':source.get('revision_url') or source['url'],'authors':'Wikidata contributors' if structured else 'Wikipedia contributors','license':'CC0' if structured else 'CC BY-SA 4.0','license_url':'https://creativecommons.org/publicdomain/zero/1.0/' if structured else OUTPUT_LICENSE['url'],'changes':'Selected source excerpts; parentheses and punctuation may be normalized; narrated and captioned.'})
+  if source.get('translation_model'):text[-1]['changes']='Selected source sentences, machine-translated, narrated and captioned.'
  media=[{'title':row.get('depiction') or row['alt'],'author':row['creator'],'source_url':row['source_url'],'license':row['license'],'license_url':row.get('license_url'),'changes':row.get('changes','Resized and captioned.')} for row in visuals]
  return {'adaptation_license':OUTPUT_LICENSE,'text':text,'media':media,'scope':'Factory contributions to this video adaptation; original component licence notices remain applicable.'}
 
@@ -1570,6 +1596,7 @@ def source_verified_native_plan(evidence,receipt,sources,topic,lang,duration):
  return slots
 
 def completed_narration_plan(sources,topic,lang,duration):
+ if any(source.get('translation_model') for source in sources):return None
  entity=sources[0].get('entity_profile',{}).get('id') if sources else None
  if not entity:return None
  try:
@@ -1892,6 +1919,16 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  visual_rows=[item['row'] for item in selected]
  return {'selected':selected,'visual_rows':visual_rows,'media_topic':media_topic,'beat_count':beat_count,'beat_for_shot':beat_for_shot,'shots_per_beat':shots_per_beat,'first_shot':first_shot,'script':' '.join(slot['text'] for slot in slots)}
 
+def beat_source(slot,source):
+ span=slot['source_sentence'];start=slot['source_position']
+ if not source.get('translation_model'):
+  return {'source_span':span,'source_start':start}
+ evidence=source['translated_spans'].get(str(start))
+ if not evidence or evidence['translated_span']!=span:
+  raise ValueError('Translated narration lost its original source sentence')
+ return {**evidence,'source_language':source['source_language'],
+         'source_revision_url':source['revision_url'],'translation_model':source['translation_model']}
+
 def run_job(jid):
  j=get_job(jid);topic=j['topic'];lang=j['language'];duration=j['duration_s'];visual_count=duration*2//5;beat_count=duration//5
  try:
@@ -1921,11 +1958,12 @@ def run_job(jid):
    update(jid,status='needs_input',stage='research',progress=0,message='More context is needed for this topic; check the matched source below',error=None,manifest=json.dumps(partial,ensure_ascii=False));return
   visual_state={}
   def before_send(planned_slots):
+   provenance=[beat_source(slot,sources[slot['source_index']]) for slot in planned_slots]
    shutil.rmtree(VISUAL/jid,ignore_errors=True)
    prepared=prepare_visuals(jid,sources,topic,lang,duration,planned_slots)
    visual_state.clear();visual_state.update(prepared)
    spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in planned_slots))['input']['text'];text_hash=hashlib.sha256(spoken.encode()).hexdigest()
-   evidence={'phase':'images verified before synthesis','job_id':jid,'voice':SELECTED_VOICES[lang][1],'spoken_text':spoken,'text_sha256':text_hash,'beats':[{key:slot.get(key) for key in ('text','source_index','source_sentence','source_position','visual_targets')} for slot in planned_slots],'visuals':prepared['visual_rows'],'sources':[{'title':source['title'],'url':source['url'],'revision_url':source.get('revision_url')} for source in sources],'implementation_hashes':implementation_hashes()}
+   evidence={'phase':'images verified before synthesis','job_id':jid,'voice':SELECTED_VOICES[lang][1],'spoken_text':spoken,'text_sha256':text_hash,'beats':[{**{key:slot.get(key) for key in ('text','source_index','source_sentence','source_position','visual_targets')},**source_proof} for slot,source_proof in zip(planned_slots,provenance,strict=True)],'visuals':prepared['visual_rows'],'sources':[{'title':source['title'],'url':source['url'],'revision_url':source.get('revision_url')} for source in sources],'implementation_hashes':implementation_hashes()}
    evidence_dir=RENDER/jid;evidence_dir.mkdir(parents=True,exist_ok=True)
    evidence_path=evidence_dir/('verified-input-'+text_hash[:16]+'.json')
    temporary=evidence_path.with_suffix('.tmp');temporary.write_text(json.dumps(evidence,ensure_ascii=False,indent=2));temporary.replace(evidence_path)
@@ -1947,7 +1985,7 @@ def run_job(jid):
   full=subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(video),'-f','null','-'],capture_output=True,text=True,timeout=150)
   if full.returncode:raise ValueError('full MP4 decode failed')
   if not rendered.get('qa_passed'):raise ValueError('media-worker render QA failed')
-  manifest={'version':'universal-1','output_license':OUTPUT_LICENSE,'attribution':attribution,'implementation_hashes':implementation_hashes(),'job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'script_mode':'source-grounded overview','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note'),'source_type':x.get('source_type','article'),'revision_id':x.get('revision_id'),'revision_url':x.get('revision_url'),'label':x.get('label'),'description':x.get('description')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],'source_span':s['source_sentence'],'source_start':s['source_position'],'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification'],'visual_target':x.get('visual_target'),'visual_role':x.get('visual_role')} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'images_verified_before_voice':True,'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'all_images_photographically_screened':all(x['pixel_verification'].get('photographic_screen',{}).get('passed') for x in visual_rows),'scene_plan_version':'source-linked-v2','source_linked_shots':sum(bool(x.get('visual_target')) for x in visual_rows),'establishing_shots':sum(x.get('visual_role')=='establishing' for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
+  manifest={'version':'universal-1','output_license':OUTPUT_LICENSE,'attribution':attribution,'implementation_hashes':implementation_hashes(),'job_id':jid,'topic':topic,'language':lang,'requested_duration_s':duration,'visual_search_topic':media_topic,'created_at':now(),'script':' '.join(x['text'] for x in slots),'resolved_topic':slots[0].get('resolved_topic',topic),'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'script_mode':'source-grounded overview','llm_calls':0,'sources':[{'title':x['title'],'url':x['url'],'retrieval_note':x.get('retrieval_note'),'source_type':x.get('source_type','article'),'revision_id':x.get('revision_id'),'revision_url':x.get('revision_url'),'label':x.get('label'),'description':x.get('description')} for x in sources],'beats':[{'order':i+1,'caption':s['text'],**beat_source(s,sources[s['source_index']]),'source_title':sources[s['source_index']]['title'],'source_url':sources[s['source_index']]['url']} for i,s in enumerate(slots)],'visuals':[{'order':i+1,'provider':x['provider'],'provider_id':x['id'],'alt':x['alt'],'creator':x['creator'],'creator_url':x['creator_url'],'provider_page':x['source_url'],'license':x.get('license'),'license_url':x.get('license_url'),'changes':x.get('changes'),'search_query':x.get('query',topic),'caption':x['caption'],'source_article':x['article_url'],'source_title':x['article_title'],'asset_sha256':x['asset_sha256'],'pixel_verification':x['pixel_verification'],'visual_target':x.get('visual_target'),'visual_role':x.get('visual_role')} for i,x in enumerate(visual_rows)],'narration':voice_audit,'render':rendered,'audit':{'shots_required':visual_count,'narration_beats':beat_count,'unique_assets':len({x['asset_sha256'] for x in visual_rows}),'images_per_narration_beat':shots_per_beat,'minimum_two_images_per_beat':all(count>=2 for count in shots_per_beat),'average_shot_duration_ms':target/visual_count,'source_count':len(sources),'all_visuals_have_provenance':all(x['source_url'] and x['article_url'] for x in visual_rows),'images_verified_before_voice':True,'all_images_pixel_checked':all(x['pixel_verification']['passed'] for x in visual_rows),'all_images_photographically_screened':all(x['pixel_verification'].get('photographic_screen',{}).get('passed') for x in visual_rows),'scene_plan_version':'source-linked-v2','source_linked_shots':sum(bool(x.get('visual_target')) for x in visual_rows),'establishing_shots':sum(x.get('visual_role')=='establishing' for x in visual_rows),'full_decode':True,'renderer_gates':rendered.get('qa_gates',{})},'retention_days':30}
   (RENDER/jid/'universal-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
   shutil.rmtree(VISUAL/jid,ignore_errors=True);shutil.rmtree(VOICE/jid,ignore_errors=True);shutil.rmtree(ROOT/'tmp'/jid,ignore_errors=True)
   update(jid,status='ready',stage='review',progress=100,message='MP4 ready for review; listening approval pending',manifest=json.dumps(manifest,ensure_ascii=False),error=None)

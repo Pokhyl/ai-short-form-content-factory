@@ -19,3 +19,11 @@ References
 - [Argos model index](https://github.com/argosopentech/argospm-index)
 - [Helsinki-NLP original multilingual model](https://huggingface.co/Helsinki-NLP/opus-mt-tc-big-en-zle)
 - [Pinned CTranslate2 int8 conversion](https://huggingface.co/NothingSoftware/opus-mt-tc-big-en-zle-ct2-int8/tree/60e35c8d683875ff7ead041d6b9c2ef69237e4e7)
+
+## Staged research integration
+
+The staged worker now creates a Ukrainian or Russian narration view from a verified English article if an identifier resolves and the requested edition is missing. It keeps the exact English span, its offset and the revision URL beside the translated sentence. It rejects sentences with changed numbers or alphanumeric identifiers. All downstream narration, media and rendering gates remain in effect.
+
+The initial runtime research probe processed the complete bounded set for four cases. It retained 33 translated sentences for each n8n case, 31 for Papermaking and 35 for Lunar eclipse. For «n8n автоматизация для фирм» (UK45), the scope check produced no complete plan. The shorter Russian topic «n8n автоматизация» produced a four-beat plan. That plan includes corporate valuation context and is not an accepted storyboard. No jobs, speech requests or renders were created.
+
+The final candidate passed checks.py and alignment_checks.py in the runtime. Real-model samples from Papermaking (UK), Lunar eclipse (RU) and N8n (UK) bound the translated text back to the exact English sentence and revision. The stronger number-order and punctuation-in-identifier checks passed. Studio has not enabled this translation path.

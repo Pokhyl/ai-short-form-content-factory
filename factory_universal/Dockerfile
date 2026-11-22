@@ -6,6 +6,7 @@ RUN pip install --no-cache-dir opencv-python-headless==4.13.0.92
 WORKDIR /app
 COPY app.py /app/app.py
 COPY storyboard.py /app/storyboard.py
+COPY source_translation.py /app/source_translation.py
 COPY photo_duplicates.py /app/photo_duplicates.py
 COPY renderer.py /app/renderer.py
 COPY alignment_core.py /app/alignment_core.py

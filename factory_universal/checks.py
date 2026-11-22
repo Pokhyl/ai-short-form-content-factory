@@ -260,6 +260,29 @@ def check():
  assert source['revision_id']==12345
  assert source['revision_url']=='https://en.wikipedia.org/w/index.php?oldid=12345'
  assert any(link['title']=='Pulp (paper)' for link in source['visual_links'])
+ from source_translation import article_view,usable_translation
+ english={'title':'H44','url':'https://en.wikipedia.org/wiki/H44','revision_id':12345,
+          'revision_url':'https://en.wikipedia.org/w/index.php?oldid=12345',
+          'text':'H44 packs files into one compressed archive.\nH44 checks 20 files every day.'}
+ def translated_fixture(sentences,language):
+  assert language=='uk' and sentences==english['text'].splitlines()
+  return ['H44 пакує файли в один стиснений архів.','H44 перевіряє 30 файлів щодня.']
+ translated=article_view(english,'uk',app.sentences,translate=translated_fixture)
+ assert translated['text']=='H44 пакує файли в один стиснений архів.'
+ slot={'source_position':0,'source_sentence':translated['text']}
+ proof=app.beat_source(slot,translated)
+ assert proof['source_span']==english['text'].splitlines()[0]
+ assert proof['source_revision_url']==english['revision_url']
+ assert proof['translated_span']==translated['text']
+ assert not usable_translation('About 12, then about 35.','Спочатку близько 35, потім близько 12.')
+ assert not usable_translation('The system uses H-264 codec.','Система використовує кодек H.264.')
+ assert 'machine-translated' in app.output_credits([translated],[])['text'][0]['changes']
+ try:
+  app.beat_source({**slot,'source_sentence':'Інше речення.'},translated)
+ except ValueError:
+  pass
+ else:
+  raise AssertionError('Mismatched translation lost its exact origin')
  # A rejected meaning stays rejected; another meaning of the same topic remains selectable.
  with TemporaryDirectory() as temp:
   with patch.object(app,'DB',Path(temp)/'decisions.sqlite3'):
