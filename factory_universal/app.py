@@ -292,6 +292,25 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
  else:chosen=max(options,key=lambda item:(item[1][0],item[0]))[1][1]
  return [{'text':candidates[index][2],'language':lang,'source_index':candidates[index][1],'source_sentence':candidates[index][2],'score':candidates[index][0]} for index in chosen]
 
+def source_title_key(text):
+ return unicodedata.normalize('NFKC',text).casefold().strip()
+
+def joined_topic_title(topic):
+ # Candidate for accidental word splitting, never a loose search synonym.
+ parts=source_title_key(topic).split()
+ if len(parts)!=2 or not all(part.isalpha() and len(part)>=2 for part in parts):return ''
+ joined=''.join(parts)
+ return joined if len(joined)>=7 else ''
+
+def exact_source_title(topic,title):
+ requested=source_title_key(topic)
+ actual=source_title_key(title)
+ if requested==actual:return 2
+ return int(bool(joined_topic_title(topic)) and joined_topic_title(topic)==actual)
+
+def source_match_rank(topic,source):
+ return max(exact_source_title(topic,source.get('title','')),int(bool(joined_topic_title(topic)) and joined_topic_title(topic)==source.get('joined_title_alias')))
+
 def wikipedia(topic,lang):
   queries=[(topic,6)]
   made=bool(re.search(r'\b(make|made|manufactur\w*|produc\w*|fabricat\w*|build|create|zrobi\w*|produk\w*|wytwarz\w*|изготов\w*|производ\w*|виробля\w*|виготов\w*)\b',topic,re.I))
@@ -307,14 +326,25 @@ def wikipedia(topic,lang):
    for hit in (data.get('query') or {}).get('search') or []:
     title=str(hit.get('title') or '').strip();key=str(hit.get('pageid') or title)
     if title and key not in seen:seen.add(key);hits.append(title)
+  # A qualified homonym can dominate the search for a broken compound.
+  # Try the joined spelling while retaining priority for any valid exact article.
+  joined=joined_topic_title(topic)
+  joined_target=''
+  if joined and not made and not any(exact_source_title(topic,title)==1 for title in hits):
+   q=urllib.parse.urlencode({'action':'query','titles':joined,'redirects':1,'prop':'pageprops','format':'json','formatversion':'2'})
+   pages=(http_json('https://'+lang+'.wikipedia.org/w/api.php?'+q,timeout=22).get('query') or {}).get('pages',[])
+   page=pages[0] if len(pages)==1 else {}
+   if page.get('pageid') and 'disambiguation' not in page.get('pageprops',{}):
+    joined_target=page['title']
+    if joined_target not in hits:hits.append(joined_target)
   core_set=set(core);method_terms=set(topic_terms({'en':'manufacturing making production process materials equipment','pl':'produkcja wytwarzanie proces materiały urządzenia','ru':'производство изготовление процесс материалы оборудование','uk':'виробництво виготовлення процес матеріали обладнання'}[lang],lang))
   def core_matches(title):
    words=set(topic_terms(title,lang))
    return {term for term in core_set if term in words or (made and lang=='en' and len(term)>=4 and any(word.startswith(term) and word[len(term):] in {'making','manufacturing','production','blowing'} for word in words))}
-  hits=[title for title in hits if core_matches(title) or (made and bool(set(topic_terms(title,lang))&method_terms))]
+  hits=[title for title in hits if title==joined_target or exact_source_title(topic,title) or core_matches(title) or (made and bool(set(topic_terms(title,lang))&method_terms))]
   if made and len(core_set)>1:
    hits=[title for title in hits if core_set<=set(topic_terms(title,lang)) or bool((set(topic_terms(title,lang))-core_set)&method_terms) or (bool(set(topic_terms(title,lang))&core_set) and bool(re.search(r'manufactur|produc|fabricat|process|produk|wytwarz|proces|производ|изготов|процесс|виробниц|виготов|процес',title,re.I)))]
-  hits=sorted(hits,key=lambda title:(-len(core_matches(title)),-int(made and bool(re.search(r'making|manufactur|production|produk|wytwarz|производ|изготов|виробниц|виготов',title,re.I))),hits.index(title)))
+  hits=sorted(hits,key=lambda title:(-max(int(title==joined_target),exact_source_title(topic,title)),-len(core_matches(title)),-int(made and bool(re.search(r'making|manufactur|production|produk|wytwarz|производ|изготов|виробниц|виготов',title,re.I))),hits.index(title)))
   if not hits:
    hints=['uk','ru','en','pl'] if re.search('[іїєґІЇЄҐ]',topic) else ['ru','uk','en','pl'] if re.search('[А-Яа-яЁё]',topic) else ['pl','en','ru','uk'] if re.search('[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]',topic) else ['en','pl','ru','uk']
    for query_lang in hints:
@@ -338,7 +368,7 @@ def wikipedia(topic,lang):
     parsed=http_json('https://'+lang+'.wikipedia.org/w/api.php?'+q,timeout=22).get('parse') or {}
     actual=str(parsed.get('title') or title).strip();html=((parsed.get('text') or {}).get('*') or '')
     parser=WikiHTML(lang,paragraphs_only=True);parser.feed(html);text=parser.text()
-    if actual and len(text)>220 and 'may refer to:' not in text[:600].lower():out.append({'title':actual,'url':'https://'+lang+'.wikipedia.org/wiki/'+urllib.parse.quote(actual.replace(' ','_')),'text':text,'visual_title':actual if lang=='en' else next((str(link.get('*') or link.get('title') or '') for link in parsed.get('langlinks',[]) if link.get('lang')=='en'),'')})
+    if actual and len(text)>220 and 'may refer to:' not in text[:600].lower():out.append({'title':actual,'joined_title_alias':joined if title==joined_target else '','url':'https://'+lang+'.wikipedia.org/wiki/'+urllib.parse.quote(actual.replace(' ','_')),'text':text,'visual_title':actual if lang=='en' else next((str(link.get('*') or link.get('title') or '') for link in parsed.get('langlinks',[]) if link.get('lang')=='en'),'')})
    except Exception as e:
     if getattr(e,'code',None)==429:raise
     continue
@@ -659,7 +689,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    stage_order={'heat':0,'shape':1,'cool':2,'inspect':3}
    return sorted(chosen,key=lambda x:(max((stage_order[action] for action in visual_actions(x['text']) if action in stage_order),default=0),x['source_index'],x['source_position']))
   return sorted(chosen,key=lambda x:(0 if definition and x['source_index']==definition_index else 1,x['source_index'],x['source_position']))
-def source_cache_key(topic,lang):return 'wikipedia-v10|'+lang+'|'+topic
+def source_cache_key(topic,lang):return 'wikipedia-v12|'+lang+'|'+topic
 def load_sources(topic,lang):
  current=ROOT/'cache'/(hashlib.sha256(source_cache_key(topic,lang).encode()).hexdigest()+'.json')
  try:
@@ -673,7 +703,7 @@ def load_sources(topic,lang):
    label=profile.get('native_name','').strip()
    original=grounding_terms(topic,lang)
    known=' '.join([sources[0]['title']]+list(profile.get('labels',{}).values()))
-   grounded=bool(original&grounding_terms(known,lang)) or (lang=='en' and any(len(term)>=4 and any(word.startswith(term) and word[len(term):] in {'making','manufacturing','production','blowing'} for word in tokens(known)) for term in original))
+   grounded=bool(source_match_rank(topic,sources[0]) or original&grounding_terms(known,lang)) or (lang=='en' and any(len(term)>=4 and any(word.startswith(term) and word[len(term):] in {'making','manufacturing','production','blowing'} for word in tokens(known)) for term in original))
    if description and label and grounded and 15<=len(description)<=220:
     definition=label[:1].upper()+label[1:]+' — '+description+'.'
     sources.append({'title':label+' — Wikidata','url':profile['source_url'],'text':definition,
@@ -694,7 +724,7 @@ def relevant_sources(sources,topic,lang):
   title=topic_terms(source['title'],lang)
   matched=sum(any(stem(a)==stem(b) or (process_intent and lang=='en' and len(a)>=4 and b.startswith(a) and b[len(a):] in {'making','manufacturing','production','blowing'}) for b in title) for a in terms)
   method=bool(process_intent and re.search(r'making|manufactur|production|produk|wytwarz|производ|изготов|виробниц|виготов',source['title'],re.I))
-  return (matched,int(method),-len(title))
+  return (source_match_rank(topic,source),matched,int(method),-len(title))
  ranked=sorted(sources,key=title_rank,reverse=True)
  if not ranked:return []
  anchor=ranked[0]
@@ -718,6 +748,8 @@ def order_process_slots(slots):
  return sorted(slots,key=lambda slot:(min((stages[action] for action in scene_actions(slot['text'])),default=99),slot.get('source_index',0),slot.get('source_position',0)))
 
 def plan_script(sources,topic,lang,duration,max_beats=None):
+ if sources and source_match_rank(topic,sources[0])==1:
+  topic=sources[0]['title']
  process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  structured=source_overview_mode(sources)
  limit=int(min(max_beats or 100,max(2,duration//5)))

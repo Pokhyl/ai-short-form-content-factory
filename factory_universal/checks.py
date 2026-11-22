@@ -134,6 +134,26 @@ def check():
  assert retrieved[0]['title']=='Papermaking'
  # Ranker must retain the process anchor selected by discovery.
  assert app.relevant_sources(retrieved,'How paper is made','en')[0]['title']=='Papermaking'
+ # A verified joined-title redirect outranks a qualified homonym.
+ def split_title_fixture(url,**kwargs):
+  query=app.urllib.parse.parse_qs(app.urllib.parse.urlsplit(url).query)
+  if query.get('list')==['search']:
+   return {'query':{'search':[{'title':'Супер Нова (футбольний клуб)','pageid':2}]}}
+  if query.get('titles')==['супернова']:
+   assert query['redirects']==['1']
+   return {'query':{'pages':[{'pageid':1,'title':'Наднова'}]}}
+  if query.get('action')==['parse']:
+   return {'parse':{'title':query['page'][0],'text':{'*':'<p>'+('Підтверджений факт з енциклопедичного джерела. '*10)+'</p>'}}}
+  raise AssertionError(query)
+ with patch.object(app,'http_json',split_title_fixture):
+  split_retrieved=app.wikipedia('супер нова','uk')
+ assert app.relevant_sources(split_retrieved,'супер нова','uk')[0]['title']=='Наднова'
+ # A verified spelling repair never outranks an exact requested title.
+ exact={'title':'Супер Нова','text':'Independent exact match.'}
+ assert app.relevant_sources(split_retrieved+[exact],'супер нова','uk')[0]==exact
+ assert app.exact_source_title('light house','Lighthouse')==1
+ assert app.exact_source_title('light house','Lighthouse (album)')==0
+
 
 
  # A role-related document cannot pass the separate photographic human-content gate.

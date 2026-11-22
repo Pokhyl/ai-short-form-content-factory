@@ -1,3 +1,9 @@
+# Current source-resolution regression — 2026-11-22
+
+User job 1af1715f-9956-4404-beb7-8d919ab2ec46 for «супер нова» failed because Studio resolved its subject to SK Super Nova, a football club. A search hit spelled «Супер Нова» was a short disambiguation page and did not supply a usable article. The previous release's final-frame check does not cover new topic resolution.
+
+The staged resolver treats a split two-word term as an additional exact-title lookup, follows confirmed Wikipedia redirects, excludes disambiguation targets, and preserves priority for a valid exact title. The verified spelling participates in grounding and source ranking. Live metadata checks resolve the astronomy term to «Наднова» (Q3937), with 135 media candidates before image evaluation. Separate inputs cover microscopy and photosynthesis. Runtime and alignment checks passed. See the staged receipt `/data/factory-universal/qa/novel-20261122-source-v3.json` for full pipeline results. Studio remains on the previous release pending review.
+
 # Studio delivery — 2026-11-22
 
 Studio at https://studio.hodor.com.pl/ runs the implementation from a5375ce. Runtime hashes match the image that produced stage output 4293d960-bd9a-41d3-a13d-c54f37539b96. Runtime and alignment checks passed. Assistant inspected all 18 photographs and complete captions in the UK45 output. The earlier EN30 biography passed all 12 shots on November 19. Owner listening remains pending.
