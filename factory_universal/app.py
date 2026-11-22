@@ -664,7 +664,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    paragraph=next((p for p in sources[0]['text'].splitlines() if p.strip()),'')
    original=sentences(paragraph)[0] if paragraph else ''
    lead=re.sub(r'\s+([,.;:!?])',r'\1',omit_parenthetical_asides(original)).strip()
-   if lead.endswith(('.', '!', '?')) and 5<=len(lead.split())<=90 and len(lead)<=650 and not re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',lead):
+   if lead.endswith(('.', '!', '?')) and 5<=len(lead.split())<=90 and len(lead)<=650 and not re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',lead) and not incidental_place_event(lead,topic,sources[0].get('entity_profile',{})):
     definition_index=0;definition=lead
     source_positions[(0,lead)]=sources[0]['text'].find(original);source_spans[(0,lead)]=original
   if definition:
@@ -687,6 +687,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      source_position=paragraph_start+paragraph.find(original_sentence)
      if foreign_name_catalogue(sentence,lang,topic):continue
      if any(excluded in original_sentence for excluded in src.get('excluded_visual_sentences',[])):continue
+     if incidental_place_event(sentence,topic,sources[0].get('entity_profile',{})):continue
      if human:sentence=retain_named_model_asides(sentence)
      if human or definition:sentence=omit_parenthetical_asides(sentence)
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
@@ -1095,6 +1096,20 @@ def artifact_photo_centuries(photo):
 def named_place_subject(profile):
  return profile.get('kind')=='entity' and bool(re.search(r'\b(?:city|town|village|capital|municipality|country|island|mountain|national park|palace|castle|cathedral|monument)\b',profile.get('visual_description',''),re.I))
 
+def incidental_place_event(text,topic,profile):
+ # Present-day views can illustrate geography, but cannot establish a
+ # dated trial, battle or other incidental historical event.
+ event=r'\b(?:trials?|battles?|sieges?|uprisings?|treaties|treaty|wars?|occup\w*|founded|first mention\w*|proces\w*|bitw\w*|oblęż\w*|powstan\w*|traktat\w*|wojn\w*|założ\w*|wzmiank\w*|суд\w*|битв\w*|осад\w*|облог\w*|восстан\w*|повстан\w*|войн\w*|війн\w*|окупац\w*|оккупац\w*|заснув\w*|основан\w*|згадк\w*|упоминани\w*)\b'
+ date=r'\b(?:[1-9]\d{2}|[12]\d{3})\b'
+ early_year=r'\b(?:in|since|until|w|we|od|do|в|у|з|с|до)\s+1[0-8]\d{2}\b(?![.,]\d|\s*(?:km|mi|км|м²))'
+ historical_brief=r'\b(?:histor\w*|ancient|medieval|dziej\w*|średniowiecz\w*|истори\w*|істор\w*|древн\w*|середньовіч\w*)\b'
+ historic_assembly=r'\b(?:general sejm|sejm\w* waln\w*|вальн\w* сейм\w*)\b'
+ return bool(named_place_subject(profile) and not re.search('|'.join((event,date,historical_brief,historic_assembly)),topic,re.I)
+             and not century_labels(topic)
+             and (re.search(early_year,text,re.I) or re.search(historic_assembly,text,re.I)
+                  or any(century<20 for century in century_labels(text))
+                  or (re.search(date,text) and re.search(event,text,re.I))))
+
 def place_detail_query(slot,profile):
  words=re.findall(r"[^\W\d_]+",slot['text'],re.UNICODE)
  names={name.casefold() for name in list(profile.get('labels',{}).values())+[profile.get('name','')]}
@@ -1135,7 +1150,7 @@ def semantic_categories(candidate):
 def photographic_metadata(p):
  title=p.get('depiction','')
  description=p.get('alt','').removeprefix(title).strip()
- if re.search(r'\b(?:annotated|montage|multi.panel|before.and.after)\b',title,re.I):return False
+ if re.search(r'\b(?:annotated|montage|multi.panel|before(?:[ _-]+and)?[ _-]+after)\b',title,re.I):return False
  nonphoto=r'\b(?:shows?|showing|displays?|plots?|depicts?) (?:a |an |the )?(?:spectrum|(?:light.?curve|spectral|intensity) plot|graph)\b|\b(?:inset(?: [a-z-]+){0,2} images?|series of [a-z]+ panels)\b|\[(?:top|bottom) (?:left|right)\]'
  if re.search(nonphoto,description[:950],re.I):return False
  if re.search(r'\b(?:image (?:has been |is )annotated|annotated to highlight|comparison star|(?:two|three|four) images (?:of .*? )?(?:are (?:shown|seen)|show)|multiple panels)\b',description[:750],re.I):return False
@@ -1346,7 +1361,11 @@ def photo_score(p,slot,topic):
   if qualifiers and not qualifiers&meta:return -1
  required=scene_actions(slot['text']) if process_topic else set()
  action_description=(p.get('alt','').removeprefix(p.get('depiction','')) or '')[:300]
- depicted=visual_actions(depiction+' '+action_description)
+ action_metadata=depiction+' '+action_description
+ if 'dry' in required:
+  # A photo of handling an already dried item does not show the drying step.
+  action_metadata=re.sub(r'\b(?:after (?:the )?drying|already dried|dry (?:paper|sheets?|cardboard|fibres?|fibers?))\b',' ',action_metadata,flags=re.I)
+ depicted=visual_actions(action_metadata)
  specific=required-{'production'}
  if specific and not specific&depicted:return -1
  if specific and re.search(r'\b(?:exterior|outside|panorama|skyline)\b',depiction,re.I):return -1
@@ -1612,7 +1631,7 @@ def source_verified_native_plan(evidence,receipt,sources,topic,lang,duration):
   url=evidence['sources'][old_index]['url'];index=next((i for i,source in enumerate(sources) if source['url']==url),None)
   span=beat.get('source_sentence','');start=beat.get('source_position',-1)
   if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:return None
-  if truncated_dependent_clause(beat['text'],span,lang) or context_dependent_sentence(beat['text']):return None
+  if truncated_dependent_clause(beat['text'],span,lang) or context_dependent_sentence(beat['text']) or incidental_place_event(beat['text'],topic,sources[0].get('entity_profile',{})):return None
   slots.append({'text':beat['text'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
  if not slots or len(slots)>duration//5 or not script_covers_identifier_scope(sources,topic,lang,slots):return None
  spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
@@ -1636,7 +1655,7 @@ def completed_narration_plan(sources,topic,lang,duration):
    index=next((i for i,source in enumerate(sources) if source['url']==beat['source_url']),None)
    span=beat.get('source_span','');start=beat.get('source_start',-1)
    if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:valid=False;break
-   if truncated_dependent_clause(beat['caption'],span,lang) or context_dependent_sentence(beat['caption']):valid=False;break
+   if truncated_dependent_clause(beat['caption'],span,lang) or context_dependent_sentence(beat['caption']) or incidental_place_event(beat['caption'],topic,sources[0].get('entity_profile',{})):valid=False;break
    slots.append({'text':beat['caption'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
   if not valid or not slots or len(slots)>duration//5 or not script_covers_identifier_scope(sources,topic,lang,slots):continue
   # A previously measured, source-verified script remains useful after its

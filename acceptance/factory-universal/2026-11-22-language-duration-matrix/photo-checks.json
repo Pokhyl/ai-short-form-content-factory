@@ -1,0 +1,122 @@
+{
+  "fresh_videos": 0,
+  "matrix": [
+    {
+      "id": "7a60aa0e-9bfe-412a-a60b-14bb77df944a",
+      "topic": "Warszawa",
+      "language": "pl",
+      "duration": 15,
+      "status": "preflight_passed",
+      "images": 6,
+      "voice_sends": 0,
+      "script": "Warszawa — stolica Polski i jej najludniejsze miasto, stolica województwa mazowieckiego. W 1339 Warszawa została wybrana na miejsce procesu polsko-krzyżackiego o Pomorze i Kujawy.",
+      "searches": {
+        "stock": 0,
+        "commons": 3
+      },
+      "implementation_hashes": {
+        "app.py": "f0a6ff8e85afebb26a64fc55f413ad38167ea395e74c6e5699989d73c1964e8d",
+        "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+        "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+        "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+      }
+    },
+    {
+      "id": "12b7a954-af59-4837-9d92-28f7fe0716f9",
+      "topic": "How paper is made",
+      "language": "en",
+      "duration": 30,
+      "status": "preflight_passed",
+      "images": 12,
+      "voice_sends": 0,
+      "script": "Papermaking is the process of manufacturing paper and cardboard. Screening the fibre involves using a mesh made from non-corroding and inert material, such as brass, stainless steel or a synthetic fibre, which is stretched in a paper mould, a wooden frame similar to that of a window. Water is further removed from this sheet by pressing. The fairly damp fibre is then dried using a variety of methods, such as vacuum drying or simply air drying.",
+      "searches": {
+        "stock": 0,
+        "commons": 12
+      },
+      "implementation_hashes": {
+        "app.py": "f0a6ff8e85afebb26a64fc55f413ad38167ea395e74c6e5699989d73c1964e8d",
+        "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+        "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+        "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+      }
+    },
+    {
+      "id": "90e030bf-1bc1-4d18-92fb-aa726f3e6662",
+      "topic": "Марс",
+      "language": "ru",
+      "duration": 45,
+      "status": "preflight_passed",
+      "images": 18,
+      "voice_sends": 0,
+      "script": "Марс — четвёртая по удалённости от Солнца и седьмая по размеру планета Солнечной системы. К началу XXI века Марс — наиболее подробно изученная планета Солнечной системы после Земли. По линейному размеру Марс практически ровно вдвое меньше Земли. Его средний экваториальный радиус оценивается как 3396,9 ± 0,4 км или 3396,2 ± 0,1 км. Средний полярный радиус Марса оценивается в 3374,9 км или 3376,2 ± 0,1 км; полярный радиус у северного полюса — 3376,2 км, у южного — 3382,6 км.",
+      "searches": {
+        "stock": 0,
+        "commons": 3
+      },
+      "implementation_hashes": {
+        "app.py": "f0a6ff8e85afebb26a64fc55f413ad38167ea395e74c6e5699989d73c1964e8d",
+        "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+        "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+        "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+      }
+    },
+    {
+      "id": "94dec2f5-2bb0-4828-843a-bbc2c1f1eadc",
+      "topic": "Бджоли",
+      "language": "uk",
+      "duration": 60,
+      "status": "preflight_passed",
+      "images": 24,
+      "voice_sends": 0,
+      "script": "Існує близько 20 тисяч видів бджіл. Усі бджоли мають дві пари крил, задня пара за розміром менша від передньої; тільки у декількох видів у однієї касти крила дуже короткі, що робить політ бджоли важкою або неможливою справою. Бджоли як запилювачі украй важливі в сільському господарстві, і це призводить до того, що фермери в багатьох країнах домовляються з бджолярами про взаємовигідне розведення бджіл поблизу сільськогосподарських угідь. Бджоли, як і мурахи, по суті є спеціалізованою формою оси. Хоча вік найбільш ранніх скам'янілих знахідок оцінюється тільки в 40 млн років, дослідження генетики бджіл і частково скам'янілостей указує, що вони з'явилися набагато раніше, разом з появою квіткових рослин 140 млн років тому. Предки сучасних бджіл відносилися до родини піщаних ос і були хижими комахами. Їх жертвами ставали інші комахи.",
+      "searches": {
+        "stock": 0,
+        "commons": 3
+      },
+      "implementation_hashes": {
+        "app.py": "f0a6ff8e85afebb26a64fc55f413ad38167ea395e74c6e5699989d73c1964e8d",
+        "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+        "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+        "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+      }
+    }
+  ],
+  "warsaw_recheck": [
+    {
+      "id": "985f5050-1153-4923-9359-204c063935e2",
+      "topic": "Warszawa",
+      "language": "pl",
+      "duration": 15,
+      "status": "preflight_passed",
+      "images": 6,
+      "voice_sends": 0,
+      "script": "Warszawa — stolica Polski i jej najludniejsze miasto, stolica województwa mazowieckiego. W północnej części Warszawy skarpa biegnie w pobliżu Wisły, natomiast w południowej odsuwa się od rzeki.",
+      "searches": {
+        "stock": 0,
+        "commons": 3
+      },
+      "implementation_hashes": {
+        "app.py": "a9a13ad3b5fb565f2f95e82abf81222738c02a883214bed32b6560cce929b042",
+        "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+        "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+        "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+        "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+        "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+        "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+      }
+    }
+  ]
+}

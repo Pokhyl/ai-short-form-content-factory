@@ -1,0 +1,6 @@
+{"cases":[
+ {"topic":"Warszawa","language":"pl","duration_s":15},
+ {"topic":"How paper is made","language":"en","duration_s":30},
+ {"topic":"Марс","language":"ru","duration_s":45},
+ {"topic":"Бджоли","language":"uk","duration_s":60}
+]}

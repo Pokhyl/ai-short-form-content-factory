@@ -1,0 +1,67 @@
+{
+  "implementation_hashes": {
+    "app.py": "f0a6ff8e85afebb26a64fc55f413ad38167ea395e74c6e5699989d73c1964e8d",
+    "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+    "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+  },
+  "project_ready": false,
+  "mode": "normal worker in staged image",
+  "cases": [
+    {
+      "topic": "Warszawa",
+      "language": "pl",
+      "duration_s": 15,
+      "id": "259133cc-cd5b-4d36-bed5-c11b9de83f52",
+      "status": "needs_connection",
+      "error": null,
+      "manifest_path": "/data/renders/259133cc-cd5b-4d36-bed5-c11b9de83f52/universal-manifest.json",
+      "narration": {},
+      "render": {},
+      "audit": {},
+      "voice_attempts": 0
+    },
+    {
+      "topic": "How paper is made",
+      "language": "en",
+      "duration_s": 30,
+      "id": "031854e5-c349-4094-9062-95e5bb8090c9",
+      "status": "needs_connection",
+      "error": null,
+      "manifest_path": "/data/renders/031854e5-c349-4094-9062-95e5bb8090c9/universal-manifest.json",
+      "narration": {},
+      "render": {},
+      "audit": {},
+      "voice_attempts": 0
+    },
+    {
+      "topic": "Марс",
+      "language": "ru",
+      "duration_s": 45,
+      "id": "a460e148-160c-4bb2-bb04-8e474e25ef04",
+      "status": "needs_connection",
+      "error": null,
+      "manifest_path": "/data/renders/a460e148-160c-4bb2-bb04-8e474e25ef04/universal-manifest.json",
+      "narration": {},
+      "render": {},
+      "audit": {},
+      "voice_attempts": 0
+    },
+    {
+      "topic": "Бджоли",
+      "language": "uk",
+      "duration_s": 60,
+      "id": "ea7e57a5-e8b1-4da1-946a-1a7d47818ab1",
+      "status": "needs_connection",
+      "error": null,
+      "manifest_path": "/data/renders/ea7e57a5-e8b1-4da1-946a-1a7d47818ab1/universal-manifest.json",
+      "narration": {},
+      "render": {},
+      "audit": {},
+      "voice_attempts": 0
+    }
+  ]
+}

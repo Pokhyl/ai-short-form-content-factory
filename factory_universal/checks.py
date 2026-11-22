@@ -18,6 +18,13 @@ def check():
  solar={'alt':'Solar panels for thermal heating on a house','height':1000,'width':800}
  assert app.photo_score(fossil,slot,'Solar energy')<0
  assert app.photo_score(solar,slot,'Solar energy')>=0
+ drying={'text':'The wet sheets of paper are air dried.','process_intent':True}
+ after={'alt':'File:Paper mill.jpg A worker collects dry paper sheets after drying.',
+        'depiction':'File:Paper mill.jpg','width':1200,'height':900}
+ on_rack={**after,'alt':'Drying handmade paper sheets on racks.','depiction':'File:Drying handmade paper.jpg'}
+ assert app.photo_score(after,drying,'How paper is made')<0
+ assert app.photo_score(on_rack,drying,'How paper is made')>=0
+ assert not app.photographic_metadata({'depiction':'File:Before After Specimen Washing.jpg'})
  assert app.unsupported_qualifier('The largest mud volcanoes are enormous.','Volcano',[{'title':'Volcano'}])
  assert not app.unsupported_qualifier('The largest mud volcanoes are enormous.','Volcano',[{'title':'Volcano'},{'title':'Mud volcano'}])
  contexts=[{'title':'Lunar eclipse','visual_title':'Lunar eclipse','text':'The Moon moves through the shadow of Earth.'},{'title':'August 2009 lunar eclipse','visual_title':'August 2009 lunar eclipse','text':'The Moon moves through the shadow of Earth.'}]
@@ -193,6 +200,15 @@ def check():
   'X20 автоматизация для фирм','uk',[{'text':'Компанії можуть використовувати X20 для автоматизації.'}])
  assert not app.script_covers_identifier_scope([{'scoped_identifier':'X20'}],
   'X20 автоматизация для фирм','uk',[{'text':'Компанія створила X20 у 2020 році.'}])
+ city={'kind':'entity','visual_description':'capital city of a country'}
+ assert app.incidental_place_event('W 1339 odbył się proces sądowy w mieście.','Warszawa',city)
+ assert app.incidental_place_event('Pierwsza wzmianka o Warszawie pochodzi z 23 kwietnia 1313.','Warszawa',city)
+ assert app.incidental_place_event('W 1526 została włączona do Korony Królestwa Polskiego.','Warszawa',city)
+ assert app.incidental_place_event('W Warszawie odbyło się 145 sejmów walnych.','Warszawa',city)
+ assert app.incidental_place_event('Nazwa miasta zmieniła się w XVI wieku.','Warszawa',city)
+ assert app.incidental_place_event('In 1812 an army occupied the city.','Example City',city)
+ assert not app.incidental_place_event('W 1339 odbył się proces sądowy w mieście.','Historia Warszawy',city)
+ assert not app.incidental_place_event('In 2020 the city had a population of a million.','Example City',city)
  # A cut before an example list must preserve the following predicate.
  complete='This is a method by which several workers, such as librarians, preserve old records.'
  assert app.complete_clause_variants(complete,'en')==[complete]
