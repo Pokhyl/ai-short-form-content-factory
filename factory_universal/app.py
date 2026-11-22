@@ -507,7 +507,10 @@ def context_dependent_sentence(text):
  pronouns=r'^(?:he|she|it|they|their|its|он|она|оно|они|его|ее|её|их|він|вона|воно|вони|це|його|її|їх|one|ona|ono|oni|jej|jego|ich)\b'
  reference=re.search(references,text,re.I)
  dangling=bool(reference and len(text[:reference.start()].split())<5)
- return bool(re.search(leading,text,re.I) or dangling or re.search(pronouns,text,re.I))
+ intro=re.match(r'^(?:in|on|at|during|among|for|under|within)\s+[^,]{1,65},\s*',text,re.I)
+ unresolved=bool(intro and re.search(pronouns,text[intro.end():],re.I))
+ omitted_expression=bool(re.search(r'\b(?:equation|formula|expression)\b[^.!?]{0,120}\b(?:is|are|was|were|becomes?)\s*[.!?]$',text,re.I))
+ return bool(re.search(leading,text,re.I) or dangling or re.search(pronouns,text,re.I) or unresolved or omitted_expression)
 
 
 def attach_native_aliases(sources,lang):
@@ -553,6 +556,21 @@ def foreign_name_catalogue(text,lang,topic):
  if lang not in {'ru','uk'} or re.search(r'list|catalog|список|перелік|каталог',topic,re.I):return False
  return len(re.findall(r'[A-Za-z]{2,}',text))>=3 and len(re.findall(r'[,;]',text))>=3
 
+DEPENDENT_RELATIVE = {
+  'en':r'\b(?:by|through|in|from|under|for|to|with|of) which\b',
+  'pl':r'\b(?:w|przez|dzięki|za pomocą) któr\w*',
+  'ru':r'\b(?:в|при|с помощью|посредством) котор\w*',
+  'uk':r'\b(?:в|у|за допомогою|під час|через) як\w*',
+ }
+
+def truncated_dependent_clause(text,source,lang):
+ if not re.search(DEPENDENT_RELATIVE.get(lang,r'(?!)'),text,re.I):return False
+ def canonical(value):
+  return re.sub(r'[^\w]+','',value.casefold())
+ prefix=canonical(text)
+ original=canonical(source)
+ return prefix!=original and original.startswith(prefix)
+
 def complete_clause_variants(text,lang):
  variants=[text]
  separators={
@@ -573,6 +591,9 @@ def complete_clause_variants(text,lang):
   if re.match(r'^(?:while|although|because|when|if|after|before|whereas|gdy|kiedy|chociaż|ponieważ|jeśli|aby|когда|хотя|поскольку|если|чтобы|коли|хоча|оскільки|якщо|щоб)\b',prefix,re.I):continue
   if re.search(r'following|следующ|наступн|następując',prefix,re.I):continue
   if prefix.count('(')!=prefix.count(')'):continue
+  # A copula in the main clause does not complete a following relative clause.
+  # Keep the original when a cut might leave its subject without a predicate.
+  if truncated_dependent_clause(prefix,text,lang):continue
   variants.append(prefix+'.')
  return list(dict.fromkeys(variants))[:4]
 
@@ -964,6 +985,25 @@ def scene_astronomical_identifiers(slot):
   return astronomical_identifiers(slot.get('text',''))
  return set()
 
+def century_labels(text):
+ from alignment_core import _roman_numeral_to_int
+ matches=re.findall(r'(?<!\w)([IVXLC]{1,6}|\d{1,2})(?:st|nd|rd|th|[-–.]?[йяийго]{1,2})?\.?\s*(?:centur(?:y|ies)|wiek\w*|століт\w*|столет\w*|век\w*)(?!\w)',text,re.I)
+ return {int(value) if value.isdigit() else _roman_numeral_to_int(value.upper()) for value in matches}
+
+def artifact_scene_centuries(slot):
+ description=slot.get('entity_profile',{}).get('visual_description','')
+ if re.search(r'\b(?:instrument|device|machine|tool|apparatus)\b',description,re.I):
+  return century_labels(slot.get('text',''))
+ return set()
+
+def artifact_photo_centuries(photo):
+ title=photo.get('depiction','')
+ description=photo.get('alt','').removeprefix(title).strip()
+ # Prefer the file title when it dates the object. The first caption sentence
+ # is the archival description rather than an arbitrary year elsewhere.
+ context=title if century_labels(title) or re.search(r'\b[12]\d{3}\b',title) else ' '.join(sentences(description)[:1])
+ return century_labels(context)|{(int(year)-1)//100+1 for year in re.findall(r'\b[12]\d{3}\b',context)}
+
 def named_place_subject(profile):
  return profile.get('kind')=='entity' and bool(re.search(r'\b(?:city|town|village|capital|municipality|country|island|mountain|national park|palace|castle|cathedral|monument)\b',profile.get('visual_description',''),re.I))
 
@@ -1010,6 +1050,7 @@ def photographic_metadata(p):
  if re.search(r'\b(?:annotated|montage|multi.panel|before.and.after)\b',title,re.I):return False
  nonphoto=r'\b(?:shows?|showing|displays?|plots?|depicts?) (?:a |an |the )?(?:spectrum|(?:light.?curve|spectral|intensity) plot|graph)\b|\b(?:inset(?: [a-z-]+){0,2} images?|series of [a-z]+ panels)\b|\[(?:top|bottom) (?:left|right)\]'
  if re.search(nonphoto,description[:950],re.I):return False
+ if re.search(r'\b(?:image (?:has been |is )annotated|annotated to highlight|comparison star|(?:two|three|four) images (?:of .*? )?(?:are (?:shown|seen)|show)|multiple panels)\b',description[:750],re.I):return False
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
  if re.search(r'\bfig(?:ure)?[. ]+\s*\d+\b',p.get('depiction',''),re.I):return False
  return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|calendars?|scrapbooks?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|CGI|artist[’\x27]?s? (?:impression|concept|rendering)|(?:3d|3-d|3 d) (?:render\w*|model\w*)|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
@@ -1060,8 +1101,13 @@ def discover_photos(topic,lang,slots):
  commons_limit=48 if scene_queries else (12 if slots and slots[0].get('process_intent') else 3)
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  catalog_queries=list(dict.fromkeys(name for slot in slots for name in sorted(scene_astronomical_identifiers(slot))))
- if catalog_queries and not (scene_queries or slots[0].get('process_intent')):
-  queries=list(dict.fromkeys(queries[:1]+catalog_queries+queries[1:]))[:commons_limit]
+ periods=set().union(*(artifact_scene_centuries(slot) for slot in slots))
+ dated_queries=[]
+ for century in sorted(periods.intersection(range(4,22))):
+  suffix={1:'st',2:'nd',3:'rd'}.get(century%10,'th') if century not in {11,12,13} else 'th'
+  dated_queries.append(f'{topic} {century}{suffix} century')
+ if (catalog_queries or dated_queries) and not (scene_queries or slots[0].get('process_intent')):
+  queries=list(dict.fromkeys(queries[:1]+catalog_queries+dated_queries+queries[1:]))[:commons_limit]
  for query in queries:
   key=query.casefold().strip()
   if key not in SEARCH_QUERIES['commons'] and len(SEARCH_QUERIES['commons'])>=commons_limit:continue
@@ -1097,6 +1143,12 @@ def photo_origins(p):
   description=p.get('alt','').removeprefix(p.get('depiction','')).strip()
   signature=' '.join(token for token in tokens(' '.join(sentences(description)[:2])) if token not in STOP)
   if len(signature)>=100:origins.add(('commons-observation-description',signature))
+  publication_id=re.search(r'\(((?:19|20)\d{2}-\d{2,4}(?:-\d{2,5})?)\)\.[a-z]+$',p.get('depiction',''),re.I)
+  if publication_id:origins.add(('commons-observation-publication',publication_id.group(1)))
+  exposure=re.search(r'\bobtained by (.{4,100}?) in ((?:19|20)\d{2}), with (\d+) minutes? exposure in ([a-z-]+)',description,re.I)
+  if exposure:
+   subjects='|'.join(sorted(astronomical_identifiers(p.get('depiction',''))))
+   if subjects:origins.add(('commons-observation-exposure',subjects,*[part.casefold() for part in exposure.groups()]))
  return origins
 
 def dhash(im):
@@ -1151,6 +1203,8 @@ def photo_score(p,slot,topic):
  if not photographic_metadata(p):return -1
  toy_pattern=r'\b(?:toys?|toy model|playset|Spielzeug|zabawk\w*|іграш\w*|игруш\w*)\b'
  if re.search(toy_pattern,p.get('depiction') or p.get('alt',''),re.I) and not re.search(toy_pattern,topic,re.I):return -1
+ periods=artifact_scene_centuries(slot)
+ if periods and not periods&artifact_photo_centuries(p):return -1
  identifiers=scene_astronomical_identifiers(slot)
  if identifiers:
   observed=astronomical_identifiers(p.get('depiction','')+' '+' '.join(semantic_categories(p)))
@@ -1470,6 +1524,7 @@ def source_verified_native_plan(evidence,receipt,sources,topic,lang,duration):
   url=evidence['sources'][old_index]['url'];index=next((i for i,source in enumerate(sources) if source['url']==url),None)
   span=beat.get('source_sentence','');start=beat.get('source_position',-1)
   if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:return None
+  if truncated_dependent_clause(beat['text'],span,lang) or context_dependent_sentence(beat['text']):return None
   slots.append({'text':beat['text'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
  if not slots or len(slots)>duration//5:return None
  spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
@@ -1492,6 +1547,7 @@ def completed_narration_plan(sources,topic,lang,duration):
    index=next((i for i,source in enumerate(sources) if source['url']==beat['source_url']),None)
    span=beat.get('source_span','');start=beat.get('source_start',-1)
    if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:valid=False;break
+   if truncated_dependent_clause(beat['caption'],span,lang) or context_dependent_sentence(beat['caption']):valid=False;break
    slots.append({'text':beat['caption'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
   if not valid or not slots or len(slots)>duration//5:continue
   # A previously measured, source-verified script remains useful after its

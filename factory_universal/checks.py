@@ -148,6 +148,15 @@ def check():
  with patch.object(app,'http_json',split_title_fixture):
   split_retrieved=app.wikipedia('супер нова','uk')
  assert app.relevant_sources(split_retrieved,'супер нова','uk')[0]['title']=='Наднова'
+ # A cut before an example list must preserve the following predicate.
+ complete='This is a method by which several workers, such as librarians, preserve old records.'
+ assert app.complete_clause_variants(complete,'en')==[complete]
+ assert app.truncated_dependent_clause('This is a method by which several workers.',complete,'en')
+ assert not app.truncated_dependent_clause(complete,complete,'en')
+ assert app.context_dependent_sentence('In small cells, they are embedded in the membrane.')
+ assert app.context_dependent_sentence('Since water is used here, the equation for the process is.')
+ assert not app.context_dependent_sentence('In small cells, pigments are embedded in the membrane.')
+
  # Specific catalog designations need that object, not generic space photography.
  astro={'entity_profile':{'kind':'concept','visual_description':'an astronomical explosion of a star'},'text':'У 1987 році спостерігали SN 1987A.','source_driven':True,'visual_title':'Supernova'}
  sky={'provider':'commons','alt':'Supernova photograph','depiction':'File:Supernova SN1987A.jpg','height':1280,'width':1280}
@@ -158,12 +167,24 @@ def check():
  assert not app.photographic_metadata({'depiction':'File:Instrument - Fig. 59.png'})
  assert not app.photographic_metadata({'depiction':'File:Data.png','alt':'This image shows the spectrum of the object.'})
  assert not app.photographic_metadata({'depiction':'File:Target (annotated).png'})
+ assert not app.photographic_metadata({'depiction':'File:Target (Compass Image).png','alt':'This detailed image has been annotated to highlight structures.'})
+ relation={'provider':'commons','creator':'ESA','alt':'The telescope frame was obtained by Telescope X in 1992, with 10 minutes exposure in H-alpha.'}
+ original={**relation,'depiction':'File:SN 1987A view.jpg'}
+ crop={**relation,'depiction':'File:Detail of SN 1987A image.jpg'}
+ assert any(key[0]=='commons-observation-exposure' for key in app.photo_origins(original)&app.photo_origins(crop))
+
  assert app.photographic_metadata({'depiction':'File:Target composite.png','alt':'Combined visible and infrared observations of the target.'})
 
  microscope_slot={'text':'A microscope magnifies small objects.','visual_title':'Microscope','source_driven':True}
  microscope={**sky,'depiction':'File:Microscope toy.jpg','alt':'A children’s microscope toy'}
  assert app.photo_score(microscope,microscope_slot,'Microscope')<0
  assert app.photo_score(microscope,microscope_slot,'Microscope toy')>=0
+ instrument_history={**microscope_slot,'text':'Przyrząd opracowano w XVII wieku.','entity_profile':{'visual_description':'A microscope is an optical instrument.'}}
+ historical={**sky,'depiction':'File:Microscope from 1670.jpg','alt':'Microscope from 1670'}
+ assert app.photo_score(historical,instrument_history,'Microscope')>=0
+ assert app.photo_score({**historical,'depiction':'File:Microscope 1870.jpg'},instrument_history,'Microscope')<0
+ assert app.century_labels('XVII столітті and 18th century')=={17,18}
+
 
  assert app.astronomical_identifiers('NGC 224 and SN 1987A')=={'NGC 224','SN 1987A'}
  # A verified spelling repair never outranks an exact requested title.
