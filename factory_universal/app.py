@@ -1005,6 +1005,11 @@ def semantic_categories(candidate):
  return [category for category in candidate.get('categories',[]) if not re.search(r'\b(?:from|via|uploaded|taken with|photographs by|images by|files by|press photographs?|press photos?|published in)\b',category,re.I)]
 
 def photographic_metadata(p):
+ title=p.get('depiction','')
+ description=p.get('alt','').removeprefix(title).strip()
+ if re.search(r'\b(?:annotated|montage|multi.panel|before.and.after)\b',title,re.I):return False
+ nonphoto=r'\b(?:shows?|showing|displays?|plots?|depicts?) (?:a |an |the )?(?:spectrum|(?:light.?curve|spectral|intensity) plot|graph)\b|\b(?:inset(?: [a-z-]+){0,2} images?|series of [a-z]+ panels)\b|\[(?:top|bottom) (?:left|right)\]'
+ if re.search(nonphoto,description[:950],re.I):return False
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
  if re.search(r'\bfig(?:ure)?[. ]+\s*\d+\b',p.get('depiction',''),re.I):return False
  return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|calendars?|scrapbooks?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|CGI|artist[’\x27]?s? (?:impression|concept|rendering)|(?:3d|3-d|3 d) (?:render\w*|model\w*)|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
@@ -1087,6 +1092,11 @@ def photo_origins(p):
   description=re.sub(r'\s+',' ',description).casefold()
   if len(description)>=80 and len(set(description.split()))>=10:
    origins.add(('commons-person-description',description))
+ if p.get('provider')=='commons' and institutional_astronomical_photo(p):
+  # Telescope archives may publish multiple crops or color mappings of one exposure.
+  description=p.get('alt','').removeprefix(p.get('depiction','')).strip()
+  signature=' '.join(token for token in tokens(' '.join(sentences(description)[:2])) if token not in STOP)
+  if len(signature)>=100:origins.add(('commons-observation-description',signature))
  return origins
 
 def dhash(im):

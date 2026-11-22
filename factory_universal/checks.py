@@ -156,6 +156,10 @@ def check():
  assert not app.photographic_metadata({**sky,'depiction':'File:Supernova (CGI).jpg'})
  assert not app.photographic_metadata({'depiction':'File:Instrument.png','alt':'3d model using Blender'})
  assert not app.photographic_metadata({'depiction':'File:Instrument - Fig. 59.png'})
+ assert not app.photographic_metadata({'depiction':'File:Data.png','alt':'This image shows the spectrum of the object.'})
+ assert not app.photographic_metadata({'depiction':'File:Target (annotated).png'})
+ assert app.photographic_metadata({'depiction':'File:Target composite.png','alt':'Combined visible and infrared observations of the target.'})
+
  microscope_slot={'text':'A microscope magnifies small objects.','visual_title':'Microscope','source_driven':True}
  microscope={**sky,'depiction':'File:Microscope toy.jpg','alt':'A children’s microscope toy'}
  assert app.photo_score(microscope,microscope_slot,'Microscope')<0
