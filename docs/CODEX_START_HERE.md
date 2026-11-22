@@ -1,3 +1,7 @@
+# Current delivery check — 2026-11-22
+
+The November 19 v13 run produced a valid UK45 MP4 and replaced later commemorations with original historical footage. Review of all 18 shots found a 2023 summit photo in the 2019 election scene. Keep that recording out of the curated examples. Dated civic scenes now filter and search by the source year. A filename date takes precedence over incidental years elsewhere in image metadata. Runtime and alignment checks passed. A fresh normal pipeline run is recorded under `/data/factory-universal/qa/event-date-20261122.json`. Studio is still on the previous release pending frame review.
+
 # Current regression — 2026-11-19
 
 project_ready=false pending correction of failed user job acfbd2ea-ee67-4115-9ed1-05e6624c7bb2 (Владимир зеленский / UK45). Its planning trace misclassified Ukrainian office appointment «посаду» as vehicle landing; public roles, elections and entertainment organizations also lacked appropriate event contexts. Typed person/event verification is staged, not deployed. Preserve the failed ID. Verify the actual normal pipeline and frames before claiming readiness. The 2026-11-18 evidence below is historical and does not establish general readiness.

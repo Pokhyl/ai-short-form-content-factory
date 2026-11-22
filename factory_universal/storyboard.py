@@ -199,6 +199,9 @@ def abstract_visual_subject(entity):
  description=entity.get('description','')
  return bool(re.search(r'^(?:the )?(?:(?:scientific|systematic|scholarly) study of|(?:academic|scientific|scholarly|interdisciplinary) (?:field|discipline)|(?:branch|field|discipline) of (?:science|study|research)|(?:social|natural|formal|applied) science\b)',description,re.I))
 
+def event_years(text):
+ return re.findall(r'(?<!\d)(?:1[5-9]|20)\d{2}(?!\d)',text or '')
+
 def person_event_target(target,profile,text):
  # A public office is a role of the named person, not a photographable object.
  description=target.get('description','')
@@ -211,7 +214,8 @@ def person_event_target(target,profile,text):
   event=('performance',r'concert|performance|performing|on stage|comedy|festival|концерт|виступ|вистава|сцен[аіуы]|концерт|występ|wystep|scen[aiy]','an actor or comedian performing on a stage in front of an audience')
  if not event:return target
  key,pattern,visual=event
- return {**target,'id':profile['id'],'name':profile['name'],'native_name':profile.get('native_name',profile['name']),'kind':'human','aliases':profile.get('aliases',[]),'commons_category':profile.get('commons_category',''),'linked_context':{k:target.get(k) for k in ('id','name','description','source_url')},'intent':{'name':'person event','event':key,'metadata_pattern':pattern,'visual':visual,'visual_objects':[visual],'query_suffix':key,'negative_descriptions':['A studio portrait or close-up headshot without any visible public event.']}}
+ years=event_years(text) if key in {'campaign','inauguration'} else []
+ return {**target,'id':profile['id'],'name':profile['name'],'native_name':profile.get('native_name',profile['name']),'kind':'human','aliases':profile.get('aliases',[]),'commons_category':profile.get('commons_category',''),'linked_context':{k:target.get(k) for k in ('id','name','description','source_url')},'intent':{'name':'person event','event':key,'event_years':years,'metadata_pattern':pattern,'visual':visual,'visual_objects':[visual],'query_suffix':key,'negative_descriptions':['A studio portrait or close-up headshot without any visible public event.']}}
 
 def build(slots,sources,lang,api):
  profile=sources[0].get('entity_profile',{})
@@ -307,7 +311,7 @@ def query_plan(slots):
  for slot in slots:
   for target in slot.get('visual_targets',[]):
    intent=target.get('intent',{})
-   targets.setdefault((target['id'],intent.get('name',''),intent.get('query_suffix','')),target)
+   targets.setdefault((target['id'],intent.get('name',''),intent.get('query_suffix',''),tuple(intent.get('event_years',[]))),target)
  primary=[];second=[]
  for target in targets.values():
   name=target['name']
@@ -323,7 +327,10 @@ def query_plan(slots):
    if intent.get('event')=='performance' and context and context!=name:
     primary.append(context+' performance');second.append(context)
    else:
-    primary.append(name+' '+term);second.append(name+' '+suffix if term!=suffix else 'haswbstatement:P180='+target['id']+' '+term)
+    years=' '.join(dict.fromkeys(intent.get('event_years',[])))
+    primary.append(' '.join(filter(None,(name,term,years))))
+    fallback=name+' '+suffix if term!=suffix else 'haswbstatement:P180='+target['id']+' '+term
+    second.append(' '.join(filter(None,(fallback,years))))
   elif intent.get('name')=='historical protest':
    years=' '.join(intent.get('event_years',[]));primary.append((name+' '+years).strip());second.append(((target.get('commons_category') or name)+' '+years).strip())
   elif intent.get('name')=='city context':
@@ -353,6 +360,11 @@ def target_score(candidate,slot,api):
  if intent.get('name')=='person event':
   if candidate.get('identity_verification',{}).get('entity_id')!=target['id']:return -1
   event_text=candidate.get('depiction','')+' '+' '.join(api.semantic_categories(candidate))+' '+candidate.get('alt','')[:500]
+  required_years=set(intent.get('event_years',[]))
+  if required_years:
+   # A dated filename takes precedence over incidental years elsewhere in the metadata.
+   dated=set(event_years(candidate.get('depiction','')) or event_years(event_text))
+   if not dated & required_years:return -1
   if not re.search(intent['metadata_pattern'],event_text,re.I):return -1
   if re.search(r'portrait|headshot|official photograph',candidate.get('depiction',''),re.I):return -1
   return 40

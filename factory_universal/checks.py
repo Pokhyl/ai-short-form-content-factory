@@ -647,6 +647,13 @@ def check():
  # Explicit campaign context also works without a linked physical object.
  direct=storyboard.person_event_target(profile,profile,'Під час передвиборчої кампанії кандидат представив програму.')
  assert direct['intent']['event']=='campaign'
+ dated=storyboard.person_event_target(profile,profile,'The candidate joined the 2019 election campaign.')
+ photo={'provider':'commons','depiction':'File:Candidate voting 2019.jpg','identity_verification':{'entity_id':profile['id']}}
+ assert storyboard.target_score(photo,{'visual_target':dated},app)>0
+ summit={**photo,'depiction':'File:Candidate at 2023 summit.jpg','alt':'Previously won the 2019 election'}
+ assert storyboard.target_score(summit,{'visual_target':dated},app)<0
+ assert all('2019' in query for query in storyboard.query_plan([{'visual_targets':[dated]}]))
+
  assert storyboard.person_event_target(profile,profile,'Виступив проти наміру міністерства змінити правила.')==profile
  query_variants=storyboard.query_plan([{'visual_targets':[direct]}])
  assert any('election' in query for query in query_variants) and any('campaign' in query for query in query_variants)
