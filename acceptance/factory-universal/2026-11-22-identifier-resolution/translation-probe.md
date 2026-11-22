@@ -27,3 +27,11 @@ The staged worker now creates a Ukrainian or Russian narration view from a verif
 The initial runtime research probe processed the complete bounded set for four cases. It retained 33 translated sentences for each n8n case, 31 for Papermaking and 35 for Lunar eclipse. For «n8n автоматизация для фирм» (UK45), the scope check produced no complete plan. The shorter Russian topic «n8n автоматизация» produced a four-beat plan. That plan includes corporate valuation context and is not an accepted storyboard. No jobs, speech requests or renders were created.
 
 The final candidate passed checks.py and alignment_checks.py in the runtime. Real-model samples from Papermaking (UK), Lunar eclipse (RU) and N8n (UK) bound the translated text back to the exact English sentence and revision. The stronger number-order and punctuation-in-identifier checks passed. Studio has not enabled this translation path.
+
+## Scoped UK45 planning and photographic preflight
+
+The duration solver now retains candidates with distinct coverage of the required scope. A high-scoring topic overview of the same length can no longer evict a plan that covers the requested focus. Ukrainian and Russian company terminology is recognized in identifier briefs.
+
+An isolated UK45 attempt for the original request selected four source-linked beats. The photographic preflight failed at shot 17 with insufficient scene-matched images. Editorial inspection also found an off-topic fundraising fact in that script. The revised planner requires translated sentences to cover substantive focus terms and produced three beats without the fundraising sentence. Its remaining passages still explain the product in general terms and include a literal translation of a press-coverage phrase. This was not accepted as a business-automation script. No recording or rendering was requested.
+
+Runtime and alignment checks passed for both candidates. The revised UK45 plan reused the cached translation of English revision 1382794918. Studio did not change.

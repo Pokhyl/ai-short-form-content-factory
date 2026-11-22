@@ -235,12 +235,12 @@ def natural_duration_ms(text,lang):
  if internal_rate is None:return round(characters)
  return round((characters+measured_sentence_ms(spoken,lang)*internal_rate)/2)
 
-def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required_sentence=None,natural=False):
+def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required_sentence=None,natural=False,scope=()):
  # Exact-count duration-constrained selection over source sentences, measured in the selected voice.
  rate=natural_char_rate(lang) if natural else None
  cost_ms=lambda text:natural_duration_ms(text,lang)+round(rate) if natural else measured_sentence_ms(text,lang)
  step=10 if natural else 25
- budget=((duration_ms if duration_ms is not None else count*5000)-(0 if natural else 100))//step;states=[{} for _ in range(count+1)];states[0][0]=(0.0,())
+ budget=((duration_ms if duration_ms is not None else count*5000)-(0 if natural else 100))//step;states=[{} for _ in range(count+1)];states[0][(0,0)]=(0.0,())
  seen=set();candidates=[]
  for row in rows:
   norm=re.sub(r'\W+','',row[2].lower())
@@ -251,6 +251,16 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
   mandatory=next((row for row in candidates if row[2]==required_sentence),None)
   candidates=candidates[:40]+sorted(candidates[40:],key=lambda row:cost_ms(row[2]))[:20]
   if mandatory is not None and mandatory not in candidates:candidates[-1]=mandatory
+ # Remember which scope terms a partial narration already covers. This
+ # prevents a higher-ranked overview from replacing a topical plan of
+ # the same length before the final scope check.
+ scope_bits={term:1<<i for i,term in enumerate(sorted(scope))}
+ full_scope=(1<<len(scope_bits))-1
+ masks=[sum(scope_bits[term] for term in identifier_scope_terms(row[2],lang)&scope_bits.keys())
+        for row in candidates] if scope_bits else [0]*len(candidates)
+ present=0
+ for mask in masks:present|=mask
+ if present!=full_scope:return []
  normalized=[re.sub(r'\W+','',row[2].casefold()) for row in candidates] if natural else []
  actions=[visual_actions(row[2])-{'production'} for row in candidates]
  terms=[set(topic_terms(row[2],lang)) for row in candidates]
@@ -271,20 +281,22 @@ def fit_narration(rows,count,lang,process_intent=False,duration_ms=None,required
  if required is not None:
   cost=(cost_ms(candidates[required][2])+step-1)//step
   if cost>budget:return []
-  states[0].clear();states[1][cost]=(candidates[required][0],(required,))
+  states[0].clear();states[1][(cost,masks[required])]=(candidates[required][0],(required,))
  for index,(score,source_index,sentence,words) in enumerate(candidates):
   if index==required:continue
   cost=(cost_ms(sentence)+step-1)//step
   if cost>budget:continue
   for selected in range(min(count,index+1+(required is not None)),0,-1):
-   for used,(total,chosen) in list(states[selected-1].items()):
+   for (used,covered),(total,chosen) in list(states[selected-1].items()):
     target=used+cost
     if target>budget:continue
     if not conflicts[index].isdisjoint(chosen):continue
     candidate=(total+score-sum(penalties[index][old] for old in chosen),chosen+(index,))
-    if target not in states[selected] or candidate[0]>states[selected][target][0]:states[selected][target]=candidate
+    key=(target,covered|masks[index])
+    if key not in states[selected] or candidate[0]>states[selected][key][0]:states[selected][key]=candidate
  if not states[count]:return []
- options=[(used,value) for used,value in states[count].items() if not natural or used*step >= (duration_ms or count*5000)*.85]
+ options=[(used,value) for (used,covered),value in states[count].items()
+          if covered==full_scope and (not natural or used*step >= (duration_ms or count*5000)*.85)]
  if not options:return []
  # Natural speech must occupy the requested window; relevance breaks timing ties.
  if natural:
@@ -628,6 +640,8 @@ def complete_clause_variants(text,lang):
 def source_slots(sources,topic,count,lang='en',duration_s=None):
   target_ms=(duration_s if duration_s is not None else count*5)*1000
   object_terms=grounding_terms(topic,lang)
+  scope=identifier_scope(sources,topic,lang)
+  translated_focus=(scope-{'company'}) if sources and sources[0].get('translation_model') else set()
   process_intent=bool(re.search(r'\b(make|made|manufactur\w*|produc\w*|fabricat\w*|build|create|zrobi\w*|produk\w*|wytwarz\w*|изготов\w*|производ\w*|виробля\w*|виготов\w*)\b',topic,re.I))
   focus=set() if process_intent else narrative_focus(sources,topic,lang)
   bottle_words=grounding_terms('bottle bottles бутылка пляшка пляшки butelka butelki',lang)
@@ -676,6 +690,8 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if human:sentence=retain_named_model_asides(sentence)
      if human or definition:sentence=omit_parenthetical_asides(sentence)
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
+     scope_hits=scope&identifier_scope_terms(sentence,lang) if scope else set()
+     if translated_focus and not translated_focus&scope_hits:continue
      if vernacular and re.search(r'[A-Za-z]{3,}',sentence):continue
      first=re.search(r'[^\W_]',sentence,re.UNICODE)
      named_lead=bool(src.get('translation_model') and src.get('scoped_identifier') and re.match(re.escape(src['scoped_identifier'])+r'\b',sentence,re.I))
@@ -703,6 +719,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if process_intent and not definition and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
      if process_intent and not (visual_actions(sentence)-{'production'}) and not (si==0 and source_position<4 and process_definition(sentence)):continue
      score=((5 if process_intent else 30)/(1+paragraph_index) if definition else 0)+(8*process_overlap if definition and process_intent else 0)+topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
+     score+=12*len(scope_hits)
      if human:
       profile_terms=r'profile|account|username|logo|обліков\w* запис|уч[её]тн\w* запис|профил|профіл|логотип|profil\w*|konto'
       if not biography_signal(sentence) and re.search(profile_terms,sentence,re.I) and not re.search(profile_terms,topic,re.I):continue
@@ -731,8 +748,8 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
   if len(chosen)!=count:return []
   if opening is not None and not any(slot['text']==opening[2] for slot in chosen):
    chosen[-1]={'text':opening[2],'language':lang,'process_intent':process_intent,'source_index':opening[1],'source_sentence':opening[2],'score':opening[0]}
-  if definition or sum(measured_sentence_ms(slot['text'],lang) for slot in chosen)>target_ms-100:
-   chosen=fit_narration(all_rows,count,lang,process_intent,target_ms,required_sentence=opening[2] if opening else None,natural=bool(definition))
+  if definition or scope or sum(measured_sentence_ms(slot['text'],lang) for slot in chosen)>target_ms-100:
+   chosen=fit_narration(all_rows,count,lang,process_intent,target_ms,required_sentence=opening[2] if opening else None,natural=bool(definition),scope=scope if len(scope)<=4 else ())
    if len(chosen)!=count:return []
    for slot in chosen:slot['process_intent']=process_intent
   for slot in chosen:
@@ -824,10 +841,17 @@ def order_process_slots(slots):
  stages={'production':-1,'mix':0,'heat':1,'melt':1,'shape':2,'drain':3,'press':4,'dry':5,'cool':6,'cut':7,'inspect':8}
  return sorted(slots,key=lambda slot:(min((stages[action] for action in scene_actions(slot['text'])),default=99),slot.get('source_index',0),slot.get('source_position',0)))
 
-def script_covers_identifier_scope(sources,topic,lang,slots):
+def identifier_scope_terms(text,lang):
+ root_length=5 if lang in {'uk','ru'} else 4
+ return {('company' if lang in {'uk','ru'} and re.match(r'^(?:ф[іи]рм|компан|підприєм|предприят)',term)
+          else term if lang=='en' else term[:root_length]) for term in topic_terms(text,lang)}
+
+def identifier_scope(sources,topic,lang):
  identifier=sources[0].get('scoped_identifier','') if sources else ''
- scope=grounding_terms(topic,lang)-grounding_terms(identifier,lang) if identifier else set()
- return not scope or scope<=grounding_terms(' '.join(slot['text'] for slot in slots),lang)
+ return identifier_scope_terms(topic,lang)-identifier_scope_terms(identifier,lang) if identifier else set()
+
+def script_covers_identifier_scope(sources,topic,lang,slots):
+ return identifier_scope(sources,topic,lang)<=identifier_scope_terms(' '.join(slot['text'] for slot in slots),lang)
 
 def plan_script(sources,topic,lang,duration,max_beats=None):
  identifier=sources[0].get('scoped_identifier','') if sources else ''

@@ -179,6 +179,20 @@ def check():
   assert app.plan_script(native,brief,'uk',45)==[]
  with patch.object(app,'source_slots',side_effect=lambda sources,topic,count,lang,**kwargs:[{'text':'Архіватор створює архіви резервних копій.'}]*count):
   assert app.plan_script(native,brief,'uk',45)
+ # A better-scoring overview of the same length must not hide the scoped plan.
+ rows=[
+  (30,0,'The instrument measures temperature.',[]),
+  (20,0,'An engineer designed the instrument.',[]),
+  (5,0,'The instrument records ocean conditions.',[]),
+ ]
+ with patch.object(app,'measured_sentence_ms',return_value=3000):
+  fitted=app.fit_narration(rows,2,'en',duration_ms=8000,required_sentence=rows[0][2],scope={'ocean'})
+ assert [slot['text'] for slot in fitted]==[rows[0][2],rows[2][2]]
+ # A Russian brief can match the equivalent Ukrainian wording in the source.
+ assert app.script_covers_identifier_scope([{'scoped_identifier':'X20'}],
+  'X20 автоматизация для фирм','uk',[{'text':'Компанії можуть використовувати X20 для автоматизації.'}])
+ assert not app.script_covers_identifier_scope([{'scoped_identifier':'X20'}],
+  'X20 автоматизация для фирм','uk',[{'text':'Компанія створила X20 у 2020 році.'}])
  # A cut before an example list must preserve the following predicate.
  complete='This is a method by which several workers, such as librarians, preserve old records.'
  assert app.complete_clause_variants(complete,'en')==[complete]
