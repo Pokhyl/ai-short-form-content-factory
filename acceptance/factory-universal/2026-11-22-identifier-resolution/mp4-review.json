@@ -1,0 +1,173 @@
+{
+  "cases": [
+    {
+      "id": "0bcce6ec-c479-4249-ba98-05d27342177a",
+      "topic": "photo synthesis",
+      "language": "en",
+      "duration_s": 15
+    }
+  ],
+  "results": [
+    {
+      "id": "0bcce6ec-c479-4249-ba98-05d27342177a",
+      "topic": "photo synthesis",
+      "language": "en",
+      "duration_s": 15,
+      "status": "ready",
+      "stage": "review",
+      "error": null,
+      "script": "Photosynthesis — biological process to convert light into chemical energy. In plants, algae, and cyanobacteria, photosynthesis releases oxygen. Some organisms employ even more radical variants of photosynthesis.",
+      "audit": {
+        "shots_required": 6,
+        "narration_beats": 3,
+        "unique_assets": 6,
+        "images_per_narration_beat": [
+          2,
+          2,
+          2
+        ],
+        "minimum_two_images_per_beat": true,
+        "average_shot_duration_ms": 2500.0,
+        "source_count": 2,
+        "all_visuals_have_provenance": true,
+        "images_verified_before_voice": true,
+        "all_images_pixel_checked": true,
+        "all_images_photographically_screened": true,
+        "scene_plan_version": "source-linked-v2",
+        "source_linked_shots": 0,
+        "establishing_shots": 2,
+        "full_decode": true,
+        "renderer_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "render": {
+        "status": "ready",
+        "job_id": "0bcce6ec-c479-4249-ba98-05d27342177a",
+        "engine": "project FFmpeg renderer",
+        "storage_path": "/data/renders/0bcce6ec-c479-4249-ba98-05d27342177a/final.mp4",
+        "manifest_path": "/data/renders/0bcce6ec-c479-4249-ba98-05d27342177a/manifest.json",
+        "sha256": "32edb3cb029f5511c6fc39f566dc38641e2510395edb1d08bd63b7a3b4bbc135",
+        "bytes": 1763515,
+        "width": 1080,
+        "height": 1920,
+        "video_codec": "h264",
+        "audio_codec": "aac",
+        "pix_fmt": "yuv420p",
+        "fps_num": 30,
+        "fps_den": 1,
+        "duration_ms": 15000,
+        "muxed_audio_duration_ms": 15000,
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "frame_count": 450,
+        "audio_duration_ms": 14184,
+        "requested_duration_ms": 15000,
+        "target_duration_ms": 15000,
+        "duration_delta_ms": 0,
+        "input_audio_sha256": "21fe6036adcc69782a5d8e6a5d7ec627224c7bf6a4924a0d6961f8d3ac79709a",
+        "segments": [
+          {
+            "scene_uuid": "d8a92c18-f9ab-40d4-9cf7-c0e554f8a801",
+            "shot_uuid": "869ba117-57ee-462b-8c91-e998dc5d6729",
+            "visual_asset_id": "312fac7a-694d-4ff5-87f4-ae28ac4a736b",
+            "segment_order": 1,
+            "start_ms": 0,
+            "end_ms": 2400,
+            "duration_ms": 2400,
+            "asset_sha256": "6d2142f27c11fe3cb0322b04f4303b8af1f35e27a9daa9a4679b393c00467155",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "32f7db2a-4c2a-44d0-bc50-3de7b8c214b7",
+            "shot_uuid": "25d7367b-e17d-4c99-8ed8-efa1fe170e8d",
+            "visual_asset_id": "3b13e095-2b46-487b-97fe-c6fbd0028191",
+            "segment_order": 2,
+            "start_ms": 2400,
+            "end_ms": 4900,
+            "duration_ms": 2500,
+            "asset_sha256": "8b2d4127111d89866228336f3a9426e43822c0fee812d7a37ba2264cdf8d3249",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "679762fa-814d-4968-af83-cda373e2550e",
+            "shot_uuid": "823fd603-743e-47be-aec7-244773f80756",
+            "visual_asset_id": "3de55cbc-c147-43bb-bc75-3f09ca37bb8d",
+            "segment_order": 3,
+            "start_ms": 4900,
+            "end_ms": 7400,
+            "duration_ms": 2500,
+            "asset_sha256": "cd13dde25313d07745a6f2e9dd98146e3b2d97c87d08dc775e5923645cc65a9a",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "7edb97b2-2a21-4c27-8897-57e3726e5359",
+            "shot_uuid": "67c4d8ef-7ba5-4363-9651-667e4c355d69",
+            "visual_asset_id": "807acbc3-b1fb-479a-b128-f9107bfe359d",
+            "segment_order": 4,
+            "start_ms": 7400,
+            "end_ms": 9900,
+            "duration_ms": 2500,
+            "asset_sha256": "1c5025eeb7d9229354849bf2e06ddf99850421c208e62473a02bf17da885ea92",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "cb56c5c9-26b1-43fb-9b87-2d5f0cb866d1",
+            "shot_uuid": "dc54f1c2-0e5b-4e26-8fd4-73ad6f6c86fe",
+            "visual_asset_id": "67dad759-9835-46ef-bf79-22e87da2a109",
+            "segment_order": 5,
+            "start_ms": 9900,
+            "end_ms": 12400,
+            "duration_ms": 2500,
+            "asset_sha256": "88fe5e6b72594bec2c35cc0606d64efce538934472c75cd91ad4f6ceb759a191",
+            "media_type": "photo"
+          },
+          {
+            "scene_uuid": "4a7c759c-1dbd-4a58-a542-176f2fdeaf63",
+            "shot_uuid": "bfe7436c-8a0b-401f-ae4f-92fc56a9db8b",
+            "visual_asset_id": "14a304dd-4423-41f0-ab19-7c7bb932c189",
+            "segment_order": 6,
+            "start_ms": 12400,
+            "end_ms": 15000,
+            "duration_ms": 2600,
+            "asset_sha256": "e2f29b183c4f08988f23a82d0c69a73145d7ecf7a0df27690da4bc6b3030623a",
+            "media_type": "photo"
+          }
+        ],
+        "qa_passed": true,
+        "qa_gates": {
+          "exact_frames": true,
+          "exact_duration": true,
+          "portrait_dimensions": true,
+          "h264": true,
+          "aac": true,
+          "yuv420p": true,
+          "fps_30": true,
+          "unique_images": true,
+          "continuous_timeline": true,
+          "unchanged_source_audio": true,
+          "natural_audio_fits": true,
+          "attribution_embedded": true
+        }
+      },
+      "frame_count": 450,
+      "exact_frames": true,
+      "exact_duration": true,
+      "llm_calls": 0,
+      "speech_voice": "en-US-Chirp3-HD-Algenib",
+      "hash_matches": true
+    }
+  ],
+  "technical_pass": true
+}

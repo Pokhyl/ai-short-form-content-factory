@@ -8,7 +8,7 @@ Studio: https://studio.hodor.com.pl/ — no password.
 
 The current release resolves verified split-title spellings and checks historical dates and catalog identifiers when the narration names them. The unauthenticated browser request «супер нова» completed a 45-second Ukrainian MP4. Frame and caption review accepted astronomy and English plant-biology outputs. The Polish microscope result requires stronger visual grounding for named historical facts and remains outside accepted examples. See acceptance/factory-universal/2026-11-22-source-resolution/.
 
-Owner listening approval remains separate and pending. Inputs require an identifiable source and enough suitable licensed photos; ambiguous or unsupported requests ask for context.
+Owner listening approval remains separate and pending. Inputs require an identifiable source and enough suitable licensed photos. A brief starting with an exact alphanumeric identifier can resolve its subject through another Wikipedia edition and follow a published link to the selected language. Studio reports when the native article is unavailable. The script must cover the requested focus.
 
 ## Pipeline
 

@@ -1,0 +1,28 @@
+{
+  "id": "8535b7b5-26f6-4c7e-8d3c-f4b28f2a81e8",
+  "created_at": "2026-11-22T19:20:33.106117+00:00",
+  "updated_at": "2026-11-22T19:20:35.508618+00:00",
+  "topic": "n8n автоматизация для фирм",
+  "language": "uk",
+  "duration_s": 45,
+  "status": "needs_input",
+  "stage": "research",
+  "progress": 0,
+  "message": "Found N8n, but no usable Wikipedia article for it in Ukrainian.",
+  "error": null,
+  "review_status": "pending",
+  "review_note": null,
+  "manifest": {
+    "sources": [
+      {
+        "title": "N8n",
+        "language": "en",
+        "native_title": "",
+        "url": "https://en.wikipedia.org/wiki/N8n"
+      }
+    ],
+    "resolved_topic": "N8n",
+    "input_reason": "source_language_unavailable"
+  },
+  "origin": "user"
+}

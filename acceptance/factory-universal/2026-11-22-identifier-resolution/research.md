@@ -12,3 +12,9 @@ Checks ran in the factory runtime with isolated SQLite and a fresh cache. `check
 | B2B sales | English | Resolved the exact identifier redirect to `Business-to-business`. |
 
 These checks cover source discovery and worker diagnostics. Fixtures exercise the requirement that a planned script include the requested focus. They generated no MP4s.
+
+## Production verification
+
+The updated worker (`55238bd`) processed one new submission from the public form for the original brief. Studio linked the English article and reported the lack of a usable Ukrainian article. The original job was preserved. The job list initially omitted the reason field from its summary. Release `105f007` passes it through, and the browser verified the source-specific card and link.
+
+A separate public-form job for `photo synthesis` (English, 15 s) reached ready with the selected Google voice, six distinct images, 450 frames, exact duration, successful complete decode and a matching SHA-256. Chromium played the new 1080×1920 MP4 after deployment. The attached midpoint frames show complete captions. The two shots for the final sentence show algae without explaining the specific photosynthetic mechanism, a limitation of the selected narration and visual context. Listening approval is pending.

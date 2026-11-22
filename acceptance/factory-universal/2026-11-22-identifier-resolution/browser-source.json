@@ -1,0 +1,34 @@
+{
+  "page_errors": [],
+  "authenticated": false,
+  "submission_attempted": true,
+  "passed": true,
+  "default_user_only": true,
+  "ready_examples": 5,
+  "continuous_playback": {
+    "before": {
+      "time": 5.157075,
+      "width": 1080,
+      "error": null
+    },
+    "after_refresh": {
+      "same": true,
+      "time": 6.501969,
+      "width": 1080
+    }
+  },
+  "mobile_dimensions": {
+    "viewport": 390,
+    "content": 390
+  },
+  "diagnostics_accessible": true,
+  "submission_started_at": "2026-11-22T19:20:32.922113+00:00",
+  "request": {
+    "topic": "n8n автоматизация для фирм",
+    "language": "uk",
+    "duration_s": 45
+  },
+  "submission_http_status": 202,
+  "submitted_job": "8535b7b5-26f6-4c7e-8d3c-f4b28f2a81e8",
+  "form_keeps_language_duration": true
+}
