@@ -154,6 +154,13 @@ def check():
  assert app.photo_score(sky,astro,'Supernova')>=0
  assert app.photo_score({**sky,'depiction':'File:Supernova SN 1006.jpg'},astro,'Supernova')<0
  assert not app.photographic_metadata({**sky,'depiction':'File:Supernova (CGI).jpg'})
+ assert not app.photographic_metadata({'depiction':'File:Instrument.png','alt':'3d model using Blender'})
+ assert not app.photographic_metadata({'depiction':'File:Instrument - Fig. 59.png'})
+ microscope_slot={'text':'A microscope magnifies small objects.','visual_title':'Microscope','source_driven':True}
+ microscope={**sky,'depiction':'File:Microscope toy.jpg','alt':'A children’s microscope toy'}
+ assert app.photo_score(microscope,microscope_slot,'Microscope')<0
+ assert app.photo_score(microscope,microscope_slot,'Microscope toy')>=0
+
  assert app.astronomical_identifiers('NGC 224 and SN 1987A')=={'NGC 224','SN 1987A'}
  # A verified spelling repair never outranks an exact requested title.
  exact={'title':'Супер Нова','text':'Independent exact match.'}
