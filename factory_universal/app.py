@@ -2044,7 +2044,7 @@ class Handler(BaseHTTPRequestHandler):
    with connect() as c:rows=c.execute('SELECT id FROM jobs WHERE '+filters[view]+' ORDER BY created_at DESC LIMIT 50').fetchall()
    jobs=[public_job(get_job(row['id'])) for row in rows]
    for job in jobs:
-    if job['manifest']:job['manifest']={key:job['manifest'][key] for key in ('script','sources','resolved_topic','resolved_entity_id','input_needed') if key in job['manifest']}
+    if job['manifest']:job['manifest']={key:job['manifest'][key] for key in ('script','sources','resolved_topic','resolved_entity_id','input_needed','input_reason') if key in job['manifest']}
    return self.json_out(200,{'jobs':jobs,'view':view})
   m=re.fullmatch(r'/api/jobs/([0-9a-fA-F-]{36})(?:/(video|manifest|credits))?',p)
   if m:
