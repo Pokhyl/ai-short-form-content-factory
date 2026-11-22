@@ -248,6 +248,18 @@ def check():
  assert captured==['Papermaking']
  assert enriched[-1]['source_type']=='structured definition'
  assert app.relevant_sources(enriched,'How paper is made','en')[-1]['source_type']=='structured definition'
+ # Snapshot links and the exact text must point to the same revision.
+ from storyboard import ensure_source
+ source={'url':'https://en.wikipedia.org/wiki/Papermaking'}
+ def snapshot_fixture(url,**kwargs):
+  params=app.urllib.parse.parse_qs(app.urllib.parse.urlsplit(url).query)
+  assert params['page']==['Papermaking'] and 'revid' in params['prop'][0].split('|')
+  return {'parse':{'revid':12345,'text':{'*':'<p>'+('Papermaking uses <a href="/wiki/Pulp_(paper)">pulp</a>. '*15)+'</p>'}}}
+ with patch.object(app,'cache_fetch',lambda key,fetch:fetch()),patch.object(app,'http_json',snapshot_fixture):
+  ensure_source([source],'en',app)
+ assert source['revision_id']==12345
+ assert source['revision_url']=='https://en.wikipedia.org/w/index.php?oldid=12345'
+ assert any(link['title']=='Pulp (paper)' for link in source['visual_links'])
  # A rejected meaning stays rejected; another meaning of the same topic remains selectable.
  with TemporaryDirectory() as temp:
   with patch.object(app,'DB',Path(temp)/'decisions.sqlite3'):

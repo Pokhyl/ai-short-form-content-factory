@@ -80,7 +80,7 @@ def ensure_source(sources,lang,api):
  source=sources[0]
  def fetch():
   title=urllib.parse.unquote(urllib.parse.urlsplit(source['url']).path.split('/wiki/',1)[-1]).replace('_',' ')
-  query=urllib.parse.urlencode({'action':'parse','page':title,'prop':'text|langlinks','format':'json'})
+  query=urllib.parse.urlencode({'action':'parse','page':title,'prop':'text|revid','format':'json'})
   parsed=api.http_json('https://'+lang+'.wikipedia.org/w/api.php?'+query,timeout=22).get('parse',{})
   article=extract_article(parsed.get('text',{}).get('*',''),lang,api)
   if len(article['text'])<220:raise ValueError('Source article text is unavailable')
@@ -88,7 +88,7 @@ def ensure_source(sources,lang,api):
   article['revision_url']='https://'+lang+'.wikipedia.org/w/index.php?oldid='+str(parsed['revid']) if parsed.get('revid') else source['url']
   return article
  # Text and links must come from the same revision and the same paragraph parser.
- source.update(api.cache_fetch('scene-article-snapshot-v1|'+lang+'|'+source['url'],fetch))
+ source.update(api.cache_fetch('scene-article-snapshot-v2|'+lang+'|'+source['url'],fetch))
 
 def source_links(sources,lang,api):
  if 'visual_links' not in sources[0]:ensure_source(sources,lang,api)
