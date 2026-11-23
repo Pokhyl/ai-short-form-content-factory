@@ -27,6 +27,8 @@ def check():
  assert app.photo_score(on_rack,drying,'How paper is made')>=0
  assert not app.photographic_metadata({'depiction':'File:Before After Specimen Washing.jpg'})
  assert not app.photographic_metadata({'alt':'Specimen preparation. (A) Photograph of the insect. (B) Close-up of the wing. (C) View under magnification.'})
+ assert not app.photographic_metadata({'depiction':'File:Volcano from an orbiter.jpg',
+                                        'creator':'The contributor modified the image with labels.'})
  assert app.unsupported_qualifier('The largest mud volcanoes are enormous.','Volcano',[{'title':'Volcano'}])
  assert not app.unsupported_qualifier('The largest mud volcanoes are enormous.','Volcano',[{'title':'Volcano'},{'title':'Mud volcano'}])
  contexts=[{'title':'Lunar eclipse','visual_title':'Lunar eclipse','text':'The Moon moves through the shadow of Earth.'},{'title':'August 2009 lunar eclipse','visual_title':'August 2009 lunar eclipse','text':'The Moon moves through the shadow of Earth.'}]
@@ -421,6 +423,10 @@ def check():
  quiet={**flowers,'alt':'A quiet volcano with a snow-covered cone','depiction':'File:Volcano in winter.jpg'}
  assert app.photo_score(quiet,volcano_slot,'volcano')<0
  assert app.photo_score({**quiet,'alt':'An ash cloud from the erupting volcano'},volcano_slot,'volcano')>=0
+ mars_crater={**quiet,'depiction':'File:Mars volcano and impact crater.jpg','alt':'A volcanic caldera on Mars.'}
+ crater_slot={**volcano_slot,'volcanic_features':['crater']}
+ assert app.photo_score(mars_crater,crater_slot,'volcano')<0
+ assert app.photo_score(mars_crater,crater_slot,'Mars volcano')>=0
  audit_context=app.photo_audit_context('volcano',volcano_slot)
  assert app.photo_audit_context('volcano',{**volcano_slot,'text':'Інше речення про виверження.'})==audit_context
  assert app.photo_audit_context('volcano',{**volcano_slot,'volcanic_features':['crater']})!=audit_context

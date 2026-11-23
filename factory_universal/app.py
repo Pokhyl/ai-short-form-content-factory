@@ -1237,6 +1237,8 @@ def semantic_categories(candidate):
 def photographic_metadata(p):
  title=p.get('depiction','')
  description=p.get('alt','').removeprefix(title).strip()
+ overlays=r'\b(?:added (?:text |color(?:ed)? )?(?:labels|arrows)|(?:modified|marked|overlaid) (?:the )?(?:image |photo(?:graph)? )?with (?:text |color(?:ed)? )?(?:labels|arrows))\b'
+ if re.search(overlays,description+' '+p.get('creator',''),re.I):return False
  if re.search(r'\b(?:annotated|montage|multi.panel|before(?:[ _-]+and)?[ _-]+after)\b',title,re.I):return False
  nonphoto=r'\b(?:shows?|showing|displays?|plots?|depicts?) (?:a |an |the )?(?:spectrum|(?:light.?curve|spectral|intensity) plot|graph)\b|\b(?:inset(?: [a-z-]+){0,2} images?|series of [a-z]+ panels)\b|\[(?:top|bottom) (?:left|right)\]'
  if re.search(nonphoto,description[:950],re.I):return False
@@ -1425,6 +1427,9 @@ def photo_score(p,slot,topic):
   if 'pollination' in insect_features and re.search(r'\b(?:hive|comb|frames?|honeycomb|beeswax)\b',title,re.I) and not re.search(r'\b(?:pollinating|on (?:a |the )?flower|orchard)\b',title,re.I):return -1
   if 'fossil' in depicted_features and 'fossil' not in insect_features and 'fossil' not in insect_scene_features(topic):return -1
  features=slot.get('volcanic_features',[])
+ if volcanic_subject(profile):
+  alien_terrain=r'\b(?:on (?:mars|venus|mercury|the moon|io|titan)|martian (?:surface|crater|volcano|landscape)|lunar (?:surface|crater)|venusian (?:surface|crater|volcano))\b'
+  if re.search(alien_terrain,p.get('alt',''),re.I) and not re.search(r'\b(?:mars|venus|mercury|moon|io|titan|martian|lunar|venusian)\b',topic,re.I):return -1
  if features:
   observed=volcanic_features(p.get('alt','')+' '+' '.join(semantic_categories(p)))
   if not set(features).intersection(observed):return -1
