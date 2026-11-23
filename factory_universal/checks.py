@@ -402,6 +402,9 @@ def check():
  honey_slot={**bee_slot,'text':'Бджоли перероблюють нектар на мед.'}
  honey_slot['insect_features']=app.insect_scene_features(honey_slot['text'])
  assert honey_slot['insect_features']==['honey production']
+ assert app.insect_scene_features('Бджоли перероблюють його в мед.')==['honey production']
+ assert app.insect_scene_features('З нектару виробляється мед.')==['honey production']
+ assert app.insect_scene_features('Існують у різноманітних колективних утвореннях.')==['insect colony']
  assert app.photo_score(flowers,honey_slot,'Bee')<0
  assert app.photo_score({**flowers,'alt':'Honey bees on honeycomb'},honey_slot,'Bee')>=0
  assert app.insect_scene_features('Бджоли як запилювачі важливі в сільському господарстві.')==['pollination']

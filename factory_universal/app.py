@@ -1154,11 +1154,12 @@ INSECT_SCENE_FEATURES={
  'queen':r'\b(?:queen(?: bee)?|queen ant|queen wasp|królow\w*|matk\w* pszczel\w*|матк\w*|бджол[ауиі]-мат[іе]\w*)\b',
  'pollen':r'\b(?:pollen|pollen basket\w*|pył(?:ek|ku|kiem)|пил(?:ок|ку|ком)|пыльц\w*)\b',
  'proboscis':r'\b(?:proboscis|proboscides|trąbk\w*|хобот\w*)\b',
- 'honey production':r'\b(?:honeycomb\w*|honey (?:extraction|production|processing|stores?)|(?:make|produce|store|extract|harvest)\w* honey|produkcj\w* miodu|plastry miodu|переробл\w*\b.{0,40}\bна мед|виробництв\w* меду|пчелиные соты|производств\w* м[её]да|кг меду)\b',
+ 'honey production':r'\b(?:honeycomb\w*|honey (?:extraction|production|processing|stores?)|(?:make|produce|store|extract|harvest)\w* honey|produkcj\w* miodu|plastry miodu|переробл\w*\b.{0,40}\b(?:на|в|у) мед|виробля\w* мед|виробництв\w* меду|пчелиные соты|производ(?:ств\w* м[её]да|ится м[её]д)|кг меду)\b',
  'pollination':r'\b(?:pollinat\w*|foraging|(?:drinking|collecting) nectar|on (?:a |the )?flower\w*|zapyl\w*|(?:за|об)пил\w*|опыл\w*)\b',
  'carrion feeding':r'\b(?:carrion|vulture bees?|padlin\w*|падал(?:ь|і|лю|ью))\b',
  'predation':r'\b(?:predat\w*|prey|eating a (?:bee|wasp|fly)|drapież\w*|ofiar\w*|жертв\w*|здобич\w*|прогодуван\w* птах\w*|хищн\w*|павук\w*)\b',
  'solitary insects':r'\b(?:solitary (?:bees?|wasps?|insects?)|samotnicz\w*|одиночн\w*)\b',
+ 'insect colony':r'\b(?:hive|beehive|insect colony|colony of bees|swarm of bees|kolektyw\w*|колективн\w* утворенн\w*|колони\w* пч[её]л|бджолин\w* колоні\w*)\b',
 }
 
 def insect_scene_features(text):
@@ -1424,7 +1425,9 @@ def photo_score(p,slot,topic):
   depicted_features=set(insect_scene_features(p.get('alt','')+' '+' '.join(semantic_categories(p))))
   if not set(insect_features)<=depicted_features:return -1
   title=p.get('depiction','')
-  if 'pollination' in insect_features and re.search(r'\b(?:hive|comb|frames?|honeycomb|beeswax)\b',title,re.I) and not re.search(r'\b(?:pollinating|on (?:a |the )?flower|orchard)\b',title,re.I):return -1
+  if 'pollination' in insect_features:
+   if re.search(r'\b(?:hive|comb|frames?|honeycomb|beeswax)\b',title,re.I) and not re.search(r'\b(?:pollinating|on (?:a |the )?flower|orchard)\b',title,re.I):return -1
+   if re.search(r'\b(?:queen marking|bee marked in|marking a queen)\b',p.get('alt',''),re.I):return -1
   if 'fossil' in depicted_features and 'fossil' not in insect_features and 'fossil' not in insect_scene_features(topic):return -1
  features=slot.get('volcanic_features',[])
  if volcanic_subject(profile):
