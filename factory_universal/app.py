@@ -542,8 +542,8 @@ def grounding_terms(text,lang):
 
 def context_dependent_sentence(text):
  # Source paragraphs may refer to material omitted from a short video.
- leading=r'^(?:pozostał\w* częś\w*|решта|остальн\w* часть|the remaining part|był on|była ona|byli oni|były one|ось чому|вот почему|that is why|that.s why|dlatego|згодом|пізніше|затем|впоследствии|subsequently|later|potem|następnie|the (?:outcome|result|wooden frame)\b|finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
- references=r'\b(?:цього|цієї|цих|цим|цій|цей|ця|цю|ці|їх|її|його|такі|таких|такого|такої|така|такою|этой|этого|этих|такие|таких|такая|такой|такую|такое|tych|tej|tego|takie|takich|this|these|those|such)\b'
+ leading=r'^(?:pozostał\w* częś\w*|поверх (?:цієї |такої )?маси|поверх (?:этой |такой )?массы|решта|остальн\w* часть|the remaining part|był on|była ona|byli oni|były one|ось чому|вот почему|that is why|that.s why|dlatego|згодом|пізніше|затем|впоследствии|subsequently|later|potem|następnie|the (?:outcome|result|wooden frame)\b|finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
+ references=r'\b(?:цього|цієї|цих|цим|цими|цій|этими|цей|ця|цю|ці|їх|її|його|такі|таких|такого|такої|така|такою|этой|этого|этих|такие|таких|такая|такой|такую|такое|tych|tej|tego|takie|takich|this|these|those|such)\b'
  pronouns=r'^(?:he|she|it|they|their|its|он|она|оно|они|его|ее|её|их|він|вона|воно|вони|це|його|її|їх|one|ona|ono|oni|jej|jego|ich)\b'
  reference=re.search(references,text,re.I)
  dangling=bool(reference and len(text[:reference.start()].split())<5)
@@ -854,7 +854,7 @@ def identifier_scope(sources,topic,lang):
 def script_covers_identifier_scope(sources,topic,lang,slots):
  return identifier_scope(sources,topic,lang)<=identifier_scope_terms(' '.join(slot['text'] for slot in slots),lang)
 
-def plan_script(sources,topic,lang,duration,max_beats=None):
+def plan_script(sources,topic,lang,duration,max_beats=None,excluded_narrations=()):
  identifier=sources[0].get('scoped_identifier','') if sources else ''
  if sources and source_match_rank(topic,sources[0])==1:
   topic=sources[0]['title']
@@ -870,16 +870,18 @@ def plan_script(sources,topic,lang,duration,max_beats=None):
    if structured:
     expanded=expand_source_blocks(slots,int(max_beats or duration//5))
     if process_intent:expanded=order_process_slots(expanded)
-    if expanded and script_covers_identifier_scope(sources,topic,lang,expanded):
+    if expanded and script_covers_identifier_scope(sources,topic,lang,expanded) and (
+        not excluded_narrations or narration_digest(lang,expanded) not in excluded_narrations):
      spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in expanded))['input']['text']
      predicted=natural_duration_ms(spoken,lang)
      plans.append((abs(predicted-duration*950),abs(count-preferred),-sum(slot.get('score',0) for slot in expanded),expanded))
-   elif script_covers_identifier_scope(sources,topic,lang,slots):return slots
+   elif script_covers_identifier_scope(sources,topic,lang,slots) and (
+       not excluded_narrations or narration_digest(lang,slots) not in excluded_narrations):return slots
  if plans:return min(plans,key=lambda row:row[:3])[3]
  if sources and not process_intent and not identifier:
   canonical=sources[0]['title']
   if canonical.casefold()!=topic.casefold():
-   slots=plan_script(sources,canonical,lang,duration,max_beats=max_beats)
+   slots=plan_script(sources,canonical,lang,duration,max_beats=max_beats,excluded_narrations=excluded_narrations)
    for slot in slots:slot['resolved_topic']=canonical
    return slots
  return []
@@ -1127,6 +1129,10 @@ INSECT_SCENE_FEATURES={
  'stinger':r'\b(?:sting(?:er|ers|ing)?|żądł\w*|жал[аоу]|жалом)\b',
  'waggle dance':r'\b(?:waggle dance|bee dance|dance of (?:the )?bees|taniec pszcz\w*|танц\w*|танок)\b',
  'fossil':r'\b(?:fossils?|fossilized|skamieniałoś\w*|скам[’\x27]яніл\w*|окаменел\w*)\b',
+ 'brood':r'\b(?:brood|larv\w*|eggs?|czerw(?:iu|ia|ie|iem)?|larw\w*|jaj(?:a|ka|ek|ko)|личин(?:ок|к\w*)|яйц\w*)\b',
+ 'queen':r'\b(?:queen(?: bee)?|queen ant|queen wasp|królow\w*|matk\w* pszczel\w*|бджолин\w* матк\w*|пчелин\w* матк\w*)\b',
+ 'pollen':r'\b(?:pollen|pollen basket\w*|pył(?:ek|ku|kiem)|пил(?:ок|ку|ком)|пыльц\w*)\b',
+ 'proboscis':r'\b(?:proboscis|proboscides|trąbk\w*|хобот\w*)\b',
 }
 
 def insect_scene_features(text):
@@ -1134,6 +1140,15 @@ def insect_scene_features(text):
 
 def insect_subject(profile):
  return bool(re.search(r'\binsects?\b',profile.get('visual_description',''),re.I))
+
+def conflicting_insect_identity(candidate,profile):
+ # Hoverflies are often photographed on the same flowers as bees. Use the
+ # named subject in the caption, before keyword and category lists.
+ if not re.fullmatch(r'bees?',profile.get('name',''),re.I):return False
+ title=candidate.get('depiction','')
+ description=candidate.get('alt','').removeprefix(title).lstrip()
+ identity=title+' '+description[:110]
+ return bool(re.search(r'\b(?:hoverfl(?:y|ies)|drone fl(?:y|ies)|Eristalis|Syrphidae)\b',identity,re.I))
 
 def place_detail_query(slot,profile):
  if slot.get('place_features'):
@@ -1354,6 +1369,7 @@ def photo_score(p,slot,topic):
  profile=slot.get('entity_profile',{})
  insect_features=slot.get('insect_features',[])
  if insect_subject(profile) or insect_features:
+  if conflicting_insect_identity(p,profile):return -1
   depicted_features=set(insect_scene_features(p.get('alt','')+' '+' '.join(semantic_categories(p))))
   if not set(insect_features)<=depicted_features:return -1
   if 'fossil' in depicted_features and 'fossil' not in insect_features and 'fossil' not in insect_scene_features(topic):return -1
@@ -1598,6 +1614,20 @@ def google_connection_status(force=False):
   draft=path.with_suffix('.tmp');draft.write_text(json.dumps(result));draft.replace(path)
   return result
 
+def voice_cache_path(voice,digest):
+ return ROOT/'cache'/(hashlib.sha256(('selected-voice-audio-v1|'+voice+'|'+digest).encode()).hexdigest()+'.json')
+
+def cached_native_voice(voice,digest):
+ cache=voice_cache_path(voice,digest)
+ try:
+  stat=cache.stat()
+  if time.time()-stat.st_mtime>=86400 or stat.st_size>=10_000_000:return None
+  saved=json.loads(cache.read_text());audit=saved.get('audit',{});audio=base64.b64decode(saved.get('audio_base64',''),validate=True)
+  if audio and audit.get('voice')==voice and audit.get('text_sha256')==digest and audit.get('audio_sha256')==hashlib.sha256(audio).hexdigest():
+   return audio,audit
+ except (OSError,ValueError,TypeError,AttributeError):pass
+ return None
+
 def google_voice_once(lang,text,jid,attempt):
  import psycopg
  body=selected_voice_request(lang,text);spoken=body['input']['text'];voice=body['voice']['name']
@@ -1606,17 +1636,15 @@ def google_voice_once(lang,text,jid,attempt):
  # A durable claim precedes quota accounting and the uncertain send; an interrupted attempt cannot replay.
  with connect() as c:
   c.execute('INSERT INTO voice_attempts(job_id,attempt,text_sha256,voice,state) VALUES(?,?,?,?,?)',(jid,attempt,digest,voice,'claimed'))
- cache=ROOT/'cache'/(hashlib.sha256(('selected-voice-audio-v1|'+voice+'|'+digest).encode()).hexdigest()+'.json')
- if cache.exists() and time.time()-cache.stat().st_mtime<86400 and cache.stat().st_size<10_000_000:
-  try:
-   saved=json.loads(cache.read_text());audit=saved.get('audit',{});audio=base64.b64decode(saved.get('audio_base64',''),validate=True)
-  except (OSError,ValueError,TypeError):audit={};audio=b''
-  if audit.get('voice')==voice and audit.get('text_sha256')==digest and audit.get('audio_sha256')==hashlib.sha256(audio).hexdigest() and audio:
-   folder=ROOT/'tmp'/jid;folder.mkdir(parents=True,exist_ok=True);path=folder/('voice-attempt-'+str(attempt)+'.mp3')
-   with path.open('xb') as stream:stream.write(audio)
-   audit={**audit,'attempt':attempt,'reused_completed_audio':True,'provider_send':False}
-   with connect() as c:c.execute("UPDATE voice_attempts SET state='measured',receipt=? WHERE job_id=? AND attempt=?",(json.dumps(audit),jid,attempt))
-   return path,audit
+ cache=voice_cache_path(voice,digest)
+ saved=cached_native_voice(voice,digest)
+ if saved:
+  audio,audit=saved
+  folder=ROOT/'tmp'/jid;folder.mkdir(parents=True,exist_ok=True);path=folder/('voice-attempt-'+str(attempt)+'.mp3')
+  with path.open('xb') as stream:stream.write(audio)
+  audit={**audit,'attempt':attempt,'reused_completed_audio':True,'provider_send':False}
+  with connect() as c:c.execute("UPDATE voice_attempts SET state='measured',receipt=? WHERE job_id=? AND attempt=?",(json.dumps(audit),jid,attempt))
+  return path,audit
  sku='wavenet' if lang=='ru' else 'chirp3_hd'
  try:
   with psycopg.connect(SETTINGS['database_url'],connect_timeout=5,options='-c statement_timeout=5000') as pg:
@@ -1649,6 +1677,18 @@ def google_voice_once(lang,text,jid,attempt):
 
 def natural_voice_window(duration):
  return round(duration*900),duration*1000
+
+def out_of_window_narrations(topic,lang,duration):
+ voice=SELECTED_VOICES[lang][1];low,high=natural_voice_window(duration)
+ with connect() as db:
+  rows=db.execute("SELECT v.text_sha256 FROM voice_attempts v JOIN jobs j ON j.id=v.job_id WHERE j.topic=? AND j.language=? AND j.duration_s=? AND v.voice=? AND v.state='measured' GROUP BY v.text_sha256 ORDER BY MAX(v.rowid) DESC LIMIT 12",(topic,lang,duration,voice)).fetchall()
+ excluded=set()
+ for row in rows:
+  digest=row['text_sha256'];cached=cached_native_voice(voice,digest)
+  if not cached:continue
+  milliseconds=cached[1].get('duration_ms')
+  if isinstance(milliseconds,int) and not low<=milliseconds<=high:excluded.add(digest)
+ return excluded
 
 def initial_natural_budget(sources,topic,lang,duration):
  if source_overview_mode(sources):return duration
@@ -1722,8 +1762,7 @@ def completed_narration_plan(sources,topic,lang,duration):
    if not safe_id(row['job_id']) or not re.fullmatch('[a-f0-9]{64}',digest):continue
    evidence=json.loads((RENDER/row['job_id']/('verified-input-'+digest[:16]+'.json')).read_text())
    slots=source_verified_native_plan(evidence,receipt,sources,topic,lang,duration)
-   cache=ROOT/'cache'/(hashlib.sha256(('selected-voice-audio-v1|'+SELECTED_VOICES[lang][1]+'|'+digest).encode()).hexdigest()+'.json')
-   if slots and cache.is_file() and time.time()-cache.stat().st_mtime<86400:return slots
+   if slots and cached_native_voice(SELECTED_VOICES[lang][1],digest):return slots
   except (OSError,ValueError,KeyError,TypeError):continue
  return None
 
@@ -1732,9 +1771,9 @@ def narration_digest(lang,slots):
  return hashlib.sha256(spoken.encode()).hexdigest()
 
 def distinct_narration_plan(sources,topic,lang,duration,planning_seconds,seen,direction):
- for step in range(17):
+ for step in [*range(17),*range(-1,-17,-1)]:
   budget=max(5,min(90,planning_seconds+direction*step*.25))
-  candidate=plan_script(sources,topic,lang,budget,max_beats=duration//5)
+  candidate=plan_script(sources,topic,lang,budget,max_beats=duration//5,excluded_narrations=seen)
   if candidate and narration_digest(lang,candidate) not in seen:return candidate,budget
  return [],planning_seconds
 
@@ -1778,7 +1817,7 @@ def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots
 
 def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None):
  # Change complete source sentences after a measured miss, never the voice or playback rate.
- planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=set();attempts=[];slots=[];completed_plan=completed_narration_plan(sources,topic,lang,duration)
+ planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=out_of_window_narrations(topic,lang,duration);attempts=[];slots=[];completed_plan=completed_narration_plan(sources,topic,lang,duration)
  for attempt in (1,2,3):
   direction=-1 if attempts and attempts[-1]['duration_ms']>duration*1000 else 1
   slots=completed_plan if attempt==1 and completed_plan else plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)

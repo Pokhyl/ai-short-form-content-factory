@@ -56,7 +56,7 @@ def check():
  import io,hashlib,uuid
  with TemporaryDirectory() as temp:
   directory=Path(temp);job_id=str(uuid.uuid4());calls=[];plans=[]
-  def fake_plan(sources,topic,lang,seconds,max_beats=None):
+  def fake_plan(sources,topic,lang,seconds,max_beats=None,excluded_narrations=()):
    plans.append(seconds);return [{'text':'Complete source sentence number '+str(len(plans))+'.','language':lang}]
   def fake_voice(lang,text,jid,attempt):
    calls.append((lang,text,attempt));path=directory/('attempt-'+str(attempt));path.write_bytes(b'unchanged natural voice')
@@ -84,6 +84,25 @@ def check():
     except ValueError as error:assert str(error)=='no verified images'
     else:raise AssertionError('missing images did not stop narration')
     assert unused.call_count==0
+ with TemporaryDirectory() as temp,patch.multiple(app,ROOT=Path(temp),DB=Path(temp)/'jobs.sqlite3'):
+  app.init_db()
+  voice=app.SELECTED_VOICES['en'][1];jid=str(uuid.uuid4());now=app.now()
+  cases=[('too short',26496,True),('fits duration',28800,True),('too long and no cache',30936,False)]
+  excluded=[]
+  with app.connect() as db:
+   db.execute("INSERT INTO jobs(id,created_at,updated_at,topic,language,duration_s,status,stage,progress,message) VALUES(?,?,?,?,?,?,'failed','voice',100,'fixture')",(jid,now,now,'Example','en',30))
+   for attempt,(script,milliseconds,save) in enumerate(cases,1):
+    digest=hashlib.sha256(script.encode()).hexdigest()
+    db.execute("INSERT INTO voice_attempts(job_id,attempt,text_sha256,voice,state) VALUES(?,?,?,?,'measured')",(jid,attempt,digest,voice))
+    if save:
+     path=app.voice_cache_path(voice,digest);path.parent.mkdir(exist_ok=True)
+     audio=b'fixture audio'
+     path.write_text(app.json.dumps({'audio_base64':app.base64.b64encode(audio).decode(),
+       'audit':{'voice':voice,'text_sha256':digest,'audio_sha256':hashlib.sha256(audio).hexdigest(),'duration_ms':milliseconds}}))
+    if attempt==1:excluded.append(digest)
+  assert app.out_of_window_narrations('Example','en',30)==set(excluded)
+  assert app.out_of_window_narrations('Another topic','en',30)==set()
+  assert app.out_of_window_narrations('Example','en',45)==set()
 
 
 
@@ -217,6 +236,7 @@ def check():
  assert not app.truncated_dependent_clause(complete,complete,'en')
  assert app.context_dependent_sentence('In small cells, they are embedded in the membrane.')
  assert app.context_dependent_sentence('Поскольку неизвестно, является ли такая сила тяжести достаточной, рассматриваются другие варианты.')
+ assert app.context_dependent_sentence('За цими рухами інші бджоли дізнаються про місце збору.')
  assert app.context_dependent_sentence('Since water is used here, the equation for the process is.')
  assert not app.context_dependent_sentence('In small cells, pigments are embedded in the membrane.')
 
@@ -358,6 +378,9 @@ def check():
  assert app.photo_score({**skyline,'alt':'Escarpment above the river in Example City'},feature_slot,'Example City')>=0
  assert app.insect_scene_features('Бджола виконує певні умовні рухи — танцює.')==['waggle dance']
  assert app.insect_scene_features('У кожної бджоли є дві пари крил та вусики.')==['antennae','wings']
+ assert app.insect_scene_features('Бджолина матка відкладає яйця, з яких виходять личинки.')==['brood','queen']
+ assert app.insect_scene_features('Пилок потрібен для годування личинок.')==['brood','pollen']
+ assert app.insect_scene_features('Довгий хоботок потрібен для висмоктування нектару.')==['proboscis']
  insect={'text':'A bee performs a waggle dance.','insect_features':['waggle dance']}
  flowers={'provider':'commons','alt':'A bee on a flower','width':1200,'height':900}
  assert app.photo_score(flowers,insect,'Bee')<0
@@ -365,6 +388,11 @@ def check():
  live_insect={'text':'A bee collects pollen.','entity_profile':{'visual_description':'clade of insects'}}
  fossil_bee={**flowers,'alt':'Fossilized stingless bee preserved in amber.'}
  assert app.photo_score(fossil_bee,live_insect,'Bee')<0
+ hoverfly={**flowers,'depiction':'File:Eristalis tenax and flowers.jpg',
+           'alt':'File:Eristalis tenax and flowers.jpg Drone fly on ragwort; a bee mimic.'}
+ bee_slot={**live_insect,'entity_profile':{'name':'bee','visual_description':'clade of insects'}}
+ assert app.photo_score(hoverfly,bee_slot,'Bee')<0
+ assert app.photo_score(flowers,bee_slot,'Bee')>=0
 
  # Retention accounts for ASR records and never selects unrelated shared UUIDs.
  with TemporaryDirectory() as temp:
