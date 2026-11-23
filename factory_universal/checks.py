@@ -394,7 +394,7 @@ def check():
  assert app.photo_score(hoverfly,bee_slot,'Bee')<0
  assert app.photo_score(flowers,bee_slot,'Bee')>=0
  target_slot={**bee_slot,'visual_target':{'name':'Bee','kind':'animal'}}
- for title in ('Amber color ant with wings like bee','Bee or wasp','Crab spider with bee prey','Ant lifting dead bee'):
+ for title in ('Amber color ant with wings like bee','Bee or wasp','Crab spider with bee prey','Ant lifting dead bee','Greater Bee Fly - Bombylius major'):
   assert app.photo_score({**flowers,'depiction':f'File:{title}.jpg','alt':title},target_slot,'Bee')<0
  honey_slot={**bee_slot,'text':'Бджоли перероблюють нектар на мед.'}
  honey_slot['insect_features']=app.insect_scene_features(honey_slot['text'])
@@ -402,6 +402,9 @@ def check():
  assert app.photo_score(flowers,honey_slot,'Bee')<0
  assert app.photo_score({**flowers,'alt':'Honey bees on honeycomb'},honey_slot,'Bee')>=0
  assert app.insect_scene_features('Бджоли як запилювачі важливі в сільському господарстві.')==['pollination']
+ assert app.insect_scene_features('Бджолу-матір називають маткою.')==['queen']
+ assert app.insect_scene_features('Один вид бджіл є обпилювачем цієї рослини.')==['pollination']
+ assert app.insect_scene_features('Група бджіл пристосувалася до поїдання падалі.')==['carrion feeding']
 
  # Retention accounts for ASR records and never selects unrelated shared UUIDs.
  with TemporaryDirectory() as temp:

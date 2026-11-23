@@ -1130,11 +1130,12 @@ INSECT_SCENE_FEATURES={
  'waggle dance':r'\b(?:waggle dance|bee dance|dance of (?:the )?bees|taniec pszcz\w*|танц\w*|танок)\b',
  'fossil':r'\b(?:fossils?|fossilized|skamieniałoś\w*|скам[’\x27]яніл\w*|окаменел\w*)\b',
  'brood':r'\b(?:brood|larv\w*|eggs?|czerw(?:iu|ia|ie|iem)?|larw\w*|jaj(?:a|ka|ek|ko)|личин(?:ок|к\w*)|яйц\w*)\b',
- 'queen':r'\b(?:queen(?: bee)?|queen ant|queen wasp|królow\w*|matk\w* pszczel\w*|бджолин\w* матк\w*|пчелин\w* матк\w*)\b',
+ 'queen':r'\b(?:queen(?: bee)?|queen ant|queen wasp|królow\w*|matk\w* pszczel\w*|матк\w*|бджол[ауиі]-мат[іе]\w*)\b',
  'pollen':r'\b(?:pollen|pollen basket\w*|pył(?:ek|ku|kiem)|пил(?:ок|ку|ком)|пыльц\w*)\b',
  'proboscis':r'\b(?:proboscis|proboscides|trąbk\w*|хобот\w*)\b',
- 'honey production':r'\b(?:honeycomb\w*|honey (?:extraction|production|processing)|(?:make|produce|store|extract|harvest)\w* honey|produkcj\w* miodu|plastry miodu|переробл\w*\b.{0,40}\bна мед|виробництв\w* меду|пчелиные соты|производств\w* м[её]да)\b',
- 'pollination':r'\b(?:pollinat\w*|foraging|(?:drinking|collecting) nectar|on (?:a |the )?flower\w*|zapyl\w*|запил\w*|опыл\w*)\b',
+ 'honey production':r'\b(?:honeycomb\w*|honey (?:extraction|production|processing|stores?)|(?:make|produce|store|extract|harvest)\w* honey|produkcj\w* miodu|plastry miodu|переробл\w*\b.{0,40}\bна мед|виробництв\w* меду|пчелиные соты|производств\w* м[её]да|кг меду)\b',
+ 'pollination':r'\b(?:pollinat\w*|foraging|(?:drinking|collecting) nectar|on (?:a |the )?flower\w*|zapyl\w*|(?:за|об)пил\w*|опыл\w*)\b',
+ 'carrion feeding':r'\b(?:carrion|vulture bees?|padlin\w*|падал(?:ь|і|лю|ью))\b',
 }
 
 def insect_scene_features(text):
@@ -1150,7 +1151,7 @@ def conflicting_insect_identity(candidate,profile):
  title=candidate.get('depiction','')
  description=candidate.get('alt','').removeprefix(title).lstrip()
  identity=title+' '+description[:110]
- different_species=r'\b(?:hoverfl(?:y|ies)|drone fl(?:y|ies)|Eristalis|Syrphidae|bee mimics?|bee or wasp|(?:it is|possibly|probably) a wasp|ant with wings|ant lifting|dead bee|spider with (?:bee )?prey)\b'
+ different_species=r'\b(?:hoverfl(?:y|ies)|(?:drone|bee)[ -]fl(?:y|ies)|Eristalis|Syrphidae|Bombyliidae|Bombylius|bee mimics?|bee or wasp|(?:it is|possibly|probably) a wasp|ant with wings|ant lifting|dead bee|spider with (?:bee )?prey)\b'
  return bool(re.search(different_species,identity,re.I))
 
 def place_detail_query(slot,profile):
