@@ -1133,6 +1133,8 @@ INSECT_SCENE_FEATURES={
  'queen':r'\b(?:queen(?: bee)?|queen ant|queen wasp|królow\w*|matk\w* pszczel\w*|бджолин\w* матк\w*|пчелин\w* матк\w*)\b',
  'pollen':r'\b(?:pollen|pollen basket\w*|pył(?:ek|ku|kiem)|пил(?:ок|ку|ком)|пыльц\w*)\b',
  'proboscis':r'\b(?:proboscis|proboscides|trąbk\w*|хобот\w*)\b',
+ 'honey production':r'\b(?:honeycomb\w*|honey (?:extraction|production|processing)|(?:make|produce|store|extract|harvest)\w* honey|produkcj\w* miodu|plastry miodu|переробл\w*\b.{0,40}\bна мед|виробництв\w* меду|пчелиные соты|производств\w* м[её]да)\b',
+ 'pollination':r'\b(?:pollinat\w*|foraging|(?:drinking|collecting) nectar|on (?:a |the )?flower\w*|zapyl\w*|запил\w*|опыл\w*)\b',
 }
 
 def insect_scene_features(text):
@@ -1148,7 +1150,8 @@ def conflicting_insect_identity(candidate,profile):
  title=candidate.get('depiction','')
  description=candidate.get('alt','').removeprefix(title).lstrip()
  identity=title+' '+description[:110]
- return bool(re.search(r'\b(?:hoverfl(?:y|ies)|drone fl(?:y|ies)|Eristalis|Syrphidae)\b',identity,re.I))
+ different_species=r'\b(?:hoverfl(?:y|ies)|drone fl(?:y|ies)|Eristalis|Syrphidae|bee mimics?|bee or wasp|(?:it is|possibly|probably) a wasp|ant with wings|ant lifting|dead bee|spider with (?:bee )?prey)\b'
+ return bool(re.search(different_species,identity,re.I))
 
 def place_detail_query(slot,profile):
  if slot.get('place_features'):
@@ -1361,11 +1364,6 @@ def photo_score(p,slot,topic):
  if identifiers:
   observed=astronomical_identifiers(p.get('depiction','')+' '+' '.join(semantic_categories(p)))
   if not observed&identifiers:return -1
- if slot.get('visual_target'):
-  target=slot['visual_target']
-  if named_astronomical_subject({'kind':target.get('kind'),'visual_description':target.get('description','')}) and not institutional_astronomical_photo(p):return -1
-  from storyboard import target_score
-  return target_score(p,slot,sys.modules[__name__])
  profile=slot.get('entity_profile',{})
  insect_features=slot.get('insect_features',[])
  if insect_subject(profile) or insect_features:
@@ -1373,6 +1371,11 @@ def photo_score(p,slot,topic):
   depicted_features=set(insect_scene_features(p.get('alt','')+' '+' '.join(semantic_categories(p))))
   if not set(insect_features)<=depicted_features:return -1
   if 'fossil' in depicted_features and 'fossil' not in insect_features and 'fossil' not in insect_scene_features(topic):return -1
+ if slot.get('visual_target'):
+  target=slot['visual_target']
+  if named_astronomical_subject({'kind':target.get('kind'),'visual_description':target.get('description','')}) and not institutional_astronomical_photo(p):return -1
+  from storyboard import target_score
+  return target_score(p,slot,sys.modules[__name__])
  if named_place_subject(profile):
   if not place_identity(p,profile):return -1
   detail=slot.get('place_detail_query')

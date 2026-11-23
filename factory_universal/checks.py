@@ -393,6 +393,15 @@ def check():
  bee_slot={**live_insect,'entity_profile':{'name':'bee','visual_description':'clade of insects'}}
  assert app.photo_score(hoverfly,bee_slot,'Bee')<0
  assert app.photo_score(flowers,bee_slot,'Bee')>=0
+ target_slot={**bee_slot,'visual_target':{'name':'Bee','kind':'animal'}}
+ for title in ('Amber color ant with wings like bee','Bee or wasp','Crab spider with bee prey','Ant lifting dead bee'):
+  assert app.photo_score({**flowers,'depiction':f'File:{title}.jpg','alt':title},target_slot,'Bee')<0
+ honey_slot={**bee_slot,'text':'Бджоли перероблюють нектар на мед.'}
+ honey_slot['insect_features']=app.insect_scene_features(honey_slot['text'])
+ assert honey_slot['insect_features']==['honey production']
+ assert app.photo_score(flowers,honey_slot,'Bee')<0
+ assert app.photo_score({**flowers,'alt':'Honey bees on honeycomb'},honey_slot,'Bee')>=0
+ assert app.insect_scene_features('Бджоли як запилювачі важливі в сільському господарстві.')==['pollination']
 
  # Retention accounts for ASR records and never selects unrelated shared UUIDs.
  with TemporaryDirectory() as temp:
