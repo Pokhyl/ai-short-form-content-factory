@@ -4,6 +4,8 @@ Studio at https://studio.hodor.com.pl/ runs implementation `69d6213`. The servic
 
 The worker excludes previously measured scripts that cannot fit at native speed and distinguishes dry scrap baling from wet pressing. The representative four-language matrix covered 15, 30, 45 and 60 seconds. The Ukrainian 60-second biology renders passed technical checks and failed frame review. The stricter follow-up exhausted scene alternatives before synthesis. Full visual acceptance of that case and listening approval remain pending.
 
+The independent Ukrainian 60-second «Вулкан» job reached the 900-second deadline while selecting scene photos. Both failed 60-second follow-ups stopped before speech synthesis. The scene-selection traces are in the release evidence.
+
 Chrome submitted the EN30 paper-manufacturing job `ac0ca5fe-2cc4-4a4a-8344-66beb043f0fc` through the public form and played the 900-frame MP4. Its 12 photographs, wet pressing, captions, credit downloads and cached Algenib recording were verified. The run used zero new synthesis sends.
 
 Evidence is in [the timing and scene review](../acceptance/factory-universal/2026-11-23-timing-and-scene-matching/README.md) and [the language and duration matrix](../acceptance/factory-universal/2026-11-23-matrix-after-reconnect/README.md).

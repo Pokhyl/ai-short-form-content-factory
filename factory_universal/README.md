@@ -6,7 +6,9 @@ Studio: https://studio.hodor.com.pl/ — no password.
 
 ## Delivery
 
-The current release resolves verified split-title spellings and checks historical dates and catalog identifiers when the narration names them. The unauthenticated browser request «супер нова» completed a 45-second Ukrainian MP4. Frame and caption review accepted astronomy and English plant-biology outputs. The Polish microscope result requires stronger visual grounding for named historical facts and remains outside accepted examples. See acceptance/factory-universal/2026-11-22-source-resolution/.
+The deployed worker skips scripts with a verified out-of-window recording and uses the available synthesis attempts for new scripts. The public 30-second paper-manufacturing test passed Chrome playback and frame inspection, with 12 distinct photographs, the selected English voice, synchronized captions and credits. The Ukrainian 60-second Bee case exhausted scene alternatives before synthesis. See [current release evidence](../acceptance/factory-universal/2026-11-23-timing-and-scene-matching/README.md) and the [four-language duration matrix](../acceptance/factory-universal/2026-11-23-matrix-after-reconnect/README.md).
+
+Earlier releases resolved verified split-title spellings and added scene checks for named historical dates and catalog identifiers. The unauthenticated browser request «супер нова» completed a 45-second Ukrainian MP4. Frame and caption review accepted astronomy and English plant biology. The Polish microscope result requires stronger visual grounding for named historical facts. See acceptance/factory-universal/2026-11-22-source-resolution/.
 
 Owner listening approval remains separate and pending. Inputs require an identifiable source and enough suitable licensed photos. A brief starting with an exact alphanumeric identifier can resolve its subject through another Wikipedia edition and follow a published link to the selected language. Studio reports when the native article is unavailable. The script must cover the requested focus.
 

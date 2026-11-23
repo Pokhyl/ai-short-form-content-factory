@@ -23,3 +23,7 @@ After deployment of `1b496ca`, the unauthenticated Chrome form created EN30 job 
 Deployment `69d6213` adds the pressing-context check. The same public form created fresh job `ac0ca5fe-2cc4-4a4a-8344-66beb043f0fc` after the fix. Chrome played the verified 30-second file, and the downloaded bytes and contact-sheet hash matched the inspected reference. All 12 actual midpoints and captions were inspected, including the wet-sheet presses and the drying shots. The native audio was reused with zero new synthesis sends. The previous marked test job is preserved.
 
 The final Bee failure on the production insect rules is `cde0867a-62fc-4374-9fdb-b6a93a665829`. It exhausted the bounded search for a valid combination of facts and photos before synthesis. The accompanying scene diagnostics and worker receipt document the failure and zero voice attempts.
+
+## Independent Ukrainian 60-second check
+
+The deployed image processed «Вулкан» as job `61e98237-26ed-44f8-b42b-2bb64e6a9041`. The worker reached the 900-second deadline during shot selection, before speech synthesis. The receipt records zero voice attempts. The accompanying planning trace records scenes with unavailable matching assets.
