@@ -430,6 +430,7 @@ def check():
  crater_slot={**volcano_slot,'volcanic_features':['crater']}
  assert app.photo_score(mars_crater,crater_slot,'volcano')<0
  assert app.photo_score(mars_crater,crater_slot,'Mars volcano')>=0
+ assert app.photo_score({**quiet,'alt':'A natural volcano stone'}, {**volcano_slot,'volcanic_features':[]},'volcano')<0
  audit_context=app.photo_audit_context('volcano',volcano_slot)
  assert app.photo_audit_context('volcano',{**volcano_slot,'text':'Інше речення про виверження.'})==audit_context
  assert app.photo_audit_context('volcano',{**volcano_slot,'volcanic_features':['crater']})!=audit_context

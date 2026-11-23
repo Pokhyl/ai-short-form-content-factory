@@ -1433,6 +1433,8 @@ def photo_score(p,slot,topic):
  if volcanic_subject(profile):
   alien_terrain=r'\b(?:on (?:mars|venus|mercury|the moon|io|titan)|martian (?:surface|crater|volcano|landscape)|lunar (?:surface|crater)|venusian (?:surface|crater|volcano))\b'
   if re.search(alien_terrain,p.get('alt',''),re.I) and not re.search(r'\b(?:mars|venus|mercury|moon|io|titan|martian|lunar|venusian)\b',topic,re.I):return -1
+  material_sample=r'\b(?:volcan(?:o|ic) stones?|volcanic rock specimens?|volcanic rock samples?)\b'
+  if not features and re.search(material_sample,p.get('alt',''),re.I) and not re.search(material_sample,topic,re.I):return -1
  if features:
   observed=volcanic_features(p.get('alt','')+' '+' '.join(semantic_categories(p)))
   if not set(features).intersection(observed):return -1
