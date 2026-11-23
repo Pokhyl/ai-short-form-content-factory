@@ -457,6 +457,8 @@ def check():
  attached=context['visual_targets'][0]
  assert storyboard.target_score({**quiet,'depiction':'File:Example Mountains panorama.jpg','alt':'Mountain panorama'},{'visual_target':attached},app)<0
  assert storyboard.target_score({**quiet,'depiction':'File:Example Mountains volcanic outcrop.jpg'},{'visual_target':attached},app)>=0
+ assert storyboard.linked_alias_in({'label':'Везувій','title':'Везувій'},'Виверження Везувію.', 'uk')
+ assert not storyboard.linked_alias_in({'label':'Везувій','title':'Везувій'},'Виверження іншого вулкана.', 'uk')
 
  # Retention accounts for ASR records and never selects unrelated shared UUIDs.
  with TemporaryDirectory() as temp:

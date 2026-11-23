@@ -44,6 +44,17 @@ def paragraph_key(text):
 def phrase_in(phrase,text):
  return bool(phrase and re.search(r'(?<!\w)'+re.escape(phrase)+r'(?!\w)',text,re.I))
 
+def linked_alias_in(link,text,lang):
+ if phrase_in(link['label'],text) or phrase_in(link['title'],text):return True
+ if lang=='en' or not link['label'][:1].isupper():return False
+ words=re.findall(r'[^\W\d_]+',link['label'].casefold());body=re.findall(r'[^\W\d_]+',text.casefold())
+ if not words or len(words)>8:return False
+ def same(left,right):
+  if left==right:return True
+  minimum=min(len(left),len(right))
+  return minimum>=5 and abs(len(left)-len(right))<=3 and left[:max(4,minimum-2)]==right[:max(4,minimum-2)]
+ return any(all(same(left,right) for left,right in zip(words,body[start:start+len(words)])) for start in range(len(body)-len(words)+1))
+
 def extract_article(html,lang,api):
  class LinkedArticle(api.WikiHTML):
   def __init__(self):
@@ -219,7 +230,7 @@ def person_event_target(target,profile,text):
 
 def bind_landform_examples(slots,sources,lang,api):
  links=[link for link in source_links(sources,lang,api) if link['label'][:1].isupper()
-        and any(phrase_in(link['label'],slot['text']) for slot in slots)]
+        and any(linked_alias_in(link,slot['text'],lang) for slot in slots)]
  resolved=resolve_links(links,lang,api)
  primary=sources[0]['entity_profile']['id']
  previous=None
@@ -227,10 +238,10 @@ def bind_landform_examples(slots,sources,lang,api):
   targets={};regions={}
   for link in links:
    entity=resolved.get(link['title'])
-   if not entity or entity['id']==primary or not phrase_in(link['label'],slot['text']):continue
+   if not entity or entity['id']==primary or not linked_alias_in(link,slot['text'],lang):continue
    description=entity.get('description','')
    if not api.volcanic_subject({'name':'','visual_description':description}):
-    if re.search(r'^(?:a |an |the )?(?:mountain range|mountains|peninsula|geographic(?:al)? region|region|island|archipelago)\b',description,re.I):
+    if re.search(r'^(?:a |an |the )?(?:mountain range|mountains|peninsula|geographic(?:al)? region|region|island|archipelago|state of|province of)\b',description,re.I):
      regions[entity['id']]={**entity,'anchor':link['label'],'binding':'named geographic context in the source article',
                             'intent':{'name':'named landform','visual':'a volcanic landform, crater or outcrop in this region',
                                       'query_suffix':'volcanic terrain','metadata_pattern':r'\b(?:volcan\w*|lava|calder\w*)\b'}}
@@ -241,7 +252,7 @@ def bind_landform_examples(slots,sources,lang,api):
                          'intent':{'name':'named landform','visual':visual,'query_suffix':features[0] if features else '',
                                    'negative_descriptions':['A town, building, street or mural sharing a landform name.']}}
    if 'eruption' in features:targets[entity['id']]['intent']['event_years']=event_years(slot['text'])
-  if targets or regions:slot['visual_targets']=list((targets or regions).values())[:2]
+  if targets or regions:slot['visual_targets']=list({**targets,**regions}.values())[:2]
   elif previous and previous.get('source_sentence') and previous['source_sentence']==slot.get('source_sentence') and api.context_dependent_sentence(slot['text']):
    slot['visual_targets']=previous['visual_targets']
   previous=slot
@@ -260,16 +271,6 @@ def build(slots,sources,lang,api):
  links=source_links(sources,lang,api)
  alias_titles={}
  for link in links:alias_titles.setdefault(link['label'].casefold(),set()).add(link['title'])
- def alias_matches(link,text):
-  if phrase_in(link['label'],text) or phrase_in(link['title'],text):return True
-  if lang=='en' or not link['label'][:1].isupper():return False
-  words=re.findall(r'[^\W\d_]+',link['label'].casefold());body=re.findall(r'[^\W\d_]+',text.casefold())
-  if not words or len(words)>8:return False
-  def same(left,right):
-   if left==right:return True
-   minimum=min(len(left),len(right))
-   return minimum>=5 and abs(len(left)-len(right))<=3 and left[:max(4,minimum-2)]==right[:max(4,minimum-2)]
-  return any(all(same(left,right) for left,right in zip(words,body[start:start+len(words)])) for start in range(len(body)-len(words)+1))
  def local_links(slot):
   source=sources[slot.get('source_index',0)]
   span=slot.get('source_sentence') or slot['text']
@@ -277,7 +278,7 @@ def build(slots,sources,lang,api):
   key=paragraph_key(paragraph);found={}
   for link in links:
    if re.fullmatch(r'[\d\W]+',link['label']):continue
-   if not alias_matches(link,slot['text']):continue
+   if not linked_alias_in(link,slot['text'],lang):continue
    explicit=link.get('paragraph_key')==key
    unambiguous=len(alias_titles[link['label'].casefold()])==1
    if explicit or unambiguous:
