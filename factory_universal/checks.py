@@ -25,6 +25,7 @@ def check():
  assert app.photo_score(after,drying,'How paper is made')<0
  assert app.photo_score(on_rack,drying,'How paper is made')>=0
  assert not app.photographic_metadata({'depiction':'File:Before After Specimen Washing.jpg'})
+ assert not app.photographic_metadata({'alt':'Specimen preparation. (A) Photograph of the insect. (B) Close-up of the wing. (C) View under magnification.'})
  assert app.unsupported_qualifier('The largest mud volcanoes are enormous.','Volcano',[{'title':'Volcano'}])
  assert not app.unsupported_qualifier('The largest mud volcanoes are enormous.','Volcano',[{'title':'Volcano'},{'title':'Mud volcano'}])
  contexts=[{'title':'Lunar eclipse','visual_title':'Lunar eclipse','text':'The Moon moves through the shadow of Earth.'},{'title':'August 2009 lunar eclipse','visual_title':'August 2009 lunar eclipse','text':'The Moon moves through the shadow of Earth.'}]
@@ -215,6 +216,7 @@ def check():
  assert app.truncated_dependent_clause('This is a method by which several workers.',complete,'en')
  assert not app.truncated_dependent_clause(complete,complete,'en')
  assert app.context_dependent_sentence('In small cells, they are embedded in the membrane.')
+ assert app.context_dependent_sentence('Поскольку неизвестно, является ли такая сила тяжести достаточной, рассматриваются другие варианты.')
  assert app.context_dependent_sentence('Since water is used here, the equation for the process is.')
  assert not app.context_dependent_sentence('In small cells, pigments are embedded in the membrane.')
 
@@ -345,6 +347,24 @@ def check():
  assert app.named_place_subject(place)
  assert not app.place_identity({'provider':'pexels','alt':'Example City'},place)
  assert app.place_identity({'provider':'commons','categories':['Category:Buildings in Example City']},place)
+ assert app.place_scene_features('The most populous city in the region.','en')==[]
+ assert app.place_scene_features('Skarpa biegnie w pobliżu Wisły.','pl')==['river','escarpment']
+ assert app.place_scene_features('Most nad Wisłą.','pl')==['river','bridge']
+ feature_slot={'entity_profile':place,'text':'The escarpment slopes down to the river.',
+               'place_features':['river','escarpment'],'place_detail_query':'Example City river escarpment'}
+ skyline={'provider':'commons','alt':'Example City skyline','query':feature_slot['place_detail_query'],
+          'categories':['Category:Buildings in Example City'],'width':1200,'height':900}
+ assert app.photo_score(skyline,feature_slot,'Example City')<0
+ assert app.photo_score({**skyline,'alt':'Escarpment above the river in Example City'},feature_slot,'Example City')>=0
+ assert app.insect_scene_features('Бджола виконує певні умовні рухи — танцює.')==['waggle dance']
+ assert app.insect_scene_features('У кожної бджоли є дві пари крил та вусики.')==['antennae','wings']
+ insect={'text':'A bee performs a waggle dance.','insect_features':['waggle dance']}
+ flowers={'provider':'commons','alt':'A bee on a flower','width':1200,'height':900}
+ assert app.photo_score(flowers,insect,'Bee')<0
+ assert app.photo_score({**flowers,'alt':'Honey bee performing a waggle dance on the comb'},insect,'Bee')>=0
+ live_insect={'text':'A bee collects pollen.','entity_profile':{'visual_description':'clade of insects'}}
+ fossil_bee={**flowers,'alt':'Fossilized stingless bee preserved in amber.'}
+ assert app.photo_score(fossil_bee,live_insect,'Bee')<0
 
  # Retention accounts for ASR records and never selects unrelated shared UUIDs.
  with TemporaryDirectory() as temp:
@@ -830,6 +850,13 @@ def check():
  with patch.object(app,'plan_script',return_value=[good_slot]):
   assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign)==[good_slot]
  assert event_source[0]['excluded_visual_sentences']==[bad_text]
+ already_spoken={'text':'Example Person was elected in a national vote.','source_index':0}
+ calls.clear()
+ event_source=[{'text':bad_text+'\n'+already_spoken['text']+'\n'+good_text}]
+ seen={app.narration_digest('en',[already_spoken])}
+ with patch.object(app,'plan_script',side_effect=[[already_spoken],[good_slot]]):
+  assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign,seen,-1)==[good_slot]
+ assert calls==[[bad_slot],[good_slot]]
  # Historical event photos must depict the event, not later anniversary exhibitions.
  revolution={'id':'Q9003','name':'Example Revolution','description':'2014 revolution in Example','commons_category':'Example protests'}
  revolution['intent']=storyboard.scene_intent('The election followed the Example Revolution.',revolution)

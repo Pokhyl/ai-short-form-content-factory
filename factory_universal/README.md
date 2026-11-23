@@ -16,7 +16,7 @@ The staged local translation path covers English source articles for verified id
 
 1. Resolve a primary native-language Wikipedia article and Wikidata identity; preserve exact source spans and revision provenance.
 2. Plan complete facts with source-linked biography objects, primary-topic context for other subjects and physical manufacturing stages. Compare feasible fact counts against completed native measurements, combining character counts with silent pronunciation estimates; keep production stages in causal order.
-3. Search bounded Commons pools across the entire job: three broad queries, twelve process queries or forty-eight source-linked queries, at most fifty candidates each. Cache source/search results for 24 hours.
+3. Search bounded Commons pools across the entire job: three broad queries, eight for named places or insect scenes, twelve process queries or forty-eight source-linked queries, at most fifty candidates each. Cache source/search results for 24 hours.
 4. Verify all 6/12/18/24 unique images before synthesis, minimum two per beat. Require metadata context, pinned local CLIP subject/genre screening and crop/resize deduplication. Preserve the complete photograph on a solid matte.
 5. Synthesize with the exact selected Google voice through the retained native credential gateway and PostgreSQL free-tier ledger. Try at most three distinct complete texts to fit the natural window; never change speed, pitch or voice, append filler, or repeat an ambiguous send.
 6. Align the unchanged native recording using the existing media worker; render 1080×1920 H.264/AAC at 30 fps with exactly 450/900/1350/1800 frames, then fully decode and verify the result.

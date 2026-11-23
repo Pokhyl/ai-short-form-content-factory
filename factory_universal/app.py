@@ -542,8 +542,8 @@ def grounding_terms(text,lang):
 
 def context_dependent_sentence(text):
  # Source paragraphs may refer to material omitted from a short video.
- leading=r'^(?:był on|była ona|byli oni|były one|ось чому|вот почему|that is why|that.s why|dlatego|згодом|пізніше|затем|впоследствии|subsequently|later|potem|następnie|the (?:outcome|result|wooden frame)\b|finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
- references=r'\b(?:цього|цієї|цих|цим|цій|цей|ця|цю|ці|їх|її|його|такі|таких|такого|этой|этого|этих|такие|таких|tych|tej|tego|takie|takich|this|these|those|such)\b'
+ leading=r'^(?:pozostał\w* częś\w*|решта|остальн\w* часть|the remaining part|był on|była ona|byli oni|były one|ось чому|вот почему|that is why|that.s why|dlatego|згодом|пізніше|затем|впоследствии|subsequently|later|potem|następnie|the (?:outcome|result|wooden frame)\b|finally|lastly|unfortunately|according to some|according to many|furthermore|moreover|however|another|other|therefore|thus|in addition|for example|examples? include|another example|нарешті|на жаль|за оцінкою|по мнению|według niektórych|наостанок|крім того|однак|але|проте|зрештою|інше|інша|інший|отже|таким чином|наприклад|наконец|кроме того|однако|другое|другой|другая|следовательно|таким образом|например|wreszcie|ponadto|jednak|zatem|na przykład|na koniec)\b'
+ references=r'\b(?:цього|цієї|цих|цим|цій|цей|ця|цю|ці|їх|її|його|такі|таких|такого|такої|така|такою|этой|этого|этих|такие|таких|такая|такой|такую|такое|tych|tej|tego|takie|takich|this|these|those|such)\b'
  pronouns=r'^(?:he|she|it|they|their|its|он|она|оно|они|его|ее|её|их|він|вона|воно|вони|це|його|її|їх|one|ona|ono|oni|jej|jego|ich)\b'
  reference=re.search(references,text,re.I)
  dangling=bool(reference and len(text[:reference.start()].split())<5)
@@ -1110,7 +1110,34 @@ def incidental_place_event(text,topic,profile):
                   or any(century<20 for century in century_labels(text))
                   or (re.search(date,text) and re.search(event,text,re.I))))
 
+PLACE_FEATURES={
+ 'river':r'\b(?:rivers?|riverbank\w*|Vistula|Wisł\w*|Wisla|rzek\w*|річк\w*|рек\w*|рік[аиу])\b',
+ 'escarpment':r'\b(?:escarpments?|bluffs?|steep slope\w*|skarp\w*|урвищ\w*|круч\w*|обрыв\w*|откос\w*)\b',
+ 'bridge':r'\b(?:bridges?|most(?:u|y|em|ów|ach|ami)|міст(?:ок|ки)|мост\w*)\b',
+}
+
+def place_scene_features(text,lang=None):
+ features=[feature for feature,pattern in PLACE_FEATURES.items() if re.search(pattern,text,re.I)]
+ if lang=='pl' and 'bridge' not in features and re.search(r'\bmost\b',text,re.I):features.append('bridge')
+ return features
+
+INSECT_SCENE_FEATURES={
+ 'antennae':r'\b(?:antenna(?:e|s)?|antennal|czułk\w*|вусик\w*|усик\w*)\b',
+ 'wings':r'\b(?:wings?|winged|skrzydł\w*|крил\w*|крыл\w*)\b',
+ 'stinger':r'\b(?:sting(?:er|ers|ing)?|żądł\w*|жал[аоу]|жалом)\b',
+ 'waggle dance':r'\b(?:waggle dance|bee dance|dance of (?:the )?bees|taniec pszcz\w*|танц\w*|танок)\b',
+ 'fossil':r'\b(?:fossils?|fossilized|skamieniałoś\w*|скам[’\x27]яніл\w*|окаменел\w*)\b',
+}
+
+def insect_scene_features(text):
+ return [feature for feature,pattern in INSECT_SCENE_FEATURES.items() if re.search(pattern,text,re.I)]
+
+def insect_subject(profile):
+ return bool(re.search(r'\binsects?\b',profile.get('visual_description',''),re.I))
+
 def place_detail_query(slot,profile):
+ if slot.get('place_features'):
+  return ' '.join([profile.get('native_name') or profile['name'],*slot['place_features']])
  words=re.findall(r"[^\W\d_]+",slot['text'],re.UNICODE)
  names={name.casefold() for name in list(profile.get('labels',{}).values())+[profile.get('name','')]}
  for index in range(1,len(words)-1):
@@ -1154,6 +1181,7 @@ def photographic_metadata(p):
  nonphoto=r'\b(?:shows?|showing|displays?|plots?|depicts?) (?:a |an |the )?(?:spectrum|(?:light.?curve|spectral|intensity) plot|graph)\b|\b(?:inset(?: [a-z-]+){0,2} images?|series of [a-z]+ panels)\b|\[(?:top|bottom) (?:left|right)\]'
  if re.search(nonphoto,description[:950],re.I):return False
  if re.search(r'\b(?:image (?:has been |is )annotated|annotated to highlight|comparison star|(?:two|three|four) images (?:of .*? )?(?:are (?:shown|seen)|show)|multiple panels)\b',description[:750],re.I):return False
+ if len(set(re.findall(r'(?:^|[.!?]\s+)\(([A-H])\)\s+[A-Z]',description[:950])))>=3:return False
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
  if re.search(r'\bfig(?:ure)?[. ]+\s*\d+\b',p.get('depiction',''),re.I):return False
  return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|calendars?|scrapbooks?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|CGI|artist[’\x27]?s? (?:impression|concept|rendering)|(?:3d|3-d|3 d) (?:render\w*|model\w*)|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
@@ -1188,11 +1216,14 @@ def discover_photos(topic,lang,slots):
   stages += [' '.join(core_terms)+' '+STAGE_QUERY_TOOLS[action][index] for index in range(2) for action in actions_needed]
   queries=list(dict.fromkeys(queries[:3]+stages))[:12]
  if named_place_subject(profile):
-  name=profile['name'];native=profile.get('native_name') or name;category=profile.get('commons_category') or name
+  name=profile['name']
   details=list(dict.fromkeys(slot.get('place_detail_query') for slot in slots if slot.get('place_detail_query')))
-  queries=([name+' panorama incategory:"CC-BY-3.0"']+details+[name+' panorama incategory:"CC-BY-4.0"'])[:3]
+  queries=([name+' panorama incategory:"CC-BY-3.0"']+details+[name+' panorama incategory:"CC-BY-4.0"'])[:8]
  if profile.get('kind')=='concept' and slots and not slots[0].get('process_intent'):
   queries=([('incategory:"'+profile['commons_category']+'"')] if profile.get('commons_category') else [])+[topic+' photograph',topic]
+ if insect_subject(profile):
+  details=list(dict.fromkeys(feature for slot in slots for feature in slot.get('insect_features',[])))
+  queries=[topic+' '+feature for feature in details]+queries
  if profile.get('kind')=='human':
   name=profile['name'];category=profile.get('commons_category') or name
   exclude=' -intitle:Caricature -intitle:graph'
@@ -1201,7 +1232,10 @@ def discover_photos(topic,lang,slots):
  from storyboard import query_plan
  scene_queries=query_plan(slots)
  if scene_queries:queries=list(dict.fromkeys(queries[:2]+scene_queries))[:48]
- commons_limit=48 if scene_queries else (12 if slots and slots[0].get('process_intent') else 3)
+ commons_limit=3
+ if scene_queries:commons_limit=48
+ elif slots and slots[0].get('process_intent'):commons_limit=12
+ elif named_place_subject(profile) or insect_subject(profile):commons_limit=8
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  catalog_queries=list(dict.fromkeys(name for slot in slots for name in sorted(scene_astronomical_identifiers(slot))))
  periods=set().union(*(artifact_scene_centuries(slot) for slot in slots))
@@ -1318,10 +1352,17 @@ def photo_score(p,slot,topic):
   from storyboard import target_score
   return target_score(p,slot,sys.modules[__name__])
  profile=slot.get('entity_profile',{})
+ insect_features=slot.get('insect_features',[])
+ if insect_subject(profile) or insect_features:
+  depicted_features=set(insect_scene_features(p.get('alt','')+' '+' '.join(semantic_categories(p))))
+  if not set(insect_features)<=depicted_features:return -1
+  if 'fossil' in depicted_features and 'fossil' not in insect_features and 'fossil' not in insect_scene_features(topic):return -1
  if named_place_subject(profile):
   if not place_identity(p,profile):return -1
   detail=slot.get('place_detail_query')
-  if detail and p.get('query')!=detail:return -1
+  features=slot.get('place_features',[])
+  if not features and detail and p.get('query')!=detail:return -1
+  if features and not set(features)<=set(place_scene_features(p.get('alt','')+' '+' '.join(semantic_categories(p)))):return -1
   return 2*len(set(tokens(slot['text']+' '+slot.get('visual_title','')))&set(tokens(p.get('alt',''))))+(.5 if p['height']>=p['width'] else 0)
  if named_astronomical_subject(profile):
   if p.get('provider')!='commons':return -1
@@ -1404,6 +1445,13 @@ def pixel_check(raw,topic,slot,candidate=None):
   audit['identity_verification']=identity;return audit
  if slot.get('source_driven'):
   profile=slot.get('entity_profile',{})
+  features=slot.get('place_features') or slot.get('insect_features')
+  if features:
+   feature=' and '.join(features)
+   subject=profile['name']+' — '+feature
+   return get_pixel_verifier().check(raw,subject,set(),'',[],topic,
+     extra_positives=['A photograph of the '+feature+' in '+profile['name']+'.'],
+     extra_negatives=['A generic photograph of '+profile['name']+' without visible evidence of '+feature+'.'])
   if named_astronomical_subject(profile):
    name=profile['name']
    positive=['A photograph of '+name+' in space.']
@@ -1679,7 +1727,18 @@ def completed_narration_plan(sources,topic,lang,duration):
   except (OSError,ValueError,KeyError,TypeError):continue
  return None
 
-def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots,before_send):
+def narration_digest(lang,slots):
+ spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
+ return hashlib.sha256(spoken.encode()).hexdigest()
+
+def distinct_narration_plan(sources,topic,lang,duration,planning_seconds,seen,direction):
+ for step in range(17):
+  budget=max(5,min(90,planning_seconds+direction*step*.25))
+  candidate=plan_script(sources,topic,lang,budget,max_beats=duration//5)
+  if candidate and narration_digest(lang,candidate) not in seen:return candidate,budget
+ return [],planning_seconds
+
+def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots,before_send,seen=(),direction=1):
  from storyboard import SceneUnavailable,phrase_in
  for planning_attempt in range(20):
   if not slots:raise ValueError('No complete source narration with enough scene-matched media')
@@ -1711,34 +1770,26 @@ def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots
     for paragraph in source['text'].splitlines():
      for sentence in sentences(paragraph):
       if any(len(name)>=3 and phrase_in(name,sentence) for name in names) and sentence not in excluded:excluded.append(sentence)
-   slots=plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
+   if seen:
+    slots,planning_seconds=distinct_narration_plan(sources,topic,lang,duration,planning_seconds,seen,direction)
+   else:
+    slots=plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
  raise ValueError('Scene planning exhausted its bounded source alternatives before synthesis')
 
 def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None):
  # Change complete source sentences after a measured miss, never the voice or playback rate.
  planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=set();attempts=[];slots=[];completed_plan=completed_narration_plan(sources,topic,lang,duration)
  for attempt in (1,2,3):
+  direction=-1 if attempts and attempts[-1]['duration_ms']>duration*1000 else 1
   slots=completed_plan if attempt==1 and completed_plan else plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
   if not slots or len(slots)>duration//5:raise ValueError('no complete source narration fits the natural speaking budget')
-  script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()
-  if identity in seen:
-   direction=-1 if attempts[-1]['duration_ms']>duration*1000 else 1
-   alternative=None
-   for step in range(1,17):
-    budget=max(5,min(90,planning_seconds+direction*step*.25))
-    candidate=plan_script(sources,topic,lang,budget,max_beats=duration//5)
-    if not candidate:continue
-    candidate_script=' '.join(slot['text'] for slot in candidate)
-    candidate_spoken=selected_voice_request(lang,candidate_script)['input']['text']
-    candidate_identity=hashlib.sha256(candidate_spoken.encode()).hexdigest()
-    if candidate_identity not in seen:
-     alternative=(candidate,candidate_script,candidate_spoken,candidate_identity,budget);break
-   if alternative is None:raise ValueError('no different complete text fits the correction range; no duplicate synthesis')
-   slots,script,spoken,identity,planning_seconds=alternative
+  if narration_digest(lang,slots) in seen:
+   slots,planning_seconds=distinct_narration_plan(sources,topic,lang,duration,planning_seconds,seen,direction)
+   if not slots:raise ValueError('no different complete text fits the correction range; no duplicate synthesis')
   if before_send is not None:
-   slots=prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots,before_send)
-   script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()
-   if identity in seen:raise ValueError('Scene re-planning returned a previously synthesized text; no duplicate send')
+   slots=prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots,before_send,seen,direction)
+  script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()
+  if identity in seen:raise ValueError('Duplicate narration prevented before synthesis')
   seen.add(identity)
   update(jid,stage='voice',progress=50,message='Creating narration with your selected '+lang.upper()+' voice; attempt '+str(attempt))
   path,measured=google_voice_once(lang,script,jid,attempt);measured={**measured,'internal_duration_estimate_ms':measured_sentence_ms(spoken,lang)};attempts.append(measured);actual=measured['duration_ms']
@@ -1852,7 +1903,10 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  beat_for_shot=shot_beats(visual_count,beat_count);shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
  for slot in slots:
   slot['language']=lang;slot['entity_profile']=sources[0].get('entity_profile',{});slot['source_driven']=source_overview_mode(sources)
-  if named_place_subject(slot['entity_profile']):slot['place_detail_query']=place_detail_query(slot,slot['entity_profile'])
+  if named_place_subject(slot['entity_profile']):
+   slot['place_features']=place_scene_features(slot['text'],lang)
+   slot['place_detail_query']=place_detail_query(slot,slot['entity_profile'])
+  if insect_subject(slot['entity_profile']):slot['insect_features']=insect_scene_features(slot['text'])
   source=sources[slot['source_index']]
   slot['visual_title']=source.get('visual_title') or (source['title'] if lang=='en' else '')
   if not slot.get('process_intent'):
