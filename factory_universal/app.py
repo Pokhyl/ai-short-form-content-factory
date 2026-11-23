@@ -1433,10 +1433,11 @@ def photo_score(p,slot,topic):
   observed=astronomical_identifiers(p.get('depiction','')+' '+' '.join(semantic_categories(p)))
   if not observed&identifiers:return -1
  profile=slot.get('entity_profile',{})
+ insect_profile=insect_subject(profile)
  insect_features=slot.get('insect_features',[])
- if insect_subject(profile) or insect_features:
+ if insect_profile or insect_features:
   if conflicting_insect_identity(p,profile,insect_features):return -1
-  if insect_subject(profile) and not insect_photo_identity(p,profile):return -1
+  if insect_profile and not insect_photo_identity(p,profile):return -1
   depicted_features=set(insect_scene_features(p.get('alt','')+' '+' '.join(semantic_categories(p))))
   if not set(insect_features)<=depicted_features:return -1
   title=p.get('depiction','')
@@ -1486,7 +1487,7 @@ def photo_score(p,slot,topic):
   names=[topic]+slot.get('topic_aliases',[])
   groups=[set(topic_terms(name,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'} for name in names]
   category_identity=concept and any(group and group<=set(tokens(category)) for category in semantic_categories(p) for group in groups)
-  if not any(group and group<=meta for group in groups) and not supported_concept and not category_identity:return -1
+  if not any(group and group<=meta for group in groups) and not supported_concept and not category_identity and not insect_profile:return -1
  if not process_topic and not slot.get('source_driven') and p.get('provider')=='pixabay' and len(anchors)>1 and not any(group and group<=set(tokens(tag)) for group in groups for tag in depiction.split(',')):return -1
  if p.get('provider') in {'pixabay','pexels'} and re.search(r'\b(?:fantasy|sci[ -]?fi|digital art|3d render|ai[ -]generated)\b',depiction,re.I):return -1
  work_context=r'\b(?:factor(?:y|ies)|mill(?:ing)?|refiner\w*|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|\w{3,}making|handmade|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
