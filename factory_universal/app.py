@@ -955,9 +955,9 @@ def output_credits(sources,visuals):
  media=[{'title':row.get('depiction') or row['alt'],'author':row['creator'],'source_url':row['source_url'],'license':row['license'],'license_url':row.get('license_url'),'changes':row.get('changes','Resized and captioned.')} for row in visuals]
  return {'adaptation_license':OUTPUT_LICENSE,'text':text,'media':media,'scope':'Factory contributions to this video adaptation; original component licence notices remain applicable.'}
 
-def commons_search(query,limit=20):
- params=urllib.parse.urlencode({'action':'query','generator':'search','gsrsearch':query+' filetype:bitmap','gsrnamespace':6,'gsrlimit':max(1,min(50,int(limit))),'prop':'imageinfo|categories','cllimit':'50','iiprop':'url|size|extmetadata','iiurlwidth':1280,'format':'json'})
- data=cache_fetch('commons-v4|'+str(limit)+'|'+query,lambda:http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=25))
+COMMONS_IMAGE_FIELDS={'action':'query','prop':'imageinfo|categories','cllimit':'50','iiprop':'url|size|extmetadata','iiurlwidth':1280,'format':'json'}
+
+def commons_photo_candidates(data,query):
  found=[]
  for page in sorted((data.get('query') or {}).get('pages',{}).values(),key=lambda x:x.get('index',999)):
   for im in page.get('imageinfo',[]):
@@ -974,6 +974,27 @@ def commons_search(query,limit=20):
    source='https://commons.wikimedia.org/w/index.php?curid='+str(page['pageid'])
    found.append({'provider':'commons','categories':[category['title'] for category in page.get('categories',[])],'id':str(page['pageid']),'alt':plain_metadata(page.get('title',''))+' '+get('ImageDescription'),'depiction':plain_metadata(page.get('title','')),'query':query,'url':url,'original_url':original_url,'original_size':original_size,'original_pixels':pixels,'source_url':source,'creator':get('Artist') or get('Credit') or 'Wikimedia Commons','creator_url':im.get('descriptionurl') or source,'width':width,'height':height,'license':license_name,'license_url':license_url,'changes':'resized and composited with narration captions'})
  return found
+
+def commons_search(query,limit=20):
+ params=urllib.parse.urlencode({**COMMONS_IMAGE_FIELDS,'generator':'search','gsrsearch':query+' filetype:bitmap','gsrnamespace':6,'gsrlimit':max(1,min(50,int(limit)))})
+ data=cache_fetch('commons-v4|'+str(limit)+'|'+query,lambda:http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=25))
+ return commons_photo_candidates(data,query)
+
+def article_photo_candidates(source):
+ url=urllib.parse.urlsplit(source['url']);revision=source.get('revision_id')
+ language=(url.hostname or '').removesuffix('.wikipedia.org')
+ if url.scheme!='https' or url.hostname!=language+'.wikipedia.org' or not re.fullmatch('[a-z][a-z-]{0,15}',language) or not isinstance(revision,int) or revision<1:return []
+ reference='https://'+url.hostname+'/w/index.php?oldid='+str(revision)
+ def retrieve():
+  params=urllib.parse.urlencode({'action':'parse','oldid':revision,'prop':'images','format':'json'})
+  files=http_json('https://'+url.hostname+'/w/api.php?'+params,timeout=15).get('parse',{}).get('images',[])
+  titles=list(dict.fromkeys('File:'+filename for filename in files if re.search(r'\.(?:jpe?g|png|webp)$',filename,re.I)))[:36]
+  if not titles:return []
+  params=urllib.parse.urlencode({**COMMONS_IMAGE_FIELDS,'titles':'|'.join(titles),'redirects':1})
+  data=http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=20)
+  # Commons resolves every file's license and attribution independently.
+  return [{**row,'article_media_revision':reference} for row in commons_photo_candidates(data,reference)]
+ return cache_fetch('article-commons-v1|'+reference,retrieve)
 
 def visual_context_title(slot,sources,lang):
  # Match the native-language fact to article introductions, then use their English titles.
@@ -1136,6 +1157,8 @@ INSECT_SCENE_FEATURES={
  'honey production':r'\b(?:honeycomb\w*|honey (?:extraction|production|processing|stores?)|(?:make|produce|store|extract|harvest)\w* honey|produkcj\w* miodu|plastry miodu|переробл\w*\b.{0,40}\bна мед|виробництв\w* меду|пчелиные соты|производств\w* м[её]да|кг меду)\b',
  'pollination':r'\b(?:pollinat\w*|foraging|(?:drinking|collecting) nectar|on (?:a |the )?flower\w*|zapyl\w*|(?:за|об)пил\w*|опыл\w*)\b',
  'carrion feeding':r'\b(?:carrion|vulture bees?|padlin\w*|падал(?:ь|і|лю|ью))\b',
+ 'predation':r'\b(?:predat\w*|prey|eating a (?:bee|wasp|fly)|drapież\w*|ofiar\w*|жертв\w*|здобич\w*|прогодуван\w* птах\w*|хищн\w*|павук\w*)\b',
+ 'solitary insects':r'\b(?:solitary (?:bees?|wasps?|insects?)|samotnicz\w*|одиночн\w*)\b',
 }
 
 def insect_scene_features(text):
@@ -1144,15 +1167,33 @@ def insect_scene_features(text):
 def insect_subject(profile):
  return bool(re.search(r'\binsects?\b',profile.get('visual_description',''),re.I))
 
-def conflicting_insect_identity(candidate,profile):
+VOLCANIC_FEATURES={
+ 'eruption':(r'\b(?:erupt\w*|ash plume|ash cloud|erupcj\w*|wybuch\w*|виверж\w*|изверж\w*|вулканічн\w* поп[іе]л\w*|вулканическ\w* пепел\w*)\b','an erupting volcano with a visible ash plume or lava fountain'),
+ 'lava flow':(r'\b(?:lava flows?|molten lava|law[ayę] (?:płyn\w*|spływ\w*)|(?:потік|поток\w*) лав[иы]|лавов\w* (?:потік|поток\w*))\b','a lava flow or its solidified channel in a volcanic landscape'),
+ 'crater':(r'\b(?:craters?|calderas?|kratery?|krater\w*|kalder\w*|кратер\w*|кальдер\w*)\b','a volcanic crater or caldera seen from above or from its rim'),
+ 'fumarole':(r'\b(?:fumarol\w*|фумарол\w*)\b','a visible steam vent on a volcanic slope'),
+}
+
+def volcanic_subject(profile):
+ landform=r'(?:(?:strato|super)?volcano(?:es)?|volcanism|calderas?|volcanic (?:landform|island|crater lake))'
+ if re.fullmatch(landform,profile.get('name',''),re.I):return True
+ modifiers=r'(?:(?:an?|the|active|inactive|extinct|dormant|submarine|underwater|shield|ancient|small|large|quaternary|complex|composite)\s+)*'
+ description=profile.get('visual_description','')
+ return bool(re.match(modifiers+landform+r'\b',description,re.I) or re.search(r'\bvolcanic (?:island )?caldera\b',description))
+
+def volcanic_features(text):
+ return [feature for feature,(pattern,_) in VOLCANIC_FEATURES.items() if re.search(pattern,text,re.I)]
+
+def conflicting_insect_identity(candidate,profile,features=()):
  # Hoverflies are often photographed on the same flowers as bees. Use the
  # named subject in the caption, before keyword and category lists.
  if not re.fullmatch(r'bees?',profile.get('name',''),re.I):return False
  title=candidate.get('depiction','')
  description=candidate.get('alt','').removeprefix(title).lstrip()
  identity=title+' '+description[:110]
- different_species=r'\b(?:hoverfl(?:y|ies)|(?:drone|bee)[ -]fl(?:y|ies)|Eristalis|Syrphidae|Bombyliidae|Bombylius|bee mimics?|bee or wasp|(?:it is|possibly|probably) a wasp|ant with wings|ant lifting|dead bee|spider with (?:bee )?prey)\b'
- return bool(re.search(different_species,identity,re.I))
+ different_species=r'\b(?:hoverfl(?:y|ies)|(?:drone|bee)[ -]fl(?:y|ies)|Eristalis|Syrphidae|Bombyliidae|Bombylius|bee mimics?|bee or wasp|(?:it is|possibly|probably) a wasp|ant with wings)\b'
+ incidental_bee=r'\b(?:ant lifting|dead bee|spider with (?:bee )?prey)\b'
+ return bool(re.search(different_species,identity,re.I) or ('predation' not in features and re.search(incidental_bee,identity,re.I)))
 
 def place_detail_query(slot,profile):
  if slot.get('place_features'):
@@ -1243,6 +1284,9 @@ def discover_photos(topic,lang,slots):
  if insect_subject(profile):
   details=list(dict.fromkeys(feature for slot in slots for feature in slot.get('insect_features',[])))
   queries=[topic+' '+feature for feature in details]+queries
+ if volcanic_subject(profile):
+  details=list(dict.fromkeys(feature for slot in slots for feature in slot.get('volcanic_features',[])))
+  queries=[topic+' '+feature for feature in details]+queries
  if profile.get('kind')=='human':
   name=profile['name'];category=profile.get('commons_category') or name
   exclude=' -intitle:Caricature -intitle:graph'
@@ -1250,11 +1294,17 @@ def discover_photos(topic,lang,slots):
   queries=[subject,name+' incategory:"CC-BY-2.0"'+exclude,'intitle:"'+name+'" incategory:"CC-BY-4.0"'+exclude]
  from storyboard import query_plan
  scene_queries=query_plan(slots)
- if scene_queries:queries=list(dict.fromkeys(queries[:2]+scene_queries))[:48]
+ if scene_queries:queries=list(dict.fromkeys(queries[:8 if volcanic_subject(profile) else 2]+scene_queries))[:48]
  commons_limit=3
  if scene_queries:commons_limit=48
  elif slots and slots[0].get('process_intent'):commons_limit=12
- elif named_place_subject(profile) or insect_subject(profile):commons_limit=8
+ elif named_place_subject(profile) or insect_subject(profile) or volcanic_subject(profile):commons_limit=8
+ elif slots and slots[0].get('source_driven') and slots[0].get('requested_shots',0)>=18:
+  # Long overviews need a wider pool of separately licensed photographs.
+  commons_limit=8
+ if slots and slots[0].get('source_driven') and slots[0].get('requested_shots',0)>=18 and commons_limit==8 and not named_place_subject(profile):
+  variants=[topic+' '+term for term in ('closeup','in nature','photography')]
+  queries=list(dict.fromkeys(queries+[topic+' intitle:"'+topic+'"']+variants))[:commons_limit]
  if not queries:queries=list(dict.fromkeys([slot.get('visual_title') for slot in slots if slot.get('visual_title')]+[topic]+aliases))[:3]
  catalog_queries=list(dict.fromkeys(name for slot in slots for name in sorted(scene_astronomical_identifiers(slot))))
  periods=set().union(*(artifact_scene_centuries(slot) for slot in slots))
@@ -1368,10 +1418,16 @@ def photo_score(p,slot,topic):
  profile=slot.get('entity_profile',{})
  insect_features=slot.get('insect_features',[])
  if insect_subject(profile) or insect_features:
-  if conflicting_insect_identity(p,profile):return -1
+  if conflicting_insect_identity(p,profile,insect_features):return -1
   depicted_features=set(insect_scene_features(p.get('alt','')+' '+' '.join(semantic_categories(p))))
   if not set(insect_features)<=depicted_features:return -1
+  title=p.get('depiction','')
+  if 'pollination' in insect_features and re.search(r'\b(?:hive|comb|frames?|honeycomb|beeswax)\b',title,re.I) and not re.search(r'\b(?:pollinating|on (?:a |the )?flower|orchard)\b',title,re.I):return -1
   if 'fossil' in depicted_features and 'fossil' not in insect_features and 'fossil' not in insect_scene_features(topic):return -1
+ features=slot.get('volcanic_features',[])
+ if features:
+  observed=volcanic_features(p.get('alt','')+' '+' '.join(semantic_categories(p)))
+  if not set(features).intersection(observed):return -1
  if slot.get('visual_target'):
   target=slot['visual_target']
   if named_astronomical_subject({'kind':target.get('kind'),'visual_description':target.get('description','')}) and not institutional_astronomical_photo(p):return -1
@@ -1404,7 +1460,8 @@ def photo_score(p,slot,topic):
   supported_concept=concept and bool(meta&set(slot['entity_profile'].get('visual_vocabulary',[])))
   names=[topic]+slot.get('topic_aliases',[])
   groups=[set(topic_terms(name,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'} for name in names]
-  if not any(group and group<=meta for group in groups) and not supported_concept:return -1
+  category_identity=concept and any(group and group<=set(tokens(category)) for category in semantic_categories(p) for group in groups)
+  if not any(group and group<=meta for group in groups) and not supported_concept and not category_identity:return -1
  if not process_topic and not slot.get('source_driven') and p.get('provider')=='pixabay' and len(anchors)>1 and not any(group and group<=set(tokens(tag)) for group in groups for tag in depiction.split(',')):return -1
  if p.get('provider') in {'pixabay','pexels'} and re.search(r'\b(?:fantasy|sci[ -]?fi|digital art|3d render|ai[ -]generated)\b',depiction,re.I):return -1
  work_context=r'\b(?:factor(?:y|ies)|mill(?:ing)?|refiner\w*|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|\w{3,}making|handmade|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
@@ -1435,7 +1492,7 @@ def photo_score(p,slot,topic):
  if specific and not specific&depicted:return -1
  if specific and re.search(r'\b(?:exterior|outside|panorama|skyline)\b',depiction,re.I):return -1
  if required and not required&depicted and 'production' not in depicted:return -1
- return 2*len(terms&meta)+.8*len(set(tokens(topic))&meta)+8*len(required&depicted)+(6 if slot.get('visual_title') and slot['visual_title'].casefold()==p.get('query','').casefold() else 0)+(.5 if p['height']>=p['width'] else 0)
+ return 2*len(terms&meta)+.8*len(set(tokens(topic))&meta)+8*len(required&depicted)+(5 if p.get('article_media_revision') else 0)+(6 if slot.get('visual_title') and slot['visual_title'].casefold()==p.get('query','').casefold() else 0)+(.5 if p['height']>=p['width'] else 0)
 def scene_photo_score(candidate,slot,topic):
  if slot.get('visual_target_optional'):
   return max((photo_score(candidate,{**slot,'visual_target':target},topic) for target in slot.get('visual_targets',[])),default=-1)
@@ -1469,8 +1526,29 @@ def pixel_check(raw,topic,slot,candidate=None):
   audit['identity_verification']=identity;return audit
  if slot.get('source_driven'):
   profile=slot.get('entity_profile',{})
+  if volcanic_subject(profile):
+   features=slot.get('volcanic_features',[])
+   if features:
+    subject=VOLCANIC_FEATURES[features[0]][1]
+    positives=['A photograph of '+VOLCANIC_FEATURES[feature][1]+'.' for feature in features]
+    negatives=['A quiet mountain panorama with no volcanic activity.','A town, storefront, or street sharing a volcano name.'] if 'crater' not in features else ['A town, storefront, or street sharing a volcano name.']
+   else:
+    subject='a volcano in a natural landscape'
+    positives=['A photograph of a volcanic cone rising above the surrounding landscape.','A natural volcanic crater or a volcanic eruption.']
+    negatives=['A photograph of a town or storefront sharing a volcano name.']
+   return get_pixel_verifier().check(raw,subject,set(),'',[],topic,extra_positives=positives,extra_negatives=negatives)
   features=slot.get('place_features') or slot.get('insect_features')
   if features:
+   if slot.get('insect_features')==['pollination']:
+    name=profile['name']
+    return get_pixel_verifier().check(raw,name+' collecting nectar on a flower',set(),'',[],topic,
+      extra_positives=['A close photograph of a '+name+' carrying pollen and feeding on a flower.','A '+name+' pollinating the center of a flower.'],
+      extra_negatives=['An insect walking on the ground or on wood.','A flower with no insect on it.','A fly with large compound eyes hovering near a flower.'])
+   if 'predation' in slot.get('insect_features',[]):
+    name=profile['name']
+    return get_pixel_verifier().check(raw,'a predator holding a '+name+' as prey',set(),'',[],topic,
+      extra_positives=['A spider holding a '+name+' in its legs.','A bird holding a '+name+' in its beak.'],
+      extra_negatives=['A single insect feeding on a flower with no predator nearby.','A beehive or a group of bees on a honeycomb.'])
    feature=' and '.join(features)
    subject=profile['name']+' — '+feature
    return get_pixel_verifier().check(raw,subject,set(),'',[],topic,
@@ -1489,18 +1567,30 @@ def pixel_check(raw,topic,slot,candidate=None):
   description=profile.get('visual_description','') if visual_subject.casefold() in {profile.get('name','').casefold(),topic.casefold()} else ''
   subject=visual_subject+(' — '+description if description else '')
   extras=['A wide landscape photograph of a flower garden.'] if re.search(r'\binsects?\b',profile.get('visual_description',''),re.I) else []
-  return get_pixel_verifier().check(raw,subject,set(),'',slot.get('visual_competitors',[]),topic,extra_negatives=extras)
+  plain_subject=['A photograph of '+visual_subject+'.'] if description and profile.get('kind')=='concept' else []
+  return get_pixel_verifier().check(raw,subject,set(),'',slot.get('visual_competitors',[]),topic,extra_negatives=extras,extra_positives=plain_subject)
  visual_subject=(slot.get('visual_title') or topic) if not slot.get('process_intent',True) else topic
  subject=' '.join(dict.fromkeys(topic_terms(visual_subject,'en')))
  return get_pixel_verifier().check(raw,subject or topic,visual_actions(slot['text']) if slot.get('process_intent',True) else set(),slot['text'] if slot.get('language','en')=='en' else '',slot.get('visual_competitors',[]),topic)
 
-def allocate_photos(candidates,slots,topic,shot_count=None,scene_slots=None):
+def photo_audit_context(topic,slot):
+ target=slot.get('visual_target') or {};profile=slot.get('entity_profile',{})
+ context={'topic':topic,'target':{key:target.get(key) for key in ('id','name','anchor','description','intent')},
+          'profile':{key:profile.get(key) for key in ('id','kind','name','visual_description')},
+          'visual_title':slot.get('visual_title'),'competitors':slot.get('visual_competitors',[]),
+          'source_driven':slot.get('source_driven'),'process_intent':slot.get('process_intent'),'language':slot.get('language'),
+          'features':{key:slot.get(key) for key in ('place_features','insect_features','volcanic_features')}}
+ if not target and (slot.get('process_intent') or not slot.get('source_driven')):context['caption']=slot['text']
+ return hashlib.sha256(json.dumps(context,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+
+def allocate_photos(candidates,slots,topic,shot_count=None,scene_slots=None,edges=None):
  # Assign the entire storyboard before downloads, preserving scarce assets for scenes that need them.
- subject=set(tokens(topic));edges=[]
- for slot in (scene_slots if scene_slots is not None else [slots[beat] for beat in shot_beats(shot_count if shot_count is not None else len(slots)*2,len(slots))]):
-  eligible=[index for index,p in enumerate(candidates) if scene_photo_score(p,slot,topic)>=0]
-  eligible.sort(key=lambda index:scene_photo_score(candidates[index],slot,topic),reverse=True)
-  edges.append(eligible)
+ if edges is None:
+  choices=scene_slots if scene_slots is not None else [slots[beat] for beat in shot_beats(shot_count if shot_count is not None else len(slots)*2,len(slots))]
+  edges=[]
+  for slot in choices:
+   scored=[(scene_photo_score(candidate,slot,topic),index) for index,candidate in enumerate(candidates)]
+   edges.append([index for score,index in sorted(scored,key=lambda entry:-entry[0]) if score>=0])
  owner={}
  def assign(scene,seen):
   for candidate in edges[scene]:
@@ -1515,6 +1605,26 @@ def allocate_photos(candidates,slots,topic,shot_count=None,scene_slots=None):
  allocated=[None]*len(edges)
  for candidate,scene in owner.items():allocated[scene]=candidates[candidate]
  return allocated
+
+def rank_storyboard_photos(candidates,scene_slots,beat_for_shot,topic):
+ # The same caption and target often span several shots. Score each pair once.
+ scores={};shot_options=[];edges=[]
+ for slot,beat in zip(scene_slots,beat_for_shot):
+  choices=[slot]
+  if slot.get('visual_target_optional'):
+   choices.extend({**slot,'visual_target':target} for target in slot['visual_targets'] if target['id']!=slot['visual_target']['id'])
+  options=[];eligible={}
+  for choice in choices:
+   key=(beat,(choice.get('visual_target') or {}).get('id'))
+   if key not in scores:
+    scored={index:score for index,candidate in enumerate(candidates) if (score:=photo_score(candidate,choice,topic))>=0}
+    scores[key]=(scored,sorted(scored,key=scored.get,reverse=True))
+   scored,ranked=scores[key]
+   options.append((choice,ranked))
+   for index,score in scored.items():eligible[index]=max(score,eligible.get(index,-1))
+  shot_options.append(options)
+  edges.append(sorted(eligible,key=lambda index:(-eligible[index],index)))
+ return shot_options,edges
 
 def font(size,bold=False):
  paths=['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf' if bold else '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf','/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf']
@@ -1949,11 +2059,12 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  beat_count=len(slots)
  beat_for_shot=shot_beats(visual_count,beat_count);shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
  for slot in slots:
-  slot['language']=lang;slot['entity_profile']=sources[0].get('entity_profile',{});slot['source_driven']=source_overview_mode(sources)
+  slot['language']=lang;slot['entity_profile']=sources[0].get('entity_profile',{});slot['source_driven']=source_overview_mode(sources);slot['requested_shots']=visual_count
   if named_place_subject(slot['entity_profile']):
    slot['place_features']=place_scene_features(slot['text'],lang)
    slot['place_detail_query']=place_detail_query(slot,slot['entity_profile'])
   if insect_subject(slot['entity_profile']):slot['insect_features']=insect_scene_features(slot['text'])
+  if volcanic_subject(slot['entity_profile']):slot['volcanic_features']=volcanic_features(slot['text'])
   source=sources[slot['source_index']]
   slot['visual_title']=source.get('visual_title') or (source['title'] if lang=='en' else '')
   if not slot.get('process_intent'):
@@ -1968,6 +2079,13 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  beat_for_shot=storyboard_beats(visual_count,slots)
  shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
  scene_slots=shot_slots(slots,beat_for_shot)
+ if visual_count>=18 and slots[0]['source_driven'] and slots[0]['entity_profile'].get('kind')=='concept' and not slots[0].get('process_intent') and not sources[0].get('article_media_loaded'):
+  try:
+   for photo in article_photo_candidates(sources[0]):DISCOVERED_PHOTOS.setdefault((photo['provider'],photo['id']),photo)
+  except urllib.error.HTTPError as error:
+   if error.code in {429,503}:raise
+  except (OSError,ValueError):pass
+  sources[0]['article_media_loaded']=True
  candidates=discover_photos(media_topic,'en',slots)
  if sources[0].get('entity_profile',{}).get('kind')=='human':
   profile=sources[0]['entity_profile']
@@ -1980,30 +2098,31 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  competitors=[] if slots[0].get('process_intent') else visual_competitors(media_topic,candidates)
  for slot in slots:slot['visual_competitors']=competitors
  get_pixel_verifier()
- allocated=allocate_photos(candidates,slots,media_topic,visual_count,scene_slots=scene_slots)
- eligible_by_shot=[{(p['provider'],p['id']) for p in candidates if scene_photo_score(p,slot,media_topic)>=0} for slot in scene_slots]
- topic_terms=set(tokens(media_topic));selected=[];used_ids=set();hashes=[];visual_rows=[];rejected_contexts=set();used_origins=set()
+ shot_options,edges=rank_storyboard_photos(candidates,scene_slots,beat_for_shot,media_topic)
+ allocated=allocate_photos(candidates,slots,media_topic,visual_count,scene_slots=scene_slots,edges=edges)
+ candidate_indexes={id(candidate):index for index,candidate in enumerate(candidates)}
+ assigned_indexes=[candidate_indexes[id(candidate)] for candidate in allocated]
+ eligible_by_shot=[set(edge) for edge in edges]
+ selected=[];used_ids=set();hashes=[];rejected_contexts=set();used_origins=set()
  raw_cache=ROOT/'tmp'/jid/'scene-photo-cache';raw_cache.mkdir(parents=True,exist_ok=True)
  from photo_duplicates import fingerprint,duplicate
  fingerprints=[];selected_positions={}
  for i in photo_selection_order(beat_for_shot,scene_slots,eligible_by_shot):
-  slot=scene_slots[i]
-  choices=[slot]
-  if slot.get('visual_target_optional'):
-   choices.extend({**slot,'visual_target':target} for target in slot.get('visual_targets',[]) if target['id']!=slot['visual_target']['id'])
-  for trial_slot in choices:
-   slot=trial_slot
+  for slot,ranked_options in shot_options[i]:
    # Reserve scarce images only for a stricter future constraint. Equal
    # subject constraints share a pool; reserving their unverified assignments
    # can falsely exhaust today's scene despite usable images in that pool.
-   current_eligible={(p['provider'],p['id']) for p in candidates if photo_score(p,slot,media_topic)>=0}
-   reserved={(p['provider'],p['id']) for future_index,p in enumerate(allocated[i+1:],i+1) if eligible_by_shot[future_index]<current_eligible}
-   ranked=[allocated[i]]+sorted([p for p in candidates if (p['provider'],p['id']) not in reserved and p is not allocated[i]],key=lambda p:photo_score(p,slot,media_topic),reverse=True)
+   current_eligible=set(ranked_options)
+   reserved={index for future_index,index in enumerate(assigned_indexes[i+1:],i+1) if eligible_by_shot[future_index]<current_eligible}
+   assigned=assigned_indexes[i]
+   ranked=([assigned] if assigned in current_eligible else [])+[index for index in ranked_options if index!=assigned and index not in reserved]
+   context_key=photo_audit_context(media_topic,slot)
    found=None;attempts=0;rejection_reasons=[]
-   for p in ranked:
+   for index in ranked:
+    p=candidates[index]
     key=(p['provider'],p['id'])
-    context=(key,slot.get('visual_target',{}).get('id') or slot.get('visual_title',''),slot['text'] if slot.get('process_intent') else '')
-    if key in used_ids or bool(photo_origins(p)&used_origins) or context in rejected_contexts or photo_score(p,slot,media_topic)<0:continue
+    context=(key,(slot.get('visual_target') or {}).get('id'),beat_for_shot[i])
+    if key in used_ids or bool(photo_origins(p)&used_origins) or context in rejected_contexts:continue
     meta=set(tokens(p['alt']))
     if not meta:continue
     if attempts>=24:break
@@ -2025,7 +2144,6 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
      with Image.open(raw) as im:ph=dhash(im.convert('RGB'))
      if any((ph^old).bit_count()<=4 for old in hashes):shutil.rmtree(folder);continue
      target=slot.get('visual_target') or {}
-     context_key=hashlib.sha256(json.dumps({'topic':media_topic,'subject':{key:target.get(key) for key in ('id','name','description','intent')},'profile':slot.get('entity_profile',{}).get('id'),'visual_title':slot.get('visual_title'),'caption':None if target else slot['text'],'competitors':slot.get('visual_competitors',[]),'language':lang},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
      audit_path=raw_cache/(cache_key+'-'+context_key+'.json');raw_sha=hashlib.sha256(raw.read_bytes()).hexdigest()
      genre_path=raw_cache/(cache_key+'.photograph.json')
      genre_saved=json.loads(genre_path.read_text()) if genre_path.exists() else {}
@@ -2057,7 +2175,7 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
    error=SceneUnavailable(slot,'no verified scene-matched image for shot '+str(i+1)+' after '+str(attempts)+' candidates; '+ '; '.join(rejection_reasons[-3:]))
    error.beat_index=beat_for_shot[i];error.verified_in_beat=sum(beat_for_shot[j]==error.beat_index for j in selected_positions)
    raise error
-  used_origins.update(photo_origins(found['provider']));hashes.append(found['phash']);fingerprints.append(found['fingerprint']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);selected_positions[i]=found;visual_rows.append(found['row'])
+  used_origins.update(photo_origins(found['provider']));hashes.append(found['phash']);fingerprints.append(found['fingerprint']);used_ids.add((found['provider']['provider'],found['provider']['id']));selected.append(found);selected_positions[i]=found
   update(jid,progress=max(20+int(len(selected)*25/visual_count),(get_job(jid) or {}).get('progress',0)),message='Prepared '+str(len(selected))+' of '+str(visual_count)+' unique photos')
  selected=[selected_positions[index] for index in range(visual_count)]
  visual_rows=[item['row'] for item in selected]

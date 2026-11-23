@@ -1,4 +1,5 @@
 import app
+import storyboard
 
 def check():
  assert app.tokens('Volcanoes cats dogs species series')==['volcano','cat','dog','species','series']
@@ -405,6 +406,48 @@ def check():
  assert app.insect_scene_features('Бджолу-матір називають маткою.')==['queen']
  assert app.insect_scene_features('Один вид бджіл є обпилювачем цієї рослини.')==['pollination']
  assert app.insect_scene_features('Група бджіл пристосувалася до поїдання падалі.')==['carrion feeding']
+ assert app.insect_scene_features('Бджола може стати жертвою павуків.')==['predation']
+ assert app.insect_scene_features('Одиночні бджоли трапляються у саду.')==['solitary insects']
+ prey={**flowers,'alt':'Crab spider with bee prey','depiction':'File:Crab spider with bee prey.jpg'}
+ assert app.photo_score(prey,bee_slot,'Bee')<0
+ assert app.photo_score(prey,{**bee_slot,'insect_features':['predation']},'Bee')>=0
+ assert app.photo_score({**flowers,'depiction':'File:Honey bee comb.jpg','alt':'Honey bee comb and an explanation of pollination'},
+                        {**bee_slot,'insect_features':['pollination']},'Bee')<0
+ assert app.volcanic_features('Під час виверження побачили потік лави.')==['eruption','lava flow']
+ assert not app.volcanic_subject({'name':'Volcano Town','visual_description':'a town near a volcano'})
+ assert app.volcanic_subject({'visual_description':'Sunda Strait volcanic island caldera'})
+ volcano_slot={'text':'Під час виверження утворився шлейф попелу.','volcanic_features':['eruption'],
+               'entity_profile':{'kind':'concept','name':'volcano'},'source_driven':True}
+ quiet={**flowers,'alt':'A quiet volcano with a snow-covered cone','depiction':'File:Volcano in winter.jpg'}
+ assert app.photo_score(quiet,volcano_slot,'volcano')<0
+ assert app.photo_score({**quiet,'alt':'An ash cloud from the erupting volcano'},volcano_slot,'volcano')>=0
+ audit_context=app.photo_audit_context('volcano',volcano_slot)
+ assert app.photo_audit_context('volcano',{**volcano_slot,'text':'Інше речення про виверження.'})==audit_context
+ assert app.photo_audit_context('volcano',{**volcano_slot,'volcanic_features':['crater']})!=audit_context
+ natural={'text':'A plume rose from Example Peak.','volcanic_features':['eruption']}
+ volcanic_source={'entity_profile':{'id':'Q1','kind':'concept','name':'volcano'}}
+ example={'id':'Q2','name':'Example Peak','description':'active volcano','commons_category':'Example Peak'}
+ link={'label':'Example Peak','title':'Example Peak'}
+ with patch.object(storyboard,'source_links',return_value=[link]),patch.object(storyboard,'resolve_links',return_value={'Example Peak':example}):
+  storyboard.build([natural],[volcanic_source],'en',app)
+ assert natural['visual_targets'][0]['id']=='Q2'
+ assert 'Example Peak eruption' in storyboard.query_plan([natural])
+ grounded={**volcano_slot,'visual_target':natural['visual_targets'][0]}
+ assert app.photo_score({**quiet,'alt':'An ash cloud from an erupting volcano.'},grounded,'volcano')<0
+ assert app.photo_score({**quiet,'depiction':'File:Example Peak eruption.jpg','alt':'An ash cloud from the erupting volcano.'},grounded,'volcano')>=0
+ dated_scene={**natural,'text':'A plume rose from Example Peak in 1883.'}
+ with patch.object(storyboard,'source_links',return_value=[link]),patch.object(storyboard,'resolve_links',return_value={'Example Peak':example}):
+  storyboard.build([dated_scene],[volcanic_source],'en',app)
+ dated_target=dated_scene['visual_targets'][0]
+ assert dated_target['intent']['event_years']==['1883']
+ assert storyboard.target_score({**quiet,'depiction':'File:Example Peak eruption 2020.jpg','alt':'First erupted in 1883'},{'visual_target':dated_target},app)<0
+ region={'id':'Q3','name':'Example Mountains','description':'mountain range'}
+ context={'text':'Old volcanoes are found in the Example Mountains.'}
+ with patch.object(storyboard,'source_links',return_value=[{'title':region['name'],'label':region['name']}]),patch.object(storyboard,'resolve_links',return_value={region['name']:region}):
+  storyboard.build([context],[volcanic_source],'en',app)
+ attached=context['visual_targets'][0]
+ assert storyboard.target_score({**quiet,'depiction':'File:Example Mountains panorama.jpg','alt':'Mountain panorama'},{'visual_target':attached},app)<0
+ assert storyboard.target_score({**quiet,'depiction':'File:Example Mountains volcanic outcrop.jpg'},{'visual_target':attached},app)>=0
 
  # Retention accounts for ASR records and never selects unrelated shared UUIDs.
  with TemporaryDirectory() as temp:
@@ -470,7 +513,6 @@ def check():
 
 
  # Reused anchor labels in other paragraphs cannot change a scene's subject.
- import storyboard
  parser=storyboard.ArticleLinks()
  parser.feed('<p>A <a href="/wiki/River_One">river</a> feeds the lake.</p><p>The <a href="/wiki/Unrelated_Fiction">river</a> is a fictional character.</p>')
  first='A river feeds the lake.'
@@ -522,6 +564,11 @@ def check():
  assigned=app.allocate_photos(fixtures,[body],'Example',6,scene_slots=expanded)
  assert len({row['id'] for row in assigned})==6
  assert assigned[0]['id']=='rare'
+ with patch.object(app,'photo_score',wraps=app.photo_score) as scoring:
+  options,edges=app.rank_storyboard_photos(fixtures,expanded,[0]*6,'Example')
+  assert scoring.call_count==2*len(fixtures)
+ assert app.allocate_photos(fixtures,[body],'Example',6,scene_slots=expanded,edges=edges)==assigned
+ assert len(options[0])==1 and len(options[2])==2
 
 
  # Wikipedia often links a name only at its first mention. Unambiguous aliases
@@ -756,6 +803,19 @@ def check():
  assert app.supported_commons_license('CC BY-SA 4.0','https://creativecommons.org/licenses/by-sa/4.0','Example Author')
  assert app.supported_commons_license('CC BY-SA 3.0','http://creativecommons.org/licenses/by-sa/3.0/','Example Author')
  assert not app.supported_commons_license('CC BY-SA 4.0','https://creativecommons.org.evil.example/licenses/by-sa/4.0','Example Author')
+ info={'url':'https://upload.wikimedia.org/wikipedia/commons/test.jpg','width':1000,'height':800,'size':2000,
+       'extmetadata':{'LicenseShortName':{'value':'CC BY-SA 4.0'},'LicenseUrl':{'value':'https://creativecommons.org/licenses/by-sa/4.0/'},'Artist':{'value':'Example Author'}}}
+ restricted={**info,'extmetadata':{**info['extmetadata'],'LicenseShortName':{'value':'CC BY-NC 4.0'}}}
+ pages={'1':{'pageid':1,'title':'File:Example photo.jpg','imageinfo':[info]},
+        '2':{'pageid':2,'title':'File:Restricted.jpg','imageinfo':[restricted]}}
+ with patch.object(app,'cache_fetch',side_effect=lambda key,fetch:fetch()),patch.object(app,'http_json',side_effect=[{'parse':{'images':['Icon.svg','Example photo.jpg','Restricted.jpg']}},{'query':{'pages':pages}}]) as http:
+  matches=app.article_photo_candidates({'url':'https://uk.wikipedia.org/wiki/Example','revision_id':1234})
+  assert [photo['id'] for photo in matches]==['1']
+  assert matches[0]['article_media_revision']=='https://uk.wikipedia.org/w/index.php?oldid=1234'
+  assert 'oldid=1234' in http.call_args_list[0].args[0]
+  assert 'Icon' not in http.call_args_list[1].args[0]
+  assert not app.article_photo_candidates({'url':'https://example.org/wiki/Example','revision_id':1234})
+  assert http.call_count==2
  # General Cyrillic overviews avoid foreign-name catalogues the selected native voice cannot align reliably.
  catalogue='Исследователи используют Alpha Mission, Beta Orbiter, Gamma Explorer, Delta Probe и другие аппараты.'
  assert app.foreign_name_catalogue(catalogue,'ru','Планета')

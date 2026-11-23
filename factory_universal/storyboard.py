@@ -217,6 +217,35 @@ def person_event_target(target,profile,text):
  years=event_years(text) if key in {'campaign','inauguration'} else []
  return {**target,'id':profile['id'],'name':profile['name'],'native_name':profile.get('native_name',profile['name']),'kind':'human','aliases':profile.get('aliases',[]),'commons_category':profile.get('commons_category',''),'linked_context':{k:target.get(k) for k in ('id','name','description','source_url')},'intent':{'name':'person event','event':key,'event_years':years,'metadata_pattern':pattern,'visual':visual,'visual_objects':[visual],'query_suffix':key,'negative_descriptions':['A studio portrait or close-up headshot without any visible public event.']}}
 
+def bind_landform_examples(slots,sources,lang,api):
+ links=[link for link in source_links(sources,lang,api) if link['label'][:1].isupper()
+        and any(phrase_in(link['label'],slot['text']) for slot in slots)]
+ resolved=resolve_links(links,lang,api)
+ primary=sources[0]['entity_profile']['id']
+ previous=None
+ for slot in slots:
+  targets={};regions={}
+  for link in links:
+   entity=resolved.get(link['title'])
+   if not entity or entity['id']==primary or not phrase_in(link['label'],slot['text']):continue
+   description=entity.get('description','')
+   if not api.volcanic_subject({'name':'','visual_description':description}):
+    if re.search(r'^(?:a |an |the )?(?:mountain range|mountains|peninsula|geographic(?:al)? region|region|island|archipelago)\b',description,re.I):
+     regions[entity['id']]={**entity,'anchor':link['label'],'binding':'named geographic context in the source article',
+                            'intent':{'name':'named landform','visual':'a volcanic landform, crater or outcrop in this region',
+                                      'query_suffix':'volcanic terrain','metadata_pattern':r'\b(?:volcan\w*|lava|calder\w*)\b'}}
+    continue
+   features=slot.get('volcanic_features',[])
+   visual=api.VOLCANIC_FEATURES[features[0]][1] if features else 'a volcanic landform showing its cone, crater or surrounding terrain'
+   targets[entity['id']]={**entity,'anchor':link['label'],'binding':'linked physical example in the source article',
+                         'intent':{'name':'named landform','visual':visual,'query_suffix':features[0] if features else '',
+                                   'negative_descriptions':['A town, building, street or mural sharing a landform name.']}}
+   if 'eruption' in features:targets[entity['id']]['intent']['event_years']=event_years(slot['text'])
+  if targets or regions:slot['visual_targets']=list((targets or regions).values())[:2]
+  elif previous and previous.get('source_sentence') and previous['source_sentence']==slot.get('source_sentence') and api.context_dependent_sentence(slot['text']):
+   slot['visual_targets']=previous['visual_targets']
+  previous=slot
+
 def build(slots,sources,lang,api):
  profile=sources[0].get('entity_profile',{})
  # Associated entities explain a person's life. Other topic categories retain
@@ -226,6 +255,7 @@ def build(slots,sources,lang,api):
    if slot.get('process_intent') and api.scene_actions(slot['text'])=={'production'} and not api.process_definition(slot['text']):raise SceneUnavailable(slot,'No evidenced physical operation for this process scene')
    slot['visual_targets']=[]
    slot['visual_role']='establishing' if index==0 else 'process_evidence' if slot.get('process_intent') else 'topic_evidence'
+  if api.volcanic_subject(profile) and not slots[0].get('process_intent'):bind_landform_examples(slots,sources,lang,api)
   return
  links=source_links(sources,lang,api)
  alias_titles={}
@@ -337,6 +367,11 @@ def query_plan(slots):
    primary.append(name+' skyline');second.append(name+' panorama')
   elif intent.get('name')=='organization context':
    primary.append(name+' '+suffix);second.append(name+' headquarters')
+  elif intent.get('name')=='named landform':
+   context=' '.join(filter(None,[suffix,*intent.get('event_years',[])]))
+   primary.append((name+' '+context).strip())
+   category=target.get('commons_category')
+   second.append(('incategory:"'+category+'" '+context).strip() if category else (name+' volcano '+context).strip())
   else:
    primary.append(name+(' '+suffix if suffix else ''))
    second.append(name+(' '+suffix if suffix else '')+' incategory:"CC-BY-2.0"')
@@ -391,8 +426,9 @@ def target_score(candidate,slot,api):
   return False
  if not any(identity_phrase(name) for name in names if len(name)>=3):return -1
  intent=target.get('intent',{})
- if intent.get('name')=='historical protest' and intent.get('event_years'):
-  if not any(re.search(r'(?<!\d)'+year+r'(?!\d)',text) for year in intent['event_years']):return -1
+ if intent.get('name') in {'historical protest','named landform'} and intent.get('event_years'):
+  dated=event_years(candidate.get('depiction','')) if intent['name']=='named landform' else []
+  if not set(intent['event_years']).intersection(dated or event_years(text)):return -1
  if intent.get('name')=='physical award':
   required=set(intent.get('award_domains',[]));depicted=award_domains(identity_text)
   if required and depicted and not required&depicted:return -1
