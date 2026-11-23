@@ -1,0 +1,34 @@
+{
+  "page_errors": [],
+  "authenticated": false,
+  "submission_attempted": true,
+  "passed": true,
+  "default_user_only": true,
+  "ready_examples": 5,
+  "continuous_playback": {
+    "before": {
+      "time": 5.168302,
+      "width": 1080,
+      "error": null
+    },
+    "after_refresh": {
+      "same": true,
+      "time": 6.574744,
+      "width": 1080
+    }
+  },
+  "mobile_dimensions": {
+    "viewport": 390,
+    "content": 390
+  },
+  "diagnostics_accessible": true,
+  "submission_started_at": "2026-11-23T08:41:00.761914+00:00",
+  "request": {
+    "topic": "How paper is made",
+    "language": "en",
+    "duration_s": 30
+  },
+  "submission_http_status": 202,
+  "submitted_job": "a68f3e3b-a76c-4957-9900-ae6bf5735bcf",
+  "form_keeps_language_duration": true
+}

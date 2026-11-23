@@ -13,3 +13,9 @@ Staged job `d878ba1a-2c75-4c83-a716-2360aecb2620` passed technical checks, and a
 The next build requires evidence for the narrated biological feature or action before accepting a candidate. This applies when a scene has a source-linked visual target as well as when it uses the primary topic. The regression suite includes the rejected file descriptions and checks that photographs of nectar feeding do not qualify as evidence of honey production.
 
 The earlier Polish, English, Russian and Ukrainian matrix is recorded in [the four-language test results](../2026-11-23-matrix-after-reconnect/README.md).
+
+The second Ukrainian run (`571cb830-3b98-41c0-bd10-f12a7ad8e0ae`) also rendered 1,800 frames and 24 distinct photographs, with 59.256 seconds of the selected native voice. All 24 shot midpoints were inspected. Frame review again rejected the output. A bee fly was visible in shot 19, and frames about carrion feeding and honey reserves showed generic flower photos. The follow-up regression checks cover bee flies, carrion feeding, queen-bee references, pollinator inflections and explicit honey quantities. No Ukrainian example from this series was promoted. A new, full 60-second visual acceptance with the latest rule set remains pending.
+
+## Public Studio check
+
+After deployment of `1b496ca`, the unauthenticated Chrome form created EN30 job `a68f3e3b-a76c-4957-9900-ae6bf5735bcf`. Studio served and played its 900-frame MP4, manifest and credits. It reused the verified native recording with zero synthesis sends. The public render selected a different set of photos from the staged render. Midpoint review rejected shots 6, 7 and 10 because they show dry scrap-paper baling during the wet-sheet pressing step. The test job carries an assistant frame review requesting changes. Runtime regression fixtures require a distinction between these two pressing operations.

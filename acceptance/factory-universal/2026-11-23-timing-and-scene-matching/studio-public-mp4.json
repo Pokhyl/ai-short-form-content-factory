@@ -1,0 +1,28 @@
+{
+  "id": "a68f3e3b-a76c-4957-9900-ae6bf5735bcf",
+  "playback": {
+    "duration": 30,
+    "width": 1080,
+    "height": 1920,
+    "error": null
+  },
+  "frame_count": 900,
+  "unique_photos": 12,
+  "voice": "en-US-Chirp3-HD-Algenib",
+  "voice_ms": 28368,
+  "new_provider_sends": 0,
+  "sha256": "643ca0bf2946cd27ce5babf59c3a02265edff0fda18c3b7824828e10fa23947e",
+  "same_as_reviewed_stage": false,
+  "manifest_http": 200,
+  "credits_http": 200,
+  "range_http": 206,
+  "implementation_hashes": {
+    "app.py": "63f0dc8dfbb8a247056a74d1dec0e27f57397c0fe2f3bc00090b69581765e2bc",
+    "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+    "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+  }
+}

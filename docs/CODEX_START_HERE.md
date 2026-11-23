@@ -1,4 +1,12 @@
-# Current Studio release — 2026-11-22
+# Current Studio release — 2026-11-23
+
+Studio at https://studio.hodor.com.pl/ runs implementation `1b496ca`. The service was rebuilt only after the factory queue was empty. All eight application file hashes match the server checkout. Runtime, alignment and real FFmpeg checks passed.
+
+The worker excludes previously measured scripts that cannot fit at native speed. A fresh EN30 paper-manufacturing job assembled 12 distinct photos and speech voiced by Algenib at 28.368 seconds. All 12 frame midpoints and captions were reviewed. The representative four-language matrix covered 15, 30, 45 and 60 seconds. The Ukrainian 60-second biology tests rendered and passed technical checks, but scene-to-image review found mismatched photos. The latest checks cover the newly observed mismatches. Full visual acceptance of that case and listening approval remain pending.
+
+Evidence is in [the timing and scene review](../acceptance/factory-universal/2026-11-23-timing-and-scene-matching/README.md) and [the language and duration matrix](../acceptance/factory-universal/2026-11-23-matrix-after-reconnect/README.md).
+
+# Previous Studio release — 2026-11-22
 
 Studio runs implementation 04569e5. A browser submission for «супер нова» resolved to the astronomy article «Наднова» (Q3937) and produced a 45-second Ukrainian MP4 with 18 photographs. Public job 4dbe70b6-8173-491b-8f37-6fbd29e552cc is byte-identical to the reviewed stage output. Playback, video ranges, credits and the manifest were checked. The browser run reused the cached recording of the selected native voice and made no new synthesis request. Owner listening is pending.
 
