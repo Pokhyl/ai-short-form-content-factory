@@ -1,8 +1,10 @@
 # Current Studio release — 2026-11-23
 
-Studio at https://studio.hodor.com.pl/ runs implementation `1b496ca`. The service was rebuilt only after the factory queue was empty. All eight application file hashes match the server checkout. Runtime, alignment and real FFmpeg checks passed.
+Studio at https://studio.hodor.com.pl/ runs implementation `69d6213`. The service was rebuilt after the factory queue was empty. All eight application file hashes match the server checkout. Runtime, alignment and real FFmpeg checks passed.
 
-The worker excludes previously measured scripts that cannot fit at native speed. A fresh EN30 paper-manufacturing job assembled 12 distinct photos and speech voiced by Algenib at 28.368 seconds. All 12 frame midpoints and captions were reviewed. The representative four-language matrix covered 15, 30, 45 and 60 seconds. The Ukrainian 60-second biology tests rendered and passed technical checks, but scene-to-image review found mismatched photos. The latest checks cover the newly observed mismatches. Full visual acceptance of that case and listening approval remain pending.
+The worker excludes previously measured scripts that cannot fit at native speed and distinguishes dry scrap baling from wet pressing. The representative four-language matrix covered 15, 30, 45 and 60 seconds. The Ukrainian 60-second biology renders passed technical checks and failed frame review. The stricter follow-up exhausted scene alternatives before synthesis. Full visual acceptance of that case and listening approval remain pending.
+
+Chrome submitted the EN30 paper-manufacturing job `ac0ca5fe-2cc4-4a4a-8344-66beb043f0fc` through the public form and played the 900-frame MP4. Its 12 photographs, wet pressing, captions, credit downloads and cached Algenib recording were verified. The run used zero new synthesis sends.
 
 Evidence is in [the timing and scene review](../acceptance/factory-universal/2026-11-23-timing-and-scene-matching/README.md) and [the language and duration matrix](../acceptance/factory-universal/2026-11-23-matrix-after-reconnect/README.md).
 

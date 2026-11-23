@@ -19,3 +19,7 @@ The second Ukrainian run (`571cb830-3b98-41c0-bd10-f12a7ad8e0ae`) also rendered 
 ## Public Studio check
 
 After deployment of `1b496ca`, the unauthenticated Chrome form created EN30 job `a68f3e3b-a76c-4957-9900-ae6bf5735bcf`. Studio served and played its 900-frame MP4, manifest and credits. It reused the verified native recording with zero synthesis sends. The public render selected a different set of photos from the staged render. Midpoint review rejected shots 6, 7 and 10 because they show dry scrap-paper baling during the wet-sheet pressing step. The test job carries an assistant frame review requesting changes. Runtime regression fixtures require a distinction between these two pressing operations.
+
+Deployment `69d6213` adds the pressing-context check. The same public form created fresh job `ac0ca5fe-2cc4-4a4a-8344-66beb043f0fc` after the fix. Chrome played the verified 30-second file, and the downloaded bytes and contact-sheet hash matched the inspected reference. All 12 actual midpoints and captions were inspected, including the wet-sheet presses and the drying shots. The native audio was reused with zero new synthesis sends. The previous marked test job is preserved.
+
+The final Bee failure on the production insect rules is `cde0867a-62fc-4374-9fdb-b6a93a665829`. It exhausted the bounded search for a valid combination of facts and photos before synthesis. The accompanying scene diagnostics and worker receipt document the failure and zero voice attempts.
