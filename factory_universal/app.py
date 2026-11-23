@@ -1423,6 +1423,10 @@ def photo_score(p,slot,topic):
  required=scene_actions(slot['text']) if process_topic else set()
  action_description=(p.get('alt','').removeprefix(p.get('depiction','')) or '')[:300]
  action_metadata=depiction+' '+action_description
+ if 'press' in required:
+  wet_material=r'\b(?:wet|water|damp|moist|dewater\w*|wilgo\w*|mokr\w*|wod\w*|вод\w*|волог\w*|мокр\w*|влаг\w*)\b'
+  dry_packing=r'\b(?:baling|baling press|baled|packed(?: in)? bales|scrap paper|waste paper|scrap metal|salvage drive|makulatur\w*|макулатур\w*|пресування відходів)\b'
+  if re.search(wet_material,slot['text'],re.I) and re.search(dry_packing,action_metadata,re.I) and not re.search(wet_material,action_metadata,re.I):return -1
  if 'dry' in required:
   # A photo of handling an already dried item does not show the drying step.
   action_metadata=re.sub(r'\b(?:after (?:the )?drying|already dried|dry (?:paper|sheets?|cardboard|fibres?|fibers?))\b',' ',action_metadata,flags=re.I)

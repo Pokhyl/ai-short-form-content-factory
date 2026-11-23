@@ -695,6 +695,10 @@ def check():
  assert app.photo_score({**photo,'depiction':'Paper mill exterior at night'},slot,'How paper is made')<0
  assert app.photo_score({**photo,'depiction':'Paper mill cutting and slitting machinery'},slot,'How paper is made')<0
  assert app.photo_score({**photo,'depiction':'Paper mill pressing machinery'},slot,'How paper is made')>=0
+ salvage={**photo,'depiction':'Salvage drive. Scrap paper hydraulic press.jpg',
+          'alt':'Scrap paper, packed in hydraulic presses and tied into bales.'}
+ assert app.photo_score(salvage,slot,'How paper is made')<0
+ assert app.photo_score(salvage,{**slot,'text':'The factory presses scrap paper into bales.'},'How paper is made')>=0
  assert app.scene_actions('Wet paper fibers drain through a sieve.')=={'drain'}
  assert 'drain' not in app.scene_actions('The phone screen is assembled in the factory.')
  assert app.process_definition('Papermaking is the process of manufacturing paper and cardboard.')
