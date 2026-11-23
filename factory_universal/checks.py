@@ -405,6 +405,7 @@ def check():
  assert app.insect_scene_features('Бджоли перероблюють його в мед.')==['honey production']
  assert app.insect_scene_features('З нектару виробляється мед.')==['honey production']
  assert app.insect_scene_features('Існують у різноманітних колективних утвореннях.')==['insect colony']
+ assert app.insect_scene_features('Молоді робочі бджоли годують молодняк.')==['brood']
  assert app.photo_score(flowers,honey_slot,'Bee')<0
  assert app.photo_score({**flowers,'alt':'Honey bees on honeycomb'},honey_slot,'Bee')>=0
  assert app.insect_scene_features('Бджоли як запилювачі важливі в сільському господарстві.')==['pollination']
@@ -414,6 +415,10 @@ def check():
  assert app.insect_scene_features('Бджола може стати жертвою павуків.')==['predation']
  assert app.insect_scene_features('Одиночні бджоли трапляються у саду.')==['solitary insects']
  prey={**flowers,'alt':'Crab spider with bee prey','depiction':'File:Crab spider with bee prey.jpg'}
+ termite={**flowers,'alt':'Winged termites swarming','depiction':'File:Winged termites swarming.jpg'}
+ wing_scene={**bee_slot,'insect_features':['wings']}
+ assert app.photo_score(termite,wing_scene,'Bee')<0
+ assert app.photo_score({**flowers,'alt':'Honeybee with wings extended'},wing_scene,'Bee')>=0
  assert app.photo_score(prey,bee_slot,'Bee')<0
  assert app.photo_score(prey,{**bee_slot,'insect_features':['predation']},'Bee')>=0
  assert app.photo_score({**flowers,'depiction':'File:Honey bee comb.jpg','alt':'Honey bee comb and an explanation of pollination'},

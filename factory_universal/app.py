@@ -1150,7 +1150,7 @@ INSECT_SCENE_FEATURES={
  'stinger':r'\b(?:sting(?:er|ers|ing)?|żądł\w*|жал[аоу]|жалом)\b',
  'waggle dance':r'\b(?:waggle dance|bee dance|dance of (?:the )?bees|taniec pszcz\w*|танц\w*|танок)\b',
  'fossil':r'\b(?:fossils?|fossilized|skamieniałoś\w*|скам[’\x27]яніл\w*|окаменел\w*)\b',
- 'brood':r'\b(?:brood|larv\w*|eggs?|czerw(?:iu|ia|ie|iem)?|larw\w*|jaj(?:a|ka|ek|ko)|личин(?:ок|к\w*)|яйц\w*)\b',
+ 'brood':r'\b(?:brood|larv\w*|eggs?|czerw(?:iu|ia|ie|iem)?|larw\w*|jaj(?:a|ka|ek|ko)|личин(?:ок|к\w*)|яйц\w*|молодняк\w*)\b',
  'queen':r'\b(?:queen(?: bee)?|queen ant|queen wasp|królow\w*|matk\w* pszczel\w*|матк\w*|бджол[ауиі]-мат[іе]\w*)\b',
  'pollen':r'\b(?:pollen|pollen basket\w*|pył(?:ek|ku|kiem)|пил(?:ок|ку|ком)|пыльц\w*)\b',
  'proboscis':r'\b(?:proboscis|proboscides|trąbk\w*|хобот\w*)\b',
@@ -1167,6 +1167,20 @@ def insect_scene_features(text):
 
 def insect_subject(profile):
  return bool(re.search(r'\binsects?\b',profile.get('visual_description',''),re.I))
+
+def insect_photo_identity(candidate,profile):
+ names=[profile.get('name',''),profile.get('native_name',''),*profile.get('aliases',[])]
+ groups=[set(tokens(name)) for name in names if tokens(name)]
+ if not groups:return True
+ title=candidate.get('depiction','')
+ description=candidate.get('alt','').removeprefix(title).strip()
+ fields=[title,description[:150],*semantic_categories(candidate)]
+ for field in fields:
+  words=set(tokens(field))
+  # A compound common name still identifies its parent insect group.
+  if words&{'honeybee','bumblebee','stinglessbee','carpenterbee'}:words.add('bee')
+  if any(group<=words for group in groups):return True
+ return False
 
 VOLCANIC_FEATURES={
  'eruption':(r'\b(?:erupt\w*|ash plume|ash cloud|erupcj\w*|wybuch\w*|виверж\w*|изверж\w*|вулканічн\w* поп[іе]л\w*|вулканическ\w* пепел\w*)\b','an erupting volcano with a visible ash plume or lava fountain'),
@@ -1422,6 +1436,7 @@ def photo_score(p,slot,topic):
  insect_features=slot.get('insect_features',[])
  if insect_subject(profile) or insect_features:
   if conflicting_insect_identity(p,profile,insect_features):return -1
+  if insect_subject(profile) and not insect_photo_identity(p,profile):return -1
   depicted_features=set(insect_scene_features(p.get('alt','')+' '+' '.join(semantic_categories(p))))
   if not set(insect_features)<=depicted_features:return -1
   title=p.get('depiction','')
