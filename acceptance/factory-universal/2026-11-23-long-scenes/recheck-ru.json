@@ -1,0 +1,28 @@
+{
+  "id": "07a9b5c0-6e6f-455b-ab20-45166226d266",
+  "public_user_card": false,
+  "topic": "Марс",
+  "playback": {
+    "duration": 45,
+    "width": 1080,
+    "height": 1920,
+    "error": null
+  },
+  "frames": 1350,
+  "photos": 18,
+  "voice": "ru-RU-Wavenet-D",
+  "voice_ms": 41280,
+  "audio_sha256": "d90cdd491e260c40458e0e566d9a371e8014d6d8b151f80099931660db7b2799",
+  "sha256": "1a9794636bf5274ea9a7d02ee84581120235d6b16820d009c5e3fcc84ab863d0",
+  "credits_http": 200,
+  "range_http": 206,
+  "implementation_hashes": {
+    "app.py": "ee12e3ba35a0ca87cdcf0297c6b637c71eea13ca8cadcbb093bf0db01126cd95",
+    "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+    "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+  }
+}

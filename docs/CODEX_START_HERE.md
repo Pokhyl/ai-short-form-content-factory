@@ -1,5 +1,15 @@
 # Current Studio release — 2026-11-23
 
+Studio runs `474a267`. Runtime, alignment and real FFmpeg tests passed. The server checkout and the eight running application files match the release. Long overviews consider licensed files from the cited article revision, reuse scene verification work and require metadata evidence for named volcanic locations and insect identities.
+
+Chrome submitted the Ukrainian 60-second «Вулкан» job `1db660ca-2a91-4020-94c4-e2f216ece2ca` through the live Studio form. The completed MP4 played in the browser at 1080×1920 with 1,800 frames, 24 distinct photos, the selected native voice and downloadable credits. All 24 shot midpoints were inspected. The named Vulcano island scene shows the correct place. Some geology shots illustrate the topic broadly and give limited visual evidence for the narrated height and timing claims. Listening approval remains pending.
+
+The public 60-second «Бджоли» job `77465dea-64c1-47bc-9f7e-d5896d34556e` also decoded and played in Chrome with 1,800 frames, 24 distinct photos and the selected voice. The earlier termite files were rejected by production controls and absent from the new video. Frame review requested changes for the opening pace and the use of general pollination closeups during the seasonal beekeeper migration scene.
+
+See [the long-scene release evidence](../acceptance/factory-universal/2026-11-23-long-scenes/README.md).
+
+# Earlier Studio release — 2026-11-23
+
 Studio at https://studio.hodor.com.pl/ runs implementation `69d6213`. The service was rebuilt after the factory queue was empty. All eight application file hashes match the server checkout. Runtime, alignment and real FFmpeg checks passed.
 
 The worker excludes previously measured scripts that cannot fit at native speed and distinguishes dry scrap baling from wet pressing. The representative four-language matrix covered 15, 30, 45 and 60 seconds. The Ukrainian 60-second biology renders passed technical checks and failed frame review. The stricter follow-up exhausted scene alternatives before synthesis. Full visual acceptance of that case and listening approval remain pending.

@@ -1,0 +1,46 @@
+[
+  {
+    "topic": "Вулкан",
+    "id": "8cbcfe9d-9826-474f-a62e-29bc991c7525",
+    "status": "failed",
+    "images": null,
+    "voice_sends": 0,
+    "error": "Scene planning exhausted its bounded source alternatives before synthesis",
+    "replan_count": 20,
+    "searches": {
+      "stock": 0,
+      "commons": 7
+    },
+    "implementation_hashes": {
+      "app.py": "8e8a76d33df7ff00ccc2cdc0ec97d775241da858665e81d31fd3a1073e46c70f",
+      "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+      "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+      "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+      "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+      "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+      "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+    }
+  },
+  {
+    "topic": "Бджоли",
+    "id": "8ac81880-796a-40f6-b464-0a85a059f0b0",
+    "status": "preflight_passed",
+    "images": 24,
+    "voice_sends": 0,
+    "error": null,
+    "replan_count": 12,
+    "searches": {
+      "stock": 0,
+      "commons": 8
+    },
+    "implementation_hashes": {
+      "app.py": "8e8a76d33df7ff00ccc2cdc0ec97d775241da858665e81d31fd3a1073e46c70f",
+      "storyboard.py": "497c0109250a694f7b3ff64882e1a4facd1c9c9f3791c31804de7d4cd7d86324",
+      "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+      "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+      "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+      "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+      "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+    }
+  }
+]

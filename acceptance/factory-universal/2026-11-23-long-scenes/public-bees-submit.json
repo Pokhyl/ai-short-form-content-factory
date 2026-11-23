@@ -1,0 +1,34 @@
+{
+  "page_errors": [],
+  "authenticated": false,
+  "submission_attempted": true,
+  "passed": true,
+  "default_user_only": true,
+  "ready_examples": 5,
+  "continuous_playback": {
+    "before": {
+      "time": 5.168712,
+      "width": 1080,
+      "error": null
+    },
+    "after_refresh": {
+      "same": true,
+      "time": 6.499066,
+      "width": 1080
+    }
+  },
+  "mobile_dimensions": {
+    "viewport": 390,
+    "content": 390
+  },
+  "diagnostics_accessible": true,
+  "submission_started_at": "2026-11-23T16:57:30.175399+00:00",
+  "request": {
+    "topic": "Бджоли",
+    "language": "uk",
+    "duration_s": 60
+  },
+  "submission_http_status": 202,
+  "submitted_job": "77465dea-64c1-47bc-9f7e-d5896d34556e",
+  "form_keeps_language_duration": true
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "topic": "Вулкан",
+    "id": "e4726a98-7899-4da2-836e-223820cbdd97",
+    "status": "preflight_passed",
+    "images": 24,
+    "voice_sends": 0,
+    "error": null,
+    "replan_count": 1,
+    "searches": {
+      "stock": 0,
+      "commons": 8
+    },
+    "implementation_hashes": {
+      "app.py": "264725e339006dd9adba050778f28dff130956373d560848dcb919c149d72259",
+      "storyboard.py": "aa610ce1e6243b740c0d1c944987de5daf2de23aea1c17e32b65868a77e36a61",
+      "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+      "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+      "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+      "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+      "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+    }
+  },
+  {
+    "topic": "Бджоли",
+    "id": "77a4faa6-e18a-4105-bf63-65224933409c",
+    "status": "preflight_passed",
+    "images": 24,
+    "voice_sends": 0,
+    "error": null,
+    "replan_count": 13,
+    "searches": {
+      "stock": 0,
+      "commons": 8
+    },
+    "implementation_hashes": {
+      "app.py": "264725e339006dd9adba050778f28dff130956373d560848dcb919c149d72259",
+      "storyboard.py": "aa610ce1e6243b740c0d1c944987de5daf2de23aea1c17e32b65868a77e36a61",
+      "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+      "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+      "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+      "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+      "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+    }
+  }
+]

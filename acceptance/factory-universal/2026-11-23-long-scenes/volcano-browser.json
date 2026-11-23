@@ -1,0 +1,28 @@
+{
+  "id": "d7ac30f5-3d18-4329-8d64-2b7df4337575",
+  "public_user_card": false,
+  "topic": "Вулкан",
+  "playback": {
+    "duration": 60,
+    "width": 1080,
+    "height": 1920,
+    "error": null
+  },
+  "frames": 1800,
+  "photos": 24,
+  "voice": "uk-UA-Chirp3-HD-Enceladus",
+  "voice_ms": 57264,
+  "audio_sha256": "c24f660627301018788c23512ea92551a726064b4050a105444596f41af35dc1",
+  "sha256": "561c94463fe3ef4c07019fbbd246c0c8ed8773ab72555a85d81b8450bcee8e78",
+  "credits_http": 200,
+  "range_http": 206,
+  "implementation_hashes": {
+    "app.py": "4a683a7119062eb25fa5f62ea22dfe68201f1da05845a023a81850bd82d181ea",
+    "storyboard.py": "7012658e8dcd6f9d48badda8b09d7f4fe4add2a6133e8cb671cc36991439b2a6",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+    "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "page_errors": [],
+  "authenticated": false,
+  "submission_attempted": true,
+  "passed": true,
+  "default_user_only": true,
+  "ready_examples": 5,
+  "continuous_playback": {
+    "before": {
+      "time": 5.158763,
+      "width": 1080,
+      "error": null
+    },
+    "after_refresh": {
+      "same": true,
+      "time": 6.569705,
+      "width": 1080
+    }
+  },
+  "mobile_dimensions": {
+    "viewport": 390,
+    "content": 390
+  },
+  "diagnostics_accessible": true,
+  "submission_started_at": "2026-11-23T16:49:41.778523+00:00",
+  "request": {
+    "topic": "Вулкан",
+    "language": "uk",
+    "duration_s": 60
+  },
+  "submission_http_status": 202,
+  "submitted_job": "1db660ca-2a91-4020-94c4-e2f216ece2ca",
+  "form_keeps_language_duration": true
+}
