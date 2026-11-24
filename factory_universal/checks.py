@@ -193,7 +193,11 @@ def check():
  # Match a verified product in a multilingual brief without substituting an unrelated source.
  assert app.topic_identifier('7-Zip для архівів')=='7-Zip'
  assert app.topic_identifier('1987 спостереження')==''
- assert app.topic_identifier('Made with 7-Zip')==''
+ assert app.topic_identifier('Made with 7-Zip')=='7-Zip'
+ assert app.topic_identifier('Автоматизация процессов n8n')=='n8n'
+ assert app.topic_identifier('Автоматизация фирмы с помощью (n8n).')=='n8n'
+ assert app.topic_identifier('n8n или N8N')=='n8n'
+ assert app.topic_identifier('Сравнить 7-Zip и H44')==''
  def identifier_fixture(url,**kwargs):
   parsed=app.urllib.parse.urlsplit(url)
   query=app.urllib.parse.parse_qs(parsed.query)
@@ -203,7 +207,7 @@ def check():
   assert query['titles']==['H44'] and query['redirects']==['1']
   page={'title':'H44','missing':True} if parsed.hostname.startswith('uk.') else {'title':'H44 Archiver','pageid':1}
   return {'query':{'pages':[page]}}
- brief='H44 для резервних копій'
+ brief='Для резервних копій через H44'
  with patch.object(app,'http_json',identifier_fixture),patch.object(app,'cache_fetch',lambda key,fetch:fetch()):
   assert app.wikipedia(brief,'uk')==[]
   reference=app.identifier_article('H44','uk')
@@ -233,6 +237,8 @@ def check():
  # A Russian brief can match the equivalent Ukrainian wording in the source.
  assert app.script_covers_identifier_scope([{'scoped_identifier':'X20'}],
   'X20 автоматизация для фирм','uk',[{'text':'Компанії можуть використовувати X20 для автоматизації.'}])
+ assert app.script_covers_identifier_scope([{'scoped_identifier':'X20'}],
+  'Автоматизация вашей фирмы с помощью X20','uk',[{'text':'Компанії можуть використовувати X20 для автоматизації.'}])
  assert not app.script_covers_identifier_scope([{'scoped_identifier':'X20'}],
   'X20 автоматизация для фирм','uk',[{'text':'Компанія створила X20 у 2020 році.'}])
  city={'kind':'entity','visual_description':'capital city of a country'}

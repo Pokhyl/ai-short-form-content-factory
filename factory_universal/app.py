@@ -325,10 +325,12 @@ def source_match_rank(topic,source):
  return max(exact_source_title(topic,source.get('title','')),int(bool(joined_topic_title(topic)) and joined_topic_title(topic)==source.get('joined_title_alias')))
 
 def topic_identifier(topic):
- match=re.match(r'^\s*([a-z0-9]+(?:[-.][a-z0-9]+)*)(?=\s|$)',topic,re.I|re.ASCII)
- if not match:return ''
- name=match[1]
- return name if 3<=len(name)<=40 and re.search('[a-z]',name,re.I) and re.search('[0-9]',name) else ''
+ candidates={}
+ for match in re.finditer(r'(?<!\w)[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)*(?!\w)',topic):
+  name=match[0]
+  if 3<=len(name)<=40 and re.search('[A-Za-z]',name) and re.search('[0-9]',name):
+   candidates.setdefault(name.casefold(),name)
+ return next(iter(candidates.values())) if len(candidates)==1 else ''
 
 def identifier_article(identifier,lang):
  def fetch():
@@ -853,7 +855,9 @@ def identifier_scope_terms(text,lang):
 
 def identifier_scope(sources,topic,lang):
  identifier=sources[0].get('scoped_identifier','') if sources else ''
- return identifier_scope_terms(topic,lang)-identifier_scope_terms(identifier,lang) if identifier else set()
+ if not identifier:return set()
+ scope=re.sub(r'\b(?:с помощью|за допомогою|za pomocą|by means of|using|ваш(?:а|ей|ої|у|е|его|ого|им|ими|их|і)?)\b',' ',topic,flags=re.I)
+ return identifier_scope_terms(scope,lang)-identifier_scope_terms(identifier,lang)
 
 def script_covers_identifier_scope(sources,topic,lang,slots):
  return identifier_scope(sources,topic,lang)<=identifier_scope_terms(' '.join(slot['text'] for slot in slots),lang)
