@@ -1915,6 +1915,23 @@ def narration_digest(lang,slots):
  return hashlib.sha256(spoken.encode()).hexdigest()
 
 def distinct_narration_plan(sources,topic,lang,duration,planning_seconds,seen,direction):
+ if source_overview_mode(sources):
+  target=duration*950
+  best=None;probed=set();digests=set()
+  for offset in (0,.5,-.5,1.5,-1.5,3,-3,5,-5):
+   budget=max(5,min(90,planning_seconds+direction*offset))
+   if budget in probed:continue
+   probed.add(budget)
+   candidate=plan_script(sources,topic,lang,budget,max_beats=duration//5,excluded_narrations=seen)
+   if not candidate:continue
+   digest=narration_digest(lang,candidate)
+   if digest in seen or digest in digests:continue
+   digests.add(digest)
+   predicted=natural_duration_ms(' '.join(slot['text'] for slot in candidate),lang)
+   error=abs(predicted-target)
+   if error<=duration*15:return candidate,budget
+   if best is None or error<best[0]:best=(error,candidate,budget)
+  if best is not None:return best[1],best[2]
  for step in [*range(17),*range(-1,-17,-1)]:
   budget=max(5,min(90,planning_seconds+direction*step*.25))
   candidate=plan_script(sources,topic,lang,budget,max_beats=duration//5,excluded_narrations=seen)
@@ -1964,11 +1981,17 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
  planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=out_of_window_narrations(topic,lang,duration);attempts=[];slots=[];completed_plan=completed_narration_plan(sources,topic,lang,duration)
  for attempt in (1,2,3):
   direction=-1 if attempts and attempts[-1]['duration_ms']>duration*1000 else 1
-  slots=completed_plan if attempt==1 and completed_plan else plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
-  if not slots or len(slots)>duration//5:raise ValueError('no complete source narration fits the natural speaking budget')
-  if narration_digest(lang,slots) in seen:
+  if attempt==1 and completed_plan:
+   slots=completed_plan
+  elif seen and source_overview_mode(sources):
    slots,planning_seconds=distinct_narration_plan(sources,topic,lang,duration,planning_seconds,seen,direction)
    if not slots:raise ValueError('no different complete text fits the correction range; no duplicate synthesis')
+  else:
+   slots=plan_script(sources,topic,lang,planning_seconds,max_beats=duration//5)
+   if slots and narration_digest(lang,slots) in seen:
+    slots,planning_seconds=distinct_narration_plan(sources,topic,lang,duration,planning_seconds,seen,direction)
+    if not slots:raise ValueError('no different complete text fits the correction range; no duplicate synthesis')
+  if not slots or len(slots)>duration//5:raise ValueError('no complete source narration fits the natural speaking budget')
   if before_send is not None:
    slots=prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots,before_send,seen,direction)
   script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()

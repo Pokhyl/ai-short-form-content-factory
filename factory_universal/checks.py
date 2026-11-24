@@ -1010,6 +1010,19 @@ def check():
   audit=app.pixel_check('unused','Example Person',{'visual_target':{**family_target,'intent':family_intent}})
   assert not audit['passed'] and not audit['family_group_verification']['passed']
   assert factory.return_value.check.call_args_list[1].args[1]=='members of a family photographed together'
+ # A distinct script alone is insufficient after a miss: compare complete
+ # alternatives against the original delivery window in either direction.
+ prior=[{'text':'Previously measured script.'}]
+ short=[{'text':'Distinct but too short.'}]
+ fits=[{'text':'Distinct and close to the target.'}]
+ seen={app.narration_digest('uk',prior)}
+ for duration in app.DURATIONS:
+  for lang in app.LANGS:
+   def candidate(sources,topic,language,budget,max_beats=None,excluded_narrations=()):
+    assert max_beats==duration//5 and excluded_narrations==seen
+    return fits if budget==duration-1.5 else short
+   with patch.object(app,'source_overview_mode',return_value=True),patch.object(app,'plan_script',side_effect=candidate),patch.object(app,'natural_duration_ms',side_effect=lambda text,language:duration*(950 if text==fits[0]['text'] else 780)):
+    assert app.distinct_narration_plan([], 'topic',lang,duration,duration,seen,1)==(fits,duration-1.5)
  # Recorded native UK timings: character-only calibration misses number-rich text.
  # Predict two held-out complete recordings using only the first completed sample.
  calibration=(526,51025,35136)
