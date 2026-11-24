@@ -1,0 +1,86 @@
+{
+  "implementation_hashes": {
+    "app.py": "c1c5e97e3cf514c2dafe51acb6d362dc55e4e58909acd231af803a9cd4ec9e1e",
+    "storyboard.py": "aaa54e016cd4e18f4ac932df220457b5ffdc575f1edcc2fd1e1a8a632866e98d",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+    "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+  },
+  "cases": [
+    {
+      "id": "9f14a8d0-e99f-4b48-8acc-eb2ba483dc93",
+      "topic": "нейтронная звезда",
+      "language": "uk",
+      "duration_s": 45,
+      "status": "failed",
+      "error": "no verified scene-matched image for shot 2 after 24 candidates; pixel comparison rejected candidate: score=0.223354 margin=0.022614; pixel comparison rejected candidate: score=0.217296 margin=0.023042; pixel comparison rejected candidate: score=0.236547 margin=0.031128"
+    },
+    {
+      "id": "dfd5370a-b7e6-477c-a43c-8a6f2b9705f1",
+      "topic": "How paper is made",
+      "language": "en",
+      "duration_s": 30,
+      "status": "ready",
+      "error": null,
+      "frames": 900,
+      "voice": "en-US-Chirp3-HD-Algenib",
+      "speech_ms": 28368,
+      "audio_tempo_factor": 1.0,
+      "attempt_durations_ms": [
+        28368
+      ],
+      "photos": 12,
+      "full_decode": true,
+      "exact_duration": true,
+      "exact_frames": true,
+      "sha256": "6fea04275d54afe4921f1aa6312bad9a9fb0efd5e4048213b179aef49431594c",
+      "frame_review": "observations recorded"
+    },
+    {
+      "id": "224bc833-9928-48be-8e36-34398a212676",
+      "topic": "Łódź",
+      "language": "pl",
+      "duration_s": 15,
+      "status": "ready",
+      "error": null,
+      "frames": 450,
+      "voice": "pl-PL-Chirp3-HD-Enceladus",
+      "speech_ms": 13608,
+      "audio_tempo_factor": 1.0,
+      "attempt_durations_ms": [
+        18336,
+        11976,
+        13608
+      ],
+      "photos": 6,
+      "full_decode": true,
+      "exact_duration": true,
+      "exact_frames": true,
+      "sha256": "e726c15ea032ebaf67763629974fd507c4755ad1c53450471117bc5607e9c4fa",
+      "frame_review": "changes required"
+    },
+    {
+      "id": "30e8957d-9b7a-4205-b608-bc5b9ab162e6",
+      "topic": "Паровоз",
+      "language": "ru",
+      "duration_s": 60,
+      "status": "ready",
+      "error": null,
+      "frames": 1800,
+      "voice": "ru-RU-Wavenet-D",
+      "speech_ms": 57216,
+      "audio_tempo_factor": 1.0,
+      "attempt_durations_ms": [
+        57216
+      ],
+      "photos": 24,
+      "full_decode": true,
+      "exact_duration": true,
+      "exact_frames": true,
+      "sha256": "9c4611dc65d5fec239b12946af3c4392e2e6f2b4fc79ba16d7057d13cdee2caf",
+      "frame_review": "changes required"
+    }
+  ]
+}

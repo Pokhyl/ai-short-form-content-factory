@@ -1,0 +1,22 @@
+{
+  "implementation_hashes": {
+    "app.py": "1792033ba71965cdda0706063285666651489dc8ff3e9579cb20556cbf72b94c",
+    "storyboard.py": "aaa54e016cd4e18f4ac932df220457b5ffdc575f1edcc2fd1e1a8a632866e98d",
+    "visual_verifier.py": "fb98fe46984f88a191344eb5e30e48c19895d8a9d9f6928373b9c6fdad03c99d",
+    "photo_duplicates.py": "dc87179617a9b5e285695c39a677d194069264939de4c33c17b5fccd22d4a0b0",
+    "renderer.py": "bf2c5ed71da4b18cf8639b847e4e80e211334669c3a94d61e95a66f0baddc162",
+    "alignment_core.py": "cf44c3562e10942da07e0e36ef1fa310a9c621fa948dbd2a64bc6c2c1cc21463",
+    "source_translation.py": "53ec1f0ce7bbe4e471ca6a95f59694f1533107a96ab0041e4ed7ca96a43c10a2"
+  },
+  "cases": [
+    {
+      "id": "48951407-3c5d-4275-b7fe-aea5b4e53fcf",
+      "topic": "нейтронная звезда",
+      "language": "uk",
+      "duration_s": 45,
+      "status": "failed",
+      "error": "Scene planning exhausted its bounded source alternatives before synthesis",
+      "voice_attempts": 0
+    }
+  ]
+}
