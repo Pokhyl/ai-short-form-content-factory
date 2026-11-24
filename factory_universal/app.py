@@ -668,6 +668,10 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
     definition_index=0;definition=lead
     source_positions[(0,lead)]=sources[0]['text'].find(original);source_spans[(0,lead)]=original
   if definition:
+   original_definition=source_spans.get((definition_index,definition),definition)
+   if any(excluded in original_definition for excluded in sources[definition_index].get('excluded_visual_sentences',[])):
+    definition_index=None;definition=None
+  if definition:
    rows.append((40,definition_index,definition,definition.split()))
    source_positions.setdefault((definition_index,definition),0);source_spans.setdefault((definition_index,definition),definition)
   for si,src in enumerate(sources):
@@ -1254,9 +1258,12 @@ def photographic_metadata(p):
  description=p.get('alt','').removeprefix(title).strip()
  overlays=r'\b(?:added (?:text |color(?:ed)? )?(?:labels|arrows)|(?:modified|marked|overlaid) (?:the )?(?:image |photo(?:graph)? )?with (?:text |color(?:ed)? )?(?:labels|arrows))\b'
  if re.search(overlays,description+' '+p.get('creator',''),re.I):return False
- if re.search(r'\b(?:annotated|montage|multi.panel|before(?:[ _-]+and)?[ _-]+after)\b',title,re.I):return False
+ if re.search(r'\b(?:annotated|labeled|labelled|infographic|montage|multi.panel|before(?:[ _-]+and)?[ _-]+after)\b',title,re.I):return False
  nonphoto=r'\b(?:shows?|showing|displays?|plots?|depicts?) (?:a |an |the )?(?:spectrum|(?:light.?curve|spectral|intensity) plot|graph)\b|\b(?:inset(?: [a-z-]+){0,2} images?|series of [a-z]+ panels)\b|\[(?:top|bottom) (?:left|right)\]'
  if re.search(nonphoto,description[:950],re.I):return False
+ # Match creator disclosures about this asset, including scientific archives
+ # whose titles describe the subject but omit the production method.
+ if re.search(r'\b(?:simulation (?:frames?|still|image)|still(?: frame)? from (?:a |an |the )?(?:planetarium show|animation|simulation)|(?:done|made|created|rendered|model(?:l)?ed) (?:in|with|using) (?:Blender|PlanetMaker|Cinema 4D|3ds Max|Maya)|procedural textures)\b',description[:950],re.I):return False
  if re.search(r'\b(?:image (?:has been |is )annotated|annotated to highlight|comparison star|(?:two|three|four) images (?:of .*? )?(?:are (?:shown|seen)|show)|multiple panels)\b',description[:750],re.I):return False
  if len(set(re.findall(r'(?:^|[.!?]\s+)\(([A-H])\)\s+[A-Z]',description[:950])))>=3:return False
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
@@ -1368,6 +1375,8 @@ def photo_origins(p):
   if len(signature)>=100:origins.add(('commons-observation-description',signature))
   publication_id=re.search(r'\(((?:19|20)\d{2}-\d{2,4}(?:-\d{2,5})?)\)\.[a-z]+$',p.get('depiction',''),re.I)
   if publication_id:origins.add(('commons-observation-publication',publication_id.group(1)))
+  release_id=re.search(r'\b((?:opo|eso|noirlab|noaoann)\d{4,})[a-z](?:\)|[ _-]|\.)',p.get('depiction',''),re.I)
+  if release_id:origins.add(('commons-observation-release',release_id.group(1).casefold()))
   exposure=re.search(r'\bobtained by (.{4,100}?) in ((?:19|20)\d{2}), with (\d+) minutes? exposure in ([a-z-]+)',description,re.I)
   if exposure:
    subjects='|'.join(sorted(astronomical_identifiers(p.get('depiction',''))))

@@ -26,6 +26,18 @@ def check():
  assert app.photo_score(after,drying,'How paper is made')<0
  assert app.photo_score(on_rack,drying,'How paper is made')>=0
  assert not app.photographic_metadata({'depiction':'File:Before After Specimen Washing.jpg'})
+ for depiction,description in [
+  ('File:Infographic- evolution of a star.jpg','A team of researchers reports a discovery.'),
+  ('File:Eccentric star (closeup-labeled).jpg','An observation of the source.'),
+  ('File:Stellar merger.jpg','Simulation frames from this NASA animation.'),
+  ('File:Double star.jpg','A still frame from the planetarium show.'),
+  ('File:Neutron star.jpg','A star done in Blender using procedural textures.'),
+  ('File:Neutron star and companion.jpg','Done with PlanetMaker'),
+ ]:
+  assert not app.photographic_metadata({'depiction':depiction,'alt':depiction+' '+description})
+ observation=lambda title:app.photo_origins({'provider':'commons','creator':'ESO','depiction':title})
+ assert observation('File:Hubble view (eso1810b).jpg')&observation('File:MUSE view (eso1810c).jpg')
+ assert not observation('File:Hubble view (eso1810b).jpg')&observation('File:An independent exposure (eso1811a).jpg')
  assert not app.photographic_metadata({'alt':'Specimen preparation. (A) Photograph of the insect. (B) Close-up of the wing. (C) View under magnification.'})
  assert not app.photographic_metadata({'depiction':'File:Volcano from an orbiter.jpg',
                                         'creator':'The contributor modified the image with labels.'})
@@ -971,6 +983,11 @@ def check():
  with patch.object(app,'plan_script',return_value=[good_slot]):
   assert app.prepare_illustrated_slots(event_source,'Example Person','en',30,30,[bad_slot],missing_campaign)==[good_slot]
  assert event_source[0]['excluded_visual_sentences']==[bad_text]
+ first='Wind turbines are machines that convert wind into electricity.'
+ other='Wind turbines generate electricity when moving air turns the blades attached to each rotor.'
+ overview=[{'title':'Wind turbines','text':first+'\n'+other,'entity_profile':{'id':'Q1'},'excluded_visual_sentences':[first]}]
+ overview_slots=app.source_slots(overview,'Wind turbines',1,'en',duration_s=15)
+ assert [slot['source_sentence'] for slot in overview_slots]==[other],overview_slots
  already_spoken={'text':'Example Person was elected in a national vote.','source_index':0}
  calls.clear()
  event_source=[{'text':bad_text+'\n'+already_spoken['text']+'\n'+good_text}]
