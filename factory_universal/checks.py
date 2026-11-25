@@ -64,6 +64,9 @@ def check():
   assert request['audioConfig']=={'audioEncoding':'MP3'}
   assert set(request)=={'input','voice','audioConfig'}
  assert app.selected_voice_request('uk','гала́ктики')['input']['text']=='галактики'
+ for duration in app.DURATIONS:
+  minimum,maximum=app.natural_voice_window(duration)
+  assert minimum==duration*900-50 and maximum==duration*1000
 
  # Regression: the real measured sequence changes text, preserves selected voice, and stops after three sends.
  from unittest.mock import patch

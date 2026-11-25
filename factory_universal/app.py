@@ -1859,7 +1859,9 @@ def google_voice_once(lang,text,jid,attempt):
   raise
 
 def natural_voice_window(duration):
- return round(duration*900),duration*1000
+ # Permit two audio frames of rounding at the lower coverage boundary. The
+ # recording must still fit inside the exact duration of the final video.
+ return round(duration*900)-50,duration*1000
 
 def out_of_window_narrations(topic,lang,duration):
  voice=SELECTED_VOICES[lang][1];low,high=natural_voice_window(duration)
@@ -2042,11 +2044,15 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
   if low<=actual<=high:break
   if source_overview_mode(sources):
    from statistics import median
-   # Calibrate the text budget once using this job's completed native recordings.
-   # Scaling the old seconds budget as well would apply the correction twice.
+   # Recalibrate the estimator using this job's completed native recordings.
    NATURAL_RATE_CACHE[lang]=median(item['duration_ms']/item['characters'] for item in attempts if item.get('characters'))
    NATURAL_INTERNAL_RATE_CACHE[lang]=median(item['duration_ms']/item['internal_duration_estimate_ms'] for item in attempts if item.get('internal_duration_estimate_ms'))
-   planning_seconds=duration
+   # Visual replanning can leave only much shorter or longer scripts. Move the
+   # search budget after calibration, while still ranking against the original
+   # delivery window in distinct_narration_plan.
+   predicted=natural_duration_ms(spoken,lang)
+   shift=0 if low<=predicted<=high else max(-8,min(8,(duration*950-predicted)/1000))
+   planning_seconds=max(5,min(90,duration+shift))
   else:planning_seconds=max(10,min(90,round(planning_seconds*(duration*1000-500)/max(actual,1))))
  else:raise ValueError('three distinct natural narration texts did not fit; no speed change or voice substitution')
  # Align the exact, unmodified natural audio through the existing media worker.
