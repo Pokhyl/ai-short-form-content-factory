@@ -382,10 +382,13 @@ def wikipedia(topic,lang):
   core_set=set(core);method_terms=set(topic_terms({'en':'manufacturing making production process materials equipment','pl':'produkcja wytwarzanie proces materiały urządzenia','ru':'производство изготовление процесс материалы оборудование','uk':'виробництво виготовлення процес матеріали обладнання'}[lang],lang))
   def core_matches(title):
    words=set(topic_terms(title,lang))
-   return {term for term in core_set if term in words or (made and lang=='en' and len(term)>=4 and any(word.startswith(term) and word[len(term):] in {'making','manufacturing','production','blowing'} for word in words))}
+   if lang!='en':
+    roots=grounding_terms(title,lang)
+    return {term for term in core_set if term[:4] in roots}
+   return {term for term in core_set if term in words or (made and len(term)>=4 and any(word.startswith(term) and word[len(term):] in {'making','manufacturing','production','blowing'} for word in words))}
   hits=[title for title in hits if title==joined_target or exact_source_title(topic,title) or core_matches(title) or (made and bool(set(topic_terms(title,lang))&method_terms))]
   if made and len(core_set)>1:
-   hits=[title for title in hits if core_set<=set(topic_terms(title,lang)) or bool((set(topic_terms(title,lang))-core_set)&method_terms) or (bool(set(topic_terms(title,lang))&core_set) and bool(re.search(r'manufactur|produc|fabricat|process|produk|wytwarz|proces|производ|изготов|процесс|виробниц|виготов|процес',title,re.I)))]
+   hits=[title for title in hits if core_matches(title)==core_set or bool((set(topic_terms(title,lang))-core_set)&method_terms) or (core_matches(title) and re.search(r'manufactur|produc|fabricat|process|produk|wytwarz|proces|производ|изготов|процесс|виробниц|виготов|процес',title,re.I))]
   hits=sorted(hits,key=lambda title:(-max(int(title==joined_target),exact_source_title(topic,title)),-len(core_matches(title)),-int(made and bool(re.search(r'making|manufactur|production|produk|wytwarz|производ|изготов|виробниц|виготов',title,re.I))),hits.index(title)))
   if native_title:hits=[native_title]
   if not hits:
@@ -766,8 +769,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    return sorted(chosen,key=lambda x:(max((stage_order[action] for action in visual_actions(x['text']) if action in stage_order),default=0),x['source_index'],x['source_position']))
   return sorted(chosen,key=lambda x:(0 if definition and x['source_index']==definition_index else 1,x['source_index'],x['source_position']))
 def source_cache_key(topic,lang):
- version='v13' if topic_identifier(topic) else 'v12'
- return 'wikipedia-'+version+'|'+lang+'|'+topic
+ return 'wikipedia-v14|'+lang+'|'+topic
 
 def translated_identifier_source(topic,lang):
  from source_translation import MODEL,article_view,configured_for
@@ -2269,17 +2271,15 @@ def run_job(jid):
     message='Found '+reference['title']+', but no usable Wikipedia article for it in '+language+'.'
     partial={'sources':[reference],'resolved_topic':reference['title'],'input_reason':'source_language_unavailable'}
     update(jid,status='needs_input',stage='research',progress=0,message=message,error=None,manifest=json.dumps(partial,ensure_ascii=False));return
-   update(jid,status='needs_input',stage='research',progress=0,message='Please add context to the topic or provide a more specific subject',error=None);return
+   partial={'input_reason':'source_not_found'}
+   update(jid,status='needs_input',stage='research',progress=0,message='No usable Wikipedia source was found for this topic in the selected language.',error=None,manifest=json.dumps(partial,ensure_ascii=False));return
   if subject_rejected(topic,lang,sources[0].get('entity_profile',{}).get('id')):
    partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources[:3]],'resolved_topic':sources[0]['title'],'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'input_needed':'This source interpretation was rejected. Add context to specify the subject you mean.'}
    update(jid,status='needs_input',stage='research',progress=0,message=partial['input_needed'],error=None,manifest=json.dumps(partial,ensure_ascii=False));return
   slots=plan_script(sources,topic,lang,duration)
   if not slots:
-   if sources[0].get('scoped_identifier'):
-    partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources],'resolved_topic':sources[0]['title'],'input_reason':'source_scope_unavailable'}
-    update(jid,status='needs_input',stage='research',progress=0,message='The sources could not support a complete script covering the requested focus and duration.',error=None,manifest=json.dumps(partial,ensure_ascii=False));return
-   partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources],'resolved_topic':sources[0]['title'],'input_needed':'The available source cannot establish a complete narration for this request. Please clarify which subject you mean.'}
-   update(jid,status='needs_input',stage='research',progress=0,message='More context is needed for this topic; check the matched source below',error=None,manifest=json.dumps(partial,ensure_ascii=False));return
+   partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources],'resolved_topic':sources[0]['title'],'input_reason':'source_scope_unavailable'}
+   update(jid,status='needs_input',stage='research',progress=0,message='The sources could not support a complete script covering the requested focus and duration.',error=None,manifest=json.dumps(partial,ensure_ascii=False));return
   visual_state={}
   def before_send(planned_slots):
    provenance=[beat_source(slot,sources[slot['source_index']]) for slot in planned_slots]

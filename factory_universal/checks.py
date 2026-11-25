@@ -190,6 +190,14 @@ def check():
  with patch.object(app,'http_json',split_title_fixture):
   split_retrieved=app.wikipedia('супер нова','uk')
  assert app.relevant_sources(split_retrieved,'супер нова','uk')[0]['title']=='Наднова'
+ def inflected_title_fixture(url,**kwargs):
+  query=app.urllib.parse.parse_qs(app.urllib.parse.urlsplit(url).query)
+  if query.get('action')==['query']:
+   return {'query':{'search':[{'title':'Корабельня','pageid':1}]}}
+  assert query['page']==['Корабельня']
+  return {'parse':{'title':'Корабельня','text':{'*':'<p>'+('На корабельні будують і ремонтують судна. '*10)+'</p>'}}}
+ with patch.object(app,'http_json',inflected_title_fixture):
+  assert app.wikipedia('Робота на корабельні','uk')[0]['title']=='Корабельня'
  # Match a verified product in a multilingual brief without substituting an unrelated source.
  assert app.topic_identifier('7-Zip для архівів')=='7-Zip'
  assert app.topic_identifier('1987 спостереження')==''
