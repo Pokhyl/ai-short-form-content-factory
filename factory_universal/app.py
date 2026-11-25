@@ -1151,7 +1151,7 @@ def incidental_place_event(text,topic,profile):
  # dated trial, battle or other incidental historical event.
  event=r'\b(?:trials?|battles?|sieges?|uprisings?|treaties|treaty|wars?|occup\w*|founded|first mention\w*|proces\w*|bitw\w*|oblęż\w*|powstan\w*|traktat\w*|wojn\w*|założ\w*|wzmiank\w*|суд\w*|битв\w*|осад\w*|облог\w*|восстан\w*|повстан\w*|войн\w*|війн\w*|окупац\w*|оккупац\w*|заснув\w*|основан\w*|згадк\w*|упоминани\w*)\b'
  date=r'\b(?:[1-9]\d{2}|[12]\d{3})\b'
- early_year=r'\b(?:in|since|until|w|we|od|do|в|у|з|с|до)\s+1[0-8]\d{2}\b(?![.,]\d|\s*(?:km|mi|км|м²))'
+ early_year=r'\b(?:in|from|since|until|w|we|z|od|do|в|у|з|с|до)\s+(?:(?:the year|roku|року|года)\s+)?1[0-8]\d{2}\b(?![.,]\d|\s*(?:(?:km|mi|m|metres?|meters?|metr\w*|км|м|метр\w*)\b|м²))'
  historical_brief=r'\b(?:histor\w*|ancient|medieval|dziej\w*|średniowiecz\w*|истори\w*|істор\w*|древн\w*|середньовіч\w*)\b'
  historic_assembly=r'\b(?:general sejm|sejm\w* waln\w*|вальн\w* сейм\w*)\b'
  return bool(named_place_subject(profile) and not re.search('|'.join((event,date,historical_brief,historic_assembly)),topic,re.I)

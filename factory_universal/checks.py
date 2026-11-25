@@ -252,6 +252,9 @@ def check():
   'X20 автоматизация для фирм','uk',[{'text':'Компанія створила X20 у 2020 році.'}])
  city={'kind':'entity','visual_description':'capital city of a country'}
  assert app.incidental_place_event('W 1339 odbył się proces sądowy w mieście.','Warszawa',city)
+ assert app.incidental_place_event('Z 1427 pochodzą pierwsze udokumentowane wiadomości o Żydach mieszkających w Starej Warszawie.','Warszawa',city)
+ assert app.incidental_place_event('The earliest records come from 1427.','Example City',city)
+ assert not app.incidental_place_event('The trail climbs from 1427 metres above sea level.','Example City',city)
  assert app.incidental_place_event('Pierwsza wzmianka o Warszawie pochodzi z 23 kwietnia 1313.','Warszawa',city)
  assert app.incidental_place_event('W 1526 została włączona do Korony Królestwa Polskiego.','Warszawa',city)
  assert app.incidental_place_event('W Warszawie odbyło się 145 sejmów walnych.','Warszawa',city)
