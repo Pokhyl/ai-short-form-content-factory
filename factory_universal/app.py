@@ -1859,9 +1859,8 @@ def google_voice_once(lang,text,jid,attempt):
   raise
 
 def natural_voice_window(duration):
- # Permit two audio frames of rounding at the lower coverage boundary. The
- # recording must still fit inside the exact duration of the final video.
- return round(duration*900)-50,duration*1000
+ from renderer import natural_audio_window
+ return natural_audio_window(duration*1000)
 
 def out_of_window_narrations(topic,lang,duration):
  voice=SELECTED_VOICES[lang][1];low,high=natural_voice_window(duration)

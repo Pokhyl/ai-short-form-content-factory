@@ -11,8 +11,9 @@ def check():
  with TemporaryDirectory(prefix='factory-render-check-') as temp:
   data=Path(temp);jid=str(uuid.uuid4());voice=data/'voiceovers'/jid;voice.mkdir(parents=True)
   audio=voice/'final.mp3'
-  subprocess.run(['ffmpeg','-nostdin','-y','-v','error','-f','lavfi','-i','anullsrc=r=24000:cl=mono','-t','14.016','-c:a','libmp3lame',str(audio)],check=True,timeout=15)
+  subprocess.run(['ffmpeg','-nostdin','-y','-v','error','-f','lavfi','-i','anullsrc=r=24000:cl=mono','-t','13.416','-c:a','libmp3lame',str(audio)],check=True,timeout=15)
   actual=round(float(probe(audio)['format']['duration'])*1000)
+  assert 13450<=actual<13500,actual
   scenes=[];images=data/'visuals'/jid;images.mkdir(parents=True)
   for index in range(6):
    path=images/(str(index)+'.jpg');Image.new('RGB',(1080,1920),(30+index*30,40,60)).save(path)

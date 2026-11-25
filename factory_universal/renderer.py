@@ -5,6 +5,11 @@ from pathlib import Path
 import subprocess
 import uuid
 
+def natural_audio_window(requested_ms):
+ # Allow about two MP3 frames at the lower coverage boundary. The recording
+ # still has to fit within the exact requested video duration.
+ return requested_ms*9//10-50,requested_ms
+
 def digest(path):
  with Path(path).open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
 
@@ -15,7 +20,8 @@ def probe(path):
 def render(jid,payload,data=Path('/data')):
  jid=str(uuid.UUID(jid));data=Path(data).resolve()
  requested=payload['requested_duration_ms'];actual=payload['audio_duration_ms'];target=payload['target_duration_ms']
- if requested not in {15000,30000,45000,60000} or target!=requested or not requested*.90<=actual<=requested:raise ValueError('natural audio does not fit requested duration')
+ lower,upper=natural_audio_window(requested)
+ if requested not in {15000,30000,45000,60000} or target!=requested or not lower<=actual<=upper:raise ValueError('natural audio does not fit requested duration')
  audio=data/'voiceovers'/jid/'final.mp3'
  if digest(audio)!=payload['input_audio_sha256']:raise ValueError('input narration hash changed')
  if abs(round(float(probe(audio)['format']['duration'])*1000)-actual)>1:raise ValueError('input narration duration changed')
@@ -50,7 +56,7 @@ def render(jid,payload,data=Path('/data')):
   meta=probe(draft);videos=[s for s in meta['streams'] if s['codec_type']=='video'];audios=[s for s in meta['streams'] if s['codec_type']=='audio']
   if len(videos)!=1 or len(audios)!=1:raise ValueError('render stream count is invalid')
   video=videos[0];sound=audios[0];duration=round(float(video['duration'])*1000)
-  gates={'exact_frames':int(video.get('nb_frames',0))==requested*30//1000,'exact_duration':duration==requested,'portrait_dimensions':(video['width'],video['height'])==(1080,1920),'h264':video['codec_name']=='h264','aac':sound['codec_name']=='aac','yuv420p':video['pix_fmt']=='yuv420p','fps_30':video['r_frame_rate']=='30/1','unique_images':len(hashes)==len(scenes),'continuous_timeline':cursor==requested,'unchanged_source_audio':digest(audio)==payload['input_audio_sha256'],'natural_audio_fits':requested*.90<=actual<=requested}
+  gates={'exact_frames':int(video.get('nb_frames',0))==requested*30//1000,'exact_duration':duration==requested,'portrait_dimensions':(video['width'],video['height'])==(1080,1920),'h264':video['codec_name']=='h264','aac':sound['codec_name']=='aac','yuv420p':video['pix_fmt']=='yuv420p','fps_30':video['r_frame_rate']=='30/1','unique_images':len(hashes)==len(scenes),'continuous_timeline':cursor==requested,'unchanged_source_audio':digest(audio)==payload['input_audio_sha256'],'natural_audio_fits':lower<=actual<=upper}
   if attribution:gates['attribution_embedded']=meta.get('format',{}).get('tags',{}).get('comment')==credits_text and 'CC BY-SA 4.0' in meta.get('format',{}).get('tags',{}).get('copyright','')
   if not all(gates.values()):raise ValueError('render QA failed: '+','.join(k for k,v in gates.items() if not v))
   draft.replace(output)
