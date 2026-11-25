@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import shutil
 import urllib.request
+from source_translation import MODEL, MODEL_HASHES, QUERY_MODEL, QUERY_HASHES
 
 REVISION='6b7c523703ae26e39be4b03774966f8571c7f523'
 FILES=[
@@ -17,16 +18,15 @@ def digest(path):
  with path.open('rb') as stream:
   for chunk in iter(lambda:stream.read(1048576),b''):value.update(chunk)
  return value.hexdigest()
-def main():
- parser=argparse.ArgumentParser();parser.add_argument('--directory',default='/var/lib/factory-rebuild/models/clip');args=parser.parse_args()
- directory=Path(args.directory);directory.mkdir(parents=True,exist_ok=True)
- for remote,name,size,expected in FILES:
+def install(directory,repository,revision,files):
+ directory.mkdir(parents=True,exist_ok=True)
+ for remote,name,size,expected in files:
   target=directory/name
   if target.is_file() and target.stat().st_size==size and digest(target)==expected:continue
   if shutil.disk_usage(directory).free<2_000_000_000:raise RuntimeError('need at least 2 GB free before installing model files')
   partial=directory/(name+'.partial');used=0
   try:
-   url='https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/'+REVISION+'/'+remote
+   url='https://huggingface.co/'+repository+'/resolve/'+revision+'/'+remote
    with urllib.request.urlopen(url,timeout=60) as response,partial.open('wb') as stream:
     while True:
      chunk=response.read(1048576)
@@ -37,6 +37,24 @@ def main():
    if used!=size or digest(partial)!=expected:raise RuntimeError('model integrity check failed: '+name)
    partial.replace(target)
   finally:partial.unlink(missing_ok=True)
- (directory/'revision.json').write_text(json.dumps({'repository':'Xenova/clip-vit-base-patch32','revision':REVISION,'files':[{'name':name,'bytes':size,'sha256':sha} for _,name,size,sha in FILES]},indent=2))
- print('Local visual model ready; all file sizes and checksums verified.')
+ (directory/'revision.json').write_text(json.dumps({'repository':repository,'revision':revision,'files':[{'name':name,'bytes':size,'sha256':sha} for _,name,size,sha in files]},indent=2))
+ print(repository+' ready; all file sizes and checksums verified.')
+
+def main():
+ parser=argparse.ArgumentParser()
+ parser.add_argument('--directory',type=Path)
+ parser.add_argument('--translation',action='store_true')
+ args=parser.parse_args()
+ if not args.translation:
+  install(args.directory or Path('/var/lib/factory-rebuild/models/clip'),'Xenova/clip-vit-base-patch32',REVISION,FILES)
+  return
+ directory=args.directory or Path('/var/lib/factory-universal/models/translation')
+ for folder,repository,model,hashes,sizes in (
+  ('from-english','NothingSoftware/opus-mt-tc-big-en-zle-ct2-int8',MODEL,MODEL_HASHES,
+   (233,242630403,2152164,802747,1017004)),
+  ('to-english','mults/hplt-translate-uk-en-ct2-int8',QUERY_MODEL,QUERY_HASHES,
+   (231,2450722,1642012,82193357)),
+ ):
+  files=[(name,name,size,checksum) for (name,checksum),size in zip(hashes.items(),sizes,strict=True)]
+  install(directory/folder,repository,model.split('@',1)[1],files)
 if __name__=='__main__':main()

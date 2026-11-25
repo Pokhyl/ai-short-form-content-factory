@@ -1,0 +1,12 @@
+services:
+  app:
+    environment:
+      FACTORY_TRANSLATION_MODEL_DIR: /models/translation/from-english
+      FACTORY_UK_EN_MODEL_DIR: /models/translation/to-english
+    volumes:
+      - type: bind
+        source: ${FACTORY_TRANSLATION_HOST_DIR:-/var/lib/factory-universal/models/translation}
+        target: /models/translation
+        read_only: true
+        bind:
+          create_host_path: false

@@ -17,28 +17,52 @@ MODEL_HASHES = {
     'target.spm': '22940e744b3a9fd166a04880938fb61f7dfa8ba4b5d2d3f6371a6c4ba8f3b019',
 }
 MAX_SENTENCES = 36
+QUERY_MODEL = 'hplt-translate-uk-en-ct2-int8@c2a0b79629e5a02059677292ed7838963216cdc7'
+QUERY_HASHES = {
+    'config.json': '95dabd564e6abdb470e95f9106766647d8dc59e1bc2a1517d292c0cee5ca5812',
+    'shared_vocabulary.json': 'f311ace701144cf8732399385e8be0b7072f75c7134cd30e3364b254ecf79e10',
+    'model.uk-en.spm': 'a57065267cdc1d75d64780a5286cd4d1279b4a037bab11540f61ed3989155238',
+    'model.bin': 'a418977df2fd300f81ab5e629d3232a363c102515ce1c3aac419b96c7a9cc686',
+}
 
 
 def configured_for(language):
     return language in TARGETS and bool(os.environ.get('FACTORY_TRANSLATION_MODEL_DIR'))
 
 
-def translate_batch(sentences, language):
+def query_configured_for(language):
+    return language == 'uk' and bool(os.environ.get('FACTORY_UK_EN_MODEL_DIR'))
+
+
+def translate(sentences, model_dir, hashes, source_tokenizer, target_tokenizer, prefix):
     import ctranslate2
     import sentencepiece
 
-    model_dir = Path(os.environ['FACTORY_TRANSLATION_MODEL_DIR'])
-    for name, expected in MODEL_HASHES.items():
+    for name, expected in hashes.items():
         with (model_dir / name).open('rb') as stream:
             if hashlib.file_digest(stream, 'sha256').hexdigest() != expected:
                 raise ValueError('Local translation model checksum mismatch: ' + name)
-    encoder = sentencepiece.SentencePieceProcessor(model_file=str(model_dir / 'source.spm'))
-    decoder = sentencepiece.SentencePieceProcessor(model_file=str(model_dir / 'target.spm'))
+    encoder = sentencepiece.SentencePieceProcessor(model_file=str(model_dir / source_tokenizer))
+    decoder = sentencepiece.SentencePieceProcessor(model_file=str(model_dir / target_tokenizer))
     model = ctranslate2.Translator(str(model_dir), device='cpu', compute_type='int8', intra_threads=2)
-    inputs = [[f'>>{TARGETS[language]}<<', *encoder.encode(sentence, out_type=str), '</s>']
+    inputs = [[*prefix, *encoder.encode(sentence, out_type=str), '</s>']
               for sentence in sentences]
     results = model.translate_batch(inputs, beam_size=4, max_batch_size=8, max_decoding_length=150)
     return [decoder.decode(result.hypotheses[0]) for result in results]
+
+
+def translate_batch(sentences, language):
+    return translate(sentences, Path(os.environ['FACTORY_TRANSLATION_MODEL_DIR']),
+                     MODEL_HASHES, 'source.spm', 'target.spm', [f'>>{TARGETS[language]}<<'])
+
+
+def english_query(topic, language):
+    if not query_configured_for(language):
+        return ''
+    directory = Path(os.environ['FACTORY_UK_EN_MODEL_DIR'])
+    tokenizer = 'model.uk-en.spm'
+    query, = translate([topic], directory, QUERY_HASHES, tokenizer, tokenizer, [])
+    return query.strip() if identifiers(query) == identifiers(topic) and number_parts(query) == number_parts(topic) else ''
 
 
 def identifiers(text):

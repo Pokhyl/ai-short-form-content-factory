@@ -216,7 +216,8 @@ def check():
   page={'title':'H44','missing':True} if parsed.hostname.startswith('uk.') else {'title':'H44 Archiver','pageid':1}
   return {'query':{'pages':[page]}}
  brief='Для резервних копій через H44'
- with patch.object(app,'http_json',identifier_fixture),patch.object(app,'cache_fetch',lambda key,fetch:fetch()):
+ import source_translation
+ with patch.object(app,'http_json',identifier_fixture),patch.object(app,'cache_fetch',lambda key,fetch:fetch()),patch.object(source_translation,'configured_for',return_value=False):
   assert app.wikipedia(brief,'uk')==[]
   reference=app.identifier_article('H44','uk')
   assert reference['language']=='en' and reference['native_title']==''
@@ -355,6 +356,22 @@ def check():
  assert proof['source_span']==english['text'].splitlines()[0]
  assert proof['source_revision_url']==english['revision_url']
  assert proof['translated_span']==translated['text']
+ scoped={'strict_translated_scope':True}
+ assert app.script_covers_identifier_scope([scoped],'Виробництво човнів в Одесі','uk',[
+  {'text':'Виробництво човнів в Одесі охоплює кілька етапів.'}])
+ assert not app.script_covers_identifier_scope([scoped],'Виробництво човнів в Одесі','uk',[
+  {'text':'Виробництво човнів охоплює кілька етапів.'}])
+ with patch.multiple(source_translation,configured_for=lambda lang:True,
+                     query_configured_for=lambda lang:True,
+                     english_query=lambda topic,lang:'Boat manufacturing in Odesa'), \
+      patch.object(app,'cache_fetch',side_effect=lambda key,fetch:fetch()), \
+      patch.object(app,'wikipedia',return_value=[
+       {'title':'Boat manufacturing','text':'Boat manufacturing spans different materials.'},
+       {'title':'Shipyard','text':'Boat manufacturing in Odesa uses composite materials.'}]), \
+      patch.object(app,'translated_article',return_value=[translated]) as research:
+  assert app.translated_research_sources('Виробництво човнів в Одесі','uk')==[translated]
+  assert research.call_count==1
+  assert research.call_args.args[0]['title']=='Shipyard'
  assert not usable_translation('About 12, then about 35.','Спочатку близько 35, потім близько 12.')
  assert not usable_translation('The system uses H-264 codec.','Система використовує кодек H.264.')
  assert 'machine-translated' in app.output_credits([translated],[])['text'][0]['changes']

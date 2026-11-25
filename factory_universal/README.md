@@ -14,7 +14,9 @@ Earlier releases resolved verified split-title spellings and added scene checks 
 
 Owner listening approval remains separate and pending. Inputs require an identifiable source and enough suitable licensed photos. A brief starting with an exact alphanumeric identifier can resolve its subject through another Wikipedia edition and follow a published link to the selected language. Studio reports when the native article is unavailable. The script must cover the requested focus.
 
-The staged local translation path covers English source articles for verified identifiers with no Ukrainian or Russian edition. It requires `FACTORY_TRANSLATION_MODEL_DIR`, the checksum-pinned CTranslate2 model specified in `source_translation.py`, CTranslate2 4.9.1 and SentencePiece 0.2.1. A translated beat carries both the original sentence and its translated text, plus the article revision. The normal source scope, image, voice and render gates still apply. Production currently uses native sources.
+Local translation can use a verified English article for an identifier with no Ukrainian or Russian edition. It can also search English Wikipedia with a locally translated Ukrainian brief. The article revision must cover the translated search terms and the script must cover the original scope. A translated beat carries both the original sentence and its translated text, plus the article revision. The normal image, voice and render gates apply.
+
+Install the pinned translation files with `python3 factory_universal/setup_models.py --translation` and include `factory_universal/compose.translation.yaml` after the base Compose file to enable the local models. Set `FACTORY_TRANSLATION_HOST_DIR` when using a custom installation directory. The models run locally and are mounted read-only. Production currently uses native sources.
 
 ## Pipeline
 

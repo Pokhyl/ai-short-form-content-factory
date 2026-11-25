@@ -570,6 +570,8 @@ def attach_native_aliases(sources,lang):
  return sources
 def narrative_focus(sources,topic,lang):
  if not sources:return set()
+ if sources[0].get('translation_model'):
+  return grounding_terms(sources[0]['text'].splitlines()[0],lang)&grounding_terms(topic,lang)
  title=sources[0]['title'];terms=topic_terms(title,lang)
  if len(terms)!=2:return set()
  root=lambda term:term[:4] if lang!='en' else term
@@ -668,7 +670,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
   if not definition and source_overview_mode(sources):
    paragraph=next((p for p in sources[0]['text'].splitlines() if p.strip()),'')
    original=sentences(paragraph)[0] if paragraph else ''
-   lead=re.sub(r'\s+([,.;:!?])',r'\1',omit_parenthetical_asides(original)).strip()
+   lead=original if sources[0].get('translation_model') else re.sub(r'\s+([,.;:!?])',r'\1',omit_parenthetical_asides(original)).strip()
    if lead.endswith(('.', '!', '?')) and 5<=len(lead.split())<=90 and len(lead)<=650 and not re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',lead) and not incidental_place_event(lead,topic,sources[0].get('entity_profile',{})):
     definition_index=0;definition=lead
     source_positions[(0,lead)]=sources[0]['text'].find(original);source_spans[(0,lead)]=original
@@ -681,7 +683,8 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    source_positions.setdefault((definition_index,definition),0);source_spans.setdefault((definition_index,definition),definition)
   for si,src in enumerate(sources):
    if definition and si!=0:continue
-   title_terms=grounding_terms(src['title'],lang)
+   title_text=src['text'].splitlines()[0] if src.get('translation_model') else src['title']
+   title_terms=grounding_terms(title_text,lang)
    for paragraph_index,paragraph in enumerate(src['text'].splitlines()):
     if definition and paragraph_index>31:continue
     if human and (si>0 or paragraph_index>31):continue
@@ -720,7 +723,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      sentence_terms=grounding_terms(sentence,lang);combined=sentence_terms|title_terms
      topic_hits=len(combined&object_terms);needed=min(2,len(object_terms))
      if object_terms&bottle_words and combined&container_words:topic_hits=max(topic_hits,min(2,len(object_terms)))
-     if focus and not human and not sentence_terms&focus:continue
+     if focus and not human and not (sentence_terms&focus or src.get('strict_translated_scope') and scope_hits):continue
      direct_topic=(human or bool(definition)) and si==0 and paragraph_index<5 or bool(sentence_terms&object_terms);process_overlap=process_signal(sentence,lang) if process_intent else 0
      if definition and si==0:topic_hits=max(topic_hits,needed)
      if needed and topic_hits<needed:continue
@@ -771,16 +774,13 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
 def source_cache_key(topic,lang):
  return 'wikipedia-v14|'+lang+'|'+topic
 
-def translated_identifier_source(topic,lang):
- from source_translation import MODEL,article_view,configured_for
- identifier=topic_identifier(topic)
- if not identifier or not configured_for(lang):return []
- reference=identifier_article(identifier,lang)
- if reference.get('language')!='en' or reference.get('native_title'):return []
+def translated_article(reference,lang,required=()):
+ from source_translation import MODEL,article_view
  from storyboard import ensure_source
  title=reference['title']
- source={'title':title,'visual_title':title,'url':reference['url'],'scoped_identifier':identifier}
+ source={**reference,'visual_title':title}
  ensure_source([source],'en',sys.modules[__name__])
+ if not set(required)<=grounding_terms(source['title']+' '+source['text'],'en'):return []
  profile=entity_profile([source],'en')
  # Translated personal names need the native biography link resolver.
  if not profile.get('id') or profile.get('kind')=='human':return []
@@ -792,11 +792,28 @@ def translated_identifier_source(topic,lang):
  view=cache_fetch(key,translate)
  return [source|view] if view else []
 
+def translated_research_sources(topic,lang):
+ from source_translation import QUERY_MODEL,configured_for,english_query,query_configured_for
+ if not configured_for(lang):return []
+ identifier=topic_identifier(topic)
+ reference=identifier_article(identifier,lang) if identifier else {}
+ if reference.get('language')=='en' and not reference.get('native_title'):
+  return translated_article({**reference,'scoped_identifier':identifier},lang)
+ if not query_configured_for(lang):return []
+ query=cache_fetch('search-query-en|'+QUERY_MODEL+'|'+lang+'|'+topic,lambda:english_query(topic,lang))
+ if not query or not (required:=grounding_terms(query,'en')):return []
+ candidates=cache_fetch(source_cache_key(query,'en'),lambda:wikipedia(query,'en'))
+ for candidate in candidates:
+  if not required<=grounding_terms(candidate['title']+' '+candidate['text'],'en'):continue
+  sources=translated_article({**candidate,'strict_translated_scope':True,'english_search_topic':query},lang,required)
+  if sources:return sources
+ return []
+
 def load_sources(topic,lang):
  current=ROOT/'cache'/(hashlib.sha256(source_cache_key(topic,lang).encode()).hexdigest()+'.json')
  try:
   sources=attach_native_aliases(relevant_sources(cache_fetch(source_cache_key(topic,lang),lambda:wikipedia(topic,lang)),topic,lang),lang)
-  if not sources:return translated_identifier_source(topic,lang)
+  if not sources:return translated_research_sources(topic,lang)
   if sources:
    from storyboard import ensure_source
    ensure_source(sources,lang,sys.modules[__name__])
@@ -857,7 +874,7 @@ def identifier_scope_terms(text,lang):
 
 def identifier_scope(sources,topic,lang):
  identifier=sources[0].get('scoped_identifier','') if sources else ''
- if not identifier:return set()
+ if not identifier and not (sources and sources[0].get('strict_translated_scope')):return set()
  scope=re.sub(r'\b(?:с помощью|за допомогою|za pomocą|by means of|using|ваш(?:а|ей|ої|у|е|его|ого|им|ими|их|і)?)\b',' ',topic,flags=re.I)
  return identifier_scope_terms(scope,lang)-identifier_scope_terms(identifier,lang)
 
@@ -866,7 +883,7 @@ def script_covers_identifier_scope(sources,topic,lang,slots):
 
 def plan_script(sources,topic,lang,duration,max_beats=None,excluded_narrations=()):
  identifier=sources[0].get('scoped_identifier','') if sources else ''
- if sources and source_match_rank(topic,sources[0])==1:
+ if sources and not sources[0].get('strict_translated_scope') and source_match_rank(topic,sources[0])==1:
   topic=sources[0]['title']
  process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
  structured=source_overview_mode(sources)
@@ -888,7 +905,7 @@ def plan_script(sources,topic,lang,duration,max_beats=None,excluded_narrations=(
    elif script_covers_identifier_scope(sources,topic,lang,slots) and (
        not excluded_narrations or narration_digest(lang,slots) not in excluded_narrations):return slots
  if plans:return min(plans,key=lambda row:row[:3])[3]
- if sources and not process_intent and not identifier:
+ if sources and not process_intent and not identifier and not sources[0].get('strict_translated_scope'):
   canonical=sources[0]['title']
   if canonical.casefold()!=topic.casefold():
    slots=plan_script(sources,canonical,lang,duration,max_beats=max_beats,excluded_narrations=excluded_narrations)
@@ -1332,6 +1349,13 @@ def discover_photos(topic,lang,slots):
  elif slots and slots[0].get('source_driven') and slots[0].get('requested_shots',0)>=18:
   # Long overviews need a wider pool of separately licensed photographs.
   commons_limit=8
+ if slots and slots[0].get('english_search_topic') and not (scene_queries or named_place_subject(profile) or named_astronomical_subject(profile)):
+  # Search the verified article title and the original scoped research query.
+  # A translated technical title alone may miss common names in image metadata.
+  scoped=slots[0]['english_search_topic']
+  commons_limit=max(commons_limit,5)
+  keywords=' '.join(topic_terms(scoped,'en'))
+  queries=list(dict.fromkeys([scoped,keywords,topic,*queries,scoped+' photograph']))[:commons_limit]
  if slots and slots[0].get('source_driven') and slots[0].get('requested_shots',0)>=18 and commons_limit==8 and not named_place_subject(profile):
   variants=[topic+' '+term for term in ('closeup','in nature','photography')]
   queries=list(dict.fromkeys(queries+[topic+' intitle:"'+topic+'"']+variants))[:commons_limit]
@@ -2130,6 +2154,7 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
   if insect_subject(slot['entity_profile']):slot['insect_features']=insect_scene_features(slot['text'])
   if volcanic_subject(slot['entity_profile']):slot['volcanic_features']=volcanic_features(slot['text'])
   source=sources[slot['source_index']]
+  if sources[0].get('english_search_topic'):slot['english_search_topic']=sources[0]['english_search_topic']
   slot['visual_title']=source.get('visual_title') or (source['title'] if lang=='en' else '')
   if not slot.get('process_intent'):
    primary_context=slot.get('source_driven') and slot['entity_profile'].get('kind')!='human'
@@ -2277,6 +2302,11 @@ def run_job(jid):
    partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources[:3]],'resolved_topic':sources[0]['title'],'resolved_entity_id':sources[0].get('entity_profile',{}).get('id'),'input_needed':'This source interpretation was rejected. Add context to specify the subject you mean.'}
    update(jid,status='needs_input',stage='research',progress=0,message=partial['input_needed'],error=None,manifest=json.dumps(partial,ensure_ascii=False));return
   slots=plan_script(sources,topic,lang,duration)
+  if not slots and not sources[0].get('translation_model'):
+   translated=translated_research_sources(topic,lang)
+   if translated and not subject_rejected(topic,lang,translated[0].get('entity_profile',{}).get('id')):
+    translated_slots=plan_script(translated,topic,lang,duration)
+    if translated_slots:sources,slots=translated,translated_slots
   if not slots:
    partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources],'resolved_topic':sources[0]['title'],'input_reason':'source_scope_unavailable'}
    update(jid,status='needs_input',stage='research',progress=0,message='The sources could not support a complete script covering the requested focus and duration.',error=None,manifest=json.dumps(partial,ensure_ascii=False));return
