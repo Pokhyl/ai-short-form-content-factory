@@ -1,0 +1,19 @@
+[
+  {
+    "id": "c8691ed0-746e-4b35-a57c-d9e966d2315e",
+    "duration": 15,
+    "frames": 450,
+    "voice": "pl-PL-Chirp3-HD-Enceladus",
+    "photos": 6,
+    "speech_ms": 13464,
+    "playback": {
+      "duration": 15,
+      "width": 1080,
+      "height": 1920,
+      "time": 0.960122,
+      "error": null
+    },
+    "credits_http_status": 200,
+    "byte_range_http_status": 206
+  }
+]
