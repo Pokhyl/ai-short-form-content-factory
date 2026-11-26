@@ -933,6 +933,11 @@ def shot_beats(shot_count,beat_count):
 
 class ShotCapacityError(ValueError):pass
 
+class PhotoPoolTooSmall(ShotCapacityError):
+ def __init__(self,available,minimum):
+  self.available=available
+  super().__init__(f'Photo search found {available} candidates; at least {minimum} are required')
+
 def storyboard_beats(shot_count,slots):
  counts=[2]*len(slots)
  if sum(counts)>shot_count:raise ValueError('At least two scene images are required per narration beat')
@@ -2130,12 +2135,20 @@ def execute_job(jid):
 
 def prepare_visuals(jid,sources,topic,lang,duration,slots):
  from storyboard import SceneUnavailable
+ preferred=duration*2//5
+ minimum=max(duration//5,len(slots)*2)
+ shot_count=preferred
  last_unavailable=None
- for _ in range(duration*2//5):
-  try:return _prepare_visuals(jid,sources,topic,lang,duration,slots)
+ for _ in range(preferred+1):
+  try:return _prepare_visuals(jid,sources,topic,lang,duration,slots,shot_count,minimum)
+  except PhotoPoolTooSmall as error:
+   if error.available<minimum:raise
+   shot_count=error.available
   except ShotCapacityError:
-   if last_unavailable is not None:raise last_unavailable
-   raise
+   if shot_count<=minimum:
+    if last_unavailable is not None:raise last_unavailable
+    raise
+   shot_count=minimum
   except SceneUnavailable as error:
    available=getattr(error,'verified_in_beat',0);beat=getattr(error,'beat_index',None)
    if available<2 or beat is None:raise
@@ -2161,12 +2174,11 @@ def photo_selection_order(beat_for_shot,scene_slots,eligible_by_shot):
   return (ordinals[index]>=2,not specific,len(eligible_by_shot[index]),ordinals[index],index)
  return sorted(range(len(beat_for_shot)),key=priority)
 
-def _prepare_visuals(jid,sources,topic,lang,duration,slots):
- visual_count=duration*2//5
+def _prepare_visuals(jid,sources,topic,lang,duration,slots,visual_count,minimum):
  beat_count=len(slots)
  beat_for_shot=shot_beats(visual_count,beat_count);shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
  for slot in slots:
-  slot['language']=lang;slot['entity_profile']=sources[0].get('entity_profile',{});slot['source_driven']=source_overview_mode(sources);slot['requested_shots']=visual_count
+  slot['language']=lang;slot['entity_profile']=sources[0].get('entity_profile',{});slot['source_driven']=source_overview_mode(sources);slot['requested_shots']=duration*2//5
   if named_place_subject(slot['entity_profile']):
    slot['place_features']=place_scene_features(slot['text'],lang)
    slot['place_detail_query']=place_detail_query(slot,slot['entity_profile'])
@@ -2187,7 +2199,7 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
  beat_for_shot=storyboard_beats(visual_count,slots)
  shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
  scene_slots=shot_slots(slots,beat_for_shot)
- if visual_count>=18 and slots[0]['source_driven'] and slots[0]['entity_profile'].get('kind')=='concept' and not slots[0].get('process_intent') and not sources[0].get('article_media_loaded'):
+ if duration>=45 and slots[0]['source_driven'] and slots[0]['entity_profile'].get('kind')=='concept' and not slots[0].get('process_intent') and not sources[0].get('article_media_loaded'):
   try:
    for photo in article_photo_candidates(sources[0]):DISCOVERED_PHOTOS.setdefault((photo['provider'],photo['id']),photo)
   except urllib.error.HTTPError as error:
@@ -2202,12 +2214,16 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots):
   event_queries=set(query_plan([{**slot,'visual_targets':[target for target in slot.get('visual_targets',[]) if target.get('intent',{}).get('name')=='person event']} for slot in slots]))
   bind_human_images([candidate for candidate in candidates if candidate.get('query') in portrait_queries|event_queries],profile)
  if named_place_subject(sources[0].get('entity_profile',{})) or slots[0].get('process_intent'):candidates=bind_place_images(candidates,sources[0]['entity_profile'])
- if len(candidates)<visual_count:raise ValueError('photo search found '+str(len(candidates))+' distinct candidates; '+str(visual_count)+' are required')
+ if len(candidates)<visual_count:raise PhotoPoolTooSmall(len(candidates),minimum)
  competitors=[] if slots[0].get('process_intent') else visual_competitors(media_topic,candidates)
  for slot in slots:slot['visual_competitors']=competitors
  get_pixel_verifier()
  shot_options,edges=rank_storyboard_photos(candidates,scene_slots,beat_for_shot,media_topic)
- allocated=allocate_photos(candidates,slots,media_topic,visual_count,scene_slots=scene_slots,edges=edges)
+ from storyboard import SceneUnavailable
+ try:allocated=allocate_photos(candidates,slots,media_topic,visual_count,scene_slots=scene_slots,edges=edges)
+ except SceneUnavailable as error:
+  if visual_count==minimum:raise
+  raise ShotCapacityError('Not enough distinct source-matched candidates for the preferred layout') from error
  candidate_indexes={id(candidate):index for index,candidate in enumerate(candidates)}
  assigned_indexes=[candidate_indexes[id(candidate)] for candidate in allocated]
  eligible_by_shot=[set(edge) for edge in edges]
@@ -2300,7 +2316,7 @@ def beat_source(slot,source):
          'source_revision_url':source['revision_url'],'translation_model':source['translation_model']}
 
 def run_job(jid):
- j=get_job(jid);topic=j['topic'];lang=j['language'];duration=j['duration_s'];visual_count=duration*2//5;beat_count=duration//5
+ j=get_job(jid);topic=j['topic'];lang=j['language'];duration=j['duration_s']
  try:
   connection=google_connection_status()
   if not connection['ready']:
@@ -2344,6 +2360,7 @@ def run_job(jid):
   slots,mp3,audio_ms,speech_ms,slot_targets,voice_audit=prepare_selected_narration(sources,topic,lang,jid,duration,before_send=before_send)
   if visual_state.get('script')!=' '.join(slot['text'] for slot in slots):raise ValueError('prepared storyboard does not match the final narration')
   selected=visual_state['selected'];visual_rows=visual_state['visual_rows'];media_topic=visual_state['media_topic']
+  visual_count=len(selected)
   beat_count=visual_state['beat_count'];beat_for_shot=visual_state['beat_for_shot'];shots_per_beat=visual_state['shots_per_beat'];first_shot=visual_state['first_shot']
   audio_sha=hashlib.sha256(mp3.read_bytes()).hexdigest();target=duration*1000;beat_starts=[sum(slot_targets[:i]) for i in range(beat_count)];cursor=0;scenes=[]
   for i,item in enumerate(selected):

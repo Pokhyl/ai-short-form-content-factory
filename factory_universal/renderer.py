@@ -26,7 +26,7 @@ def render(jid,payload,data=Path('/data')):
  if digest(audio)!=payload['input_audio_sha256']:raise ValueError('input narration hash changed')
  if abs(round(float(probe(audio)['format']['duration'])*1000)-actual)>1:raise ValueError('input narration duration changed')
  scenes=payload['scenes'];cursor=0;hashes=set();segments=[];lines=['ffconcat version 1.0']
- if len(scenes)!=requested//2500:raise ValueError('incorrect number of image scenes')
+ if not requested//5000<=len(scenes)<=requested//2500:raise ValueError('incorrect number of image scenes')
  for order,scene in enumerate(scenes,1):
   start=scene['segment_start_ms'];end=scene['segment_end_ms']
   path=Path(scene['asset_path']).resolve()

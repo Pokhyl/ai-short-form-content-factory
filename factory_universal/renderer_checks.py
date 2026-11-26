@@ -15,9 +15,10 @@ def check():
   actual=round(float(probe(audio)['format']['duration'])*1000)
   assert 13450<=actual<13500,actual
   scenes=[];images=data/'visuals'/jid;images.mkdir(parents=True)
-  for index in range(6):
+  boundaries=[0,3700,7500,11200,15000]
+  for index in range(4):
    path=images/(str(index)+'.jpg');Image.new('RGB',(1080,1920),(30+index*30,40,60)).save(path)
-   scenes.append({'scene_uuid':str(uuid.uuid4()),'shot_uuid':str(uuid.uuid4()),'visual_asset_id':str(uuid.uuid4()),'asset_path':str(path),'asset_sha256':digest(path),'media_type':'photo','asset_width':1080,'asset_height':1920,'segment_start_ms':index*2500,'segment_end_ms':(index+1)*2500})
+   scenes.append({'scene_uuid':str(uuid.uuid4()),'shot_uuid':str(uuid.uuid4()),'visual_asset_id':str(uuid.uuid4()),'asset_path':str(path),'asset_sha256':digest(path),'media_type':'photo','asset_width':1080,'asset_height':1920,'segment_start_ms':boundaries[index],'segment_end_ms':boundaries[index+1]})
   payload={'requested_duration_ms':15000,'target_duration_ms':15000,'audio_duration_ms':actual,'input_audio_sha256':digest(audio),'scenes':scenes,'attribution':{'adaptation_license':{'name':'CC BY-SA 4.0','url':'https://creativecommons.org/licenses/by-sa/4.0/'},'text':[{'authors':'Example contributors','source_url':'https://example.org/source','changes':'Selected excerpts.'}]}}
   bad=copy.deepcopy(payload);bad['scenes'][1]['asset_path']=bad['scenes'][0]['asset_path'];bad['scenes'][1]['asset_sha256']=bad['scenes'][0]['asset_sha256']
   try:render(jid,bad,data);raise AssertionError('duplicate image accepted')

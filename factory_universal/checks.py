@@ -689,6 +689,14 @@ def check():
    assert app.prepare_visuals('owned-test',[],'Example','en',30,test_slots)=={'complete':True}
    assert prepare.call_count==2 and test_slots[0]['visual_shot_cap']==3
    assert test_slots[0]['text']=='A complete fact.'
+ with patch.object(app,'_prepare_visuals',side_effect=[app.PhotoPoolTooSmall(8,6),{'complete':True}]) as prepare:
+  assert app.prepare_visuals('owned-test',[],'Example','en',30,test_slots)=={'complete':True}
+  assert [call.args[-2:] for call in prepare.call_args_list]==[(12,6),(8,6)]
+ with patch.object(app,'_prepare_visuals',side_effect=app.PhotoPoolTooSmall(5,6)) as prepare:
+  try:app.prepare_visuals('owned-test',[],'Example','en',30,test_slots)
+  except app.PhotoPoolTooSmall:pass
+  else:raise AssertionError('An undersized photo pool was accepted')
+  assert prepare.call_count==1
 
  # Differently worded sentences must not repeat the same founding event.
  events=storyboard.ArticleLinks();events.feed('<p>In 2002 the founder established <a href="/wiki/Example_Rockets">Example Rockets</a>.</p><p>In June 2002 the founder founded <a href="/wiki/Example_Rockets">Example Rockets</a>.</p>')
