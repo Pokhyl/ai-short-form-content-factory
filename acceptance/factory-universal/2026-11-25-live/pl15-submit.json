@@ -1,0 +1,34 @@
+{
+  "page_errors": [],
+  "authenticated": false,
+  "submission_attempted": true,
+  "passed": true,
+  "default_user_only": true,
+  "ready_examples": 5,
+  "continuous_playback": {
+    "before": {
+      "time": 5.176654,
+      "width": 1080,
+      "error": null
+    },
+    "after_refresh": {
+      "same": true,
+      "time": 6.524072,
+      "width": 1080
+    }
+  },
+  "mobile_dimensions": {
+    "viewport": 390,
+    "content": 390
+  },
+  "diagnostics_accessible": true,
+  "submission_started_at": "2026-11-25T20:12:40.679865+00:00",
+  "request": {
+    "topic": "Warszawa",
+    "language": "pl",
+    "duration_s": 15
+  },
+  "submission_http_status": 202,
+  "submitted_job": "27b5b2bb-b651-42fa-8ada-b8bde19dcb42",
+  "form_keeps_language_duration": true
+}

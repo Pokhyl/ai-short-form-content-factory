@@ -1,0 +1,15 @@
+{
+  "job": "8775435d-2e70-4dce-a324-b683fd55f51e",
+  "playback": {
+    "time": 1.210246,
+    "width": 1080,
+    "height": 1920,
+    "duration": 30,
+    "error": null
+  },
+  "voice": "en-US-Chirp3-HD-Algenib",
+  "photos": 12,
+  "complete_decode": true,
+  "range_status": 206,
+  "credits_status": 200
+}

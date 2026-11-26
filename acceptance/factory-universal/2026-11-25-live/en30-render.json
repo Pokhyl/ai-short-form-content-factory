@@ -1,0 +1,15 @@
+{
+  "id": "8775435d-2e70-4dce-a324-b683fd55f51e",
+  "topic": "How paper is made",
+  "language": "en",
+  "duration_s": 30,
+  "status": "ready",
+  "frame_count": 900,
+  "exact_duration": true,
+  "exact_frames": true,
+  "hash_matches": true,
+  "speech_voice": "en-US-Chirp3-HD-Algenib",
+  "unique_photos": 12,
+  "complete_decode": true,
+  "sha256": "d793e0f4a0ee18a675afb894b32dabdaba354184fc8c2dd47bae76c69ddc590e"
+}

@@ -12,11 +12,11 @@ The worker skips scripts with a verified out-of-window recording and uses the av
 
 Earlier releases resolved verified split-title spellings and added scene checks for named historical dates and catalog identifiers. The unauthenticated browser request «супер нова» completed a 45-second Ukrainian MP4. Frame and caption review accepted astronomy and English plant biology. The Polish microscope result requires stronger visual grounding for named historical facts. See acceptance/factory-universal/2026-11-22-source-resolution/.
 
-Owner listening approval remains separate and pending. Inputs require an identifiable source and enough suitable licensed photos. A brief starting with an exact alphanumeric identifier can resolve its subject through another Wikipedia edition and follow a published link to the selected language. Studio reports when the native article is unavailable. The script must cover the requested focus.
+Owner listening approval remains pending. Inputs require an identifiable source and enough suitable licensed photos. A single exact alphanumeric identifier anywhere in a brief can resolve its subject through another Wikipedia edition and follow a published link to the selected language. Studio reports when source coverage is insufficient for the requested focus.
 
 Local translation can use a verified English article for an identifier with no Ukrainian or Russian edition. It can also search English Wikipedia with a locally translated Ukrainian brief. The article revision must cover the translated search terms and the script must cover the original scope. A translated beat carries both the original sentence and its translated text, plus the article revision. The normal image, voice and render gates apply.
 
-Install the pinned translation files with `python3 factory_universal/setup_models.py --translation` and include `factory_universal/compose.translation.yaml` after the base Compose file to enable the local models. Set `FACTORY_TRANSLATION_HOST_DIR` when using a custom installation directory. The models run locally and are mounted read-only. Production currently uses native sources.
+Install the pinned translation files with `python3 factory_universal/setup_models.py --translation` and include `factory_universal/compose.translation.yaml` after the base Compose file to enable the local models. Set `FACTORY_TRANSLATION_HOST_DIR` when using a custom installation directory. Studio runs both models locally from a read-only mount.
 
 ## Pipeline
 

@@ -1,4 +1,12 @@
-# Current Studio release — 2026-11-23
+# Current Studio release — 2026-11-26
+
+Studio runs `e6b8c58`. It screens translated source candidates against the requested subject and focus before displaying a source match. See [the source relevance evidence](../acceptance/factory-universal/2026-11-26-source-relevance/README.md).
+
+# Earlier Studio release — 2026-11-25
+
+Studio runs `56280e8` with the local translation models mounted read-only. Runtime, alignment and FFmpeg checks passed. Chrome validated fresh MP4s on four topics across EN, PL, RU and UK at 15, 30, 45 and 60 seconds. Video playback and attribution endpoints passed. The frame review and source coverage limits are recorded in [the release evidence](../acceptance/factory-universal/2026-11-25-live/README.md).
+
+# Earlier Studio release — 2026-11-23
 
 Studio runs `474a267`. Runtime, alignment and real FFmpeg tests passed. The server checkout and the eight running application files match the release. Long overviews consider licensed files from the cited article revision, reuse scene verification work and require metadata evidence for named volcanic locations and insect identities.
 
