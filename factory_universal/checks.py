@@ -362,6 +362,14 @@ def check():
  assert proof['source_span']==english['text'].splitlines()[0]
  assert proof['source_revision_url']==english['revision_url']
  assert proof['translated_span']==translated['text']
+ assert not app.article_supports_query({'title':'Model yachting','text':'Work in yacht production is mentioned here.'},
+                                         'Work in yacht production')
+ assert not app.article_supports_query({'title':'Engineering','text':'Work is undertaken in Gdańsk.\nYacht production happens elsewhere.'},
+                                         'Work in yacht production in Gdańsk')
+ assert app.article_supports_query({'title':'Shipyard','text':'Work in yacht production in Gdańsk includes hull assembly.'},
+                                     'Work in yacht production in Gdańsk')
+ assert app.article_supports_query({'title':'Model yachting','text':'Model yachting is a recreational activity.'},
+                                     'Model yachting')
  scoped={'strict_translated_scope':True}
  assert app.script_covers_identifier_scope([scoped],'Виробництво човнів в Одесі','uk',[
   {'text':'Виробництво човнів в Одесі охоплює кілька етапів.'}])

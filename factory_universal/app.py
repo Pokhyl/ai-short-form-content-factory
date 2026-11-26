@@ -774,13 +774,27 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
 def source_cache_key(topic,lang):
  return 'wikipedia-v14|'+lang+'|'+topic
 
-def translated_article(reference,lang,required=()):
+def article_supports_query(article,query):
+ required=grounding_terms(query,'en')
+ if not required:return False
+ title=article['title']
+ # Model making and simulations describe a different subject from the
+ # corresponding real-world activity unless that qualifier was requested.
+ qualifiers=r'\b(?:scale models?|toys?|miniatures?|simulat\w*)\b'
+ if re.search(r'^models?\b|'+qualifiers,title,re.I) and not re.search(r'\bmodels?\b|'+qualifiers,query,re.I):return False
+ manufacture=r'\b(?:manufactur\w*|produc\w*|fabricat\w*|build\w*|built|assembl\w*|mak(?:e|es|ing))\b'
+ needs_manufacture=bool(re.search(manufacture,query,re.I))
+ return any(required<=grounding_terms(title+' '+paragraph,'en') and
+            (not needs_manufacture or re.search(manufacture,title+' '+paragraph,re.I))
+            for paragraph in article['text'].splitlines())
+
+def translated_article(reference,lang,query=''):
  from source_translation import MODEL,article_view
  from storyboard import ensure_source
  title=reference['title']
  source={**reference,'visual_title':title}
  ensure_source([source],'en',sys.modules[__name__])
- if not set(required)<=grounding_terms(source['title']+' '+source['text'],'en'):return []
+ if query and not article_supports_query(source,query):return []
  profile=entity_profile([source],'en')
  # Translated personal names need the native biography link resolver.
  if not profile.get('id') or profile.get('kind')=='human':return []
@@ -792,7 +806,7 @@ def translated_article(reference,lang,required=()):
  view=cache_fetch(key,translate)
  return [source|view] if view else []
 
-def translated_research_sources(topic,lang):
+def translated_research_sources(topic,lang,duration=None):
  from source_translation import QUERY_MODEL,configured_for,english_query,query_configured_for
  if not configured_for(lang):return []
  identifier=topic_identifier(topic)
@@ -801,19 +815,19 @@ def translated_research_sources(topic,lang):
   return translated_article({**reference,'scoped_identifier':identifier},lang)
  if not query_configured_for(lang):return []
  query=cache_fetch('search-query-en|'+QUERY_MODEL+'|'+lang+'|'+topic,lambda:english_query(topic,lang))
- if not query or not (required:=grounding_terms(query,'en')):return []
+ if not query:return []
  candidates=cache_fetch(source_cache_key(query,'en'),lambda:wikipedia(query,'en'))
  for candidate in candidates:
-  if not required<=grounding_terms(candidate['title']+' '+candidate['text'],'en'):continue
-  sources=translated_article({**candidate,'strict_translated_scope':True,'english_search_topic':query},lang,required)
-  if sources:return sources
+  if not article_supports_query(candidate,query):continue
+  sources=translated_article({**candidate,'strict_translated_scope':True,'english_search_topic':query},lang,query)
+  if sources and (duration is None or plan_script(sources,topic,lang,duration)):return sources
  return []
 
-def load_sources(topic,lang):
+def load_sources(topic,lang,duration=None):
  current=ROOT/'cache'/(hashlib.sha256(source_cache_key(topic,lang).encode()).hexdigest()+'.json')
  try:
   sources=attach_native_aliases(relevant_sources(cache_fetch(source_cache_key(topic,lang),lambda:wikipedia(topic,lang)),topic,lang),lang)
-  if not sources:return translated_research_sources(topic,lang)
+  if not sources:return translated_research_sources(topic,lang,duration)
   if sources:
    from storyboard import ensure_source
    ensure_source(sources,lang,sys.modules[__name__])
@@ -2292,7 +2306,7 @@ def run_job(jid):
   if not connection['ready']:
    update(jid,status='needs_connection',stage='connection',progress=0,message=connection['message'],error=None);return
   update(jid,status='running',stage='research',progress=5,message='Finding cited facts in the selected language')
-  sources=relevant_sources(load_sources(topic,lang),topic,lang)
+  sources=relevant_sources(load_sources(topic,lang,duration),topic,lang)
   if not sources:
    identifier=topic_identifier(topic)
    reference=identifier_article(identifier,lang) if identifier else {}
@@ -2308,12 +2322,12 @@ def run_job(jid):
    update(jid,status='needs_input',stage='research',progress=0,message=partial['input_needed'],error=None,manifest=json.dumps(partial,ensure_ascii=False));return
   slots=plan_script(sources,topic,lang,duration)
   if not slots and not sources[0].get('translation_model'):
-   translated=translated_research_sources(topic,lang)
+   translated=translated_research_sources(topic,lang,duration)
    if translated and not subject_rejected(topic,lang,translated[0].get('entity_profile',{}).get('id')):
     translated_slots=plan_script(translated,topic,lang,duration)
     if translated_slots:sources,slots=translated,translated_slots
   if not slots:
-   partial={'sources':[{'title':source['title'],'url':source['url']} for source in sources],'resolved_topic':sources[0]['title'],'input_reason':'source_scope_unavailable'}
+   partial={'input_reason':'source_scope_unavailable'}
    update(jid,status='needs_input',stage='research',progress=0,message='The sources could not support a complete script covering the requested focus and duration.',error=None,manifest=json.dumps(partial,ensure_ascii=False));return
   visual_state={}
   def before_send(planned_slots):
