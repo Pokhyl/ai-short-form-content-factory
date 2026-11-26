@@ -370,6 +370,19 @@ def check():
                                      'Work in yacht production in Gdańsk')
  assert app.article_supports_query({'title':'Model yachting','text':'Model yachting is a recreational activity.'},
                                      'Model yachting')
+ assert app.manufacturing_intent('праця на керамічному виробництві')
+ assert not app.manufacturing_intent('powstanie warszawskie')
+ assert app.translated_search_query('работа на производстве стекла','uk',lambda text,lang:{'стекла':'glass'}[text])=='manufacturing glass'
+ assert app.translated_search_query('робота на керамічному виробництві у Львові','uk',lambda text,lang:'Work in the ceramic industry in Lviv')=='Work in the ceramic manufacturing in Lviv'
+ assert app.article_supports_query({'title':'Boat building','text':'Boat manufacturing in Gdańsk includes yacht hull assembly.'},
+                                  'manufacturing yachts in Gdansk')
+ with patch.object(app,'cache_fetch',side_effect=lambda key,fetch:fetch()),patch.object(app,'http_json',return_value={'results':[
+    {'url':'https://en.wikipedia.org/wiki/Forging'},
+    {'url':'https://en.wikipedia.org.example.org/wiki/Forging'},
+    {'url':'https://en.wikipedia.org/wiki/List_of_metalworking_terms'},
+    {'url':'https://en.wikipedia.org/wiki/Forging#History'},
+    {'url':'https://en.wikipedia.org/wiki/Special:Search'}]}):
+  assert app.indexed_english_articles('metal forming')==[{'title':'Forging','url':'https://en.wikipedia.org/wiki/Forging'}]
  scoped={'strict_translated_scope':True}
  assert app.script_covers_identifier_scope([scoped],'Виробництво човнів в Одесі','uk',[
   {'text':'Виробництво човнів в Одесі охоплює кілька етапів.'}])
@@ -386,6 +399,23 @@ def check():
   assert app.translated_research_sources('Виробництво човнів в Одесі','uk')==[translated]
   assert research.call_count==1
   assert research.call_args.args[0]['title']=='Shipyard'
+ with patch.multiple(source_translation,configured_for=lambda lang:True,
+                     query_configured_for=lambda lang:True,
+                     english_query=lambda topic,lang:'glass in Lviv'), \
+      patch.object(app,'cache_fetch',side_effect=lambda key,fetch:fetch()), \
+      patch.object(app,'wikipedia',return_value=[]), \
+      patch.object(app,'indexed_english_articles',return_value=[{'title':'Glassmaking'}]) as indexed, \
+      patch.object(app,'translated_article',return_value=[translated]) as research:
+  assert app.translated_research_sources('виробництво скла у Львові','uk')==[translated]
+  indexed.assert_called_once_with('manufacturing glass in Lviv')
+  assert research.call_args.args[-1]=='manufacturing glass in Lviv'
+ city={'title':'Example City','url':'https://uk.wikipedia.org/wiki/Example','text':'The city has several glass factories.'}
+ profile={'id':'Q123','kind':'entity','name':'Example City','native_name':'Приклад','visual_description':'town in Ukraine'}
+ with patch.object(app,'wikipedia',return_value=[city]),patch.object(app,'cache_fetch',side_effect=lambda key,fetch:fetch()), \
+      patch.object(app,'attach_native_aliases',side_effect=lambda sources,lang:sources),patch.object(storyboard,'ensure_source'), \
+      patch.object(app,'entity_profile',return_value=profile),patch.object(app,'translated_research_sources',return_value=[translated]) as research:
+  assert app.load_sources('виробництво скла','uk',30)==[translated]
+  research.assert_called_once_with('виробництво скла','uk',30)
  assert not usable_translation('About 12, then about 35.','Спочатку близько 35, потім близько 12.')
  assert not usable_translation('The system uses H-264 codec.','Система використовує кодек H.264.')
  assert 'machine-translated' in app.output_credits([translated],[])['text'][0]['changes']
@@ -898,6 +928,14 @@ def check():
   assert 'Icon' not in http.call_args_list[1].args[0]
   assert not app.article_photo_candidates({'url':'https://example.org/wiki/Example','revision_id':1234})
   assert http.call_count==2
+ source={'entity_profile':{'kind':'concept','commons_category':'Example manufacturing'},'article_media_loaded':True}
+ with patch.object(app,'DISCOVERED_PHOTOS',{}),patch.object(app,'cache_fetch',side_effect=lambda key,fetch:fetch()), \
+      patch.object(app,'http_json',return_value={'query':{'pages':pages}}) as http:
+  assert app.source_photo_supplement(source)
+  assert not app.source_photo_supplement(source)
+  assert list(app.DISCOVERED_PHOTOS)==[('commons','1')]
+  assert app.DISCOVERED_PHOTOS[('commons','1')]['license']=='CC BY-SA 4.0'
+  http.assert_called_once()
  # General Cyrillic overviews avoid foreign-name catalogues the selected native voice cannot align reliably.
  catalogue='Исследователи используют Alpha Mission, Beta Orbiter, Gamma Explorer, Delta Probe и другие аппараты.'
  assert app.foreign_name_catalogue(catalogue,'ru','Планета')

@@ -81,7 +81,7 @@ def topic_terms(text,lang):
   actions={
    'pl':r'^(rob\w*|zrob\w*|wytwarz\w*|produk\w*|powst\w*|tworz\w*|proces\w*|wykon\w*)$',
    'ru':r'^(дел\w*|сдел\w*|изготов\w*|производ\w*|созда\w*|получ\w*|процесс\w*)$',
-   'uk':r'^(роб\w*|зроб\w*|виготов\w*|виробля\w*|створ\w*|отрим\w*|процес\w*)$'
+   'uk':r'^(роб\w*|зроб\w*|виготов\w*|виробля\w*|виробниц\w*|створ\w*|отрим\w*|процес\w*)$'
   }
   if lang=='en':return [x for x in tokens(text) if x not in {'make','made','manufacture','manufacturing','produce','production','process','how'}]
   suffixes={
@@ -96,6 +96,9 @@ def topic_terms(text,lang):
     if len(word)-len(suffix)>=4 and word.endswith(suffix):word=word[:-len(suffix)];break
    if len(word)>2:out.append(word)
   return out
+
+def manufacturing_intent(text):
+ return bool(re.search(r'\b(?:make|made|making|manufactur\w*|produc\w*|fabricat\w*|build|create|zrobi\w*|produk\w*|wytwarz\w*|powstaj\w*|изготов\w*|производ\w*|виробля\w*|виробниц\w*|виготов\w*)\b',text,re.I))
 
 def process_signal(text,lang):
   patterns={
@@ -355,7 +358,7 @@ def wikipedia(topic,lang):
   native_title=reference.get('native_title','')
   scoped_identifier=bool(native_title and source_title_key(topic)!=source_title_key(identifier))
   queries=[(topic,6)]
-  made=bool(re.search(r'\b(make|made|manufactur\w*|produc\w*|fabricat\w*|build|create|zrobi\w*|produk\w*|wytwarz\w*|изготов\w*|производ\w*|виробля\w*|виготов\w*)\b',topic,re.I))
+  made=manufacturing_intent(topic)
   core=list(dict.fromkeys(topic_terms(topic,lang)))
   suffix={'en':'manufacturing process','pl':'proces produkcji','ru':'процесс производства','uk':'процес виробництва'}
   stage={'en':'production method materials equipment','pl':'metoda produkcji materiały urządzenia','ru':'способ производства материалы оборудование','uk':'спосіб виробництва матеріали обладнання'}
@@ -403,6 +406,7 @@ def wikipedia(topic,lang):
      title_terms=grounding_terms(hit['title'],query_lang)
      return (bool(query_terms&title_terms) and (len(title_terms)>1 or len(query_terms)==1),len(query_terms&title_terms)/max(1,len(title_terms)),-len(title_terms))
     foreign.sort(key=foreign_rank,reverse=True)
+    if not foreign_rank(foreign[0])[1]:continue
     q=urllib.parse.urlencode({'action':'parse','page':foreign[0]['title'],'prop':'langlinks','format':'json'})
     links=(http_json('https://'+query_lang+'.wikipedia.org/w/api.php?'+q,timeout=22).get('parse') or {}).get('langlinks') or []
     translated=next((link.get('*') or link.get('title') for link in links if link.get('lang')==lang),'')
@@ -649,7 +653,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
   object_terms=grounding_terms(topic,lang)
   scope=identifier_scope(sources,topic,lang)
   translated_focus=(scope-{'company'}) if sources and sources[0].get('translation_model') else set()
-  process_intent=bool(re.search(r'\b(make|made|manufactur\w*|produc\w*|fabricat\w*|build|create|zrobi\w*|produk\w*|wytwarz\w*|изготов\w*|производ\w*|виробля\w*|виготов\w*)\b',topic,re.I))
+  process_intent=manufacturing_intent(topic)
   focus=set() if process_intent else narrative_focus(sources,topic,lang)
   bottle_words=grounding_terms('bottle bottles бутылка пляшка пляшки butelka butelki',lang)
   container_words=grounding_terms('container containers packaging jar pojemnik pojemniki opakowanie тара контейнер контейнери',lang)
@@ -774,18 +778,56 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
 def source_cache_key(topic,lang):
  return 'wikipedia-v14|'+lang+'|'+topic
 
+MANUFACTURING_BRIEF=re.compile(r'^(?:(?:работа\s+на|робота\s+на|работа\s+в|робота\s+у)\s+)?(?:производств\w*|виробництв\w*|изготовлен\w*|виготовлен\w*)\s+(.+)$',re.I)
+MANUFACTURING_EN=r'\b(?:manufactur\w*|produc\w*|fabricat\w*|build\w*|built|construct\w*|assembl\w*|mak(?:e|es|ing))\b'
+
+def translated_search_query(topic,lang,translate):
+ # Translate the object and qualifiers separately when the brief explicitly
+ # names a manufacturing process. Whole-phrase translation can turn a
+ # manufacturing industry into an unrelated activity sharing the same object.
+ match=MANUFACTURING_BRIEF.fullmatch(topic.strip())
+ if match:
+  subject=translate(match[1],lang)
+  if subject:return 'manufacturing '+subject
+ query=translate(topic,lang)
+ if re.search(r'\b(?:производств|виробництв|изготовлен|виготовлен)\w*\b',topic,re.I):
+  query=re.sub(r'\bindustry\b','manufacturing',query,flags=re.I)
+  if not re.search(MANUFACTURING_EN,query,re.I):return ''
+ return query
+
+def indexed_english_articles(query):
+ def retrieve():
+  params=urllib.parse.urlencode({'q':'site:en.wikipedia.org '+query,'format':'json','language':'en'})
+  results=http_json('http://searxng:8080/search?'+params,timeout=12).get('results',[])
+  titles={}
+  for row in results:
+   url=urllib.parse.urlsplit(row.get('url',''))
+   if url.scheme!='https' or url.netloc!='en.wikipedia.org' or not url.path.startswith('/wiki/') or url.fragment:continue
+   title=urllib.parse.unquote(url.path[6:]).replace('_',' ')
+   if not title or ':' in title or '/' in title or title.lower().startswith(('list of ','index of ')):continue
+   titles.setdefault(title,{'title':title,'url':'https://en.wikipedia.org/wiki/'+urllib.parse.quote(title.replace(' ','_'))})
+   if len(titles)>=6:break
+  return list(titles.values())
+ try:return cache_fetch('indexed-english-articles-v1|'+query,retrieve)
+ except urllib.error.HTTPError as error:
+  if error.code==429:raise ValueError('Secondary research search was rate-limited (HTTP 429)') from error
+  return []
+ except (OSError,ValueError):return []
+
 def article_supports_query(article,query):
- required=grounding_terms(query,'en')
+ def terms(text):
+  folded=''.join(char for char in unicodedata.normalize('NFKD',text) if not unicodedata.combining(char))
+  return grounding_terms(folded,'en')
+ required=terms(query)
  if not required:return False
  title=article['title']
  # Model making and simulations describe a different subject from the
  # corresponding real-world activity unless that qualifier was requested.
  qualifiers=r'\b(?:scale models?|toys?|miniatures?|simulat\w*)\b'
  if re.search(r'^models?\b|'+qualifiers,title,re.I) and not re.search(r'\bmodels?\b|'+qualifiers,query,re.I):return False
- manufacture=r'\b(?:manufactur\w*|produc\w*|fabricat\w*|build\w*|built|assembl\w*|mak(?:e|es|ing))\b'
- needs_manufacture=bool(re.search(manufacture,query,re.I))
- return any(required<=grounding_terms(title+' '+paragraph,'en') and
-            (not needs_manufacture or re.search(manufacture,title+' '+paragraph,re.I))
+ needs_manufacture=bool(re.search(MANUFACTURING_EN,query,re.I))
+ return any(required<=terms(title+' '+paragraph) and
+            (not needs_manufacture or re.search(MANUFACTURING_EN,title+' '+paragraph,re.I))
             for paragraph in article['text'].splitlines())
 
 def translated_article(reference,lang,query=''):
@@ -793,7 +835,8 @@ def translated_article(reference,lang,query=''):
  from storyboard import ensure_source
  title=reference['title']
  source={**reference,'visual_title':title}
- ensure_source([source],'en',sys.modules[__name__])
+ try:ensure_source([source],'en',sys.modules[__name__])
+ except ValueError:return []
  if query and not article_supports_query(source,query):return []
  profile=entity_profile([source],'en')
  # Translated personal names need the native biography link resolver.
@@ -814,13 +857,19 @@ def translated_research_sources(topic,lang,duration=None):
  if reference.get('language')=='en' and not reference.get('native_title'):
   return translated_article({**reference,'scoped_identifier':identifier},lang)
  if not query_configured_for(lang):return []
- query=cache_fetch('search-query-en|'+QUERY_MODEL+'|'+lang+'|'+topic,lambda:english_query(topic,lang))
+ query=cache_fetch('search-query-en-v2|'+QUERY_MODEL+'|'+lang+'|'+topic,lambda:translated_search_query(topic,lang,english_query))
  if not query:return []
  candidates=cache_fetch(source_cache_key(query,'en'),lambda:wikipedia(query,'en'))
- for candidate in candidates:
-  if not article_supports_query(candidate,query):continue
-  sources=translated_article({**candidate,'strict_translated_scope':True,'english_search_topic':query},lang,query)
-  if sources and (duration is None or plan_script(sources,topic,lang,duration)):return sources
+ checked=set()
+ for discover in (lambda:candidates,lambda:indexed_english_articles(query)):
+  for candidate in discover():
+   title=source_title_key(candidate['title'])
+   if title in checked:continue
+   checked.add(title)
+   if 'text' in candidate and not article_supports_query(candidate,query):continue
+   sources=translated_article({**candidate,'strict_translated_scope':True,'english_search_topic':query},lang,query)
+   if not sources:continue
+   if duration is None or (script_covers_identifier_scope(sources,topic,lang,sources) and plan_script(sources,topic,lang,duration)):return sources
  return []
 
 def load_sources(topic,lang,duration=None):
@@ -832,6 +881,10 @@ def load_sources(topic,lang,duration=None):
    from storyboard import ensure_source
    ensure_source(sources,lang,sys.modules[__name__])
    profile=entity_profile(sources,lang);sources[0]['entity_profile']=profile
+   if manufacturing_intent(topic) and named_place_subject(profile):
+    native_names=[sources[0]['title'],profile.get('native_name','')]
+    if not any(grounding_terms(name,lang)&grounding_terms(topic,lang) for name in native_names):
+     return translated_research_sources(topic,lang,duration)
    description=profile.get('native_description','').strip().rstrip('.')
    if description:description=sentences(description)[0].rstrip('.!?')
    label=profile.get('native_name','').strip()
@@ -853,7 +906,7 @@ def relevant_sources(sources,topic,lang):
  sources=[source for source in sources if source.get('source_type')!='structured definition']
  terms=topic_terms(topic,lang)
  def stem(word):return word[:4] if not word.isascii() else word
- process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
+ process_intent=manufacturing_intent(topic)
  def title_rank(source):
   title=topic_terms(source['title'],lang)
   matched=sum(any(stem(a)==stem(b) or (process_intent and lang=='en' and len(a)>=4 and b.startswith(a) and b[len(a):] in {'making','manufacturing','production','blowing'}) for b in title) for a in terms)
@@ -899,7 +952,7 @@ def plan_script(sources,topic,lang,duration,max_beats=None,excluded_narrations=(
  identifier=sources[0].get('scoped_identifier','') if sources else ''
  if sources and not sources[0].get('strict_translated_scope') and source_match_rank(topic,sources[0])==1:
   topic=sources[0]['title']
- process_intent=bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
+ process_intent=manufacturing_intent(topic)
  structured=source_overview_mode(sources)
  limit=int(min(max_beats or 100,max(2,duration//5)))
  preferred=min(limit,max(2,int((max_beats*5 if max_beats else duration)//10)))
@@ -1042,6 +1095,23 @@ def article_photo_candidates(source):
   return [{**row,'article_media_revision':reference} for row in commons_photo_candidates(data,reference)]
  return cache_fetch('article-commons-v1|'+reference,retrieve)
 
+def source_photo_supplement(source):
+ profile=source.get('entity_profile',{})
+ if not profile or profile.get('kind')=='human' or source.get('photo_supplement_loaded'):return False
+ if not source.get('article_media_loaded'):
+  for photo in article_photo_candidates(source):DISCOVERED_PHOTOS.setdefault((photo['provider'],photo['id']),photo)
+  source['article_media_loaded']=True
+ category=profile.get('commons_category')
+ if category:
+  def retrieve():
+   params=urllib.parse.urlencode({**COMMONS_IMAGE_FIELDS,'generator':'categorymembers','gcmtitle':'Category:'+category,'gcmtype':'file','gcmlimit':50})
+   data=http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=20)
+   return commons_photo_candidates(data,'Category:'+category)
+  for photo in cache_fetch('commons-category-photos-v1|'+category,retrieve):
+   DISCOVERED_PHOTOS.setdefault((photo['provider'],photo['id']),photo)
+ source['photo_supplement_loaded']=True
+ return True
+
 def visual_context_title(slot,sources,lang):
  # Match the native-language fact to article introductions, then use their English titles.
  mapped=[source for source in sources if source.get('visual_title') and all(year in slot['text'] for year in re.findall(r'\b\d{4}\b',source['title']))]
@@ -1063,7 +1133,7 @@ def scoped_visual_title(slot,sources,lang):
 
 def media_search_topic(topic,lang,sources):
  structured=source_overview_mode(sources)
- process=bool(re.search(r'made|making|manufactur|produc|дела|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
+ process=manufacturing_intent(topic)
  if structured:
   if process and lang=='en':return ' '.join(dict.fromkeys(topic_terms(topic,'en')))+' manufacturing'
   title=sources[0].get('visual_title') or (sources[0]['title'] if lang=='en' else '')
@@ -1081,7 +1151,7 @@ def media_search_topic(topic,lang,sources):
  mapped=sorted([source for source in sources if source.get('visual_title')],key=relevance,reverse=True)
  title=mapped[0]['visual_title'] if mapped else ''
  if not title:raise ValueError('source articles have no English interlanguage title for visual discovery')
- if re.search(r'made|making|manufactur|produc|дела|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I):title+=' manufacturing'
+ if manufacturing_intent(topic):title+=' manufacturing'
  return title
 
 def visual_queries(topic,lang,slots):
@@ -1396,7 +1466,7 @@ def discover_photos(topic,lang,slots):
   except Exception as e:
    if getattr(e,'code',None) in {429,503}:raise
    errors.append('Commons: '+str(e))
- if not pool:raise ValueError('; '.join(errors) or 'no photo candidates')
+ if not pool:raise ShotCapacityError('; '.join(errors) or 'No photo candidates found')
  DISCOVERED_PHOTOS.update(pool)
  return list(pool.values())
 
@@ -1536,7 +1606,7 @@ def photo_score(p,slot,topic):
  terms=set(tokens(topic+' '+slot['text']+' '+slot.get('visual_title','')));meta=set(tokens(depiction))
  for word in list(meta):
   if len(word)>8 and word.endswith('making'):meta.add(word[:-6])
- process_topic=bool(slot.get('process_intent') or re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))
+ process_topic=bool(slot.get('process_intent') or manufacturing_intent(topic))
  anchors=set(topic_terms(topic,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
  if process_topic and anchors and not anchors&meta:return -1
  if not process_topic and anchors:
@@ -1923,7 +1993,7 @@ def source_verified_native_plan(evidence,receipt,sources,topic,lang,duration):
   span=beat.get('source_sentence','');start=beat.get('source_position',-1)
   if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:return None
   if truncated_dependent_clause(beat['text'],span,lang) or context_dependent_sentence(beat['text']) or incidental_place_event(beat['text'],topic,sources[0].get('entity_profile',{})):return None
-  slots.append({'text':beat['text'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
+  slots.append({'text':beat['text'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':manufacturing_intent(topic)})
  if not slots or len(slots)>duration//5 or not script_covers_identifier_scope(sources,topic,lang,slots):return None
  spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
  if spoken!=evidence.get('spoken_text') or hashlib.sha256(spoken.encode()).hexdigest()!=receipt.get('text_sha256'):return None
@@ -1947,7 +2017,7 @@ def completed_narration_plan(sources,topic,lang,duration):
    span=beat.get('source_span','');start=beat.get('source_start',-1)
    if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:valid=False;break
    if truncated_dependent_clause(beat['caption'],span,lang) or context_dependent_sentence(beat['caption']) or incidental_place_event(beat['caption'],topic,sources[0].get('entity_profile',{})):valid=False;break
-   slots.append({'text':beat['caption'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':bool(re.search(r'made|making|manufactur|produc|изготов|производ|виготов|виробля|wytwarz|produk|powst',topic,re.I))})
+   slots.append({'text':beat['caption'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':manufacturing_intent(topic)})
   if not valid or not slots or len(slots)>duration//5 or not script_covers_identifier_scope(sources,topic,lang,slots):continue
   # A previously measured, source-verified script remains useful after its
   # audio cache expires. The normal worker still rechecks images before
@@ -2135,21 +2205,31 @@ def execute_job(jid):
 
 def prepare_visuals(jid,sources,topic,lang,duration,slots):
  from storyboard import SceneUnavailable
+ def supplement():
+  if not sources:return False
+  try:return source_photo_supplement(sources[0])
+  except urllib.error.HTTPError as error:
+   if error.code in {429,503}:raise ImageServiceError(error.code) from error
+  except (OSError,ValueError):pass
+  return False
  preferred=duration*2//5
  minimum=max(duration//5,len(slots)*2)
  shot_count=preferred
  last_unavailable=None
- for _ in range(preferred+1):
+ for _ in range(preferred+2):
   try:return _prepare_visuals(jid,sources,topic,lang,duration,slots,shot_count,minimum)
   except PhotoPoolTooSmall as error:
+   if supplement():continue
    if error.available<minimum:raise
    shot_count=error.available
   except ShotCapacityError:
+   if supplement():continue
    if shot_count<=minimum:
     if last_unavailable is not None:raise last_unavailable
     raise
    shot_count=minimum
   except SceneUnavailable as error:
+   if supplement():continue
    available=getattr(error,'verified_in_beat',0);beat=getattr(error,'beat_index',None)
    if available<2 or beat is None:raise
    old_cap=slots[beat].get('visual_shot_cap',duration*2//5)
