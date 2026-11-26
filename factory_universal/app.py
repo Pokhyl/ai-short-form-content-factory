@@ -100,6 +100,15 @@ def topic_terms(text,lang):
 def manufacturing_intent(text):
  return bool(re.search(r'\b(?:make|made|making|manufactur\w*|produc\w*|fabricat\w*|build|create|zrobi\w*|produk\w*|wytwarz\w*|powstaj\w*|изготов\w*|производ\w*|виробля\w*|виробниц\w*|виготов\w*)\b',text,re.I))
 
+LEGAL_OUTCOME=re.compile(r'\b(?:death sentence|life imprisonment|sentenced to|prison sentence|'
+                         r'kara (?:śmierci|pozbawienia wolności)|skazan\w* na|'
+                         r'позбавлен\w* волі|лишени\w* свободы|до розстрілу|к расстрелу|'
+                         r'засуджен\w* до|приговор[её]н\w* к)\b',re.I)
+
+def incidental_manufacturing_history(text,topic):
+ return manufacturing_intent(topic) and bool(LEGAL_OUTCOME.search(text)) and not bool(
+  LEGAL_OUTCOME.search(topic) or re.search(r'\b(?:history|historic\w*|dziej\w*|histori\w*|істор\w*|истори\w*)\b',topic,re.I))
+
 def process_signal(text,lang):
   patterns={
    'en':r'\b(melt(?:s|ed|ing)?|molten|form(?:s|ed|ing)?|blow(?:s|n|ing|pipe)?|anneal(?:s|ed|ing)?|cool(?:s|ed|ing)|inspect(?:s|ed|ing|ion|ions)?|furnaces?|batch|gobs?|press(?:es|ed|ing)?|feed(?:s|ing)?)\b',
@@ -679,7 +688,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
     proof=sources[0].get('translated_spans',{}).get(str(sources[0]['text'].find(original)),{})
     physical=visual_actions(proof.get('source_span',''))-{'production'}
     if physical and not physical<=visual_actions(lead):lead=''
-   if lead.endswith(('.', '!', '?')) and 5<=len(lead.split())<=90 and len(lead)<=650 and not re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',lead) and not incidental_place_event(lead,topic,sources[0].get('entity_profile',{})):
+   if lead.endswith(('.', '!', '?')) and 5<=len(lead.split())<=90 and len(lead)<=650 and not re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',lead) and not incidental_place_event(lead,topic,sources[0].get('entity_profile',{})) and not incidental_manufacturing_history(lead,topic):
     definition_index=0;definition=lead
     source_positions[(0,lead)]=sources[0]['text'].find(original);source_spans[(0,lead)]=original
   if definition:
@@ -707,7 +716,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      source_position=paragraph_start+paragraph.find(original_sentence)
      if foreign_name_catalogue(sentence,lang,topic):continue
      if any(excluded in original_sentence for excluded in src.get('excluded_visual_sentences',[])):continue
-     if incidental_place_event(sentence,topic,sources[0].get('entity_profile',{})):continue
+     if incidental_place_event(sentence,topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(sentence,topic):continue
      if human:sentence=retain_named_model_asides(sentence)
      if human or definition:sentence=omit_parenthetical_asides(sentence)
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
@@ -950,7 +959,12 @@ def expand_source_blocks(slots,max_beats):
 def order_process_slots(slots):
  # Preserve source claims while presenting physical stages in their causal order.
  stages={'production':-1,'mix':0,'heat':1,'melt':1,'shape':2,'drain':3,'press':4,'dry':5,'cool':6,'cut':7,'inspect':8}
- return sorted(slots,key=lambda slot:(min((stages[action] for action in scene_actions(slot['text'])),default=99),slot.get('source_index',0),slot.get('source_position',0)))
+ def stage(slot):
+  action=next(iter(scene_actions(slot['text'])))
+  if action=='heat' and re.search(r'\b(?:fired|firing|wypal\w*|wypał\w*|випал\w*|обжиг\w*)\b',slot['text'],re.I):
+   return 5.5
+  return stages[action]
+ return sorted(slots,key=lambda slot:(stage(slot),slot.get('source_index',0),slot.get('source_position',0)))
 
 def identifier_scope_terms(text,lang):
  root_length=5 if lang in {'uk','ru'} else 4
@@ -1426,6 +1440,8 @@ def discover_photos(topic,lang,slots):
   category=profile.get('commons_category')
   queries=([('incategory:"'+category+'"')] if category else [])+[topic+' machinery',' '.join(core_terms)+(' mill interior' if 'mill' in profile.get('visual_vocabulary',[]) else ' handmade')]
   stages=[(profile.get('name') or ' '.join(core_terms))+' '+STAGE_QUERIES[next(iter(scene_actions(slot['text'])))] for slot in slots if scene_actions(slot['text'])!={'production'}]
+  equipment=list(dict.fromkeys(name for slot in slots for name in slot.get('process_equipment',[])))
+  stages=equipment[:4]+stages
   actions_needed=list(dict.fromkeys(next(iter(scene_actions(slot['text']))) for slot in slots if scene_actions(slot['text'])!={'production'}))
   stages += [' '.join(core_terms)+' '+STAGE_QUERY_TOOLS[action][index] for index in range(2) for action in actions_needed]
   queries=list(dict.fromkeys(queries[:3]+stages))[:12]
@@ -1533,7 +1549,7 @@ def visual_actions(text):
   'dry':r'\b(?:dry\w*|dried|dries|dryer\w*|(?:wy|do|po)?susz\w*|(?:вы|ви|по|під|до)?суш\w*)',
   'cut':r'\b(?:cut\w*|slit\w*|trim\w*|cię\w*|(?:раз)?рез(?:а|н)\w*|(?:роз)?різ(?:а|к|ьб)\w*|ріж\w*)',
   'mix':r'\b(?:mix\w*|stirr\w*|blend\w*|miesz\w*|смеш\w*|зміш\w*)',
-  'heat':r'\b(?:furnace\w*|heat(?:ed|ing)|kiln\w*|topi\w*|piec\w*|плав\w*|печ\w*|піч\w*|нагр\w*)',
+  'heat':r'\b(?:furnace\w*|heat(?:ed|ing)|kiln\w*|topi\w*|piec\w*|плав\w*|печ(?:ь|и|і|ей|ах|ами|н\w*)\b|піч(?:чю|н\w*)?\b|нагр\w*)',
   'shape':r'\b(?:blow(?:n|ing|pipe)?|blows|glassblow\w*|form(?:ed|ing)|mold\w*|mould\w*|shap(?:ed|ing)|wydmuch\w*|formow\w*|wyduw\w*|выдув\w*|формов\w*|видув\w*|формув\w*)',
   'cool':r'\b(?:cool(?:ed|ing)|anneal\w*|lehr|leer|chłodz\w*|wyżarz\w*|охлажд\w*|отжиг\w*|охолодж\w*|відпал\w*)',
   'inspect':r'\b(?:inspect\w*|quality control|quality check\w*|test(?:ed|ing)|kontrol\w*|sprawdz\w*|провер\w*|контрол\w*|перевір\w*)',
@@ -2022,7 +2038,7 @@ def source_verified_native_plan(evidence,receipt,sources,topic,lang,duration):
   url=evidence['sources'][old_index]['url'];index=next((i for i,source in enumerate(sources) if source['url']==url),None)
   span=beat.get('source_sentence','');start=beat.get('source_position',-1)
   if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:return None
-  if truncated_dependent_clause(beat['text'],span,lang) or context_dependent_sentence(beat['text']) or incidental_place_event(beat['text'],topic,sources[0].get('entity_profile',{})):return None
+  if truncated_dependent_clause(beat['text'],span,lang) or context_dependent_sentence(beat['text']) or incidental_place_event(beat['text'],topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(beat['text'],topic):return None
   slots.append({'text':beat['text'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':manufacturing_intent(topic)})
  if not slots or len(slots)>duration//5 or not script_covers_identifier_scope(sources,topic,lang,slots):return None
  spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
@@ -2046,7 +2062,7 @@ def completed_narration_plan(sources,topic,lang,duration):
    index=next((i for i,source in enumerate(sources) if source['url']==beat['source_url']),None)
    span=beat.get('source_span','');start=beat.get('source_start',-1)
    if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:valid=False;break
-   if truncated_dependent_clause(beat['caption'],span,lang) or context_dependent_sentence(beat['caption']) or incidental_place_event(beat['caption'],topic,sources[0].get('entity_profile',{})):valid=False;break
+   if truncated_dependent_clause(beat['caption'],span,lang) or context_dependent_sentence(beat['caption']) or incidental_place_event(beat['caption'],topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(beat['caption'],topic):valid=False;break
    slots.append({'text':beat['caption'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':manufacturing_intent(topic)})
   if not valid or not slots or len(slots)>duration//5 or not script_covers_identifier_scope(sources,topic,lang,slots):continue
   # A previously measured, source-verified script remains useful after its

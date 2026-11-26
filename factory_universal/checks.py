@@ -977,6 +977,24 @@ def check():
  assert app.scene_actions('Різні матеріали надходять у піч.')=={'heat'}
  assert app.scene_actions('Розрізають листи після охолодження.')=={'cut'}
  assert app.scene_actions('Разрезают листы после охлаждения.')=={'cut'}
+ judicial='Іван Пічка отримав 10 років позбавлення волі.'
+ assert app.scene_actions(judicial)=={'production'}
+ assert app.incidental_manufacturing_history(judicial,'Виробництво кераміки')
+ assert not app.incidental_manufacturing_history(judicial,'Історія виробництва кераміки')
+ assert app.incidental_manufacturing_history('The mill owners were sentenced to prison.','How paper is made')
+ assert not app.incidental_manufacturing_history('The glass is softened in a furnace.','How glass is made')
+ forming_span='Workers shape the sheet with a forming press.'
+ forming_slot={'text':forming_span,'source_sentence':forming_span,'source_index':0,'source_position':0}
+ forming_source={'text':forming_span,'visual_links':[
+  {'label':'forming press','title':'Forming press','paragraph_key':storyboard.paragraph_key(forming_span)},
+  {'label':'sheet','title':'Paper','paragraph_key':storyboard.paragraph_key(forming_span)},
+  {'label':'Workers','title':'Laminator','paragraph_key':storyboard.paragraph_key('An unrelated paragraph.')} ]}
+ with patch.object(storyboard,'resolve_links',return_value={
+  'Forming press':{'name':'forming press','description':'industrial machine'},
+  'Paper':{'name':'paper','description':'fibrous material'}}) as resolve:
+  storyboard.bind_process_equipment([forming_slot],[forming_source],'en',app)
+  assert forming_slot['process_equipment']==['forming press']
+  assert {row['title'] for row in resolve.call_args.args[0]}=={'Forming press','Paper'}
  modern={'title':'Ceramics','text':'Ceramics are made from clay and fired in a kiln.'}
  ancient={'title':'Ancient ceramics manufacturing','text':modern['text']}
  assert app.relevant_sources([ancient,modern],'Ceramics manufacturing','en')[0]==modern
@@ -1035,6 +1053,9 @@ def check():
  with patch.object(app,'natural_char_rate',return_value=100),patch.object(app,'natural_internal_rate',return_value=None):
   assert not app.fit_narration([(100,0,block,[]),(100,0,repeat,[])],2,'en',process_intent=True,duration_ms=12000,natural=True)
  ordered=app.order_process_slots([{'text':'The sheet is pressed.'},{'text':'Wet pulp drains through a screen.'},{'text':'The sheet dries on racks.'},{'text':'Papermaking is a manufacturing process.'}])
+ firing={'text':'Виріб випалюється у печі.'}
+ forming={'text':'Майстер починає формувати виріб.'}
+ assert app.order_process_slots([firing,forming])==[forming,firing]
  assert [next(iter(app.scene_actions(row['text']))) for row in ordered]==['production','drain','press','dry']
  landing_target={'id':'Q994','name':'Example Rocket','description':'partially reusable orbital launch vehicle'}
  landing_target['intent']=storyboard.scene_intent('The Example Rocket landed on its landing pad.',landing_target)

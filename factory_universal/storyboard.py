@@ -1,6 +1,7 @@
 """Source-linked scene briefs. No topic-specific asset lists or paid model calls."""
 import re
 import hashlib
+import urllib.error
 import urllib.parse
 from html.parser import HTMLParser
 
@@ -104,6 +105,32 @@ def ensure_source(sources,lang,api):
 def source_links(sources,lang,api):
  if 'visual_links' not in sources[0]:ensure_source(sources,lang,api)
  return sources[0].get('visual_links',[])
+
+def bind_process_equipment(slots,sources,lang,api):
+ # Search by equipment named in the narrated source span. Restrict links
+ # to their original paragraph and keep the ordinary photo admission gates.
+ linked_slots=[]
+ for slot in slots:
+  source=sources[slot['source_index']]
+  span=slot['source_sentence']
+  if source.get('translation_model') or not source.get('visual_links'):continue
+  start=slot['source_position'];text=source['text']
+  if start<0 or text[start:start+len(span)]!=span:continue
+  begin=text.rfind('\n',0,start)+1;end=text.find('\n',start)
+  key=paragraph_key(text[begin:end] if end>=0 else text[begin:])
+  links=[link for link in source['visual_links'] if link['paragraph_key']==key and phrase_in(link['label'],span)]
+  if links:linked_slots.append((slot,links))
+ if not linked_slots:return
+ try:resolved=resolve_links([link for _,links in linked_slots for link in links],lang,api)
+ except urllib.error.HTTPError as error:
+  if error.code in {429,503}:raise
+  return
+ except (OSError,ValueError):return
+ equipment=r'\b(?:tools?|machines?|machinery|instruments?|devices?|equipment|apparatus|furnaces?|kilns?)\b'
+ for slot,links in linked_slots:
+  entities=[resolved.get(link['title'],{}) for link in links]
+  slot['process_equipment']=list(dict.fromkeys(entity['name'] for entity in entities if entity.get('name') and
+                               re.search(equipment,entity['name']+' '+entity.get('description',''),re.I)))[:2]
 
 def resolve_links(links,lang,api):
  titles=sorted({link['title'] for link in links})[:40]
@@ -262,6 +289,7 @@ def build(slots,sources,lang,api):
  # Associated entities explain a person's life. Other topic categories retain
  # the primary subject and their existing place/astronomy/process validators.
  if profile.get('kind')!='human':
+  if slots[0].get('process_intent'):bind_process_equipment(slots,sources,lang,api)
   for index,slot in enumerate(slots):
    if slot.get('process_intent') and api.scene_actions(slot['text'])=={'production'} and not api.process_definition(slot['text']):raise SceneUnavailable(slot,'No evidenced physical operation for this process scene')
    slot['visual_targets']=[]
