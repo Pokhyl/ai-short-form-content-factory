@@ -675,6 +675,10 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
    paragraph=next((p for p in sources[0]['text'].splitlines() if p.strip()),'')
    original=sentences(paragraph)[0] if paragraph else ''
    lead=original if sources[0].get('translation_model') else re.sub(r'\s+([,.;:!?])',r'\1',omit_parenthetical_asides(original)).strip()
+   if process_intent and sources[0].get('strict_translated_scope'):
+    proof=sources[0].get('translated_spans',{}).get(str(sources[0]['text'].find(original)),{})
+    physical=visual_actions(proof.get('source_span',''))-{'production'}
+    if physical and not physical<=visual_actions(lead):lead=''
    if lead.endswith(('.', '!', '?')) and 5<=len(lead.split())<=90 and len(lead)<=650 and not re.search(r'\^|(?<=\w)_(?=\w)|[⋅×➤]',lead) and not incidental_place_event(lead,topic,sources[0].get('entity_profile',{})):
     definition_index=0;definition=lead
     source_positions[(0,lead)]=sources[0]['text'].find(original);source_spans[(0,lead)]=original
@@ -708,7 +712,13 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if human or definition:sentence=omit_parenthetical_asides(sentence)
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
      scope_hits=scope&identifier_scope_terms(sentence,lang) if scope else set()
-     if translated_focus and not translated_focus&scope_hits:continue
+     # Consecutive process facts can refer to the material through the
+     # pinned article's original wording. Keep the original scope check
+     # on the completed script, and require agreement on the physical step.
+     evidence=src.get('translated_spans',{}).get(str(source_position),{}) if process_intent and src.get('strict_translated_scope') else {}
+     step=scene_actions(sentence)-{'production'} if evidence else set()
+     scoped_process_step=bool(step and step<=visual_actions(evidence['source_span']))
+     if translated_focus and not translated_focus&scope_hits and not scoped_process_step:continue
      if vernacular and re.search(r'[A-Za-z]{3,}',sentence):continue
      first=re.search(r'[^\W_]',sentence,re.UNICODE)
      named_lead=bool(src.get('translation_model') and src.get('scoped_identifier') and re.match(re.escape(src['scoped_identifier'])+r'\b',sentence,re.I))
@@ -730,10 +740,10 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      if focus and not human and not (sentence_terms&focus or src.get('strict_translated_scope') and scope_hits):continue
      direct_topic=(human or bool(definition)) and si==0 and paragraph_index<5 or bool(sentence_terms&object_terms);process_overlap=process_signal(sentence,lang) if process_intent else 0
      if definition and si==0:topic_hits=max(topic_hits,needed)
-     if needed and topic_hits<needed:continue
+     if needed and topic_hits<needed and not scoped_process_step:continue
      if not process_intent and object_terms and (not direct_topic or (lang=='en' and not definition and not grounding_terms(' '.join(words[:6]),lang)&object_terms)):continue
      if lang=='en' and not human and not definition and not process_intent and unsupported_qualifier(sentence,topic,sources):continue
-     if process_intent and not definition and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
+     if process_intent and not definition and not scoped_process_step and (not process_overlap or not direct_topic or not visual_actions(sentence)):continue
      if process_intent and not (visual_actions(sentence)-{'production'}) and not (si==0 and source_position<4 and process_definition(sentence)):continue
      score=((5 if process_intent else 30)/(1+paragraph_index) if definition else 0)+(8*process_overlap if definition and process_intent else 0)+topic_hits*4+len(sentence_terms&object_terms)*3+process_overlap*2+min(len(words),15)/15-.25*max(0,len(words)-15)+(3 if paragraph_index<2 and not process_intent else 0)+(4 if si==0 and not process_intent else 0)+(8 if si==0 and paragraph_index==0 and not process_intent else 0)
      score+=12*len(scope_hits)
@@ -869,7 +879,12 @@ def translated_research_sources(topic,lang,duration=None):
    if 'text' in candidate and not article_supports_query(candidate,query):continue
    sources=translated_article({**candidate,'strict_translated_scope':True,'english_search_topic':query},lang,query)
    if not sources:continue
-   if duration is None or (script_covers_identifier_scope(sources,topic,lang,sources) and plan_script(sources,topic,lang,duration)):return sources
+   if duration is None:return sources
+   if not script_covers_identifier_scope(sources,topic,lang,sources):continue
+   plan=plan_script(sources,topic,lang,duration)
+   if not plan:continue
+   if manufacturing_intent(topic) and natural_duration_ms(' '.join(slot['text'] for slot in plan),lang)<duration*750:continue
+   return sources
  return []
 
 def load_sources(topic,lang,duration=None):
@@ -907,11 +922,14 @@ def relevant_sources(sources,topic,lang):
  terms=topic_terms(topic,lang)
  def stem(word):return word[:4] if not word.isascii() else word
  process_intent=manufacturing_intent(topic)
+ historical=r'\b(?:history|historic\w*|ancient|medieval|starożytn\w*|średniowiecz\w*|давньо\w*|стародав\w*|середньовіч\w*|древн\w*|средневек\w*|істор\w*|истори\w*)\b'
+ historical_requested=bool(re.search(historical,topic,re.I))
  def title_rank(source):
   title=topic_terms(source['title'],lang)
   matched=sum(any(stem(a)==stem(b) or (process_intent and lang=='en' and len(a)>=4 and b.startswith(a) and b[len(a):] in {'making','manufacturing','production','blowing'}) for b in title) for a in terms)
   method=bool(process_intent and re.search(r'making|manufactur|production|produk|wytwarz|производ|изготов|виробниц|виготов',source['title'],re.I))
-  return (source_match_rank(topic,source),matched,int(method),-len(title))
+  dated=bool(process_intent and not historical_requested and re.search(historical,source['title'],re.I))
+  return (source_match_rank(topic,source),matched,not dated,int(method),-len(title))
  ranked=sorted(sources,key=title_rank,reverse=True)
  if not ranked:return []
  anchor=ranked[0]
@@ -1513,9 +1531,9 @@ def visual_actions(text):
   'drain':r'\b(?:drain\w*|siev\w*|deckle\w*|paper mesh|paper mou?lds?|papermaking mou?lds?|wire mesh|(?:mesh|forming|wire|mould|mold|pulp) screens?\b|dewater\w*|odwad\w*|(?:od|prze)?sącz\w*|осуш\w*|обезвож\w*|зневод\w*|процідж\w*|відцідж\w*|сито\w*)',
   'press':r'\b(?:press\w*|squeez\w*|(?:s|wy)?pras\w*|(?:с|пере)?пресс\w*|(?:с|пере)?прес\w*)',
   'dry':r'\b(?:dry\w*|dried|dries|dryer\w*|(?:wy|do|po)?susz\w*|(?:вы|ви|по|під|до)?суш\w*)',
-  'cut':r'\b(?:cut\w*|slit\w*|trim\w*|cię\w*|рез\w*|різ\w*)',
+  'cut':r'\b(?:cut\w*|slit\w*|trim\w*|cię\w*|(?:раз)?рез(?:а|н)\w*|(?:роз)?різ(?:а|к|ьб)\w*|ріж\w*)',
   'mix':r'\b(?:mix\w*|stirr\w*|blend\w*|miesz\w*|смеш\w*|зміш\w*)',
-  'heat':r'\b(?:furnace\w*|heat(?:ed|ing)|kiln\w*|topi\w*|piec\w*|плав\w*|печ\w*|нагр\w*)',
+  'heat':r'\b(?:furnace\w*|heat(?:ed|ing)|kiln\w*|topi\w*|piec\w*|плав\w*|печ\w*|піч\w*|нагр\w*)',
   'shape':r'\b(?:blow(?:n|ing|pipe)?|blows|glassblow\w*|form(?:ed|ing)|mold\w*|mould\w*|shap(?:ed|ing)|wydmuch\w*|formow\w*|wyduw\w*|выдув\w*|формов\w*|видув\w*|формув\w*)',
   'cool':r'\b(?:cool(?:ed|ing)|anneal\w*|lehr|leer|chłodz\w*|wyżarz\w*|охлажд\w*|отжиг\w*|охолодж\w*|відпал\w*)',
   'inspect':r'\b(?:inspect\w*|quality control|quality check\w*|test(?:ed|ing)|kontrol\w*|sprawdz\w*|провер\w*|контрол\w*|перевір\w*)',
@@ -2136,6 +2154,8 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
   if before_send is not None:
    slots=prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots,before_send,seen,direction)
   script=' '.join(slot['text'] for slot in slots);spoken=selected_voice_request(lang,script)['input']['text'];identity=hashlib.sha256(spoken.encode()).hexdigest()
+  if sources and sources[0].get('strict_translated_scope') and manufacturing_intent(topic) and natural_duration_ms(script,lang)<duration*750:
+   raise ValueError('Source-backed and illustrated narration is too short for the requested duration')
   if identity in seen:raise ValueError('Duplicate narration prevented before synthesis')
   seen.add(identity)
   update(jid,stage='voice',progress=50,message='Creating narration with your selected '+lang.upper()+' voice; attempt '+str(attempt))

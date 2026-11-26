@@ -409,6 +409,16 @@ def check():
   assert app.translated_research_sources('виробництво скла у Львові','uk')==[translated]
   indexed.assert_called_once_with('manufacturing glass in Lviv')
   assert research.call_args.args[-1]=='manufacturing glass in Lviv'
+ with patch.multiple(source_translation,configured_for=lambda lang:True,
+                     query_configured_for=lambda lang:True,
+                     english_query=lambda topic,lang:'glass'), \
+      patch.object(app,'cache_fetch',side_effect=lambda key,fetch:fetch()), \
+      patch.object(app,'wikipedia',return_value=[{'title':'Glass making','text':'Glass is manufactured.'}]), \
+      patch.object(app,'indexed_english_articles',return_value=[{'title':'Glass production'}]), \
+      patch.object(app,'translated_article',side_effect=[[{'text':'Виробництво скла коротке.'}],[{'text':'Виробництво скла тривале.'}]]), \
+      patch.object(app,'plan_script',side_effect=lambda sources,*args:sources), \
+      patch.object(app,'natural_duration_ms',side_effect=[15000,28000]):
+  assert app.translated_research_sources('виробництво скла','uk',30)==[{'text':'Виробництво скла тривале.'}]
  city={'title':'Example City','url':'https://uk.wikipedia.org/wiki/Example','text':'The city has several glass factories.'}
  profile={'id':'Q123','kind':'entity','name':'Example City','native_name':'Приклад','visual_description':'town in Ukraine'}
  with patch.object(app,'wikipedia',return_value=[city]),patch.object(app,'cache_fetch',side_effect=lambda key,fetch:fetch()), \
@@ -964,6 +974,12 @@ def check():
  assert app.scene_actions('Папір висушують на стелажах.')=={'dry'}
  assert app.scene_actions('Волокна зневоднюють через сито.')=={'drain'}
  assert app.scene_actions('Смесь расплавляют в печи.')=={'melt'}
+ assert app.scene_actions('Різні матеріали надходять у піч.')=={'heat'}
+ assert app.scene_actions('Розрізають листи після охолодження.')=={'cut'}
+ assert app.scene_actions('Разрезают листы после охлаждения.')=={'cut'}
+ modern={'title':'Ceramics','text':'Ceramics are made from clay and fired in a kiln.'}
+ ancient={'title':'Ancient ceramics manufacturing','text':modern['text']}
+ assert app.relevant_sources([ancient,modern],'Ceramics manufacturing','en')[0]==modern
  conference={'provider':'commons','depiction':'File:White paper press conference.jpg','alt':'A press conference about a white paper','categories':['Category:Paper industry'],'height':1000,'width':1400}
  assert app.photo_score(conference,{'text':'The paper is pressed.','process_intent':True},'Paper manufacturing')<0
  # Scene identity must also retain the stated place or physical work context.
