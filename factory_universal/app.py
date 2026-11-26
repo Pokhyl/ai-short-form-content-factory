@@ -1656,6 +1656,18 @@ def get_pixel_verifier():
  global PIXEL_VERIFIER
  if PIXEL_VERIFIER is None:PIXEL_VERIFIER=VisualVerifier()
  return PIXEL_VERIFIER
+
+def release_pixel_verifier():
+ global PIXEL_VERIFIER
+ if PIXEL_VERIFIER is None:return
+ PIXEL_VERIFIER=None
+ import gc
+ gc.collect()
+ # Return free ONNX allocator pages before the separate alignment worker
+ # loads its speech model on the same host.
+ from ctypes import CDLL
+ trim=getattr(CDLL(None),'malloc_trim',None)
+ if trim is not None:trim(0)
 def pixel_check(raw,topic,slot,candidate=None):
  if slot.get('visual_target'):
   target=slot['visual_target'];intent=target.get('intent',{});display_name=target['name']
@@ -2144,6 +2156,7 @@ def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None)
   else:planning_seconds=max(10,min(90,round(planning_seconds*(duration*1000-500)/max(actual,1))))
  else:raise ValueError('three distinct natural narration texts did not fit; no speed change or voice substitution')
  # Align the exact, unmodified natural audio through the existing media worker.
+ release_pixel_verifier()
  final=VOICE/jid/'final.mp3';final.parent.mkdir(parents=True,exist_ok=True)
  with final.open('xb') as output:output.write(path.read_bytes())
  scene_inputs=[{'scene_uuid':str(uuid.uuid5(uuid.UUID(jid),'spoken:'+str(i))),'scene_key':str(i),'narration':slot['text']} for i,slot in enumerate(slots)]
