@@ -1,6 +1,8 @@
 # Current Studio release — 2026-11-26
 
-Studio runs `e6b8c58`. It screens translated source candidates against the requested subject and focus before displaying a source match. See [the source relevance evidence](../acceptance/factory-universal/2026-11-26-source-relevance/README.md).
+Studio runs `d0ac987`. When a fully illustrated script cannot use the preferred photo count, the worker can use fewer unique photos while still verifying at least two per narration beat. See [the photo density evidence](../acceptance/factory-universal/2026-11-26-visual-density/README.md).
+
+The earlier `e6b8c58` release screens translated source candidates against the requested subject and focus before displaying a source match. See [the source relevance evidence](../acceptance/factory-universal/2026-11-26-source-relevance/README.md).
 
 # Earlier Studio release — 2026-11-25
 

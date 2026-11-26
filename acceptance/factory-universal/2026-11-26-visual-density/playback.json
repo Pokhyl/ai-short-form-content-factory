@@ -1,0 +1,70 @@
+[
+  {
+    "id": "e4e6b0a0-e173-4954-ac76-18af1d1a40cb",
+    "duration": 15,
+    "frames": 450,
+    "voice": "pl-PL-Chirp3-HD-Enceladus",
+    "photos": 6,
+    "speech_ms": 13464,
+    "playback": {
+      "duration": 15,
+      "width": 1080,
+      "height": 1920,
+      "time": 0.957861,
+      "error": null
+    },
+    "credits_http_status": 200,
+    "byte_range_http_status": 206
+  },
+  {
+    "id": "8775435d-2e70-4dce-a324-b683fd55f51e",
+    "duration": 30,
+    "frames": 900,
+    "voice": "en-US-Chirp3-HD-Algenib",
+    "photos": 12,
+    "speech_ms": 27864,
+    "playback": {
+      "duration": 30,
+      "width": 1080,
+      "height": 1920,
+      "time": 0.961194,
+      "error": null
+    },
+    "credits_http_status": 200,
+    "byte_range_http_status": 206
+  },
+  {
+    "id": "d91826ec-a094-471c-a651-99df4e2eb857",
+    "duration": 45,
+    "frames": 1350,
+    "voice": "ru-RU-Wavenet-D",
+    "photos": 18,
+    "speech_ms": 41280,
+    "playback": {
+      "duration": 45,
+      "width": 1080,
+      "height": 1920,
+      "time": 0.960728,
+      "error": null
+    },
+    "credits_http_status": 200,
+    "byte_range_http_status": 206
+  },
+  {
+    "id": "ed215c30-9588-4153-b0e7-db048f3e7976",
+    "duration": 60,
+    "frames": 1800,
+    "voice": "uk-UA-Chirp3-HD-Enceladus",
+    "photos": 24,
+    "speech_ms": 56328,
+    "playback": {
+      "duration": 60,
+      "width": 1080,
+      "height": 1920,
+      "time": 0.960314,
+      "error": null
+    },
+    "credits_http_status": 200,
+    "byte_range_http_status": 206
+  }
+]
