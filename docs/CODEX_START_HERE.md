@@ -1,4 +1,8 @@
-# Current Studio release — 2026-11-26
+# Current Studio release — 2026-11-27
+
+Studio runs `6e82a12`. Repeated manufacturing jobs can prioritize previously verified photos for an identical caption and source revision after refreshing license metadata. Sourced operating equipment can support manufacturing imagery. Kiln firing and decoration have separate discovery and verification. The shared native narration window allows a 200 ms margin below 90% coverage. See [the process media and timing evidence](../acceptance/factory-universal/2026-11-26-process-media/README.md).
+
+# Earlier Studio release — 2026-11-26
 
 Studio runs `9e74418`. The worker preserves manufacturing intent during local query translation, checks additional verified source and media candidates, and releases the visual verifier before speech alignment. See [the coverage and runtime evidence](../acceptance/factory-universal/2026-11-26-research-coverage/README.md).
 
