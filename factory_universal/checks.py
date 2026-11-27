@@ -1004,6 +1004,23 @@ def check():
  assert app.photo_score({**wheel_photo,'alt':"An idle potter's wheel in a museum."},wheel_slot,'Ceramics')<0
  assert app.photo_score(wheel_photo,{**wheel_slot,'general_process_subject':False},'Ceramics in Opishnia')<0
  assert app.photo_score(wheel_photo,{**wheel_slot,'text':'Виріб випалюється у печі.'},'Ceramics')<0
+ proof_url='https://en.wikipedia.org/wiki/Manufacturing'
+ proof_rev='https://en.wikipedia.org/w/index.php?oldid=123'
+ proof_slot={'text':wheel_slot['text'],'source_index':0}
+ proof_job={'topic':'Ceramics','language':'uk','duration_s':30}
+ proof_manifest={'sources':[{'url':proof_url,'revision_url':proof_rev}],'visuals':[
+  {'source_article':proof_url,'caption':proof_slot['text'],'provider':'commons','provider_id':'123'},
+  {'source_article':proof_url,'caption':'Different caption.','provider':'commons','provider_id':'456'}]}
+ with patch.object(app,'connect') as db,patch.object(app,'cache_fetch',return_value={}) as cached, \
+      patch.object(app,'commons_photo_candidates',return_value=[{**wheel_photo,'id':'123'}]),patch.object(app,'DISCOVERED_PHOTOS',{}):
+  db.return_value.__enter__.return_value.execute.return_value.fetchall.return_value=[{'manifest':json.dumps(proof_manifest)}]
+  app.previous_scene_photos(proof_job,[proof_slot],[{'url':proof_url,'revision_url':proof_rev+'4'}])
+  cached.assert_not_called()
+  app.previous_scene_photos(proof_job,[proof_slot],[{'url':proof_url,'revision_url':proof_rev}])
+  assert cached.call_args.args[0]=='commons-previous-scene-v1|123'
+  prioritized=app.DISCOVERED_PHOTOS[('commons','123')]
+  assert app.photo_score(prioritized,{**wheel_slot,'previous_scene_key':(proof_slot['text'],proof_url,proof_rev)},'Ceramics')>app.photo_score(wheel_photo,wheel_slot,'Ceramics')
+  assert app.photo_score({**prioritized,'alt':'An idle machine.'},wheel_slot,'Ceramics')<0
  modern={'title':'Ceramics','text':'Ceramics are made from clay and fired in a kiln.'}
  ancient={'title':'Ancient ceramics manufacturing','text':modern['text']}
  assert app.relevant_sources([ancient,modern],'Ceramics manufacturing','en')[0]==modern

@@ -1139,6 +1139,37 @@ def source_photo_supplement(source):
  source['photo_supplement_loaded']=True
  return True
 
+def previous_scene_photos(job,slots,sources):
+ keys={(slot['text'],sources[slot['source_index']]['url'],sources[slot['source_index']].get('revision_url')) for slot in slots}
+ keys={key for key in keys if key[2]}
+ if not keys:return
+ with connect() as db:
+  rows=db.execute("SELECT manifest FROM jobs WHERE topic=? AND language=? AND duration_s=? AND status='ready' AND COALESCE(review_status,'pending')!='changes_requested' ORDER BY created_at DESC LIMIT 4",
+                  (job['topic'],job['language'],job['duration_s'])).fetchall()
+ matches={}
+ for row in rows:
+  previous=json.loads(row['manifest'] or '{}')
+  revisions={source['url']:source.get('revision_url') for source in previous.get('sources',[])}
+  for photo in previous.get('visuals',[]):
+   source=photo.get('source_article')
+   key=(photo.get('caption'),source,revisions.get(source))
+   pageid=str(photo.get('provider_id',''))
+   if key in keys and photo.get('provider')=='commons' and re.fullmatch(r'[1-9]\d*',pageid):
+    matches.setdefault(pageid,set()).add(key)
+ if not matches:return
+ ids='|'.join(list(matches)[:40])
+ def retrieve():
+  params=urllib.parse.urlencode({**COMMONS_IMAGE_FIELDS,'pageids':ids})
+  return http_json('https://commons.wikimedia.org/w/api.php?'+params,timeout=20)
+ try:data=cache_fetch('commons-previous-scene-v1|'+ids,retrieve)
+ except urllib.error.HTTPError as error:
+  if error.code in {429,503}:raise
+  return
+ except (OSError,ValueError):return
+ for photo in commons_photo_candidates(data,'previously verified scene'):
+  candidate=DISCOVERED_PHOTOS.setdefault(('commons',photo['id']),photo)
+  candidate['previous_scene_keys']=sorted(matches[photo['id']])
+
 def visual_context_title(slot,sources,lang):
  # Match the native-language fact to article introductions, then use their English titles.
  mapped=[source for source in sources if source.get('visual_title') and all(year in slot['text'] for year in re.findall(r'\b\d{4}\b',source['title']))]
@@ -1704,7 +1735,8 @@ def photo_score(p,slot,topic):
  if specific and not specific&depicted:return -1
  if specific and re.search(r'\b(?:exterior|outside|panorama|skyline)\b',depiction,re.I):return -1
  if required and not required&depicted and 'production' not in depicted:return -1
- return 2*len(terms&meta)+.8*len(set(tokens(topic))&meta)+8*len(required&depicted)+(5 if p.get('article_media_revision') else 0)+(6 if slot.get('visual_title') and slot['visual_title'].casefold()==p.get('query','').casefold() else 0)+(.5 if p['height']>=p['width'] else 0)
+ previous_match=slot.get('previous_scene_key') in p.get('previous_scene_keys',[])
+ return 2*len(terms&meta)+.8*len(set(tokens(topic))&meta)+8*len(required&depicted)+(5 if p.get('article_media_revision') else 0)+(6 if slot.get('visual_title') and slot['visual_title'].casefold()==p.get('query','').casefold() else 0)+(.5 if p['height']>=p['width'] else 0)+(40 if previous_match else 0)
 def scene_photo_score(candidate,slot,topic):
  if slot.get('visual_target_optional'):
   return max((photo_score(candidate,{**slot,'visual_target':target},topic) for target in slot.get('visual_targets',[])),default=-1)
@@ -2358,6 +2390,7 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots,visual_count,minimum)
   if insect_subject(slot['entity_profile']):slot['insect_features']=insect_scene_features(slot['text'])
   if volcanic_subject(slot['entity_profile']):slot['volcanic_features']=volcanic_features(slot['text'])
   source=sources[slot['source_index']]
+  slot['previous_scene_key']=(slot['text'],source['url'],source.get('revision_url'))
   if sources[0].get('english_search_topic'):slot['english_search_topic']=sources[0]['english_search_topic']
   slot['visual_title']=source.get('visual_title') or (source['title'] if lang=='en' else '')
   if not slot.get('process_intent'):
@@ -2369,6 +2402,8 @@ def _prepare_visuals(jid,sources,topic,lang,duration,slots,visual_count,minimum)
  for slot in slots:slot['topic_aliases']=aliases
  from storyboard import build,shot_slots
  build(slots,sources,lang,sys.modules[__name__])
+ if slots[0].get('process_intent'):
+  previous_scene_photos({'topic':topic,'language':lang,'duration_s':duration},slots,sources)
  beat_for_shot=storyboard_beats(visual_count,slots)
  shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
  scene_slots=shot_slots(slots,beat_for_shot)

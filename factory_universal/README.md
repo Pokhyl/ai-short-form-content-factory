@@ -29,7 +29,7 @@ Install the pinned translation files with `python3 factory_universal/setup_model
 5. Synthesize with the exact selected Google voice through the retained native credential gateway and PostgreSQL free-tier ledger. Exclude verified cached recordings outside the requested speech window before photo preparation. Try at most three distinct complete source-backed texts, stop on an ambiguous send, and preserve the selected recording's voice, pitch and speed.
 6. Align the unchanged native recording using the existing media worker; render 1080×1920 H.264/AAC at 30 fps with exactly 450/900/1350/1800 frames, then fully decode and verify the result.
 
-Manufacturing scenes can query a tool explicitly linked in the narrated source paragraph. Tool metadata can support a scene when it identifies the tool in use and its documented function matches the operation. Kiln firing and decoration have separate media queries and image checks. Natural speech can fall up to 200 ms below the 90% coverage target, with exact video duration and the selected recording's playback speed preserved.
+Manufacturing scenes can query a tool explicitly linked in the narrated source paragraph. Tool metadata can support a scene when it identifies the tool in use and its documented function matches the operation. Kiln firing and decoration have separate media queries and image checks. A repeat can prioritize photos from an earlier render with the same caption and source revision after refreshing their licensing metadata. Natural speech can fall up to 200 ms below the 90% coverage target, with exact video duration and the selected recording's playback speed preserved.
 
 No Gemini or paid model APIs. eSpeak is an internal duration estimate only and is never audible output.
 
