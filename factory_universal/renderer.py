@@ -6,9 +6,9 @@ import subprocess
 import uuid
 
 def natural_audio_window(requested_ms):
- # Allow about two MP3 frames at the lower coverage boundary. The recording
- # still has to fit within the exact requested video duration.
- return requested_ms*9//10-50,requested_ms
+ # Allow 200 ms of natural speech variation below the 90% coverage target.
+ # The entire recording must still fit within the exact video duration.
+ return requested_ms*9//10-200,requested_ms
 
 def digest(path):
  with Path(path).open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()

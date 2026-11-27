@@ -82,6 +82,8 @@ class VisualVerifier:
    'cut':['Industrial equipment cutting {subject}.','Slitting blades trimming {subject} sheets.'],
    'mix':['A vat mixing {subject} raw material.','Industrial mixers blending {subject}.'],
    'shape':['Industrial machinery forming and molding {subject}.','A worker shaping {subject} during its manufacturing process.'],
+   'fire':['A kiln firing unfinished {subject}.','A worker loading pieces of {subject} into a kiln for firing.','A photograph inside a kiln loaded with {subject}.'],
+   'decorate':['A photograph of a worker decorating {subject} by hand.','A person applying paint or glaze to {subject} in a workshop.'],
    'cool':['An annealing oven cooling {subject} after manufacturing.','Technical illustration of an annealing furnace for {subject}.'],
    'inspect':['A worker inspecting {subject} quality during manufacturing.','A photograph of a worker inspecting the quality of {subject}.','Quality control equipment inspecting {subject}.'],
    'production':['A photograph of industrial {subject} production machinery.','An archival photograph of {subject} manufacturing inside a factory.','A photograph of {subject} being made by hand.']}
@@ -97,6 +99,8 @@ class VisualVerifier:
   if 'press' in actions:negative.append('A cutting blade slitting already finished sheets.')
   if 'dry' in actions:negative.append('A steaming vat cooking or boiling wet pulp.')
   if 'shape' in actions:negative.append('A person attaching a cap or fitting to an already finished '+subject+'.')
+  if 'fire' in actions:negative.append('An empty kiln or cold oven exhibited without any material inside.')
+  if 'decorate' in actions:negative.append('A tile cutter or saw displayed without any decoration in progress.')
   if 'glass' in subject.lower():negative.append('Metalworking, steel bars being heated and forged by a blacksmith.')
   base_count=len(negative);extra=(competitors or [])[:2];negative.extend(extra)
   descriptions=positive+negative

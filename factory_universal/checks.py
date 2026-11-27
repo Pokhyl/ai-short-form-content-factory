@@ -66,7 +66,7 @@ def check():
  assert app.selected_voice_request('uk','гала́ктики')['input']['text']=='галактики'
  for duration in app.DURATIONS:
   minimum,maximum=app.natural_voice_window(duration)
-  assert minimum==duration*900-50 and maximum==duration*1000
+  assert minimum==duration*900-200 and maximum==duration*1000
 
  # Regression: the real measured sequence changes text, preserves selected voice, and stops after three sends.
  from unittest.mock import patch
@@ -995,6 +995,15 @@ def check():
   storyboard.bind_process_equipment([forming_slot],[forming_source],'en',app)
   assert forming_slot['process_equipment']==['forming press']
   assert {row['title'] for row in resolve.call_args.args[0]}=={'Forming press','Paper'}
+ wheel_slot={'text':'Майстер формує виріб на гончарному крузі.','process_intent':True,
+             'process_equipment_descriptions':{"potter's wheel":'machine used in the shaping of round ceramic ware'},
+             'general_process_subject':True}
+ wheel_photo={'provider':'commons','depiction':'File:Making a vessel.jpg',
+              'alt':'File:Making a vessel.jpg The throwing of small objects on a pottery wheel.','height':1200,'width':1200}
+ assert app.photo_score(wheel_photo,wheel_slot,'Ceramics')>=0
+ assert app.photo_score({**wheel_photo,'alt':"An idle potter's wheel in a museum."},wheel_slot,'Ceramics')<0
+ assert app.photo_score(wheel_photo,{**wheel_slot,'general_process_subject':False},'Ceramics in Opishnia')<0
+ assert app.photo_score(wheel_photo,{**wheel_slot,'text':'Виріб випалюється у печі.'},'Ceramics')<0
  modern={'title':'Ceramics','text':'Ceramics are made from clay and fired in a kiln.'}
  ancient={'title':'Ancient ceramics manufacturing','text':modern['text']}
  assert app.relevant_sources([ancient,modern],'Ceramics manufacturing','en')[0]==modern
@@ -1055,6 +1064,16 @@ def check():
  ordered=app.order_process_slots([{'text':'The sheet is pressed.'},{'text':'Wet pulp drains through a screen.'},{'text':'The sheet dries on racks.'},{'text':'Papermaking is a manufacturing process.'}])
  firing={'text':'Виріб випалюється у печі.'}
  forming={'text':'Майстер починає формувати виріб.'}
+ assert app.scene_actions(firing['text'])=={'fire'}
+ assert app.scene_actions('The tiles are fired at a high temperature.')=={'fire'}
+ assert app.scene_actions('Clay is dried on racks before it is fired in the kiln.')=={'fire'}
+ painting={'text':'Кераміку розписують рослинним орнаментом без різких ліній.',
+           'process_intent':True,'general_process_material':'ceramic'}
+ assert app.scene_actions(painting['text'])=={'decorate'}
+ assert app.scene_actions('Різкі лінії утворюють орнамент.')=={'production'}
+ assert app.photo_score({'alt':'A ceramic tile cutter.','height':900,'width':900},painting,'Ceramics')<0
+ assert not app.photographic_metadata({'alt':'An oil painting of a worker hand painting a ceramic bowl.'},True)
+ assert app.photo_score({'alt':'A worker hand painting a ceramic bowl.','height':900,'width':900},painting,'Ceramics')>=0
  assert app.order_process_slots([firing,forming])==[forming,firing]
  assert [next(iter(app.scene_actions(row['text']))) for row in ordered]==['production','drain','press','dry']
  landing_target={'id':'Q994','name':'Example Rocket','description':'partially reusable orbital launch vehicle'}

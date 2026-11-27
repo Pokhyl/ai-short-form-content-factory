@@ -791,7 +791,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
   for slot in chosen:
    key=(slot['source_index'],slot['text']);slot['source_position']=source_positions[key];slot['source_sentence']=source_spans[key]
   if process_intent and not definition and not re.search(r'histor|ancient|истори|істор|dziej',topic,re.I):
-   stage_order={'heat':0,'shape':1,'cool':2,'inspect':3}
+   stage_order={'heat':0,'shape':1,'fire':2,'cool':3,'decorate':4,'inspect':5}
    return sorted(chosen,key=lambda x:(max((stage_order[action] for action in visual_actions(x['text']) if action in stage_order),default=0),x['source_index'],x['source_position']))
   return sorted(chosen,key=lambda x:(0 if definition and x['source_index']==definition_index else 1,x['source_index'],x['source_position']))
 def source_cache_key(topic,lang):
@@ -958,13 +958,8 @@ def expand_source_blocks(slots,max_beats):
 
 def order_process_slots(slots):
  # Preserve source claims while presenting physical stages in their causal order.
- stages={'production':-1,'mix':0,'heat':1,'melt':1,'shape':2,'drain':3,'press':4,'dry':5,'cool':6,'cut':7,'inspect':8}
- def stage(slot):
-  action=next(iter(scene_actions(slot['text'])))
-  if action=='heat' and re.search(r'\b(?:fired|firing|wypal\w*|wypał\w*|випал\w*|обжиг\w*)\b',slot['text'],re.I):
-   return 5.5
-  return stages[action]
- return sorted(slots,key=lambda slot:(stage(slot),slot.get('source_index',0),slot.get('source_position',0)))
+ stages={'production':-1,'mix':0,'heat':1,'melt':1,'shape':2,'drain':3,'press':4,'dry':5,'fire':6,'cool':7,'cut':8,'decorate':9,'inspect':10}
+ return sorted(slots,key=lambda slot:(stages[next(iter(scene_actions(slot['text'])))],slot.get('source_index',0),slot.get('source_position',0)))
 
 def identifier_scope_terms(text,lang):
  root_length=5 if lang in {'uk','ru'} else 4
@@ -1397,7 +1392,7 @@ def bind_place_images(candidates,profile):
 def semantic_categories(candidate):
  return [category for category in candidate.get('categories',[]) if not re.search(r'\b(?:from|via|uploaded|taken with|photographs by|images by|files by|press photographs?|press photos?|published in)\b',category,re.I)]
 
-def photographic_metadata(p):
+def photographic_metadata(p,painting_scene=False):
  title=p.get('depiction','')
  description=p.get('alt','').removeprefix(title).strip()
  overlays=r'\b(?:added (?:text |color(?:ed)? )?(?:labels|arrows)|(?:modified|marked|overlaid) (?:the )?(?:image |photo(?:graph)? )?with (?:text |color(?:ed)? )?(?:labels|arrows))\b'
@@ -1411,6 +1406,10 @@ def photographic_metadata(p):
  if re.search(r'\b(?:image (?:has been |is )annotated|annotated to highlight|comparison star|(?:two|three|four) images (?:of .*? )?(?:are (?:shown|seen)|show)|multiple panels)\b',description[:750],re.I):return False
  if len(set(re.findall(r'(?:^|[.!?]\s+)\(([A-H])\)\s+[A-Z]',description[:950])))>=3:return False
  text=p.get('depiction','')+' '+p.get('alt','')+' '+p.get('creator','')+' '+' '.join(p.get('categories',[]))
+ if painting_scene:
+  # Keep the artwork exclusions while recognizing descriptions of a
+  # person actively applying paint in a photograph.
+  text=re.sub(r'\b(?:person|worker|artisan|craftsperson|artist|woman|man|potter) (?:is )?(?:hand[ -])?painting\b',' ',text,flags=re.I)
  if re.search(r'\bfig(?:ure)?[. ]+\s*\d+\b',p.get('depiction',''),re.I):return False
  return not re.search(r'\.svg\b|\b(?:logos?|wordmarks?|icons?|calendars?|scrapbooks?|advertisements?|advertising banners?|promotional graphics?|flyers?|fliers?|brochures?|signatures?|autographs?|handwriting|diagrams?|charts?|graphs?|graphique|caricatures?|cartoons?|source code|maps?|mapa|mapy|plan|карта|мапа|document|letterhead|billhead|invoice|certificate|patent|schematic|collage|montage|topographic map|drawing|illustration|woodcut|engraving|lithograph|painting|poster|computer.generated|CGI|artist[’\x27]?s? (?:impression|concept|rendering)|(?:3d|3-d|3 d) (?:render\w*|model\w*)|digital art\w*|ai.generated|wykres|schemat|rysunek|график|схема|діаграма|малюнок)\b',text,re.I)
 
@@ -1443,7 +1442,8 @@ def discover_photos(topic,lang,slots):
   equipment=list(dict.fromkeys(name for slot in slots for name in slot.get('process_equipment',[])))
   stages=equipment[:4]+stages
   actions_needed=list(dict.fromkeys(next(iter(scene_actions(slot['text']))) for slot in slots if scene_actions(slot['text'])!={'production'}))
-  stages += [' '.join(core_terms)+' '+STAGE_QUERY_TOOLS[action][index] for index in range(2) for action in actions_needed]
+  process_terms=slots[0].get('general_process_material') or ' '.join(core_terms)
+  stages += [process_terms+' '+STAGE_QUERY_TOOLS[action][index] for index in range(2) for action in actions_needed]
   queries=list(dict.fromkeys(queries[:3]+stages))[:12]
  if named_place_subject(profile):
   name=profile['name']
@@ -1547,10 +1547,12 @@ def visual_actions(text):
   'drain':r'\b(?:drain\w*|siev\w*|deckle\w*|paper mesh|paper mou?lds?|papermaking mou?lds?|wire mesh|(?:mesh|forming|wire|mould|mold|pulp) screens?\b|dewater\w*|odwad\w*|(?:od|prze)?sącz\w*|осуш\w*|обезвож\w*|зневод\w*|процідж\w*|відцідж\w*|сито\w*)',
   'press':r'\b(?:press\w*|squeez\w*|(?:s|wy)?pras\w*|(?:с|пере)?пресс\w*|(?:с|пере)?прес\w*)',
   'dry':r'\b(?:dry\w*|dried|dries|dryer\w*|(?:wy|do|po)?susz\w*|(?:вы|ви|по|під|до)?суш\w*)',
-  'cut':r'\b(?:cut\w*|slit\w*|trim\w*|cię\w*|(?:раз)?рез(?:а|н)\w*|(?:роз)?різ(?:а|к|ьб)\w*|ріж\w*)',
+  'cut':r'\b(?:cut\w*|slit\w*|trim\w*|cię\w*|(?:раз)?рез(?:а|н)\w*|(?:роз)?різ(?:а|ьб)\w*|ріж\w*)',
   'mix':r'\b(?:mix\w*|stirr\w*|blend\w*|miesz\w*|смеш\w*|зміш\w*)',
   'heat':r'\b(?:furnace\w*|heat(?:ed|ing)|kiln\w*|topi\w*|piec\w*|плав\w*|печ(?:ь|и|і|ей|ах|ами|н\w*)\b|піч(?:чю|н\w*)?\b|нагр\w*)',
-  'shape':r'\b(?:blow(?:n|ing|pipe)?|blows|glassblow\w*|form(?:ed|ing)|mold\w*|mould\w*|shap(?:ed|ing)|wydmuch\w*|formow\w*|wyduw\w*|выдув\w*|формов\w*|видув\w*|формув\w*)',
+  'fire':r'\b(?:kiln(?:s|[ -]fired)?|fired in|fired at|kiln firing|wypa[lł]\w*|випал\w*|обжиг\w*|обжига\w*)\b',
+  'decorate':r'\b(?:hand[ -]paint(?:ed|ing)|decorat(?:ing|ion)|glaz(?:ing|ed)|paint(?:ing|ed) (?:the|a|an|pots?|vases?|tiles?)\b|malowa\w*|szkliw\w*|розпис\w*|розмальов\w*|глазуру\w*|распис\w*|окраш\w*)',
+  'shape':r'\b(?:blow(?:n|ing|pipe)?|blows|glassblow\w*|form(?:ed|ing)|mold\w*|mould\w*|shap(?:ed|ing)|wydmuch\w*|formow\w*|wyduw\w*|выдув\w*|формов\w*|видув\w*|форму(?:в|є|ю)\w*)',
   'cool':r'\b(?:cool(?:ed|ing)|anneal\w*|lehr|leer|chłodz\w*|wyżarz\w*|охлажд\w*|отжиг\w*|охолодж\w*|відпал\w*)',
   'inspect':r'\b(?:inspect\w*|quality control|quality check\w*|test(?:ed|ing)|kontrol\w*|sprawdz\w*|провер\w*|контрол\w*|перевір\w*)',
   'production':r'\b(?:factor(?:y|ies)|mill(?:ing)?|refiner\w*|manufactur\w*|\w{3,}making|production|assembly|automat\w*|machine\w*|fabryk\w*|produkc\w*|zakład\w*|завод\w*|производств\w*|виробниц\w*)'
@@ -1559,12 +1561,12 @@ def visual_actions(text):
 def scene_actions(text):
  actions=visual_actions(text)
  # The main operation takes precedence over auxiliary heat/vacuum in a clause.
- for action in ('press','drain','cut','mix','melt','dry','inspect','cool','shape','heat'):
+ for action in ('press','drain','cut','mix','melt','fire','dry','inspect','cool','shape','decorate','heat'):
   if action in actions:return {action}
  return {'production'}
 
-STAGE_QUERIES={'press':'press','drain':'screen','cut':'cutting slitting','mix':'mixing raw materials','melt':'melting furnace','dry':'drying','inspect':'quality inspection','cool':'annealing','shape':'forming molding','heat':'heating','production':'manufacturing'}
-STAGE_QUERY_TOOLS={'drain':['mould','sieve'],'press':['pulp press','hydraulic press'],'dry':['drying sheets','drying racks'],'shape':['mould','forming'],'heat':['furnace','kiln'],'melt':['furnace','molten'],'cool':['annealing','cooling'],'inspect':['inspection','quality control'],'mix':['mixer','mixing'],'cut':['cutter','slitting'],'production':['machinery','factory']}
+STAGE_QUERIES={'press':'press','drain':'screen','cut':'cutting slitting','mix':'mixing raw materials','melt':'melting furnace','dry':'drying','inspect':'quality inspection','cool':'annealing','shape':'forming molding','heat':'heating','fire':'kiln firing','decorate':'decorating hand painting','production':'manufacturing'}
+STAGE_QUERY_TOOLS={'drain':['mould','sieve'],'press':['pulp press','hydraulic press'],'dry':['drying sheets','drying racks'],'shape':['mould','forming'],'heat':['furnace','heating equipment'],'fire':['kiln firing','kiln loading'],'decorate':['decorating','worker painting'],'melt':['furnace','molten'],'cool':['annealing','cooling'],'inspect':['inspection','quality control'],'mix':['mixer','mixing'],'cut':['cutter','slitting'],'production':['machinery','factory']}
 
 
 def visual_competitors(topic,candidates):
@@ -1584,8 +1586,24 @@ def institutional_astronomical_photo(candidate):
  text=candidate.get('creator','')+' '+candidate.get('alt','')
  return candidate.get('provider')=='commons' and bool(re.search(r'\b(?:NASA|ESA|JPL|Hubble|STScI|ESO|USGS|NOIRLab|NAOJ|JAXA|ISRO|CNSA)\b',text,re.I)) and not re.search(r'\b(?:astronaut|cosmonaut|spacesuit|space suit|simulation|simulated|concept|analogue|analog|rendering)\b',candidate.get('alt',''),re.I)
 
+def depicted_process_equipment(photo,slot):
+ if not slot.get('process_equipment_descriptions'):return ''
+ alt=photo.get('alt','')[:600]
+ if not re.search(r'\b(?:at work|in use|operat(?:es?|ing|ed)|us(?:es|ing)|work(?:s|ing) (?:with|on)|throwing|forming|shaping)\b',alt,re.I):return ''
+ words=tokens(alt)
+ actions=scene_actions(slot['text'])-{'production'}
+ for name,description in slot['process_equipment_descriptions'].items():
+  if not actions.intersection(visual_actions(description)):continue
+  label=tokens(name)
+  if not label:continue
+  def same(left,right):
+   return left==right or min(len(left),len(right))>=6 and abs(len(left)-len(right))<=1 and left[:6]==right[:6]
+  if any(all(same(a,b) for a,b in zip(label,words[start:])) for start in range(len(words)-len(label)+1)):return name
+ return ''
+
 def photo_score(p,slot,topic):
- if not photographic_metadata(p):return -1
+ painting_scene=bool(slot.get('process_intent') and scene_actions(slot['text'])=={'decorate'})
+ if not photographic_metadata(p,painting_scene):return -1
  toy_pattern=r'\b(?:toys?|toy model|playset|Spielzeug|zabawk\w*|іграш\w*|игруш\w*)\b'
  if re.search(toy_pattern,p.get('depiction') or p.get('alt',''),re.I) and not re.search(toy_pattern,topic,re.I):return -1
  periods=artifact_scene_centuries(slot)
@@ -1641,8 +1659,10 @@ def photo_score(p,slot,topic):
  for word in list(meta):
   if len(word)>8 and word.endswith('making'):meta.add(word[:-6])
  process_topic=bool(slot.get('process_intent') or manufacturing_intent(topic))
+ equipment=depicted_process_equipment(p,slot) if process_topic else ''
  anchors=set(topic_terms(topic,'en'))-{'energy','power','system','process','technology','science','history','type','method','production','manufacturing'}
- if process_topic and anchors and not anchors&meta:return -1
+ material=slot.get('general_process_material','')
+ if process_topic and anchors and not anchors&meta and material not in meta and not (equipment and slot.get('general_process_subject')):return -1
  if not process_topic and anchors:
   concept=slot.get('source_driven') and slot.get('entity_profile',{}).get('kind')=='concept'
   supported_concept=concept and bool(meta&set(slot['entity_profile'].get('visual_vocabulary',[])))
@@ -1653,12 +1673,13 @@ def photo_score(p,slot,topic):
  if not process_topic and not slot.get('source_driven') and p.get('provider')=='pixabay' and len(anchors)>1 and not any(group and group<=set(tokens(tag)) for group in groups for tag in depiction.split(',')):return -1
  if p.get('provider') in {'pixabay','pexels'} and re.search(r'\b(?:fantasy|sci[ -]?fi|digital art|3d render|ai[ -]generated)\b',depiction,re.I):return -1
  work_context=r'\b(?:factor(?:y|ies)|mill(?:ing)?|refiner\w*|manufactur\w*|production|assembly|machine\w*|workshop|artisan\w*|craftsman|glassblow\w*|furnace\w*|kiln\w*|industrial|anneal\w*|lehr|leer|oven|inspection box|final inspection|glass works|laborator\w*|\w{3,}making|handmade|bakery|kitchen|brewery|fabryk\w*|warsztat\w*|завод\w*|цех\w*|мастерск\w*|майстер\w*|виробниц\w*)'
- if process_topic and not re.search(work_context,depiction,re.I) and not (visual_actions(depiction+' '+p.get('alt','')[:300])-{'production'}):return -1
+ if process_topic and not equipment and not re.search(work_context,depiction,re.I) and not (visual_actions(depiction+' '+p.get('alt','')[:300])-{'production'}):return -1
  if process_topic:
   if re.search(r'press.conference|news.conference|press[ _-]photo(?:graph)?|publicity[ _-]photo',depiction,re.I) and not re.search(r'press.conference|news.conference',topic,re.I):return -1
   food=r'\b(?:food|rice paper|rice flour|spring rolls?|edible|pancakes?|tortillas?|noodles?|chocolate|cakes?|bread|potato)\b'
   if re.search(food,p.get('alt','')+' '+' '.join(p.get('categories',[])),re.I) and not re.search(food,topic,re.I):return -1
   uses=set(re.findall(r'\b(?:printing press|letter press|letterpress|paper printing|book printing|printing machine|dressmaking|origami|wrapping|writing|drawing|typewriter|paper bags|paper sacks)\b',depiction,re.I))
+  if painting_scene:uses={use for use in uses if use.casefold() not in {'writing','drawing'}}
   if any(use.casefold() not in topic.casefold() for use in uses):return -1
   compounds=[word[:-6] for word in meta if len(word)>8 and word.endswith('making')]
   if compounds and not any(root in anchors for root in compounds):return -1
@@ -1668,6 +1689,8 @@ def photo_score(p,slot,topic):
  required=scene_actions(slot['text']) if process_topic else set()
  action_description=(p.get('alt','').removeprefix(p.get('depiction','')) or '')[:300]
  action_metadata=depiction+' '+action_description
+ if 'fire' in required and re.search(r'\b(?:excavat\w*|archaeolog\w*|ruins?|abandoned|disused)\b',action_metadata,re.I):return -1
+ if 'decorate' in required and re.search(r'\b(?:tile cutters?|tile saws?|cutting saws?)\b',action_metadata,re.I):return -1
  if 'press' in required:
   wet_material=r'\b(?:wet|water|damp|moist|dewater\w*|wilgo\w*|mokr\w*|wod\w*|вод\w*|волог\w*|мокр\w*|влаг\w*)\b'
   dry_packing=r'\b(?:baling|baling press|baled|packed(?: in)? bales|scrap paper|waste paper|scrap metal|salvage drive|makulatur\w*|макулатур\w*|пресування відходів)\b'
@@ -1676,6 +1699,7 @@ def photo_score(p,slot,topic):
   # A photo of handling an already dried item does not show the drying step.
   action_metadata=re.sub(r'\b(?:after (?:the )?drying|already dried|dry (?:paper|sheets?|cardboard|fibres?|fibers?))\b',' ',action_metadata,flags=re.I)
  depicted=visual_actions(action_metadata)
+ if equipment:depicted.update(required-{'production'})
  specific=required-{'production'}
  if specific and not specific&depicted:return -1
  if specific and re.search(r'\b(?:exterior|outside|panorama|skyline)\b',depiction,re.I):return -1
@@ -1761,8 +1785,15 @@ def pixel_check(raw,topic,slot,candidate=None):
     positive+=['A photograph of the rocky surface of '+name+' taken by a rover.','An orbital photograph of the surface of '+name+'.']
    return get_pixel_verifier().check(raw,name,set(),'',[],name,extra_positives=positive,extra_negatives=['A photograph of a spacecraft being built in a laboratory.','A person wearing an astronaut costume on Earth.','A collage of multiple labeled satellite images.','A topographic map with a color legend.','A small irregular moon or asteroid above a planet.','An artists concept or simulated view of a planet.'])
   if slot.get('process_intent'):
-   subject=' '.join(dict.fromkeys(topic_terms(topic,'en'))) or topic
-   return get_pixel_verifier().check(raw,subject,scene_actions(slot['text']),slot['text'] if slot.get('language')=='en' else '',slot.get('visual_competitors',[]),topic,extra_negatives=['A person writing or drawing on finished '+subject+'.','A typewriter, office printer or a person wrapping a parcel.'],extra_positives=[])
+   actions=scene_actions(slot['text'])
+   subject=slot.get('general_process_material') if actions&{'fire','decorate'} else ''
+   subject=subject or ' '.join(dict.fromkeys(topic_terms(topic,'en'))) or topic
+   equipment=depicted_process_equipment(candidate or {},slot)
+   positives=['A photograph of someone operating a '+equipment+' during manufacturing.'] if equipment else []
+   negatives=['A typewriter, office printer or a person wrapping a parcel.']
+   if 'decorate' not in actions:negatives.insert(0,'A person writing or drawing on finished '+subject+'.')
+   if equipment:negatives.append('An idle '+equipment+' displayed without anyone using it.')
+   return get_pixel_verifier().check(raw,subject,actions,slot['text'] if slot.get('language')=='en' else '',slot.get('visual_competitors',[]),topic,extra_negatives=negatives,extra_positives=positives)
   visual_subject=slot.get('visual_title') or topic
   description=profile.get('visual_description','') if visual_subject.casefold() in {profile.get('name','').casefold(),topic.casefold()} else ''
   subject=visual_subject+(' — '+description if description else '')
@@ -1781,6 +1812,8 @@ def photo_audit_context(topic,slot):
           'source_driven':slot.get('source_driven'),'process_intent':slot.get('process_intent'),'language':slot.get('language'),
           'features':{key:slot.get(key) for key in ('place_features','insect_features','volcanic_features')}}
  if not target and (slot.get('process_intent') or not slot.get('source_driven')):context['caption']=slot['text']
+ if slot.get('process_equipment_descriptions'):context['process_equipment']=slot['process_equipment_descriptions']
+ if slot.get('general_process_material'):context['process_material']=slot['general_process_material']
  return hashlib.sha256(json.dumps(context,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
 def allocate_photos(candidates,slots,topic,shot_count=None,scene_slots=None,edges=None):
@@ -2045,7 +2078,7 @@ def source_verified_native_plan(evidence,receipt,sources,topic,lang,duration):
  if spoken!=evidence.get('spoken_text') or hashlib.sha256(spoken.encode()).hexdigest()!=receipt.get('text_sha256'):return None
  return slots
 
-def completed_narration_plan(sources,topic,lang,duration):
+def completed_narration_plan(sources,topic,lang,duration,excluded=()):
  if any(source.get('translation_model') for source in sources):return None
  entity=sources[0].get('entity_profile',{}).get('id') if sources else None
  if not entity:return None
@@ -2070,6 +2103,7 @@ def completed_narration_plan(sources,topic,lang,duration):
   # synthesizing and validates the new recording against the natural window.
   spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
   digest=hashlib.sha256(spoken.encode()).hexdigest()
+  if digest in excluded:continue
   if any(item.get('text_sha256')==digest and item.get('audio_sha256')==voice.get('sha256') for item in voice.get('attempts',[])):
    return slots
  # A later alignment/render failure does not invalidate a completed native recording.
@@ -2078,7 +2112,7 @@ def completed_narration_plan(sources,topic,lang,duration):
  for row in rows:
   try:
    receipt=json.loads(row['receipt']);digest=receipt.get('text_sha256','')
-   if not safe_id(row['job_id']) or not re.fullmatch('[a-f0-9]{64}',digest):continue
+   if digest in excluded or not safe_id(row['job_id']) or not re.fullmatch('[a-f0-9]{64}',digest):continue
    evidence=json.loads((RENDER/row['job_id']/('verified-input-'+digest[:16]+'.json')).read_text())
    slots=source_verified_native_plan(evidence,receipt,sources,topic,lang,duration)
    if slots and cached_native_voice(SELECTED_VOICES[lang][1],digest):return slots
@@ -2153,7 +2187,7 @@ def prepare_illustrated_slots(sources,topic,lang,duration,planning_seconds,slots
 
 def prepare_selected_narration(sources,topic,lang,jid,duration,before_send=None):
  # Change complete source sentences after a measured miss, never the voice or playback rate.
- planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=out_of_window_narrations(topic,lang,duration);attempts=[];slots=[];completed_plan=completed_narration_plan(sources,topic,lang,duration)
+ planning_seconds=initial_natural_budget(sources,topic,lang,duration);seen=out_of_window_narrations(topic,lang,duration);attempts=[];slots=[];completed_plan=completed_narration_plan(sources,topic,lang,duration,excluded=seen)
  for attempt in (1,2,3):
   direction=-1 if attempts and attempts[-1]['duration_ms']>duration*1000 else 1
   if attempt==1 and completed_plan:
@@ -2306,8 +2340,18 @@ def photo_selection_order(beat_for_shot,scene_slots,eligible_by_shot):
 def _prepare_visuals(jid,sources,topic,lang,duration,slots,visual_count,minimum):
  beat_count=len(slots)
  beat_for_shot=shot_beats(visual_count,beat_count);shots_per_beat=[beat_for_shot.count(index) for index in range(beat_count)];first_shot=[beat_for_shot.index(index) for index in range(beat_count)]
+ general_process=slots[0].get('process_intent') and len(set(topic_terms(topic,lang)))==1 and not re.search(r'\d',topic)
+ material=''
+ if general_process and any(scene_actions(slot['text'])&{'fire','decorate'} for slot in slots):
+  from source_translation import QUERY_MODEL,english_query,query_configured_for
+  query=topic if lang=='en' else cache_fetch('search-query-en-v2|'+QUERY_MODEL+'|'+lang+'|'+topic,lambda:translated_search_query(topic,lang,english_query)) if query_configured_for(lang) else ''
+  terms=set(topic_terms(query,'en'))
+  if len(terms)==1:material=next(iter(terms))
  for slot in slots:
   slot['language']=lang;slot['entity_profile']=sources[0].get('entity_profile',{});slot['source_driven']=source_overview_mode(sources);slot['requested_shots']=duration*2//5
+  if slot.get('process_intent'):
+   slot['general_process_subject']=general_process
+   slot['general_process_material']=material
   if named_place_subject(slot['entity_profile']):
    slot['place_features']=place_scene_features(slot['text'],lang)
    slot['place_detail_query']=place_detail_query(slot,slot['entity_profile'])

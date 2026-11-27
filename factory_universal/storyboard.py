@@ -129,8 +129,10 @@ def bind_process_equipment(slots,sources,lang,api):
  equipment=r'\b(?:tools?|machines?|machinery|instruments?|devices?|equipment|apparatus|furnaces?|kilns?)\b'
  for slot,links in linked_slots:
   entities=[resolved.get(link['title'],{}) for link in links]
-  slot['process_equipment']=list(dict.fromkeys(entity['name'] for entity in entities if entity.get('name') and
-                               re.search(equipment,entity['name']+' '+entity.get('description',''),re.I)))[:2]
+  recognized={entity['name']:entity.get('description','') for entity in entities if entity.get('name') and
+              re.search(equipment,entity['name']+' '+entity.get('description',''),re.I)}
+  slot['process_equipment']=list(recognized)[:2]
+  slot['process_equipment_descriptions']={name:recognized[name] for name in slot['process_equipment']}
 
 def resolve_links(links,lang,api):
  titles=sorted({link['title'] for link in links})[:40]
