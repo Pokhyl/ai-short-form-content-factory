@@ -983,6 +983,15 @@ def check():
  assert not app.incidental_manufacturing_history(judicial,'Історія виробництва кераміки')
  assert app.incidental_manufacturing_history('The mill owners were sentenced to prison.','How paper is made')
  assert not app.incidental_manufacturing_history('The glass is softened in a furnace.','How glass is made')
+ assert app.incidental_material_behavior('Оброблений матеріал стає вчетверо міцнішим ніж звичайний.','Виробництво матеріалу')
+ assert app.incidental_material_behavior('Annealed sheets have lower internal stresses.','How sheets are made')
+ assert app.incidental_material_behavior('Зберігаються на відкритому повітрі та піддаються постійному нагріванню.','Виробництво скла')
+ assert app.incidental_material_behavior('Після загартовування різання призведе до розлому скла.','Виробництво скла')
+ assert not app.incidental_material_behavior('The sheets are cooled slowly to reduce internal stresses.','How sheets are made')
+ assert not app.incidental_material_behavior('Annealed sheets have lower internal stresses.','Properties of sheets')
+ assert not app.process_scene_supported('Recycling reduces carbon dioxide emissions per tonne of waste.')
+ assert app.process_scene_supported('Papermaking is the process of manufacturing paper and cardboard.')
+ assert app.process_scene_supported('The tiles are fired in a kiln.')
  forming_span='Workers shape the sheet with a forming press.'
  forming_slot={'text':forming_span,'source_sentence':forming_span,'source_index':0,'source_position':0}
  forming_source={'text':forming_span,'visual_links':[

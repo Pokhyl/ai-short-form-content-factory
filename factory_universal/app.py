@@ -109,6 +109,25 @@ def incidental_manufacturing_history(text,topic):
  return manufacturing_intent(topic) and bool(LEGAL_OUTCOME.search(text)) and not bool(
   LEGAL_OUTCOME.search(topic) or re.search(r'\b(?:history|historic\w*|dziej\w*|histori\w*|істор\w*|истори\w*)\b',topic,re.I))
 
+def incidental_material_behavior(text,topic):
+ if not manufacturing_intent(topic):return False
+ # Weather exposure, comparisons between products and damage after
+ # manufacture do not establish an operation for a manufacturing beat.
+ behavior=(r'\b(?:stronger than|harder than|more brittle than|mi[cę]ksz\w* niż|mocniejsz\w* niż|'
+           r'міцніш\w* (?:ніж|за)|твердіш\w* (?:ніж|за)|прочнее (?:чем|обычн\w*)|'
+           r'(?:internal|residual) stresses|внутрішн\w* напружен\w*|внутренн\w* напряжен\w*)\b'
+           r'|\b(?:stored outdoors|outdoor exposure|przechowywan\w* na zewnątrz|'
+           r'зберіга\w* на відкритому повітрі|хран\w* на открытом воздухе)\b'
+           r'|\b(?:causes? (?:breakage|cracking)|will (?:break|crack|shatter)|'
+           r'призвед\w* до (?:розлом\w*|руйнуван\w*|тріщин\w*)|'
+           r'привед\w* к (?:разрушен\w*|растрескиван\w*))\b')
+ if not re.search(behavior,text,re.I):return False
+ applied=(r'\b(?:is|are|was|were) (?:then )?(?:heated|cooled|pressed|cut|shaped|fired|'
+          r'dried|processed|treated)\b|\b(?:нагріва(?:ють|ється|ються)|охолоджу(?:ють|ється|ються)|пресую\w*|'
+          r'випалю\w*|обробля\w*|нагрева\w*|охлажда\w*|обрабатыва\w*|'
+          r'podgrzew\w*|schładza\w*|prasowan\w*|wypala\w*)\b')
+ return not re.search(applied,text,re.I)
+
 def process_signal(text,lang):
   patterns={
    'en':r'\b(melt(?:s|ed|ing)?|molten|form(?:s|ed|ing)?|blow(?:s|n|ing|pipe)?|anneal(?:s|ed|ing)?|cool(?:s|ed|ing)|inspect(?:s|ed|ing|ion|ions)?|furnaces?|batch|gobs?|press(?:es|ed|ing)?|feed(?:s|ing)?)\b',
@@ -612,6 +631,9 @@ def process_definition(text):
  parts=re.split(r'\s[—–]\s|\b(?:is|are|jest|są|це|это|є)\b',text or '',maxsplit=1,flags=re.I)
  return len(parts)>1 and bool(re.search(r'manufactur|making|made from|made by|process of|wytwarz|produk|виготов|виробниц|изготов|производ',parts[1],re.I))
 
+def process_scene_supported(text):
+ return scene_actions(text)!={'production'} or process_definition(text)
+
 def foreign_name_catalogue(text,lang,topic):
  if lang not in {'ru','uk'} or re.search(r'list|catalog|список|перелік|каталог',topic,re.I):return False
  return len(re.findall(r'[A-Za-z]{2,}',text))>=3 and len(re.findall(r'[,;]',text))>=3
@@ -693,7 +715,9 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
     source_positions[(0,lead)]=sources[0]['text'].find(original);source_spans[(0,lead)]=original
   if definition:
    original_definition=source_spans.get((definition_index,definition),definition)
-   if any(excluded in original_definition for excluded in sources[definition_index].get('excluded_visual_sentences',[])):
+   if (process_intent and not all(process_scene_supported(unit) for unit in sentences(definition))
+       or incidental_material_behavior(definition,topic)
+       or any(excluded in original_definition for excluded in sources[definition_index].get('excluded_visual_sentences',[]))):
     definition_index=None;definition=None
   if definition:
    rows.append((40,definition_index,definition,definition.split()))
@@ -716,7 +740,7 @@ def source_slots(sources,topic,count,lang='en',duration_s=None):
      source_position=paragraph_start+paragraph.find(original_sentence)
      if foreign_name_catalogue(sentence,lang,topic):continue
      if any(excluded in original_sentence for excluded in src.get('excluded_visual_sentences',[])):continue
-     if incidental_place_event(sentence,topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(sentence,topic):continue
+     if incidental_place_event(sentence,topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(sentence,topic) or incidental_material_behavior(sentence,topic):continue
      if human:sentence=retain_named_model_asides(sentence)
      if human or definition:sentence=omit_parenthetical_asides(sentence)
      sentence=re.sub(r'\[[^\]]{1,240}\]','',sentence).strip();sentence=re.sub(r'\s+([,.;:!?])',r'\1',sentence);words=sentence.split()
@@ -2103,7 +2127,7 @@ def source_verified_native_plan(evidence,receipt,sources,topic,lang,duration):
   url=evidence['sources'][old_index]['url'];index=next((i for i,source in enumerate(sources) if source['url']==url),None)
   span=beat.get('source_sentence','');start=beat.get('source_position',-1)
   if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:return None
-  if truncated_dependent_clause(beat['text'],span,lang) or context_dependent_sentence(beat['text']) or incidental_place_event(beat['text'],topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(beat['text'],topic):return None
+  if truncated_dependent_clause(beat['text'],span,lang) or context_dependent_sentence(beat['text']) or incidental_place_event(beat['text'],topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(beat['text'],topic) or incidental_material_behavior(beat['text'],topic):return None
   slots.append({'text':beat['text'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':manufacturing_intent(topic)})
  if not slots or len(slots)>duration//5 or not script_covers_identifier_scope(sources,topic,lang,slots):return None
  spoken=selected_voice_request(lang,' '.join(slot['text'] for slot in slots))['input']['text']
@@ -2127,7 +2151,7 @@ def completed_narration_plan(sources,topic,lang,duration,excluded=()):
    index=next((i for i,source in enumerate(sources) if source['url']==beat['source_url']),None)
    span=beat.get('source_span','');start=beat.get('source_start',-1)
    if index is None or start<0 or not span or sources[index]['text'][start:start+len(span)]!=span:valid=False;break
-   if truncated_dependent_clause(beat['caption'],span,lang) or context_dependent_sentence(beat['caption']) or incidental_place_event(beat['caption'],topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(beat['caption'],topic):valid=False;break
+   if truncated_dependent_clause(beat['caption'],span,lang) or context_dependent_sentence(beat['caption']) or incidental_place_event(beat['caption'],topic,sources[0].get('entity_profile',{})) or incidental_manufacturing_history(beat['caption'],topic) or incidental_material_behavior(beat['caption'],topic):valid=False;break
    slots.append({'text':beat['caption'],'language':lang,'source_index':index,'source_sentence':span,'source_position':start,'process_intent':manufacturing_intent(topic)})
   if not valid or not slots or len(slots)>duration//5 or not script_covers_identifier_scope(sources,topic,lang,slots):continue
   # A previously measured, source-verified script remains useful after its

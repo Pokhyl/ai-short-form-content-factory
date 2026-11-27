@@ -293,7 +293,7 @@ def build(slots,sources,lang,api):
  if profile.get('kind')!='human':
   if slots[0].get('process_intent'):bind_process_equipment(slots,sources,lang,api)
   for index,slot in enumerate(slots):
-   if slot.get('process_intent') and api.scene_actions(slot['text'])=={'production'} and not api.process_definition(slot['text']):raise SceneUnavailable(slot,'No evidenced physical operation for this process scene')
+   if slot.get('process_intent') and not api.process_scene_supported(slot['text']):raise SceneUnavailable(slot,'No evidenced physical operation for this process scene')
    slot['visual_targets']=[]
    slot['visual_role']='establishing' if index==0 else 'process_evidence' if slot.get('process_intent') else 'topic_evidence'
   if api.volcanic_subject(profile) and not slots[0].get('process_intent'):bind_landform_examples(slots,sources,lang,api)
@@ -320,7 +320,7 @@ def build(slots,sources,lang,api):
  seen_events=set()
  for index,slot in enumerate(slots):
   targets={}
-  if slot.get('process_intent') and api.scene_actions(slot['text'])=={'production'} and not api.process_definition(slot['text']):
+  if slot.get('process_intent') and not api.process_scene_supported(slot['text']):
    raise SceneUnavailable(slot,'No evidenced physical operation for this process scene')
   if index==0:
    # The establishing scene may show the main subject. Subsequent factual
